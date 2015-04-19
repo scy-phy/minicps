@@ -58,3 +58,6 @@ target/
 
 # Linux backup
 *~
+
+# Temp dirs
+temp/
