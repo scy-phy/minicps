@@ -1,8 +1,49 @@
 """
 minicps constants.
+
+L0 rings are isolated dicts.
+
+L1 network devices are divided into dicts according to the device type.
 """
 
-PLCS_IP = {
+
+L0_RING1 = {
+    'plc': '192.168.0.10',
+    'plcr': '192.168.0.11',
+    'rio': 'TODO',
+    'act1': 'TODO',
+    'sen1': 'TODO',
+    'ap': 'TODO',
+    'wireless_rio': 'TODO',
+}
+
+L0_RING2 = {
+    'plc': '192.168.0.20',
+    'plcr': '192.168.0.21',
+}
+
+L0_RING3 = {
+    'plc': '192.168.0.30',
+    'plcr': '192.168.0.31',
+}
+
+L0_RING4 = {
+    'plc': '192.168.0.40',
+    'plcr': '192.168.0.41',
+}
+
+L0_RING5 = {
+    'plc': '192.168.0.50',
+    'plcr': '192.168.0.51',
+}
+
+L0_RING6 = {
+    'plc': '192.168.0.60',
+    'plcr': '192.168.0.61',
+}
+
+
+L1_PLCS_IP = {
     'plc1': '192.168.1.10',
     'plc2': '192.168.1.20',
     'plc3': '192.168.1.30',
@@ -16,6 +57,28 @@ PLCS_IP = {
     'plc5r': '192.168.1.51',
     'plc6r': '192.168.1.61',
 }
+
+L1_APS_IP = {
+    'ap1': 'TODO',  # MOXA
+    'ap2': 'TODO',
+    'ap3': 'TODO',
+    'ap4': 'TODO',
+    'ap5': 'TODO',
+    'ap6': 'TODO',
+    'ap_control_network': 'TODO',  # SCADA and Historian
+    'ap_hmi': 'TODO',
+}
+
+L3_SCADA = {
+}
+
+L3_Historian = {
+}
+
+L2_HMI = {
+}
+
+
 PLCS_MAC = {
     'plc1': '00:1D:9C:C7:B0:70',
     'plc2': '00:1D:9C:C8:BC:46',
@@ -30,17 +93,8 @@ PLCS_MAC = {
     'plc5r': '00:1D:9C:C8:F4:B9',
     'plc6r': '00:1D:9C:C8:F5:DB',
 }
-PLCS = len(PLCS_IP)
+PLCS = len(PLCS_MAC)
 
-APS_IP = {
-    'ap1': 'TODO',  # MOXA
-    'ap2': 'TODO',
-    'ap3': 'TODO',
-    'ap4': 'TODO',
-    'ap5': 'TODO',
-    'ap6': 'TODO',
-    'ap_network': 'TODO',  # connected to system firewall
-}
 APS_MAC = {
     'ap1': 'TODO',  # MOXA
     'ap2': 'TODO',
@@ -48,12 +102,8 @@ APS_MAC = {
     'ap4': 'TODO',
     'ap5': 'TODO',
     'ap6': 'TODO',
-    'ap_network': 'TODO',  # connected to system firewall
+    'ap_control_network': 'TODO',  # SCADA and Historian
+    'ap_hmi': 'TODO',
 }
-APS = len(APS_IP)
+APS = len(APS_MAC)
 
-SCADA = {
-}
-
-HMI = {
-}
