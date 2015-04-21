@@ -1,8 +1,14 @@
-#!/usr/bin/env python
-# encoding: utf-8
+"""
+Functional test
+"""
 
 from nose.tools import *
-import minicps
+
+from mininet.topo import LinearTopo
+from mininet.net import Mininet
+from mininet.util import dumpNodeConnections
+from mininet.log import setLogLevel
+from mininet.link import TCLink
 
 
 def setup():
@@ -14,6 +20,16 @@ def teardown():
 
 
 def test_basic():
-    print "I RAN!"
+    """ Pingall a linear topology. """
 
+    net = Mininet(topo=LinearTopo(n=5),
+                  link=TCLink)
+    net.start()
 
+    print "Dumpingg host connections"
+    dumpNodeConnections(net.hosts)
+
+    print "Testing network connectivity"
+    net.pingAll()
+
+    net.stop()
