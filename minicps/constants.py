@@ -102,8 +102,8 @@ L2_HMI = {
 
 CONDUITS = {
     'firewall': '192.168.1.102',
-    'ap_pcm': '192.168.1.103',  # plant control network
-    'ap_dmz': '192.168.1.104',
+    'pcm_ap': '192.168.1.103',  # plant control network
+    'dmz_ap': '192.168.1.104',
 }
 
 L3_PLANT_NETWORK = {
