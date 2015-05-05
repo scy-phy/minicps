@@ -1,17 +1,23 @@
 """
 minicps constants.
 
+TEST_LOG_LEVEL affetcs all the tests. 
+output, info and debug are in increasing order of verbosity.
+
 L0 rings are isolated dicts.
 
 L1 network devices are divided into dicts according to the device type.
 L1 wireless clients connect to CONDUITS[ap_pcm]
 
-TEST_LOG_LEVEL affetcs all the tests. 
-output, info and debug are in increasing order of verbosity.
+Dedicated dict map and set each SWaT network level link parameters.
+It is also possible to fine tune each link in a single network level.
+
+Network level node numbers are stored in constats eg: L3_NODES, and
+they are used for example to distribute evenly CPU processing power.
 """
 
-TEST_LOG_LEVEL='output'
-# TEST_LOG_LEVEL='info'
+# TEST_LOG_LEVEL='output'
+TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
 
 L0_RING1 = {
@@ -133,4 +139,15 @@ PLCS_MAC = {
     'plc6r': '00:1D:9C:C8:F5:DB',
     'plc7': 'TODO',
 }
+
+
+L0_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L1_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L2_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L3_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+
+
 PLCS = len(PLCS_MAC)
+L1_NODES = 0 # TODO
+L2_NODES = 0 # TODO
+L3_NODES = PLCS/2 + 2  # 13/2 gives 6

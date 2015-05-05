@@ -7,11 +7,15 @@ simulation support.
 
 Topology syntax follow the new simplified Mininet 2.2 API.
 eg: build() insted of __init__() constructor.
+
+Switch naming convention: s2 indicates SWaT L2 network, not to
+be confused with link layer.
 """
 
 from mininet.net import Mininet
 from mininet.topo import Topo
-# from minicps import constants as c
+
+from minicps import constants as c
 
 
 class DLR(Topo):
@@ -33,7 +37,7 @@ class EthStar(Topo):
         switch = self.addSwitch('s1')
 
         for h in range(n):
-            host = self.addHost('PLC%s' % (h + 1))
+            host = self.addHost('plc%s' % (h + 1))
             self.addLink(host, switch)
 
 
@@ -45,10 +49,22 @@ class L3EthStar(Topo):
     An industrial firewall service router filter the traffic.
     """
 
-    def build(self):
-        """TODO: to be defined1. """
+    def build(self, n=c.L3_NODES):
+        """
+        mininet doesn't like long host names
+        eg: workstation abbreviated to wn
+        """
+        switch = self.addSwitch('s3')
 
-        pass
+        for h in range(n-2):
+            host = self.addHost('plc%s' % (h + 1))
+            self.addLink(host, switch, **c.L3_LINKOPTS)
+
+        # historian = self.addHost('h1')
+        # self.addLink(historian, switch, **c.L3_LINKOPTS)
+
+        # workstation = self.addHost('h2')
+        # self.addLink(workstation, switch, **c.L3_LINKOPTS)
 
 
 class L2EthStar(Topo):
@@ -61,7 +77,7 @@ class L2EthStar(Topo):
 
     def build(self):
         """TODO: to be defined1. """
-
+        switch = self.addSwitch('s2')
         pass
 
 
