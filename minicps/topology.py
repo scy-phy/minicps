@@ -18,9 +18,8 @@ class DLR(Topo):
 
     """Device Level Ring Topology."""
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Topo.__init__(self)
 
         pass
 
@@ -46,9 +45,10 @@ class L3EthStar(Topo):
     An industrial firewall service router filter the traffic.
     """
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Topo.__init__(self)
+
+        pass
 
 
 class L2EthStar(Topo):
@@ -59,9 +59,10 @@ class L2EthStar(Topo):
     16-ports ethernet switches.
     """
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Topo.__init__(self)
+
+        pass
 
 
 class L1EthStar(Topo):
@@ -72,9 +73,10 @@ class L1EthStar(Topo):
     16-ports ethernet switches.
     """
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Topo.__init__(self)
+
+        pass
 
 
 class L0DLR(DLR):
@@ -85,17 +87,17 @@ class L0DLR(DLR):
     using a remote IO adaptor.
     """
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Topo.__init__(self)
+
+        pass
 
 
 class Minicps(Mininet):
 
     """Docstring for Minicps. """
 
-    def __init__(self):
+    def build(self):
         """TODO: to be defined1. """
-        Mininet.__init__(self)
 
         pass
