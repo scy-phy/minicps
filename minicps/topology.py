@@ -4,6 +4,9 @@ Recreate the SWaT network with the highest level of precision.
 DMZ AP, L3, L2 L1  wireless star networks and L0 wireless DLR
 cannot be simulated because miniet lacks wireless (IEEE 802.11)
 simulation support.
+
+Topology syntax follow the new simplified Mininet 2.2 API.
+eg: build() insted of __init__() constructor.
 """
 
 from mininet.net import Mininet
@@ -26,11 +29,13 @@ class EthStar(Topo):
 
     """Docstring for EthStar. """
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Topo.__init__(self)
+    def build(self, n=2):
+        """Star topology with n host and a single switch."""
+        switch = self.addSwitch('s1')
 
-        pass
+        for h in range(n):
+            host = self.addHost('PLC%s' % (h + 1))
+            self.addLink(host, switch)
 
 
 class L3EthStar(Topo):

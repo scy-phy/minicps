@@ -5,8 +5,14 @@ L0 rings are isolated dicts.
 
 L1 network devices are divided into dicts according to the device type.
 L1 wireless clients connect to CONDUITS[ap_pcm]
+
+TEST_LOG_LEVEL affetcs all the tests. 
+output, info and debug are in increasing order of verbosity.
 """
 
+TEST_LOG_LEVEL='output'
+# TEST_LOG_LEVEL='info'
+# TEST_LOG_LEVEL='debug'
 
 L0_RING1 = {
     'plc': '192.168.0.10',

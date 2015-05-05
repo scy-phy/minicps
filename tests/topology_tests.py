@@ -11,7 +11,7 @@ from mininet.log import setLogLevel
 from mininet.link import TCLink
 
 from minicps import constants as c
-from minicps.topology import EthRing, EthStar
+from minicps.topology import EthStar, Minicps
 
 
 def setup():
@@ -22,33 +22,47 @@ def teardown():
     print 'TEAR DOWN!'
 
 
-def test_eth_ring():
-    """Test L0 Ethernet ting"""
+# def test_eth_ring():
+#     """Test L0 Ethernet ting"""
 
-    net = Mininet(topo=EthRing(n=5),
-                  link=TCLink)
+#     net = Mininet(topo=EthRing(n=5),
+#                   link=TCLink)
+#     net.start()
+
+#     print "Dumpingg host connections"
+#     dumpNodeConnections(net.hosts)
+
+#     print "Testing network connectivity"
+#     net.pingAll()
+
+#     net.stop()
+
+
+def test_EthStar():
+    """Test EthStar and index a couple of common test commands"""
+
+    setLogLevel(c.TEST_LOG_LEVEL)
+
+    topo = EthStar(n=2)
+    net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
     net.start()
-
-    print "Dumpingg host connections"
+    print "DEBUG: Dumping host connections"
     dumpNodeConnections(net.hosts)
-
-    print "Testing network connectivity"
+    print "DEBUG: Testing network connectivity"
     net.pingAll()
-
+    print "DEBUG: Testing network connectivity"
+    net.pingAll()
+    print "DEBUG: stopping the network"
     net.stop()
-
-
-def test_eth_star():
-    """Test L1 Ethernet star"""
-
-    net = Mininet(topo=EthStar(n=5),
-                  link=TCLink)
+    
+    topo = EthStar(n=6)
+    net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
     net.start()
-
-    print "Dumpingg host connections"
+    print "DEBUG: Dumping host connections"
     dumpNodeConnections(net.hosts)
-
-    print "Testing network connectivity"
+    print "DEBUG: Testing network connectivity"
     net.pingAll()
-
+    print "DEBUG: Testing TCP bandwidth"
+    net.pingAll()
+    print "DEBUG: stopping the network"
     net.stop()
