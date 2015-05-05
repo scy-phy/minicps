@@ -11,7 +11,7 @@ from mininet.log import setLogLevel
 from mininet.link import TCLink
 
 from minicps import constants as c
-from minicps.topology import EthStar, Minicps
+from minicps.topology import EthStar, Minicps, DLR
 
 
 def setup():
@@ -22,20 +22,22 @@ def teardown():
     print 'TEAR DOWN!'
 
 
-# def test_eth_ring():
-#     """Test L0 Ethernet ting"""
+def test_DLR():
+    """Test DLR ring"""
 
-#     net = Mininet(topo=EthRing(n=5),
-#                   link=TCLink)
-#     net.start()
+    setLogLevel(c.TEST_LOG_LEVEL)
 
-#     print "Dumpingg host connections"
-#     dumpNodeConnections(net.hosts)
-
-#     print "Testing network connectivity"
-#     net.pingAll()
-
-#     net.stop()
+    topo = DLR(n=2)
+    net = Mininet(topo)
+    net.start()
+    print "DEBUG: Dumping host connections"
+    dumpNodeConnections(net.hosts)
+    print "DEBUG: Testing network connectivity"
+    net.pingAll()
+    print "DEBUG: Testing network connectivity"
+    net.pingAll()
+    print "DEBUG: stopping the network"
+    net.stop()
 
 
 def test_EthStar():
@@ -44,7 +46,7 @@ def test_EthStar():
     setLogLevel(c.TEST_LOG_LEVEL)
 
     topo = EthStar(n=2)
-    net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
+    net = Mininet(topo)
     net.start()
     print "DEBUG: Dumping host connections"
     dumpNodeConnections(net.hosts)
