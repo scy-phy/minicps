@@ -102,7 +102,7 @@ L2_HMI = {
 
 CONDUITS = {
     'firewall': '192.168.1.102',
-    'pcm_ap': '192.168.1.103',  # plant control network
+    'pcn_ap': '192.168.1.103',  # plant control network
     'dmz_ap': '192.168.1.104',
 }
 
