@@ -18,6 +18,7 @@ from mininet.util import dumpNodeConnections
 from mininet.log import setLogLevel
 from mininet.node import CPULimitedHost
 from mininet.link import TCLink
+from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
@@ -33,6 +34,23 @@ def teardown():
     pass
 
 
+def mininet_functests(net):
+    """Common mininet functional tests can be called inside
+    each unittest. The function will be ignored by nose
+    during automatic test collection because its name is
+    not part of nose convention.
+    Remember to manually stop the network after this call.
+
+    :net: Mininet object
+    """
+
+    print "DEBUG: Dumping host connections"
+    dumpNodeConnections(net.hosts)
+    print "DEBUG: Testing network connectivity"
+    net.pingAll()
+    print "DEBUG: Testing TCP bandwidth btw PLC1 and PLC2"
+    
+
 @with_setup(setup, teardown)
 def test_EthStar():
     """Test EthStar and index a couple of common test commands"""
@@ -41,14 +59,11 @@ def test_EthStar():
     topo = EthStar(n=6)
     net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
     net.start()
-    print "DEBUG: Dumping host connections"
-    dumpNodeConnections(net.hosts)
-    print "DEBUG: Testing network connectivity"
-    net.pingAll()
-    print "DEBUG: Testing TCP bandwidth btw PLC1 and PLC2"
+
     plc1, plc2 = net.get('plc1', 'plc2')  # get host obj reference by name
     net.iperf((plc1, plc2))  # passed as a tuple
-    print "DEBUG: stopping the network"
+    assert_equals(1+1, 2)
+
     net.stop()
 
 
@@ -60,14 +75,9 @@ def test_L3EthStar():
     topo = L3EthStar()
     net = Mininet(topo=topo, link=TCLink)
     net.start()
-    print "DEBUG: Dumping host connections"
-    dumpNodeConnections(net.hosts)
-    print "DEBUG: Testing network connectivity"
-    net.pingAll()
-    print "DEBUG: Testing TCP bandwidth btw PLC1 and PLC2"
-    plc1, plc2 = net.get('plc1', 'plc2')
-    net.iperf((plc1, plc2))
-    print "DEBUG: stopping the network"
+
+    CLI(net)
+
     net.stop()
 
 
@@ -79,12 +89,5 @@ def test_DLR():
     topo = DLR(n=2)
     net = Mininet(topo)
     net.start()
-    print "DEBUG: Dumping host connections"
-    dumpNodeConnections(net.hosts)
-    print "DEBUG: Testing network connectivity"
-    net.pingAll()
-    print "DEBUG: stopping the network"
+
     net.stop()
-
-
-    

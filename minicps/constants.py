@@ -14,12 +14,16 @@ It is also possible to fine tune each link in a single network level.
 
 Network level node numbers are stored in constats eg: L3_NODES, and
 they are used for example to distribute evenly CPU processing power.
+
+Dict key mirror where possible mininet device names, indeed it is
+super easy to create a new Topo class using those dictionaries.
 """
 
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
 
+# Network constants
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',
@@ -119,10 +123,14 @@ CONDUITS = {
 }
 
 L3_PLANT_NETWORK = {
-    'historian': '192.168.1.200',
-    'workstation': '192.168.1.201',
+    'histn': '192.168.1.200',
+    'workstn': '192.168.1.201',
 }
 
+L0_NETMASK = ''
+L1_NETMASK = '/24'
+L2_NETMASK = ''
+L3_NETMASK = '/24'
 
 PLCS_MAC = {
     'plc1': '00:1D:9C:C7:B0:70',
@@ -138,6 +146,11 @@ PLCS_MAC = {
     'plc5r': '00:1D:9C:C8:F4:B9',
     'plc6r': '00:1D:9C:C8:F5:DB',
     'plc7': 'TODO',
+}
+
+OTHER_MACS = {
+        'histn': 'B8:2A:72:D7:B0:EC',
+        'workstn': '98:90:96:98:CC:49',
 }
 
 

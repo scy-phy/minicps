@@ -52,19 +52,28 @@ class L3EthStar(Topo):
     def build(self, n=c.L3_NODES):
         """
         mininet doesn't like long host names
-        eg: workstation abbreviated to wn
+        eg: workstion abbreviated to workstn
         """
         switch = self.addSwitch('s3')
 
+        # FIXME: don't know how to use CP
+        # equi_balance = 0.5 / float(n)
+        # print "DEBUG: equi_balance", equi_balance
+        # host = self.addHost('plc%s' % (h + 1), cpu=equi_balance)
+
         for h in range(n-2):
-            host = self.addHost('plc%s' % (h + 1))
+            # compute the key reused to access IP and MAC dicts and to name hosts
+            key = 'plc%s' % (h + 1)
+            host = self.addHost(key, ip=c.L1_PLCS_IP[key]+c.L1_NETMASK, mac=c.PLCS_MAC[key])
             self.addLink(host, switch, **c.L3_LINKOPTS)
 
-        # historian = self.addHost('h1')
-        # self.addLink(historian, switch, **c.L3_LINKOPTS)
+        histn = self.addHost('histn', ip=c.L3_PLANT_NETWORK['histn']+c.L3_NETMASK,
+                mac=c.OTHER_MACS['histn'])
+        self.addLink(histn, switch, **c.L3_LINKOPTS)
 
-        # workstation = self.addHost('h2')
-        # self.addLink(workstation, switch, **c.L3_LINKOPTS)
+        workstn = self.addHost('workstn', ip=c.L3_PLANT_NETWORK['workstn']+c.L3_NETMASK,
+                mac=c.OTHER_MACS['workstn'])
+        self.addLink(workstn, switch, **c.L3_LINKOPTS)
 
 
 class L2EthStar(Topo):
