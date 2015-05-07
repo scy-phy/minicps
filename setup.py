@@ -6,12 +6,12 @@ except ImportError:
 
 config = {
     'description': 'TODO',
-    'author': 'iTrust',
+    'author': 'scy-phy',
     'url': 'https://github.com/scy-phy/minicps',
     'download_url': 'https://github.com/scy-phy/minicps',
     'author email': 'abc@gmail.com',
     'version': '0.1',
-    'install_requires': ['nose'],
+    'install_requires': ['nose', 'cpppo', 'pycomm'],
     'package': ['minicps'],
     'scripts': [],
     'name': 'minicps'
