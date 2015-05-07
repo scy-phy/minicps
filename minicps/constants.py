@@ -5,9 +5,8 @@ TEST_LOG_LEVEL affetcs all the tests.
 output, info and debug are in increasing order of verbosity.
 
 L0 rings are isolated dicts.
-
 L1 network devices are divided into dicts according to the device type.
-L1 wireless clients connect to CONDUITS[ap_pcm]
+Devices are mapped with actual SWaT IP, MAC and netmasks.
 
 Dedicated dict map and set each SWaT network level link parameters.
 It is also possible to fine tune each link in a single network level.
@@ -22,6 +21,10 @@ super easy to create a new Topo class using those dictionaries.
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
+
+
+LOG_DIR = './temp'
+
 
 # Network constants
 L0_RING1 = {
@@ -164,3 +167,12 @@ PLCS = len(PLCS_MAC)
 L1_NODES = 0 # TODO
 L2_NODES = 0 # TODO
 L3_NODES = PLCS/2 + 2  # 13/2 gives 6
+
+
+# TODO: use real tag name and data types
+# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
+# and REAL (32-bit float)
+TAGS = {
+    'pump3': 'pump3=INT[10]',
+    'flow3': 'flow3=INT[10]',
+}
