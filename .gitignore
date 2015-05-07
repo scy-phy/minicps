@@ -59,8 +59,9 @@ target/
 # Linux backup
 *~
 
-# Temp dirs
-# temp/
+# Temp files and dirs
+*.out
+*.err
 
 # Caps
 *.pcapng
