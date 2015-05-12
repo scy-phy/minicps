@@ -176,3 +176,6 @@ TAGS = {
     'pump3': 'pump3=INT[10]',
     'flow3': 'flow3=INT[10]',
 }
+
+
+POX_PATH='~/'

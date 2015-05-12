@@ -5,7 +5,9 @@ MiniCPS is a lightweight simulatior for accurate network traffic in an industria
 
 We recommend the use of a mininet VM to run minicps. Once the VM is set up, run the following to install the environment:
 
+    cd
     git clone https://github.com/scy-phy/minicps
+    git clone http://github.com/noxrepo/pox
     sudo apt-get install python-pip python-nose
     sudo pip install cpppo pycomm
 

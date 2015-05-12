@@ -1,18 +1,54 @@
 """
-Model different type of SWaT devices using OpenFlow API
-and avaliable controllers.
+Minicps assumes that pox is cloned into your $HOME dir,
+for more information visit:
+https://openflow.stanford.edu/display/ONL/POX+Wiki
+
+By default Mininet runs Open vSwitch in OpenFlow mode,
+which requires an OpenFlow controller.
+
+Controller subclasses are started and stopped automatically by Mininet.
+RemoteController must be started and stopped by the user.
+
+Controller that enables learning switches doesn't work natively on
+topologies that contains loops and multiple paths (eg: fat trees)
+but they work fine with spanning tree topologies.
 """
 
-from mininet.node import Host, Node
+from mininet.net import Mininet
+from mininet.node import Controller, Host, Node
+from mininet.topo import SingleSwitchTopo
+
+from minicps import constants as c
+
+import os
 
 
-class POXLearningSwitch(object):
+class POXL2Pairs(Controller):
 
-    """Docstring for POXLearningSwitch. """
+    """Build a controller able to update switches
+    flow tables according to MAC learning."""
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        pass
+    def start(self):
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        self.cmd(self.pox, 'forwarding.l2_pairs &')
+
+    def stop(self):
+        self.cmd('kill %' + self.pox)
+
+
+class POXL2Learning(Controller):
+
+    """Build a controller able to update switches
+    flow tables according to flow-based criteria
+    (not only MAC-based flow matching)."""
+
+    def start(self):
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        self.cmd(self.pox, 'forwarding.l2_learning &')
+
+    def stop(self):
+        self.cmd('kill %' + self.pox)
+
 
 
 class PLC(Host):
