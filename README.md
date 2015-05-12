@@ -10,7 +10,10 @@ We recommend the use of a mininet VM to run minicps. Once the VM is set up, run 
     sudo pip install cpppo pycomm
 
 ## useful links ##
+
 [datasheetarchive](http://www.datasheetarchive.com/)
 
 [Allen-Bradley ControlLogix products page](http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview)
+
+[POX wiki](https://openflow.stanford.edu/display/ONL/POX+Wiki)
 
