@@ -1,8 +1,18 @@
 """
-Model different type of SWaT devices.
+Model different type of SWaT devices using OpenFlow API
+and avaliable controllers.
 """
 
 from mininet.node import Host, Node
+
+
+class POXLearningSwitch(object):
+
+    """Docstring for POXLearningSwitch. """
+
+    def __init__(self):
+        """TODO: to be defined1. """
+        pass
 
 
 class PLC(Host):
