@@ -1,6 +1,10 @@
 """
 Constants tests
 
+Given implemented minicps/topologies test everything related to
+constants module. 
+eg: IPs, MACs, netmasks
+
 """
 
 from nose.tools import *
@@ -15,6 +19,7 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 
 from minicps import constants as c
+from minicps.topology import EthStar, Minicps, DLR, L3EthStar
 
 
 def setup():
@@ -28,16 +33,32 @@ def teardown():
 
 
 @with_setup(setup, teardown)
-def test_ips():
-    """Test SWaT IP static mapping"""
-    raise SkipTest
+def test_L3EthStarMapping():
+    """Test L3 Ring MACs and IPs"""
+    # raise SkipTest
 
-    topo = EthStar(n=6)
-    net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
+    topo = L3EthStar()
+    net = Mininet(topo=topo, link=TCLink)
     net.start()
 
-    plc1, plc2 = net.get('plc1', 'plc2')  # get host obj reference by name
 
-    assert_equals(1+1, 2)
+    n = c.L3_NODES
+    for h in range(n-2):
+        key = 'plc%s' % (h + 1)
+        plc = net.get(key)  # get host obj reference by name
+        assert_equals(plc.IP(), c.L1_PLCS_IP[key])
+        assert_equals(plc.MAC(), c.PLCS_MAC[key])
+
+    histn = net.get('histn')
+    assert_equals(histn.IP(), c.L3_PLANT_NETWORK['histn'])
+    assert_equals(histn.MAC(), c.OTHER_MACS['histn'])
+
+    workstn = net.get('workstn')
+    assert_equals(workstn.IP(), c.L3_PLANT_NETWORK['workstn'])
+    assert_equals(workstn.MAC(), c.OTHER_MACS['workstn'])
+
+    # alternative way to obtain IP and MAC
+    # params = workstn.params
+    # print 'DEBUG params:', params
 
     net.stop()
