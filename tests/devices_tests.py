@@ -19,6 +19,7 @@ from minicps.topology import EthStar, Minicps, DLR, L3EthStar
 from minicps.devices import POXL2Pairs, POXL2Learning
 
 import os
+import time
 
 
 def setup():
@@ -31,12 +32,22 @@ def teardown():
     pass
 
 
-def assert_learning(ping_output):
+def arp_cache_rtts(net, h1, h2):
     """Naive learning check on the first two ping
     ICMP packets RTT.
 
-    :ping_output: given as a string.
+    :net: Mininet object.
+    :h1: first host name.
+    :h2: second host name.
+    :returns: decimal RTTs from uncached and cacthed arp entries.
     """
+
+    h1, h2 = net.get(h1, h2)
+
+    delete_arp_cache = h1.cmd('ip -s -s neigh flush all')
+    print 'DEBUG delete_arp_cache:\n', delete_arp_cache
+
+    ping_output = h1.cmd('ping -c5 %s' % h2.IP())
     print 'DEBUG ping_output:\n', ping_output
 
     lines = ping_output.split('\n')
@@ -44,17 +55,14 @@ def assert_learning(ping_output):
     second = lines[2]
     first_words = first.split(' ')
     second_words = second.split(' ')
-    first_time = first_words[6]
-    second_time = second_words[6]
+    first_rtt = first_words[6]
+    second_rtt = second_words[6]
+    first_rtt = float(first_rtt[5:])
+    second_rtt = float(second_rtt[5:])
+    print 'DEBUG first_rtt:', first_rtt
+    print 'DEBUG second_rtt:', second_rtt
 
-    first_time = float(first_time[5:])
-    second_time = float(second_time[5:])
-
-    print 'DEBUG first_time:', first_time
-    print 'DEBUG second_time:', second_time
-
-    assert_greater(first_time, second_time,
-            c.ASSERTION_ERRORS['no_learning'])
+    return first_rtt, second_rtt
 
 
 @with_setup(setup, teardown)
@@ -68,11 +76,16 @@ def test_POXL2Pairs():
     controller = POXL2Pairs
     net = Mininet(topo=topo, controller=controller, link=TCLink)
     net.start()
+    time.sleep(1)  # allow mininet to init processes
 
-    plc1, plc2 = net.get('plc1', 'plc2')
-    ping_output = plc1.cmd('ping -c3 %s' % plc2.IP())
-    
-    assert_learning(ping_output)
+    deltas = []
+    for i in range(5):
+        first_rtt, second_rtt = arp_cache_rtts(net, 'plc1', 'plc2')
+        assert_greater(first_rtt, second_rtt,
+                c.ASSERTION_ERRORS['no_learning'])
+        deltas.append(first_rtt - second_rtt)
+    print 'DEBUG deltas:', deltas
+
     # CLI(net)
 
     net.stop()
@@ -84,16 +97,21 @@ def test_POXL2Learning():
     """Test build-in forwarding.l2_learning controller
     that adds flow entries using only MAC info.
     """
-    raise SkipTest
+    # raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Learning
     net = Mininet(topo=topo, controller=controller, link=TCLink)
     net.start()
+    time.sleep(1)  # allow mininet to init processes
 
-    plc1, plc2 = net.get('plc1', 'plc2')
-    output = plc1.cmd('ping -c6 %s' % plc2.IP())
-    print 'DEBUG output:\n', output
+    deltas = []
+    for i in range(5):
+        first_rtt, second_rtt = arp_cache_rtts(net, 'plc1', 'plc2')
+        assert_greater(first_rtt, second_rtt,
+                c.ASSERTION_ERRORS['no_learning'])
+        deltas.append(first_rtt - second_rtt)
+    print 'DEBUG deltas:', deltas
 
     # CLI(net)
 
