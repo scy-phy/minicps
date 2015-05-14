@@ -152,8 +152,8 @@ PLCS_MAC = {
 }
 
 OTHER_MACS = {
-        'histn': 'B8:2A:72:D7:B0:EC',
-        'workstn': '98:90:96:98:CC:49',
+    'histn': 'B8:2A:72:D7:B0:EC',
+    'workstn': '98:90:96:98:CC:49',
 }
 
 
@@ -179,3 +179,10 @@ TAGS = {
 
 
 POX_PATH='~/'
+
+
+ASSERTION_ERRORS = {
+    'ip_mismatch': 'IP mismatch',
+    'mac_mismatch': 'MAC mismatch',
+    'no_learning': 'No learning',
+}

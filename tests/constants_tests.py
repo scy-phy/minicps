@@ -50,12 +50,16 @@ def test_L3EthStarMapping():
         assert_equals(plc.MAC(), c.PLCS_MAC[key])
 
     histn = net.get('histn')
-    assert_equals(histn.IP(), c.L3_PLANT_NETWORK['histn'])
-    assert_equals(histn.MAC(), c.OTHER_MACS['histn'])
+    assert_equals(histn.IP(), c.L3_PLANT_NETWORK['histn'],
+            c.ASSERTION_ERRORS['ip_mismatch'])
+    assert_equals(histn.MAC(), c.OTHER_MACS['histn'],
+            c.ASSERTION_ERRORS['mac_mismatch'])
 
     workstn = net.get('workstn')
-    assert_equals(workstn.IP(), c.L3_PLANT_NETWORK['workstn'])
-    assert_equals(workstn.MAC(), c.OTHER_MACS['workstn'])
+    assert_equals(workstn.IP(), c.L3_PLANT_NETWORK['workstn'],
+            c.ASSERTION_ERRORS['ip_mismatch'])
+    assert_equals(workstn.MAC(), c.OTHER_MACS['workstn'],
+            c.ASSERTION_ERRORS['mac_mismatch'])
 
     # alternative way to obtain IP and MAC
     # params = workstn.params
