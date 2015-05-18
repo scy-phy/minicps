@@ -62,6 +62,7 @@ target/
 # Temp files and dirs
 *.out
 *.err
+logs/*
 
 # Caps
 *.pcapng

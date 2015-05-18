@@ -22,6 +22,10 @@ from minicps import constants as c
 
 import os
 
+from minicps.constants import buildLogger
+import logging
+logger = buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+
 
 class POXL2Pairs(Controller):
 
@@ -29,10 +33,12 @@ class POXL2Pairs(Controller):
     flow tables according to MAC learning."""
 
     def start(self):
+        logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
         self.cmd(self.pox, 'forwarding.l2_pairs &')
 
     def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 
@@ -43,10 +49,12 @@ class POXL2Learning(Controller):
     (not only MAC-based flow matching)."""
 
     def start(self):
+        logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
         self.cmd(self.pox, 'forwarding.l2_learning &')
 
     def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 

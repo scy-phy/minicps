@@ -1,6 +1,8 @@
 """
 Devices tests
 
+time.sleep is used after net.start() to synch python interpreter with
+the mininet init process.
 """
 
 from nose.tools import *
@@ -21,15 +23,23 @@ from minicps.devices import POXL2Pairs, POXL2Learning
 import os
 import time
 
+import logging
+logger = logging.getLogger('minicps.devices')
+setLogLevel(c.TEST_LOG_LEVEL)
 
-def setup():
-    # print 'SETUP!'
-    setLogLevel(c.TEST_LOG_LEVEL)
 
+def setup_func(test_name):
+    logger.info('Inside %s' % test_name)
 
-def teardown():
-    # print 'TEAR DOWN!'
-    pass
+def teardown_func(test_name):
+    logger.info('Leaving %s' % test_name)
+
+def with_named_setup(setup=None, teardown=None):
+    def wrap(f):
+        return with_setup(
+            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
+    return wrap
 
 
 def arp_cache_rtts(net, h1, h2):
@@ -45,10 +55,10 @@ def arp_cache_rtts(net, h1, h2):
     h1, h2 = net.get(h1, h2)
 
     delete_arp_cache = h1.cmd('ip -s -s neigh flush all')
-    print 'DEBUG delete_arp_cache:\n', delete_arp_cache
+    logger.debug('delete_arp_cache: %s' % delete_arp_cache)
 
     ping_output = h1.cmd('ping -c5 %s' % h2.IP())
-    print 'DEBUG ping_output:\n', ping_output
+    logger.debug('ping_output: %s' % ping_output)
 
     lines = ping_output.split('\n')
     first = lines[1]
@@ -59,13 +69,13 @@ def arp_cache_rtts(net, h1, h2):
     second_rtt = second_words[6]
     first_rtt = float(first_rtt[5:])
     second_rtt = float(second_rtt[5:])
-    print 'DEBUG first_rtt:', first_rtt
-    print 'DEBUG second_rtt:', second_rtt
+    logger.debug('first_rtt: %s' % first_rtt)
+    logger.debug('second_rtt: %s' % second_rtt)
 
     return first_rtt, second_rtt
 
 
-@with_setup(setup, teardown)
+@with_named_setup(setup_func, teardown_func)
 def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
     that adds flow entries using only MAC info.
@@ -84,15 +94,14 @@ def test_POXL2Pairs():
         assert_greater(first_rtt, second_rtt,
                 c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
-    print 'DEBUG deltas:', deltas
+    logger.debug('deltas: %s' % deltas.__str__())
 
     # CLI(net)
 
     net.stop()
-    os.system('sudo mn -c')
 
 
-@with_setup(setup, teardown)
+@with_named_setup(setup_func, teardown_func)
 def test_POXL2Learning():
     """Test build-in forwarding.l2_learning controller
     that adds flow entries using only MAC info.
@@ -111,9 +120,8 @@ def test_POXL2Learning():
         assert_greater(first_rtt, second_rtt,
                 c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
-    print 'DEBUG deltas:', deltas
+    logger.debug('deltas: %s' % deltas.__str__())
 
     # CLI(net)
 
     net.stop()
-    os.system('sudo mn -c')

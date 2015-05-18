@@ -17,6 +17,10 @@ from mininet.topo import Topo
 
 from minicps import constants as c
 
+from minicps.constants import buildLogger
+import logging
+logger = buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+
 
 class DLR(Topo):
 
@@ -24,16 +28,18 @@ class DLR(Topo):
 
     def build(self):
         """TODO: to be defined1. """
-
         pass
 
 
 class EthStar(Topo):
 
-    """Docstring for EthStar. """
+    """Ethernet star topology with n hosts.
+    ovsc and ovss default controller and switch
+    that runs on kernel space (faster than user space).
+    """
 
     def build(self, n=2):
-        """Star topology with n host and a single switch."""
+        """build the topo"""
         switch = self.addSwitch('s1')
 
         for h in range(n):
@@ -54,12 +60,16 @@ class L3EthStar(Topo):
         mininet doesn't like long host names
         eg: workstion abbreviated to workstn
         """
+
         switch = self.addSwitch('s3')
 
         # FIXME: don't know how to use CP
         # equi_balance = 0.5 / float(n)
         # print "DEBUG: equi_balance", equi_balance
         # host = self.addHost('plc%s' % (h + 1), cpu=equi_balance)
+
+        class_name = type(self).__name__
+        logger.info('Inside %s' % class_name)
 
         for h in range(n-2):
             # compute the key reused to access IP and MAC dicts and to name hosts
@@ -74,6 +84,8 @@ class L3EthStar(Topo):
         workstn = self.addHost('workstn', ip=c.L3_PLANT_NETWORK['workstn']+c.L3_NETMASK,
                 mac=c.OTHER_MACS['workstn'])
         self.addLink(workstn, switch, **c.L3_LINKOPTS)
+
+        logger.info('Leaving %s' % class_name)
 
 
 class L2EthStar(Topo):

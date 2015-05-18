@@ -16,14 +16,71 @@ they are used for example to distribute evenly CPU processing power.
 
 Dict key mirror where possible mininet device names, indeed it is
 super easy to create a new Topo class using those dictionaries.
+
+There is a logger for each module/module_tests pair. Each pair
+reference to the same object instance and save log into
+minicps/log/modname.log. Log format and filters are hardcoded,
+naming is implicit and you can set logs dimensions and number of
+rotations through this module.
 """
+
+import logging
+import logging.handlers
 
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
 
 
-LOG_DIR = './temp'
+TEMP_DIR = './temp'
+
+
+def buildLogger(loggername, maxBytes, backupCount):
+    """Build a logger obj named loggername that generates
+    loggername.log[.n] rotating log files with every level
+    (log, file, console) hardcoded to DEBUG.
+    The format is hardcoded as well.
+
+    :loggername: name of the logger instance
+    :maxBytes: maximum bytes per rotating log file
+    :backupCount: maximum number of rotating files
+    :returns: logger instance
+
+    """
+
+    # TODO: find a way to not hardcode the level
+    
+    logger = logging.getLogger(loggername)
+    logger.setLevel(logging.DEBUG)
+
+    fh = logging.handlers.RotatingFileHandler(
+            './logs/'+loggername+'.log',
+            maxBytes=maxBytes,
+            backupCount=backupCount)
+    fh.setLevel(logging.DEBUG)
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    return logger
+LOG_BYTES = 20000
+LOG_ROTATIONS = 5
+logger = buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
+
+POX_PATH='~/'
+
+ASSERTION_ERRORS = {
+    'ip_mismatch': 'IP mismatch',
+    'mac_mismatch': 'MAC mismatch',
+    'no_learning': 'No learning',
+}
 
 
 # Network constants
@@ -175,14 +232,4 @@ L3_NODES = PLCS/2 + 2  # 13/2 gives 6
 TAGS = {
     'pump3': 'pump3=INT[10]',
     'flow3': 'flow3=INT[10]',
-}
-
-
-POX_PATH='~/'
-
-
-ASSERTION_ERRORS = {
-    'ip_mismatch': 'IP mismatch',
-    'mac_mismatch': 'MAC mismatch',
-    'no_learning': 'No learning',
 }

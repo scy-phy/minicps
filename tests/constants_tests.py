@@ -21,18 +21,26 @@ from mininet.cli import CLI
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
 
-
-def setup():
-    # print 'SETUP!'
-    setLogLevel(c.TEST_LOG_LEVEL)
-
-
-def teardown():
-    # print 'TEAR DOWN!'
-    pass
+import logging
+logger = logging.getLogger('minicps.constants')
+setLogLevel(c.TEST_LOG_LEVEL)
 
 
-@with_setup(setup, teardown)
+def setup_func(test_name):
+    logger.info('Inside %s' % test_name)
+
+def teardown_func(test_name):
+    logger.info('Leaving %s' % test_name)
+
+def with_named_setup(setup=None, teardown=None):
+    def wrap(f):
+        return with_setup(
+            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
+    return wrap
+
+
+@with_named_setup(setup_func, teardown_func)
 def test_L3EthStarMapping():
     """Test L3 Ring MACs and IPs"""
     # raise SkipTest
@@ -41,7 +49,7 @@ def test_L3EthStarMapping():
     net = Mininet(topo=topo, link=TCLink)
     net.start()
 
-
+    # TODO: add log info
     n = c.L3_NODES
     for h in range(n-2):
         key = 'plc%s' % (h + 1)

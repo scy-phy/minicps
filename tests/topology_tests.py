@@ -1,15 +1,8 @@
 """
 Topology tests
 
-with_setup decorator calls setup before each test and teardown after
-each tests. It is possible to use different fixtures for different
-tests.
+logger reference to topology logger.
 
-SkipTest can be used as a switch to intentionally skip a test. You
-can see skipped test summary in the nosetest output.
-
-use -s opt to prevent nosetest to capture stdout.
-use -v opt to obtain a more verbose output.
 """
 
 from nose.tools import *
@@ -30,15 +23,23 @@ from time import sleep
 
 import os
 
+import logging
+logger = logging.getLogger('minicps.topology')
+setLogLevel(c.TEST_LOG_LEVEL)
 
-def setup():
-    # print 'SETUP!'
-    setLogLevel(c.TEST_LOG_LEVEL)
 
+def setup_func(test_name):
+    logger.info('Inside %s' % test_name)
 
-def teardown():
-    # print 'TEAR DOWN!'
-    pass
+def teardown_func(test_name):
+    logger.info('Leaving %s' % test_name)
+
+def with_named_setup(setup=None, teardown=None):
+    def wrap(f):
+        return with_setup(
+            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
+    return wrap
 
 
 def mininet_functests(net):
@@ -51,14 +52,15 @@ def mininet_functests(net):
     :net: Mininet object
     """
 
-    print "DEBUG: Dumping host connections"
+    logging.info("Dumping host connections")
     dumpNodeConnections(net.hosts)
-    print "DEBUG: Testing network connectivity"
+    logging.info("Testing network connectivity")
     net.pingAll()
-    print "DEBUG: Testing TCP bandwidth btw PLC1 and PLC2"
+    logging.info("Testing TCP bandwidth btw first and last host")
+    net.iperf()
     
 
-@with_setup(setup, teardown)
+@with_named_setup(setup_func, teardown_func)
 def test_EthStar():
     """Show mininet testing capabilites on an eth star topologies"""
     raise SkipTest
@@ -78,23 +80,21 @@ def test_EthStar():
     do date
     sleep 1
     done > %s/date.out &
-    """ % (c.LOG_DIR)
+    """ % (c.TEMP_DIR)
 
     plc1.cmd(cmd)
     sleep(4)  # sec
     plc1.cmd('kill %while')
 
-    with open(c.LOG_DIR+'/date.out', 'r') as f:
+    with open(c.TEMP_DIR+'/date.out', 'r') as f:
         for line in f.readlines():
-            print line.strip()  # remove leading and trailing whitespaces
+            logger.debug(line.strip())  # remove leading and trailing whitespaces
     # file closed automatically by python context manager API
-
-    assert_equals(1+1, 2)
 
     net.stop()
 
 
-@with_setup(setup, teardown)
+@with_named_setup(setup_func, teardown_func)
 def test_L3EthStarBuild():
     """Test L3EthStar build process with custom L3_LINKOPTS"""
     raise SkipTest
@@ -103,12 +103,13 @@ def test_L3EthStarBuild():
     net = Mininet(topo=topo, link=TCLink)
     net.start()
 
-    CLI(net)
+    # CLI(net)
+    # mininet_functests(net)
 
     net.stop()
 
 
-@with_setup(setup, teardown)
+@with_named_setup(setup_func, teardown_func)
 def test_L3EthStarEnip():
     """Test L3EthStar ENIP client/server communications
     plc1 is used as a cpppo simulated controller listening
@@ -116,14 +117,12 @@ def test_L3EthStarEnip():
     workstn is used as a cpppo client sending couples of
     write/read requests every second.
     """
-    # raise SkipTest
+    raise SkipTest
 
-    # (re)create temp log filesystem each time overwrite all files
-    # more on http://stackoverflow.com/questions/12654772/create-empty-file-using-python
-    open(c.LOG_DIR+'/l3/cppposerver.out', 'w').close()
-    open(c.LOG_DIR+'/l3/cppposerver.err', 'w').close()
-    open(c.LOG_DIR+'/l3/cpppoclient.out', 'w').close()
-    open(c.LOG_DIR+'/l3/cpppoclient.err', 'w').close()
+    # TODO: integrate everything into log folder
+    open(c.TEMP_DIR+'/l3/cppposerver.err', 'w').close()
+    open(c.TEMP_DIR+'/l3/cpppoclient.out', 'w').close()
+    open(c.TEMP_DIR+'/l3/cpppoclient.err', 'w').close()
 
     topo = L3EthStar()
     net = Mininet(topo=topo, link=TCLink)
@@ -135,19 +134,35 @@ def test_L3EthStarEnip():
     plc1.cmd(server_cmd)
 
     client_cmd = './scripts/l3/cpppo_client4plc1.sh'
-    workstn.cmd(client_cmd)
+    out = workstn.cmd(client_cmd)
+    logger.debug(out)
 
     net.stop()
-    os.system('sudo mn -c')
 
 
-@with_setup(setup, teardown)
-def test_DLR():
-    """Test DLR ring"""
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarArpMitm():
+    """plc1 ARP poisoning MITM attack using ettercap,
+    You can pass IP target to the dedicated script.
+    """
     raise SkipTest
 
-    topo = DLR(n=2)
-    net = Mininet(topo)
+    # TODO: capute packets with ettercap and log it
+    open(c.TEMP_DIR+'/l3/plc1arppoisoning.out', 'w').close()
+
+    topo = L3EthStar()
+    net = Mininet(topo=topo, link=TCLink)
     net.start()
+
+    plc1, plc2, plc3 = net.get('plc1', 'plc2', 'plc3')
+
+    target_ip1 = plc2.IP()
+    target_ip2 = plc3.IP()
+    plc1_cmd = 'ettercap -s ./scripts/attacks/arp-mit.sh %s %s' % (
+            target_ip1, target_ip2)
+    plc1.cmd(plc1_cmd)
+
+    plc2_cmd = 'ping -c5 %s' % plc3.IP()
+    plc2.cmd(plc2_cmd)
 
     net.stop()
