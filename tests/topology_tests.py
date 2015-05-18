@@ -103,7 +103,7 @@ def test_L3EthStarBuild():
     net = Mininet(topo=topo, link=TCLink)
     net.start()
 
-    # CLI(net)
+    CLI(net)
     # mininet_functests(net)
 
     net.stop()
@@ -145,7 +145,7 @@ def test_L3EthStarArpMitm():
     """plc1 ARP poisoning MITM attack using ettercap,
     You can pass IP target to the dedicated script.
     """
-    raise SkipTest
+    # raise SkipTest
 
     # TODO: capute packets with ettercap and log it
     open(c.TEMP_DIR+'/l3/plc1arppoisoning.out', 'w').close()
@@ -158,11 +158,19 @@ def test_L3EthStarArpMitm():
 
     target_ip1 = plc2.IP()
     target_ip2 = plc3.IP()
-    plc1_cmd = 'ettercap -s ./scripts/attacks/arp-mit.sh %s %s' % (
-            target_ip1, target_ip2)
+    attacker_interface = 'plc1-eth0'
+
+    plc1_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % ( target_ip1,
+            target_ip2, attacker_interface)
     plc1.cmd(plc1_cmd)
 
     plc2_cmd = 'ping -c5 %s' % plc3.IP()
-    plc2.cmd(plc2_cmd)
+    plc2_out = plc2.cmd(plc2_cmd)
+    logger.debug(plc2_out)
+
+    plc1_out = plc1.cmd('tcpdump &')
+    logger.debug(plc1_out)
+
+    # CLI(net)
 
     net.stop()
