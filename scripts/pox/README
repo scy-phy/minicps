@@ -1,0 +1,2 @@
+Each pox script must be symlinked in one of the pox scripts subfolders
+eg: ln -s $MINICPS_DIR/scripts/pox/script $POX_DIR/pox/forwarding/script.py

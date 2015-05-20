@@ -18,7 +18,7 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
-from minicps.devices import POXL2Pairs, POXL2Learning
+from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison
 
 import os
 import time
@@ -80,7 +80,7 @@ def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
     that adds flow entries using only MAC info.
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
@@ -106,7 +106,7 @@ def test_POXL2Learning():
     """Test build-in forwarding.l2_learning controller
     that adds flow entries using only MAC info.
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Learning
@@ -123,5 +123,21 @@ def test_POXL2Learning():
     logger.debug('deltas: %s' % deltas.__str__())
 
     # CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_AntiArpPoison():
+    """Test AntiArpPoison controller.
+    """
+    # raise SkipTest
+
+    topo = L3EthStar()
+    controller = AntiArpPoison
+    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net.start()
+
+    CLI(net)
 
     net.stop()

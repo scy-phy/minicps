@@ -3,6 +3,11 @@ Minicps assumes that pox is cloned into your $HOME dir,
 for more information visit:
 https://openflow.stanford.edu/display/ONL/POX+Wiki
 
+To add a new pox controller code the control plane inside pox module
+then add a new Controller subclass and link your script in start()
+method with dot notation. 
+eg: pox/forwarding/script.py -> forwarding.script &
+
 By default Mininet runs Open vSwitch in OpenFlow mode,
 which requires an OpenFlow controller.
 
@@ -57,6 +62,20 @@ class POXL2Learning(Controller):
         logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
+
+class AntiArpPoison(Controller):
+
+    """Build a controller based on temp/antiarppoison.py
+    """
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        self.cmd(self.pox, 'forwarding.antiarppoison &')
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
 
 
 class PLC(Host):
