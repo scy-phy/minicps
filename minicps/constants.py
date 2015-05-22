@@ -27,13 +27,12 @@ rotations through this module.
 import logging
 import logging.handlers
 
+# Logging and testing
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
 
-
 TEMP_DIR = './temp'
-
 
 def buildLogger(loggername, maxBytes, backupCount):
     """Build a logger obj named loggername that generates
@@ -74,12 +73,34 @@ LOG_BYTES = 20000
 LOG_ROTATIONS = 5
 logger = buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
 
-POX_PATH='~/'
-
 ASSERTION_ERRORS = {
     'ip_mismatch': 'IP mismatch',
     'mac_mismatch': 'MAC mismatch',
     'no_learning': 'No learning',
+}
+
+
+# OpenFlow
+POX_PATH='~/'
+
+OF_TYPES = {
+    '0': 'of_hello',
+    '2': 'of_echo_request',
+    '3': 'of_echo_reply',
+    '5': 'of_feature_request',
+    '6': 'of_feature_reply',
+    '9': 'of_set_config',
+    '10': 'of_packet_in',
+    '13': 'of_packet_out',
+    '14': 'of_flow_add',
+    'xx': 'of_join',
+    'xx': 'of_port_change',
+}
+
+OF_MISC = {
+    'user_switch': 'user',
+    'kernel_switch': 'ovsk',
+    'controller_port': '6633',
 }
 
 
