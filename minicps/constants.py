@@ -38,7 +38,7 @@ TEST_LOG_LEVEL='info'
 
 TEMP_DIR = './temp'
 
-def buildLogger(loggername, maxBytes, backupCount):
+def _buildLogger(loggername, maxBytes, backupCount):
     """Build a logger obj named loggername that generates
     loggername.log[.n] rotating log files with every level
     (log, file, console) hardcoded to DEBUG.
@@ -75,7 +75,7 @@ def buildLogger(loggername, maxBytes, backupCount):
     return logger
 LOG_BYTES = 20000
 LOG_ROTATIONS = 5
-logger = buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
+logger = _buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
 
 ASSERTION_ERRORS = {
     'ip_mismatch': 'IP mismatch',

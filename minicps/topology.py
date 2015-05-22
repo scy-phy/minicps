@@ -17,9 +17,9 @@ from mininet.topo import Topo
 
 from minicps import constants as c
 
-from minicps.constants import buildLogger
+from minicps.constants import _buildLogger
 import logging
-logger = buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
 
 class DLR(Topo):

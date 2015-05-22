@@ -27,9 +27,9 @@ from minicps import constants as c
 
 import os
 
-from minicps.constants import buildLogger, _pox_opts
+from minicps.constants import _buildLogger, _pox_opts
 import logging
-logger = buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
 
 class POXL2Pairs(Controller):
