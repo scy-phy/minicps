@@ -10,7 +10,6 @@ from nose.plugins.skip import Skip, SkipTest
 
 from mininet.topo import LinearTopo
 from mininet.net import Mininet
-from mininet.util import dumpNodeConnections
 from mininet.log import setLogLevel
 from mininet.node import CPULimitedHost
 from mininet.link import TCLink
@@ -18,6 +17,7 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
+from minicps.constants import _mininet_functests
 
 from time import sleep
 
@@ -41,24 +41,6 @@ def with_named_setup(setup=None, teardown=None):
             lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
     return wrap
 
-
-def mininet_functests(net):
-    """Common mininet functional tests can be called inside
-    each unittest. The function will be ignored by nose
-    during automatic test collection because its name is
-    not part of nose convention.
-    Remember to manually stop the network after this call.
-
-    :net: Mininet object
-    """
-
-    logging.info("Dumping host connections")
-    dumpNodeConnections(net.hosts)
-    logging.info("Testing network connectivity")
-    net.pingAll()
-    logging.info("Testing TCP bandwidth btw first and last host")
-    net.iperf()
-    
 
 @with_named_setup(setup_func, teardown_func)
 def test_EthStar():
@@ -97,14 +79,14 @@ def test_EthStar():
 @with_named_setup(setup_func, teardown_func)
 def test_L3EthStarBuild():
     """Test L3EthStar build process with custom L3_LINKOPTS"""
-    raise SkipTest
+    # raise SkipTest
 
     topo = L3EthStar()
     net = Mininet(topo=topo, link=TCLink)
     net.start()
 
     CLI(net)
-    # mininet_functests(net)
+    # _mininet_functests(net)
 
     net.stop()
 
@@ -145,7 +127,7 @@ def test_L3EthStarArpMitm():
     """plc1 ARP poisoning MITM attack using ettercap,
     You can pass IP target to the dedicated script.
     """
-    # raise SkipTest
+    raise SkipTest
 
     # TODO: capute packets with ettercap and log it
     open(c.TEMP_DIR+'/l3/plc1arppoisoning.out', 'w').close()

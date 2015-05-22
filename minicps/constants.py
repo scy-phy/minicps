@@ -30,8 +30,11 @@ facility.
 
 import logging
 import logging.handlers
+from mininet.util import dumpNodeConnections
 
-# Logging and testing
+
+# LOGGING AND TESTING
+
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL='info'
 # TEST_LOG_LEVEL='debug'
@@ -73,6 +76,7 @@ def _buildLogger(loggername, maxBytes, backupCount):
     logger.addHandler(ch)
 
     return logger
+
 LOG_BYTES = 20000
 LOG_ROTATIONS = 5
 logger = _buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
@@ -84,7 +88,8 @@ ASSERTION_ERRORS = {
 }
 
 
-# OpenFlow
+# OPENFLOW
+
 POX_PATH='~/'
 
 def _pox_opts(mod_path, info_level, logfile_opts,
@@ -105,7 +110,6 @@ def _pox_opts(mod_path, info_level, logfile_opts,
 
     return pox_opts
     
-
 OF_TYPES = {
     '0': 'of_hello',
     '2': 'of_echo_request',
@@ -127,7 +131,33 @@ OF_MISC = {
 }
 
 
-# Network constants
+## MININET
+
+def _mininet_functests(net):
+    """Common mininet functional tests can be called inside
+    each unittest. The function will be ignored by nose
+    during automatic test collection because its name is
+    not part of nose convention.
+    Remember to manually stop the network after this call.
+
+    :net: Mininet object
+    """
+
+    logging.info("Dumping host connections")
+    dumpNodeConnections(net.hosts)
+    logging.info("Testing network connectivity")
+    net.pingAll()
+    logging.info("Testing TCP bandwidth btw first and last host")
+    net.iperf()
+    
+L0_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L1_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L2_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+L3_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
+
+
+## NETWORK CONSTANTS
+
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',
@@ -257,18 +287,13 @@ OTHER_MACS = {
     'workstn': '98:90:96:98:CC:49',
 }
 
-
-L0_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L1_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L2_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L3_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-
-
 PLCS = len(PLCS_MAC)
 L1_NODES = 0 # TODO
 L2_NODES = 0 # TODO
 L3_NODES = PLCS/2 + 2  # 13/2 gives 6
 
+
+## SWAT
 
 # TODO: use real tag name and data types
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
