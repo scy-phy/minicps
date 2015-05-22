@@ -42,7 +42,7 @@ def with_named_setup(setup=None, teardown=None):
     return wrap
 
 
-def arp_cache_rtts(net, h1, h2):
+def _arp_cache_rtts(net, h1, h2):
     """Naive learning check on the first two ping
     ICMP packets RTT.
 
@@ -80,6 +80,23 @@ def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
     that adds flow entries using only MAC info.
     """
+    # raise SkipTest
+
+    topo = L3EthStar()
+    controller = POXL2Pairs
+    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net.start()
+
+    CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_POXL2PairsRtt():
+    """Test build-in forwarding.l2_pairs controller RTT
+    that adds flow entries using only MAC info.
+    """
     raise SkipTest
 
     topo = L3EthStar()
@@ -90,7 +107,7 @@ def test_POXL2Pairs():
 
     deltas = []
     for i in range(5):
-        first_rtt, second_rtt = arp_cache_rtts(net, 'plc1', 'plc2')
+        first_rtt, second_rtt = _arp_cache_rtts(net, 'plc1', 'plc2')
         assert_greater(first_rtt, second_rtt,
                 c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
@@ -102,8 +119,8 @@ def test_POXL2Pairs():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_POXL2Learning():
-    """Test build-in forwarding.l2_learning controller
+def test_POXL2LearningRtt():
+    """Test build-in forwarding.l2_learning controller RTT
     that adds flow entries using only MAC info.
     """
     raise SkipTest
@@ -116,7 +133,7 @@ def test_POXL2Learning():
 
     deltas = []
     for i in range(5):
-        first_rtt, second_rtt = arp_cache_rtts(net, 'plc1', 'plc2')
+        first_rtt, second_rtt = _arp_cache_rtts(net, 'plc1', 'plc2')
         assert_greater(first_rtt, second_rtt,
                 c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
@@ -131,12 +148,23 @@ def test_POXL2Learning():
 def test_AntiArpPoison():
     """Test AntiArpPoison controller.
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = AntiArpPoison
     net = Mininet(topo=topo, controller=controller, link=TCLink)
     net.start()
+    time.sleep(1)  # allow mininet to init processes
+
+    plc1, plc2, plc3 = net.get('plc1', 'plc2', 'plc3')
+
+    target_ip1 = plc2.IP()
+    target_ip2 = plc3.IP()
+    attacker_interface = 'plc1-eth0'
+
+    # plc1_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % ( target_ip1,
+    #         target_ip2, attacker_interface)
+    # plc1.cmd(plc1_cmd)
 
     CLI(net)
 
