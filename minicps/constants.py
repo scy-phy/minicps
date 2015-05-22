@@ -10,10 +10,8 @@ Devices are mapped with actual SWaT IP, MAC and netmasks.
 
 Dedicated dict map and set each SWaT network level link parameters.
 It is also possible to fine tune each link in a single network level.
-
 Network level node numbers are stored in constats eg: L3_NODES, and
 they are used for example to distribute evenly CPU processing power.
-
 Dict key mirror where possible mininet device names, indeed it is
 super easy to create a new Topo class using those dictionaries.
 
@@ -23,9 +21,7 @@ minicps/log/modname.log. Log format and filters are hardcoded,
 naming is implicit and you can set logs dimensions and number of
 rotations through this module.
 
-POX controller logs is stored into dedicated logs/POXControllerName.log
-file. Each time the log file is overwritten, unlike minicps module logging
-facility.
+POX controller logs is stored into dedicated logs/POXControllerName.log file. Each time the log file is overwritten, unlike minicps module logging facility.
 """
 
 import logging
@@ -92,19 +88,19 @@ ASSERTION_ERRORS = {
 
 POX_PATH='~/'
 
-def _pox_opts(mod_path, info_level, logfile_opts,
+def _pox_opts(components, info_level, logfile_opts,
         log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
 
     """Generate a string with custom pox options.
 
-    :mod_path: dot notation path to the pox controller implementation
+    :components: dot notation paths (eg: forwarding.l2_learning web.webcore --port=8888)
     :info_level: DEBUG, INFO, ecc...
     :logfile_opts: path and other options (eg: file.log,w to overwrite each time)
     :returns: options string for ./pox.py command
 
     """
     info_level = info_level.upper()
-    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (mod_path,
+    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (components,
             info_level, logfile_opts, log_format)
     # print 'DEBUG:', opts
 

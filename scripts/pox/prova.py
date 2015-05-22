@@ -21,14 +21,11 @@ each pair of L2 addresses.
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
 
-# import logging
-# logger = logging.getLogger('minicps.devices')
-
 # Even a simple usage of the logger is much nicer than print!
 log = core.getLogger()
 
 
-# This table maps (switch,MAC-addr) pairs to the port on 'switch' at
+# This table maps (switch, MAC-addr) pairs to the port on 'switch' at
 # which we last saw a packet *from* 'MAC-addr'.
 # (In this case, we use a Connection object for the switch.)
 table = {}
@@ -47,12 +44,12 @@ def _handle_PacketIn (event):
   packet = event.parsed
 
   # Learn the source
-  table[(event.connection,packet.src)] = event.port
+  table[(event.connection, packet.src)] = event.port
 
-  dst_port = table.get((event.connection,packet.dst))
+  dst_port = table.get((event.connection, packet.dst))
 
   if dst_port is None:
-    # We don't know where the destination is yet.  So, we'll just
+    # We don't know where the destination is yet. So, we'll just
     # send the packet out all ports (except the one it came in on!)
     # and hope the destination is out there somewhere. :)
     msg = of.ofp_packet_out(data = event.ofp)

@@ -15,7 +15,7 @@ from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.util import dumpNodeConnections
 from mininet.log import setLogLevel
-from mininet.node import CPULimitedHost
+from mininet.node import CPULimitedHost, RemoteController
 from mininet.link import TCLink
 from mininet.cli import CLI
 
@@ -56,6 +56,27 @@ def test_POXL2Pairs():
     topo = L3EthStar()
     controller = POXL2Pairs
     net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net.start()
+
+    CLI(net)
+
+    net.stop()
+
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_RemoteController():
+    """Test L3EthStar with a remote controller
+    eg: pox controller
+    """
+    # raise SkipTest
+
+    topo = L3EthStar()
+    net = Mininet( topo=topo, controller=None, link=TCLink)
+    net.addController( 'c0',
+            controller=RemoteController,
+            ip='127.0.0.1',
+            port=6633 )
     net.start()
 
     CLI(net)
@@ -111,7 +132,7 @@ def test_POXL2PairsRtt():
     """Test build-in forwarding.l2_pairs controller RTT
     that adds flow entries using only MAC info.
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
