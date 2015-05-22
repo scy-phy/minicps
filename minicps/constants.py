@@ -133,6 +133,38 @@ OF_MISC = {
 
 ## MININET
 
+def _arp_cache_rtts(net, h1, h2):
+    """Naive learning check on the first two ping
+    ICMP packets RTT.
+
+    :net: Mininet object.
+    :h1: first host name.
+    :h2: second host name.
+    :returns: decimal RTTs from uncached and cacthed arp entries.
+    """
+
+    h1, h2 = net.get(h1, h2)
+
+    delete_arp_cache = h1.cmd('ip -s -s neigh flush all')
+    logger.debug('delete_arp_cache: %s' % delete_arp_cache)
+
+    ping_output = h1.cmd('ping -c5 %s' % h2.IP())
+    logger.debug('ping_output: %s' % ping_output)
+
+    lines = ping_output.split('\n')
+    first = lines[1]
+    second = lines[2]
+    first_words = first.split(' ')
+    second_words = second.split(' ')
+    first_rtt = first_words[6]
+    second_rtt = second_words[6]
+    first_rtt = float(first_rtt[5:])
+    second_rtt = float(second_rtt[5:])
+    logger.debug('first_rtt: %s' % first_rtt)
+    logger.debug('second_rtt: %s' % second_rtt)
+
+    return first_rtt, second_rtt
+
 def _mininet_functests(net):
     """Common mininet functional tests can be called inside
     each unittest. The function will be ignored by nose

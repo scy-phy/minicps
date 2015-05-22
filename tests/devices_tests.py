@@ -21,7 +21,8 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
-from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison, POXProva
+from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva
+from minicps.constants import _arp_cache_rtts
 
 import os
 import time
@@ -45,39 +46,6 @@ def with_named_setup(setup=None, teardown=None):
     return wrap
 
 
-def _arp_cache_rtts(net, h1, h2):
-    """Naive learning check on the first two ping
-    ICMP packets RTT.
-
-    :net: Mininet object.
-    :h1: first host name.
-    :h2: second host name.
-    :returns: decimal RTTs from uncached and cacthed arp entries.
-    """
-
-    h1, h2 = net.get(h1, h2)
-
-    delete_arp_cache = h1.cmd('ip -s -s neigh flush all')
-    logger.debug('delete_arp_cache: %s' % delete_arp_cache)
-
-    ping_output = h1.cmd('ping -c5 %s' % h2.IP())
-    logger.debug('ping_output: %s' % ping_output)
-
-    lines = ping_output.split('\n')
-    first = lines[1]
-    second = lines[2]
-    first_words = first.split(' ')
-    second_words = second.split(' ')
-    first_rtt = first_words[6]
-    second_rtt = second_words[6]
-    first_rtt = float(first_rtt[5:])
-    second_rtt = float(second_rtt[5:])
-    logger.debug('first_rtt: %s' % first_rtt)
-    logger.debug('second_rtt: %s' % second_rtt)
-
-    return first_rtt, second_rtt
-
-
 @with_named_setup(setup_func, teardown_func)
 def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
@@ -99,7 +67,7 @@ def test_POXL2Pairs():
 def test_POXProva():
     """Test forwarding.prova
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = POXProva
@@ -112,11 +80,38 @@ def test_POXProva():
 
 
 @with_named_setup(setup_func, teardown_func)
+def test_POXAntiArpPoison():
+    """TODO Test AntiArpPoison controller.
+    """
+    raise SkipTest
+
+    topo = L3EthStar()
+    controller = POXAntiArpPoison
+    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net.start()
+    time.sleep(1)  # allow mininet to init processes
+
+    plc1, plc2, plc3 = net.get('plc1', 'plc2', 'plc3')
+
+    target_ip1 = plc2.IP()
+    target_ip2 = plc3.IP()
+    attacker_interface = 'plc1-eth0'
+
+    # plc1_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % ( target_ip1,
+    #         target_ip2, attacker_interface)
+    # plc1.cmd(plc1_cmd)
+
+    CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
 def test_POXL2PairsRtt():
     """Test build-in forwarding.l2_pairs controller RTT
     that adds flow entries using only MAC info.
     """
-    raise SkipTest
+    # raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
@@ -163,28 +158,3 @@ def test_POXL2LearningRtt():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
-def test_AntiArpPoison():
-    """TODO Test AntiArpPoison controller.
-    """
-    raise SkipTest
-
-    topo = L3EthStar()
-    controller = AntiArpPoison
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
-    net.start()
-    time.sleep(1)  # allow mininet to init processes
-
-    plc1, plc2, plc3 = net.get('plc1', 'plc2', 'plc3')
-
-    target_ip1 = plc2.IP()
-    target_ip2 = plc3.IP()
-    attacker_interface = 'plc1-eth0'
-
-    # plc1_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % ( target_ip1,
-    #         target_ip2, attacker_interface)
-    # plc1.cmd(plc1_cmd)
-
-    CLI(net)
-
-    net.stop()

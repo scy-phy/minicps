@@ -40,7 +40,8 @@ class POXL2Pairs(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        self.cmd(self.pox, 'forwarding.l2_pairs &')
+        pox_opts = _pox_opts('forwarding.l2_pairs', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
 
     def stop(self):
         logger.info('Leaving %s' % type(self).__name__)
@@ -56,7 +57,8 @@ class POXL2Learning(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        self.cmd(self.pox, 'forwarding.l2_learning &')
+        pox_opts = _pox_opts('forwarding.l2_learning', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
 
     def stop(self):
         logger.info('Leaving %s' % type(self).__name__)
@@ -80,7 +82,7 @@ class POXProva(Controller):
         self.cmd('kill %' + self.pox)
 
 
-class AntiArpPoison(Controller):
+class POXAntiArpPoison(Controller):
 
     """Build a controller based on temp/antiarppoison.py
     """
@@ -88,7 +90,8 @@ class AntiArpPoison(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        self.cmd(self.pox, 'forwarding.antiarppoison &')
+        pox_opts = _pox_opts('forwarding.antiarppoison', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
 
     def stop(self):
         logger.info('Leaving %s' % type(self).__name__)
