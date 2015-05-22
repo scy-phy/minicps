@@ -18,7 +18,7 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
-from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison
+from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison, Prova
 
 import os
 import time
@@ -80,10 +80,26 @@ def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
     that adds flow entries using only MAC info.
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
+    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net.start()
+
+    CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_Prova():
+    """Test forwarding.prova
+    """
+    # raise SkipTest
+
+    topo = L3EthStar()
+    controller = Prova
     net = Mininet(topo=topo, controller=controller, link=TCLink)
     net.start()
 

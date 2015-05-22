@@ -63,6 +63,21 @@ class POXL2Learning(Controller):
         self.cmd('kill %' + self.pox)
 
 
+class Prova(Controller):
+
+    """Modify l2_pairs.py script
+    """
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        self.cmd(self.pox, 'forwarding.prova &')
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
 class AntiArpPoison(Controller):
 
     """Build a controller based on temp/antiarppoison.py
