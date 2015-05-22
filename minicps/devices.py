@@ -27,7 +27,7 @@ from minicps import constants as c
 
 import os
 
-from minicps.constants import buildLogger
+from minicps.constants import buildLogger, _pox_opts
 import logging
 logger = buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
@@ -63,15 +63,17 @@ class POXL2Learning(Controller):
         self.cmd('kill %' + self.pox)
 
 
-class Prova(Controller):
+class POXProva(Controller):
 
-    """Modify l2_pairs.py script
+    """Use it to test POX controller
     """
 
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        self.cmd(self.pox, 'forwarding.prova &')
+        pox_opts = _pox_opts('forwarding.prova', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+        # self.cmd(self.pox, 'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
 
     def stop(self):
         logger.info('Leaving %s' % type(self).__name__)

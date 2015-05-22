@@ -22,6 +22,10 @@ reference to the same object instance and save log into
 minicps/log/modname.log. Log format and filters are hardcoded,
 naming is implicit and you can set logs dimensions and number of
 rotations through this module.
+
+POX controller logs is stored into dedicated logs/POXControllerName.log
+file. Each time the log file is overwritten, unlike minicps module logging
+facility.
 """
 
 import logging
@@ -82,6 +86,25 @@ ASSERTION_ERRORS = {
 
 # OpenFlow
 POX_PATH='~/'
+
+def _pox_opts(mod_path, info_level, logfile_opts,
+        log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
+
+    """Generate a string with custom pox options.
+
+    :mod_path: dot notation path to the pox controller implementation
+    :info_level: DEBUG, INFO, ecc...
+    :logfile_opts: path and other options (eg: file.log,w to overwrite each time)
+    :returns: options string for ./pox.py command
+
+    """
+    info_level = info_level.upper()
+    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (mod_path,
+            info_level, logfile_opts, log_format)
+    # print 'DEBUG:', opts
+
+    return pox_opts
+    
 
 OF_TYPES = {
     '0': 'of_hello',

@@ -3,6 +3,9 @@ Devices tests
 
 time.sleep is used after net.start() to synch python interpreter with
 the mininet init process.
+
+POX prefixed ClassNames indicate controller coded into script/pox dir
+and symlinked to ~/pox/pox/forwarding dir.
 """
 
 from nose.tools import *
@@ -18,7 +21,7 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
-from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison, Prova
+from minicps.devices import POXL2Pairs, POXL2Learning, AntiArpPoison, POXProva
 
 import os
 import time
@@ -93,13 +96,13 @@ def test_POXL2Pairs():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_Prova():
+def test_POXProva():
     """Test forwarding.prova
     """
     # raise SkipTest
 
     topo = L3EthStar()
-    controller = Prova
+    controller = POXProva
     net = Mininet(topo=topo, controller=controller, link=TCLink)
     net.start()
 
@@ -162,7 +165,7 @@ def test_POXL2LearningRtt():
 
 @with_named_setup(setup_func, teardown_func)
 def test_AntiArpPoison():
-    """Test AntiArpPoison controller.
+    """TODO Test AntiArpPoison controller.
     """
     raise SkipTest
 
