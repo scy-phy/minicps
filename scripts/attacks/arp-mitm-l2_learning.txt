@@ -1,0 +1,82 @@
+# PLC1_MAC = xx:xx:xx:xx:xx:70
+# PLC2_MAC = xx:xx:xx:xx:xx:46
+# PLC3_MAC = xx:xx:xx:xx:xx:f2
+# look also at .n where present
+
+
+# ex1: ARP poisoning by PLC1
+# there is no PLC2 to PLC3 mapping
+# flooding because the controller still doesn't have flows to install in s3
+
+DEBUG:l2_learning:Connection [00-00-00-00-00-03 1]
+DEBUG:l2_learning:Initializing LearningSwitch, transparent=False
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bc:46 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bc:46
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bd:f2 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bd:f2
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> ff:ff:ff:ff:ff:ff
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> ff:ff:ff:ff:ff:ff
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bc:46.2 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bd:f2.3 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bd:f2.3
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bd:f2.3
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bc:46.2 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bd:f2.3 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bd:f2.3
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bd:f2.3
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+
+
+# ex2: ARP poisoning PLC2 - PLC1 - PLC3
+# there is no PLC2 to PLC3 mapping
+# flooding because the controller still doesn't have flows to install in s3
+
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bc:46 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bc:46
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bd:f2 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bd:f2
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bc:46 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bc:46
+DEBUG:l2_learning:Port from 00:1d:9c:c8:bd:f2 unknown -- flooding
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> 00:1d:9c:c8:bd:f2
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> ff:ff:ff:ff:ff:ff
+DEBUG:l2_learning:3: flood 00:1d:9c:c7:b0:70 -> ff:ff:ff:ff:ff:ff
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bc:46.2 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c8:bd:f2.3 -> 00:1d:9c:c7:b0:70.1
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bd:f2.3
+DEBUG:l2_learning:installing flow for 00:1d:9c:c7:b0:70.1 -> 00:1d:9c:c8:bc:46.2
+WARNING:l2_learning:Same port for packet from 00:1d:9c:c7:b0:70 -> 00:1d:9c:c7:b0:70 on 00-00-00-00-00-03.1.  Drop.
+WARNING:l2_learning:Same port for packet from 00:1d:9c:c7:b0:70 -> 00:1d:9c:c7:b0:70 on 00-00-00-00-00-03.1.  Drop.
+
+
+# ex3: compare RRT poisoned vs non-poisoned 
+
+# non-poisoned: first goes to controller
+mininet> plc3 ping plc4
+PING 192.168.1.40 (192.168.1.40) 56(84) bytes of data.
+64 bytes from 192.168.1.40: icmp_seq=1 ttl=64 time=77.3 ms
+64 bytes from 192.168.1.40: icmp_seq=2 ttl=64 time=20.3 ms
+64 bytes from 192.168.1.40: icmp_seq=3 ttl=64 time=20.2 ms
+64 bytes from 192.168.1.40: icmp_seq=4 ttl=64 time=20.2 ms
+64 bytes from 192.168.1.40: icmp_seq=5 ttl=64 time=20.2 ms
+
+# poisoned: first goes to controller 
+mininet> plc2 ping plc3
+PING 192.168.1.30 (192.168.1.30) 56(84) bytes of data.
+64 bytes from 192.168.1.30: icmp_seq=1 ttl=64 time=65.1 ms
+64 bytes from 192.168.1.30: icmp_seq=2 ttl=64 time=48.5 ms
+64 bytes from 192.168.1.30: icmp_seq=3 ttl=64 time=46.6 ms
+64 bytes from 192.168.1.30: icmp_seq=4 ttl=64 time=46.1 ms
+64 bytes from 192.168.1.30: icmp_seq=5 ttl=64 time=45.4 ms
+64 bytes from 192.168.1.30: icmp_seq=6 ttl=64 time=47.7 ms
+
+# notice that RTT doubles as expected
+# see also scripts/attack/.pcap frames
+# where plc1 fools plc2 (plc3 IP mapped to plc1 MAC)
+# and plc3 (plc2 IP mapped to plc1 MAC)
+
+

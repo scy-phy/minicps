@@ -67,3 +67,6 @@ target/
 
 # Caps
 *.pcapng
+*.pcap
+*.eci
+*.ecp

