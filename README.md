@@ -44,5 +44,10 @@ If you use Linux's `iptables` uncomment:
 
 [Allen-Bradley ControlLogix products page](http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview)
 
+[NOX repo](https://github.com/noxrepo/pox)
 [POX wiki](https://openflow.stanford.edu/display/ONL/POX+Wiki)
+
+[ONF repo](http://opennetworkingfoundation.github.io/libfluid/index.html)
+
+[mininet](http://mininet.org/)
 
