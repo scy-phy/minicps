@@ -71,9 +71,11 @@ class POXProva(Controller):
     """
 
     def start(self):
+        POX_PATH='hub'  # pox/ext/ dir
+
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.prova', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(POX_PATH, 'DEBUG', './logs/'+type(self).__name__+'.log,w')
         self.cmd(self.pox, pox_opts)
         # self.cmd(self.pox, 'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
 

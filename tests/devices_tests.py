@@ -47,7 +47,6 @@ def test_POXL2Pairs():
     net.stop()
 
 
-
 @with_named_setup(setup_func, teardown_func_clear)
 def test_RemoteController():
     """Test L3EthStar with a remote controller
@@ -70,7 +69,9 @@ def test_RemoteController():
 
 @with_named_setup(setup_func, teardown_func)
 def test_POXProva():
-    """Test forwarding.prova
+    """See log file for controller info
+
+    See POXProva to set the pox component
     """
     raise SkipTest
 

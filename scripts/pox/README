@@ -1,2 +1,5 @@
 Each pox script must be symlinked in one of the pox scripts subfolders
 eg: ln -s $MINICPS_DIR/scripts/pox/script $POX_DIR/pox/forwarding/script.py
+
+If you use ext then there is no need to use the dot notation when invoking
+the pox component.

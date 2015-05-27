@@ -5,11 +5,11 @@ MiniCPS is a lightweight simulatior for accurate network traffic in an industria
 
 We recommend the use of a mininet VM to run minicps. Once the VM is set up, run the following to install the environment:
 
-    cd
+    cd; mkdir scy-phy; cd scy-phy
     git clone https://github.com/scy-phy/minicps
-    git clone http://github.com/noxrepo/pox
+    cd; git clone http://github.com/noxrepo/pox
     sudo apt-get install python-pip python-nose
-    sudo pip install cpppo pycomm
+    sudo pip install cpppo pycomm nose-conver3
 
 ## Testing ##
 
@@ -40,14 +40,22 @@ If you use Linux's `iptables` uncomment:
 
 ## Links ##
 
+SWaT:
 [datasheetarchive](http://www.datasheetarchive.com/)
-
 [Allen-Bradley ControlLogix products page](http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview)
 
-[NOX repo](https://github.com/noxrepo/pox)
-[POX wiki](https://openflow.stanford.edu/display/ONL/POX+Wiki)
-
+SDN:
 [ONF repo](http://opennetworkingfoundation.github.io/libfluid/index.html)
-
 [mininet](http://mininet.org/)
+[sdnhub](http://sdnhub.org/)
+
+OpenFlow
+[NOX(POX)](http://www.noxrepo.org/)
+[POX wiki](https://openflow.stanford.edu/display/ONL/POX+Wiki)
+[Ryu](https://osrg.github.io/ryu/)
+[List](http://yuba.stanford.edu/~casado/of-sw.html)
+
+Videos:
+[Scott Shenker: why SDN](https://osrg.github.io/ryu/)
+
 
