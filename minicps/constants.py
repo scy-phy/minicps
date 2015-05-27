@@ -29,82 +29,8 @@ import logging.handlers
 from mininet.util import dumpNodeConnections
 
 from nose.tools import *
-from nose.plugins.skip import Skip, SkipTest
 
 import os
-
-# LOGGING AND TESTING
-
-# TEST_LOG_LEVEL='output'
-TEST_LOG_LEVEL='info'
-# TEST_LOG_LEVEL='debug'
-
-TEMP_DIR = './temp'
-
-def _buildLogger(loggername, maxBytes, backupCount):
-    """Build a logger obj named loggername that generates
-    loggername.log[.n] rotating log files with every level
-    (log, file, console) hardcoded to DEBUG.
-    The format is hardcoded as well.
-
-    :loggername: name of the logger instance
-    :maxBytes: maximum bytes per rotating log file
-    :backupCount: maximum number of rotating files
-    :returns: logger instance
-
-    """
-
-    # TODO: find a way to not hardcode the level
-    
-    logger = logging.getLogger(loggername)
-    logger.setLevel(logging.DEBUG)
-
-    fh = logging.handlers.RotatingFileHandler(
-            './logs/'+loggername+'.log',
-            maxBytes=maxBytes,
-            backupCount=backupCount)
-    fh.setLevel(logging.DEBUG)
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-
-    return logger
-
-LOG_BYTES = 20000
-LOG_ROTATIONS = 5
-logger = _buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
-
-ASSERTION_ERRORS = {
-    'ip_mismatch': 'IP mismatch',
-    'mac_mismatch': 'MAC mismatch',
-    'no_learning': 'No learning',
-}
-
-
-def setup_func(test_name):
-    logger.info('Inside %s' % test_name)
-
-def teardown_func(test_name):
-    logger.info('Leaving %s' % test_name)
-
-def teardown_func_clear(test_name):
-    logger.info('Leaving %s' % test_name)
-    os.system(c.MININET_CMDS['clear'])
-
-def with_named_setup(setup=None, teardown=None):
-    def wrap(f):
-        return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None, 
-            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
-    return wrap
-
 
 # OPENFLOW
 
@@ -356,3 +282,76 @@ TAGS = {
     'pump3': 'pump3=INT[10]',
     'flow3': 'flow3=INT[10]',
 }
+
+
+# LOGGING AND TESTING
+
+# TEST_LOG_LEVEL='output'
+TEST_LOG_LEVEL='info'
+# TEST_LOG_LEVEL='debug'
+
+TEMP_DIR = './temp'
+
+def _buildLogger(loggername, maxBytes, backupCount):
+    """Build a logger obj named loggername that generates
+    loggername.log[.n] rotating log files with every level
+    (log, file, console) hardcoded to DEBUG.
+    The format is hardcoded as well.
+
+    :loggername: name of the logger instance
+    :maxBytes: maximum bytes per rotating log file
+    :backupCount: maximum number of rotating files
+    :returns: logger instance
+
+    """
+
+    # TODO: find a way to not hardcode the level
+    
+    logger = logging.getLogger(loggername)
+    logger.setLevel(logging.DEBUG)
+
+    fh = logging.handlers.RotatingFileHandler(
+            './logs/'+loggername+'.log',
+            maxBytes=maxBytes,
+            backupCount=backupCount)
+    fh.setLevel(logging.DEBUG)
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    return logger
+
+LOG_BYTES = 20000
+LOG_ROTATIONS = 5
+logger = _buildLogger(__name__, LOG_BYTES, LOG_ROTATIONS)
+
+ASSERTION_ERRORS = {
+    'ip_mismatch': 'IP mismatch',
+    'mac_mismatch': 'MAC mismatch',
+    'no_learning': 'No learning',
+}
+
+
+def setup_func(test_name):
+    logger.info('Inside %s' % test_name)
+
+def teardown_func(test_name):
+    logger.info('Leaving %s' % test_name)
+
+def teardown_func_clear(test_name):
+    logger.info('Leaving %s' % test_name)
+    os.system(MININET_CMDS['clear'])
+
+def with_named_setup(setup=None, teardown=None):
+    def wrap(f):
+        return with_setup(
+            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
+    return wrap
