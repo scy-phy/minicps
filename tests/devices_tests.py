@@ -8,7 +8,6 @@ POX prefixed ClassNames indicate controller coded into script/pox dir
 and symlinked to ~/pox/pox/forwarding dir.
 """
 
-from nose.tools import *
 from nose.plugins.skip import Skip, SkipTest
 
 from mininet.topo import LinearTopo
@@ -22,28 +21,13 @@ from mininet.cli import CLI
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
 from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva
-from minicps.constants import _arp_cache_rtts
+from minicps.constants import _arp_cache_rtts, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
-import os
 import time
 
 import logging
 logger = logging.getLogger('minicps.devices')
 setLogLevel(c.TEST_LOG_LEVEL)
-
-
-def setup_func(test_name):
-    logger.info('Inside %s' % test_name)
-
-def teardown_func(test_name):
-    logger.info('Leaving %s' % test_name)
-
-def with_named_setup(setup=None, teardown=None):
-    def wrap(f):
-        return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None, 
-            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
-    return wrap
 
 
 @with_named_setup(setup_func, teardown_func)
@@ -64,7 +48,7 @@ def test_POXL2Pairs():
 
 
 
-@with_named_setup(setup_func, teardown_func)
+@with_named_setup(setup_func, teardown_func_clear)
 def test_RemoteController():
     """Test L3EthStar with a remote controller
     eg: pox controller

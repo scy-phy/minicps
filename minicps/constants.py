@@ -28,6 +28,10 @@ import logging
 import logging.handlers
 from mininet.util import dumpNodeConnections
 
+from nose.tools import *
+from nose.plugins.skip import Skip, SkipTest
+
+import os
 
 # LOGGING AND TESTING
 
@@ -84,6 +88,24 @@ ASSERTION_ERRORS = {
 }
 
 
+def setup_func(test_name):
+    logger.info('Inside %s' % test_name)
+
+def teardown_func(test_name):
+    logger.info('Leaving %s' % test_name)
+
+def teardown_func_clear(test_name):
+    logger.info('Leaving %s' % test_name)
+    os.system(c.MININET_CMDS['clear'])
+
+def with_named_setup(setup=None, teardown=None):
+    def wrap(f):
+        return with_setup(
+            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
+    return wrap
+
+
 # OPENFLOW
 
 POX_PATH='~/'
@@ -128,6 +150,10 @@ OF_MISC = {
 
 
 ## MININET
+
+MININET_CMDS = {
+    'clear': 'sudo mn -c'
+}
 
 def _arp_cache_rtts(net, h1, h2):
     """Naive learning check on the first two ping

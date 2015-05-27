@@ -20,24 +20,11 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
+from minicps.constants import setup_func, teardown_func, teardown_func_clear, with_named_setup
 
 import logging
 logger = logging.getLogger('minicps.constants')
 setLogLevel(c.TEST_LOG_LEVEL)
-
-
-def setup_func(test_name):
-    logger.info('Inside %s' % test_name)
-
-def teardown_func(test_name):
-    logger.info('Leaving %s' % test_name)
-
-def with_named_setup(setup=None, teardown=None):
-    def wrap(f):
-        return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None, 
-            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
-    return wrap
 
 
 @with_named_setup(setup_func, teardown_func)

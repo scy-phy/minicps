@@ -5,7 +5,6 @@ logger reference to topology logger.
 
 """
 
-from nose.tools import *
 from nose.plugins.skip import Skip, SkipTest
 
 from mininet.topo import LinearTopo
@@ -17,29 +16,13 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar
-from minicps.constants import _mininet_functests
+from minicps.constants import _mininet_functests, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
 from time import sleep
-
-import os
 
 import logging
 logger = logging.getLogger('minicps.topology')
 setLogLevel(c.TEST_LOG_LEVEL)
-
-
-def setup_func(test_name):
-    logger.info('Inside %s' % test_name)
-
-def teardown_func(test_name):
-    logger.info('Leaving %s' % test_name)
-
-def with_named_setup(setup=None, teardown=None):
-    def wrap(f):
-        return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None, 
-            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
-    return wrap
 
 
 @with_named_setup(setup_func, teardown_func)
