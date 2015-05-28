@@ -10,12 +10,12 @@ from nose.plugins.skip import Skip, SkipTest
 from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.log import setLogLevel
-from mininet.node import CPULimitedHost
+from mininet.node import CPULimitedHost, RemoteController
 from mininet.link import TCLink
 from mininet.cli import CLI
 
 from minicps import constants as c
-from minicps.topology import EthStar, Minicps, DLR, L3EthStar
+from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
 from minicps.constants import _mininet_functests, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
 from time import sleep
@@ -62,7 +62,7 @@ def test_EthStar():
 @with_named_setup(setup_func, teardown_func)
 def test_L3EthStarBuild():
     """Test L3EthStar build process with custom L3_LINKOPTS"""
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStar()
     net = Mininet(topo=topo, link=TCLink)
@@ -112,7 +112,6 @@ def test_L3EthStarArpMitm():
     """
     raise SkipTest
 
-    # TODO: capute packets with ettercap and log it
     open(c.TEMP_DIR+'/l3/plc1arppoisoning.out', 'w').close()
 
     topo = L3EthStar()
@@ -137,5 +136,69 @@ def test_L3EthStarArpMitm():
     logger.debug(plc1_out)
 
     # CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarAttackArpEnip():
+    """
+    attacker ARP poison plc1 and hmi using ettercap. 
+    passive and active ARP spoofing
+
+    cpppo is used to simulate enip client/server
+    
+    remote controller (eg: pox) 
+    can be used to mitigate ARP poisoning.
+
+    """
+    # raise SkipTest
+
+    topo = L3EthStarAttack()
+
+    net = Mininet(topo=topo, link=TCLink)
+    # use manual controller instantiation for dev
+
+    # net = Mininet(topo=topo, link=TCLink, controller=None)
+    # net.addController( 'c0',
+    #         controller=RemoteController,
+    #         ip='127.0.0.1',
+    #         port=c.OF_MISC['controller_port'] )
+
+    # then you can create a custom controller class and
+    # init automatically when invoking mininet
+    # eg: controller = POXAntiArpPoison
+
+    net.start()
+    plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
+    # assert(type(plc1.IP())==str)
+
+    # remote ARP poisoning
+    target_ip1 = plc1.IP()
+    target_ip2 = hmi.IP()
+    attacker_interface = 'attacker-eth0'
+    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % (
+            target_ip1,
+            target_ip2, attacker_interface)
+    attacker.cmd(attacker_cmd)
+
+    # enip communication btw plc1 server and hmi client
+    # TODO: work with multiple realistic tags
+    # CLI(net)
+    taglist = 'pump=INT[10]'
+    server_cmd = "./scripts/cpppo/server.sh %s %s %s %s" % (
+            './temp/workshop/cppposerver.err',
+            plc1.IP(),
+            taglist,
+            './temp/workshop/cppposerver.out')
+    plc1.cmd(server_cmd)
+    client_cmd = "./scripts/cpppo/client.sh %s %s %s %s" % (
+            './temp/workshop/cpppoclient.err',
+            plc1.IP(),
+            'pump[0]=0',
+            './temp/workshop/cpppoclient.out')
+    hmi.cmd(client_cmd)
+
+    CLI(net)
 
     net.stop()

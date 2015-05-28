@@ -59,7 +59,7 @@ def test_RemoteController():
     net.addController( 'c0',
             controller=RemoteController,
             ip='127.0.0.1',
-            port=6633 )
+            port=c.OF_MISC['controller_port'] )
     net.start()
 
     CLI(net)

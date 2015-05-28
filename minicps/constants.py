@@ -71,7 +71,7 @@ OF_TYPES = {
 OF_MISC = {
     'user_switch': 'user',
     'kernel_switch': 'ovsk',
-    'controller_port': '6633',
+    'controller_port': 6633,
 }
 
 
@@ -212,6 +212,7 @@ L1_PLCS_IP = {
     'plc6r': '192.168.1.61',
     # used as central hub
     'plc7': '192.168.1.70',
+    'attacker': '192.168.1.77',
 }
 
 
@@ -265,6 +266,8 @@ PLCS_MAC = {
 OTHER_MACS = {
     'histn': 'B8:2A:72:D7:B0:EC',
     'workstn': '98:90:96:98:CC:49',
+    'hmi': '00:1D:9C:C6:72:E8',
+    'attacker': 'AA:AA:AA:AA:AA:AA',  # easy to recognize in the capture
 }
 
 PLCS = len(PLCS_MAC)
