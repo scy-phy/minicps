@@ -3,7 +3,7 @@ MiniCPS is a lightweight simulatior for accurate network traffic in an industria
 
 ## Installation ##
 
-We recommend the use of a mininet VM to run minicps. Once the VM is set up, run the following to install the environment:
+We recommend the use of a mininet VM (http://mininet.org/download/) to run minicps. Once the VM is set up, run the following to install the environment:
 
     cd; mkdir scy-phy; cd scy-phy
     git clone https://github.com/scy-phy/minicps
