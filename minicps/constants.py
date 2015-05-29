@@ -72,6 +72,7 @@ OF_MISC = {
     'user_switch': 'user',
     'kernel_switch': 'ovsk',
     'controller_port': 6633,
+    'flood_port': 65531,
 }
 
 
