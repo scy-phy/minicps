@@ -8,7 +8,7 @@ We recommend the use of a mininet VM to run minicps. Once the VM is set up, run 
     cd; mkdir scy-phy; cd scy-phy
     git clone https://github.com/scy-phy/minicps
     cd; git clone http://github.com/noxrepo/pox
-    sudo apt-get install python-pip python-nose
+    sudo apt-get install python-pip python-nose tee
     sudo pip install cpppo pycomm nose-conver3
 
 ## Testing ##
@@ -45,6 +45,7 @@ SWaT:
 [Allen-Bradley ControlLogix products page](http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview)
 
 SDN:
+[thenewstack article series](http://thenewstack.io/defining-software-defined-networking-part-1/)
 [ONF repo](http://opennetworkingfoundation.github.io/libfluid/index.html)
 [mininet](http://mininet.org/)
 [sdnhub](http://sdnhub.org/)

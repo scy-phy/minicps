@@ -15,10 +15,14 @@ Learn:
 
         how to parse a packet from an event obj
         how to construct a of_packet_out to tell the switch to flood
-        how to contruct a of_flow_add to tell the switch a new flow rule
+        how to construct a of_flow_add to tell the switch a new flow rule
 """
 
-# TODO: how to subscribe EventRaiser to the pox core
+# TODO: 
+#       how to subscribe EventRaiser to the pox core
+#       what is the purpose of a connection object
+#       how to manually parse raw_data payloads
+
 
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
@@ -92,7 +96,12 @@ def _handle_PacketIn(event):
     # obtain the packet object reference
     packet = event.parsed
 
+    # parsed contains the openflow payload that usually is
+    # the first part of the packet sent from host to s3
+    log.debug("event: %r" % (event.__dict__))
+
     # table is indexed by a tuple (connection, mac_address)
+    # log.debug("event.connection: %r" % (event.connection.__dict__))
     src_key = (event.connection, packet.src)
     table[src_key] = event.port
     log.debug("controller add new table entry: %r: %r" % (

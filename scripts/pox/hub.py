@@ -7,7 +7,12 @@ except the one whose the packet was coming from.
 
 Notice that this is the simplest example of a proactive(static) configuration.
 
-Learn: launch function, how to subscribe to an event setting a callback (handler) function
+Learn: 
+    pox uses OpenFlow v1.0 protocol (eg: of_flow_mod insted of of_flow_add)
+    what is the launch function
+    what is an action
+    how to subscribe to an event setting a callback (handler) function
+    what is _handle_ConnectionUp event
 """
 
 from pox.core import core
@@ -20,7 +25,9 @@ import time
 log = core.getLogger()
 
 def _handle_ConnectionUp(event):
-    """handler naming convention does't apply in this case
+    """
+    handle ConnectionUp event that is raised once
+    the controller is connected.
 
     :event: object carrying all the info to the controller
     """

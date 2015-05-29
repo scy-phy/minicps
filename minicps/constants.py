@@ -79,7 +79,8 @@ OF_MISC = {
 ## MININET
 
 MININET_CMDS = {
-    'clear': 'sudo mn -c'
+    'clear': 'sudo mn -c',
+    'linear-remote': 'sudo mn --topo=linear,4 --controller=remote',
 }
 
 def _arp_cache_rtts(net, h1, h2):

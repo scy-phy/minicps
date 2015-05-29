@@ -19,7 +19,7 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 
 from minicps import constants as c
-from minicps.topology import EthStar, Minicps, DLR, L3EthStar
+from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
 from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva
 from minicps.constants import _arp_cache_rtts, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
@@ -54,7 +54,7 @@ def test_RemoteController():
     """
     # raise SkipTest
 
-    topo = L3EthStar()
+    topo = L3EthStarAttack()
     net = Mininet( topo=topo, controller=None, link=TCLink)
     net.addController( 'c0',
             controller=RemoteController,

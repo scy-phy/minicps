@@ -156,8 +156,8 @@ def test_L3EthStarAttackArpEnip():
 
     topo = L3EthStarAttack()
 
+    # built-in mininet controller
     net = Mininet(topo=topo, link=TCLink)
-    # use manual controller instantiation for dev
 
     # net = Mininet(topo=topo, link=TCLink, controller=None)
     # net.addController( 'c0',
@@ -173,7 +173,7 @@ def test_L3EthStarAttackArpEnip():
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
     # assert(type(plc1.IP())==str)
 
-    # remote ARP poisoning
+    # PASSIVE remote ARP poisoning
     target_ip1 = plc1.IP()
     target_ip2 = hmi.IP()
     attacker_interface = 'attacker-eth0'
@@ -184,7 +184,7 @@ def test_L3EthStarAttackArpEnip():
 
     # enip communication btw plc1 server and hmi client
     # TODO: work with multiple realistic tags
-    # CLI(net)
+    CLI(net)
     taglist = 'pump=INT[10]'
     server_cmd = "./scripts/cpppo/server.sh %s %s %s %s" % (
             './temp/workshop/cppposerver.err',
@@ -199,6 +199,6 @@ def test_L3EthStarAttackArpEnip():
             './temp/workshop/cpppoclient.out')
     hmi.cmd(client_cmd)
 
-    CLI(net)
+    # CLI(net)
 
     net.stop()

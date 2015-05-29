@@ -1,8 +1,26 @@
+"""
+Flow based learing switch
+
+l2_learning listens to openflow events and uses a dedicated
+class called LearningSwitch to manage the Switch learning logic
+eg: flood, flow_mod, drop
+
+Learn:
+    how to create a dedicate controller class
+
+    how to pass commandline arguments to pox
+    how to register a pox component to the core object
+    how to drop a packet
+    how to flood multicast packets (eg: ARP request uses 00:00:00:00:00:00)
+"""
+
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
 
-from pox.lib.util import dpid_to_str
-from pox.lib.util import str_to_bool
+import pox.lib.packet as pkt
+
+from pox.lib.util import dpid_to_str  # convert process id to string
+from pox.lib.util import str_to_bool  # return True given a set of string keywords
 
 import time
 
@@ -13,7 +31,10 @@ _flood_delay = 0
 
 class LearningSwitch(object):
 
-    """Docstring for LearningSwitch. """
+    """
+    Create a LearningSwitch OpenFlow API
+    for each switch in the network
+    """
 
     def __init__(self, connection, transparent):
         """TODO: to be defined1.
@@ -25,20 +46,23 @@ class LearningSwitch(object):
         self.connection = connection
         self.transparent = transparent
         
+        # controller MACs table
         self.macToPort = {}
 
+        # Every _handle_EventName (subsribers) will be mapped to
+        # EventName (raised event)
         connection.addListeners(self)
 
+        # Bool to track a timer
         self.hold_down_expired = (_flood_delay == 0)
 
         log.debug("Initializing LearningSwitch, transparent=%s",
                 str(self.transparent))
 
-    def _handle_PacketIn(self, event):
-        """TODO: Docstring for _handle_PacketIn.
 
-        :event: TODO
-        :returns: TODO
+    def _handle_PacketIn(self, event):
+        """
+        flood mgmt
 
         """
         packet = event.parsed
@@ -120,28 +144,37 @@ class LearningSwitch(object):
 
 class l2_learning(object):
 
-    """TODO"""
+    """
+    l2_learning pox component that used L3EthStarAttack
+    class to manage flood and flow_mod events.
+    """
 
     def __init__(self, transparent):
         """TODO: to be defined1.
 
-        :transparent: TODO
+        :transparent: passed through command line
 
         """
+
+        # l2_learning obj subscribes to core.openflow components events
         core.openflow.addListeners(self)
+
         self.transparent = transparent
 
     def _handle_ConnectionUp(self, event):
-        """TODO: Docstring for _handle_ConnectionUp.
-        :returns: TODO
+        """
+        Event fired once the controller is connected
 
         """
+
         log.debug("Connection %s" % (event.connection))
+
         LearningSwitch(event.connection, self.transparent)
 
 
 def launch(transparent=False, hold_down=_flood_delay):
-    """TODO: Docstring for launch.
+    """
+    launch argument are parsed from command line
 
     """
     try:
@@ -151,5 +184,9 @@ def launch(transparent=False, hold_down=_flood_delay):
     except:
         raise RuntimeError("Expected hold_down to be a number.")
 
+    # create an instance of a l2_learning class
+    # passing transparent to its constructor
+    # assigning the classname as component name
+    # eg: core.l2_learning
     core.registerNew(l2_learning, str_to_bool(transparent))
         
