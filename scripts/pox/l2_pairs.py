@@ -16,6 +16,9 @@ Learn:
         how to parse a packet from an event obj
         how to construct a of_packet_out to tell the switch to flood
         how to construct a of_flow_add to tell the switch a new flow rule
+
+        openflow.of_01 implicit initialization
+        what is OpenFlow's dpid and how pox manages it
 """
 
 # TODO: 
@@ -25,63 +28,17 @@ Learn:
 
 
 from pox.core import core
-import pox.openflow.libopenflow_01 as of
+import pox.openflow.libopenflow_01 as of  # OpenFlow 1.0
 
-from pox.lib.revent import Event, EventMixin, EventHalt
 import pox.lib.packet as pkt
 
 import time
 
+from pprint import pformat  # build debug strings
+
 log = core.getLogger()
 
 table = {}  # table[(a, b)]
-
-
-class EventName(Event):
-
-    """event that can be raised by EventRaiser"""
-
-    def __init__(self):
-        """TODO: to be defined1. """
-        Event.__init__(self)
-        log.debug("Inside EventName")
-
-
-class EventRaiser(EventMixin):
-
-    """obj able to raise events"""
-
-    _eventMixin_events = set([
-        EventName,
-    ])
-        
-
-def _handle_EventName(event):
-    """EvenName handler function
-
-    :event: revent.Event
-    """
-    log.debug("callback: _handle_EventName")
-
-
-def _handle_EventName_urgent(event):
-    """see addListener in the launch function for the priority
-
-    :returns: optional block the event otherwise pass the 
-    control to the next handler according to priority
-    """
-
-    log.debug("callback: _handle_EventName_urgent")
-    # return EventHalt
-        
-
-def _handle_EventName_onetime(event):
-    """see addListener in the launch function for once
-
-    :event: revent.Event
-
-    """
-    log.debug("callback: _handle_EventName_onetime")
 
 
 def _handle_PacketIn(event):
@@ -93,15 +50,17 @@ def _handle_PacketIn(event):
     all_ports = of.OFPP_FLOOD  # 65531
     # log.debug("OFPP_FLOOD: %r" % all_ports)
 
-    # obtain the packet object reference
-    packet = event.parsed
-
     # parsed contains the openflow payload that usually is
     # the first part of the packet sent from host to s3
-    log.debug("event: %r" % (event.__dict__))
+    packet = event.parsed
+
+    # DEBUG strings
+    event_log = pformat(event.__dict__, indent=4)
+    log.debug("event: %s" % event_log)
+    event_connection_log = pformat(event.connection.__dict__, indent=4)
+    log.debug("event_connection: %s" % event_connection_log)
 
     # table is indexed by a tuple (connection, mac_address)
-    # log.debug("event.connection: %r" % (event.connection.__dict__))
     src_key = (event.connection, packet.src)
     table[src_key] = event.port
     log.debug("controller add new table entry: %r: %r" % (
@@ -160,14 +119,14 @@ def _dissect_PacketIn(event):
     """
     packet = event.parsed
     inport = event.port
-    dpid = event.connection.dpid
+    dpid = event.connection.dpid  # unique ID number for each OpenFlow Switch
     if not packet.parsed:
         log.warning("%i %i ignoring unparsed packet", dpid, inport)
         return
 
     payload = packet.payload
-    log.debug("first packet %r, with payload: %r with dpid=%r and inport=%r"
-            % (packet, payload, dpid, inport))
+    # log.debug("first packet %r, with payload: %r with dpid=%r and inport=%r"
+            # % (packet, payload, dpid, inport))
 
 
 def launch(disable_flood=False):
@@ -177,7 +136,7 @@ def launch(disable_flood=False):
     :returns: TODO
 
     """
-    log.info("l2_pairs is running.")
+    log.info("running.")
 
     all_ports = of.OFPP_FLOOD
     log.debug("OFPP_FLOOD port number=%s" % (all_ports))
@@ -186,20 +145,5 @@ def launch(disable_flood=False):
         all_ports = of.OFPP_ALL
         log.debug("OFPP_ALL port number=%s" % (all_ports))
 
-    # event_class, event_id = core.openflow.addListenerByName("PacketIn", _dissect_PacketIn, priority=2)
+    event_class, event_id = core.openflow.addListenerByName("PacketIn", _dissect_PacketIn, priority=2)
     event_class, event_id = core.openflow.addListenerByName("PacketIn", _handle_PacketIn, priority=1)
-
-    # raiser = EventRaiser()
-    # # default priority is unknown
-    # event_class, event_id = raiser.addListener(EventName, _handle_EventName, priority=0)
-    # event_class, event_id = raiser.addListener(EventName, _handle_EventName_urgent, priority=2)
-    # event_class, event_id = raiser.addListener(EventName, _handle_EventName_onetime,
-    #         once=True, priority=-1)
-
-    # for x in range(3):
-    #     raiser.raiseEvent(EventName)
-    #     time.sleep(1)
-
-    # rc = core.openflow.removeListener(event_id)
-    # log.debug("core.openflow doesn't listen to %s with EID:%s? %r" % (event_class, event_id, rc))
-
