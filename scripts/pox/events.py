@@ -1,6 +1,17 @@
 """
 pox event handling
 
+events maps communication from the OpenFlow datapaths (eg switches) to
+the controller. This mapping is saved in a set of pox components able to
+raise an event according to the incoming packet. The control program has
+to specify a set of handlers (functions) to respond to events.
+
+Multiple functions with different features (eg: priority) may be mapped
+to the same event. An event handler is able to stop or forward the event
+to the next handler (eg: packet filter)
+
+OpenFlow list of event classes: pox/pox/openflow/__init__.py
+
 Learn:    
         how to create an object able to raise events, create a new event class,
         how to setup handler priority (pox default priority in unspecified)

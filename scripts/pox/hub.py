@@ -30,6 +30,9 @@ def _handle_ConnectionUp(event):
     the controller is connected.
 
     :event: object carrying all the info to the controller
+
+    addListenerByName permits to specify the handler function
+    giving the name of the event (raised by core.openflow)
     """
 
     # construct of_flowmod message
@@ -53,5 +56,5 @@ def launch():
 
     """
 
-    event_class, event_id = core.openflow.addListenerByName("ConnectionUp", _handle_ConnectionUp)
+    core.openflow.addListenerByName("ConnectionUp", _handle_ConnectionUp)
     log.info("Hub running")
