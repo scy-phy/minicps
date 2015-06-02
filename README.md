@@ -3,13 +3,19 @@ MiniCPS is a lightweight simulatior for accurate network traffic in an industria
 
 ## Installation ##
 
-We recommend the use of a mininet VM to run minicps. Once the VM is set up, run the following to install the environment:
+We recommend the use of a mininet VM (http://mininet.org/download/) to run minicps. Once the VM is set up, run the following to install the environment:
 
     cd; mkdir scy-phy; cd scy-phy
     git clone https://github.com/scy-phy/minicps
     cd; git clone http://github.com/noxrepo/pox
     sudo apt-get install python-pip python-nose tee
     sudo pip install cpppo pycomm nose-conver3
+
+In order to reduce the network traffic in an IPv4-only environment, you can disable IPv6 on the mininet VM by running the following commands:
+
+    echo 'net.ipv6.conf.all.disable_ipv6 = 1' | sudo tee /etc/sysctl.d/60-disable-ipv6.conf
+    echo 'net.ipv6.conf.default.disable_ipv6 = 1' | sudo tee -a /etc/sysctl.d/60-disable-ipv6.conf
+    sysctl -p /etc/sysctl.d/60-disable-ipv6.conf
 
 ## Testing ##
 
