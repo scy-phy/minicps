@@ -1,5 +1,6 @@
 """
 Hub implementation. 
+
 No dedicated Controller class.
 Only one callback function that is called once during ConnectionUp
 that instructs all the switches to flood every packet to every port 
@@ -7,12 +8,16 @@ except the one whose the packet was coming from.
 
 Notice that this is the simplest example of a proactive(static) configuration.
 
+Prereq:
+        study events.py
+
 Learn: 
     pox uses OpenFlow v1.0 protocol (eg: of_flow_mod insted of of_flow_add)
     what is the launch function
     what is an action
     how to subscribe to an event setting a callback (handler) function
     what is _handle_ConnectionUp event
+    OpenFlow has a set of well defined port to flood packets
 """
 
 from pox.core import core
@@ -22,6 +27,7 @@ from pox.lib.util import dpidToStr
 
 import time
 
+# wrapper around logger.getLogger()
 log = core.getLogger()
 
 def _handle_ConnectionUp(event):

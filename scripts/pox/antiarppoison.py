@@ -19,23 +19,35 @@ IDS_PORT = 100
 class AntiARPPoisonSwitch (object):
     """
     A AntiARPPoisonSwitch object is created for each switch that connects.
-    A Connection object for that switch is passed to the __init__ function.
     """
+
     def __init__ (self, connection):
-        # Keep track of the connection to the switch so that we can
-        # send it messages!
+        """
+        connection allows the controller to manage the switch
+
+        AntiARPPoisonSwitch _handle methods subscribes to all connection
+        event 
+        eg: switch may fire a PacketIn event
+
+        __init__ start a timer that every TimerQuantumDuration sec call
+        self.Clean_Tables.
+        """
+
         self.connection = connection
 
-        # This binds our PacketIn event listener
         connection.addListeners(self)
 
-        # Use this table to keep track of which ethernet address is on
-        # which switch port (keys are MACs, values are ports).
         self.mac_to_port = {}
         self.ip_to_mac = {}
-        self.ip_to_mac_time_track = {}
-        Timer(TimerQuantumDuration, self.Clean_Tables, recurring = True)
 
+        # ???????
+        self.ip_to_mac_time_track = {}
+
+        #     time_to_wake,         callback           infinite loop
+        Timer(TimerQuantumDuration, self.Clean_Tables, recurring=True)
+
+
+    # helper method used by handlers
     def send_packet (self, buffer_id, raw_data, out_port, in_port):
         """
         Sends a packet out of the specified switch port.
@@ -62,7 +74,6 @@ class AntiARPPoisonSwitch (object):
 
         # Send message to switch
         self.connection.send(msg)
-
         
     #Checks to see if a IP to MAC mapping is already there.
     def arp_spoof_detected(self, packet, packet_in):
@@ -81,7 +92,6 @@ class AntiARPPoisonSwitch (object):
         #Let's note the IP to MAC address mapping.
         self.ip_to_mac[ipsrc] = macsrc
         return False
-        
         
     #General function for checking if something looks like ARP poisoning
     def check_arp_spoof(self, packet, packet_in):
@@ -141,6 +151,7 @@ class AntiARPPoisonSwitch (object):
                                              of.OFPP_FLOOD, packet_in.in_port)
 
 
+    # handlers
     def _handle_PacketIn (self, event):
         """
         Handles packet in messages from the switch.
@@ -169,6 +180,9 @@ def launch ():
     Starts the component
     """
     def start_switch (event):
+        """event is always a PacketIn"""
         log.debug("Controlling %s" % (event.connection,))
         AntiARPPoisonSwitch(event.connection)
+
+    # everytime a new switch is connected start_switch is triggered
     core.openflow.addListenerByName("ConnectionUp", start_switch)

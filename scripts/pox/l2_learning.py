@@ -8,7 +8,6 @@ eg: flood, flow_mod, drop
 Learn:
     how to create a dedicate controller class
 
-    how to pass commandline arguments to pox
     how to register a pox component to the core object
     how to drop a packet
     how to flood multicast packets (eg: ARP request uses 00:00:00:00:00:00)
@@ -19,14 +18,15 @@ import pox.openflow.libopenflow_01 as of
 
 import pox.lib.packet as pkt
 
-from pox.lib.util import dpid_to_str  # convert process id to string
-from pox.lib.util import str_to_bool  # return True given a set of string keywords
+# dpid helper functions
+from pox.lib.util import dpid_to_str
+from pox.lib.util import str_to_bool
 
 import time
 
 log = core.getLogger()
 
-_flood_delay = 0
+_flood_delay = 0  # sec 
 
 
 class LearningSwitch(object):
