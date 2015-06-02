@@ -54,19 +54,38 @@ def _pox_opts(components, info_level, logfile_opts,
 
     return pox_opts
     
-OF_TYPES = {
-    '0': 'of_hello',
-    '2': 'of_echo_request',
-    '3': 'of_echo_reply',
-    '5': 'of_feature_request',
-    '6': 'of_feature_reply',
-    '9': 'of_set_config',
-    '10': 'of_packet_in',
-    '13': 'of_packet_out',
-    '14': 'of_flow_add',
-    'xx': 'of_join',
-    'xx': 'of_port_change',
+# mirrors minicps constants
+OF10_MSG_TYPES= {
+    0:  'OFPT_HELLO',  # Symmetric 
+    1:  'OFPT_ERROR',  # Symmetric 
+    2:  'OFPT_ECHO_REQUEST',  # Symmetric 
+    3:  'OFPT_ECHO_REPLY',  # Symmetric 
+    4:  'OFPT_VENDOR',  # Symmetric 
+
+    5:  'OFPT_FEATURES_REQUEST',  # Controller -> Switch
+    6:  'OFPT_FEATURES_REPLY',  # Controller -> Switch
+    7:  'OFPT_GET_CONFIG_REQUEST',  # Controller -> Switch
+    8:  'OFPT_GET_CONFIG_REPLY',  # Controller -> Switch
+    9:  'OFPT_SET_CONFIG',  # Controller -> Switch
+
+    10: 'OFPT_PACKET_IN',  # Async
+    11: 'OFPT_FLOW_REMOVED',  # Async
+    12: 'OFPT_PORT_STATUS',  # Async
+
+    13: 'OFPT_PACKET_OUT',  # Controller -> Switch
+    14: 'OFPT_FLOW_MOD',  # Controller -> Switch
+    15: 'OFPT_PORT_MOD',  # Controller -> Switch
+
+    16: 'OFPT_STATS_REQUEST',  # Controller -> Switch
+    17: 'OFPT_STATS_REPLY',  # Controller -> Switch
+
+    18: 'OFPT_BARRIER_REQUEST',  # Controller -> Switch
+    19: 'OFPT_BARRIER_REPLY',  # Controller -> Switch
+
+    20: 'OFPT_QUEUE_GET_CONFIG_REQUEST',  # Controller -> Switch
+    21: 'OFPT_QUEUE_GET_CONFIG_REPLY',  # Controller -> Switch
 }
+
 
 OF_MISC = {
     'user_switch': 'user',
