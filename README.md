@@ -11,6 +11,12 @@ We recommend the use of a mininet VM (http://mininet.org/download/) to run minic
     sudo apt-get install python-pip python-nose tee
     sudo pip install cpppo pycomm nose-conver3
 
+In order to reduce the network traffic in an IPv4-only environment, you can disable IPv6 on the mininet VM by running the following commands:
+
+    echo 'net.ipv6.conf.all.disable_ipv6 = 1' | sudo tee /etc/sysctl.d/60-disable-ipv6.conf
+    echo 'net.ipv6.conf.default.disable_ipv6 = 1' | sudo tee -a /etc/sysctl.d/60-disable-ipv6.conf
+    sysctl -p /etc/sysctl.d/60-disable-ipv6.conf
+
 ## Testing ##
 
 Use with_setup decorator to call tests fixtures. It is possible to use different fixtures for different tests.
