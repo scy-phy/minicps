@@ -1,21 +1,34 @@
 # MiniCPS #
-MiniCPS is a lightweight simulatior for accurate network traffic in an industrial control system, with basic support for physical layer interaction.
+
+MiniCPS is a lightweight simulatior for accurate network traffic in an
+industrial control system, with basic support for physical layer
+interaction.
 
 ## Installation ##
 
-We recommend the use of a mininet VM (http://mininet.org/download/) to run minicps. Once the VM is set up, run the following to install the environment:
+We recommend the use of a mininet VM (http://mininet.org/download/) to
+run minicps. Once the VM is set up, run the following to install the
+environment:
 
-    cd; mkdir scy-phy; cd scy-phy
-    git clone https://github.com/scy-phy/minicps
-    cd; git clone http://github.com/noxrepo/pox
-    sudo apt-get install python-pip python-nose tee
-    sudo pip install cpppo pycomm nose-cov
+    $ cd; mkdir scy-phy; cd scy-phy
+    $ git clone https://github.com/scy-phy/minicps
+    $ cd; git clone http://github.com/noxrepo/pox
+    # apt-get install python-pip python-nose tee
+    # pip install cpppo pycomm nose-cov
 
-In order to reduce the network traffic in an IPv4-only environment, you can **DISABLE** the Linux IPv6 kernel module:
+To symlink minicps pox controller to pox/ext execute the following
+script. Notice that `POX_PATH` defaults to `~/pox` and `MINICPS_PATH`
+defaults to `~/minicps`.
+
+    $ ~/minicps/script/pox/init.py [-p POX_PATH -m MINICPS_PATH -vv]
+    
+In order to reduce the network traffic in an IPv4-only environment,
+you can **disable** the Linux IPv6 kernel module:
 
     # vim /etc/default/grub
 
-then add `ipv6.disable=1` as first parameter in the string. Note that the `...` poriton of the string depends on your grub config.
+then add `ipv6.disable=1` as first parameter in the string.
+Note that the `...` poriton of the string depends on your grub config.
 
     GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1 ..."
 
@@ -23,21 +36,22 @@ then
 
     # update-grub
 
-then reboot your machine and check it with `ifconfig` that no `inet6` is listed.
+then reboot your machine and check it with `ifconfig` that no
+`inet6` is listed.
 
 Instruction taken from [here](https://github.com/mininet/mininet/issues/454).
 
 ## Testing ##
 
-Use with_setup decorator to call tests fixtures. It is possible to use different fixtures for different tests.
 
-SkipTest can be used as a switch to intentionally skip a test. You
-can see skipped test summary in the nosetest output.
+You can intentionally skipe a particular test adding/uncommenting `raise SkipTest`.
+You can see skipped test summary in the nosetest output.
 
-To run a single test whitin a script use /path/to/test:test_name witouth parenthesis.
+To run a single test whitin a script use `/path/to/test:test_name` (witouth parenthesis).
 
-use -s opt to prevent nosetest to capture stdout.
-use -v opt to obtain a more verbose output.
+use `-s` opt to prevent nosetest to capture stdout.
+use `-v` opt to obtain a more verbose output.
+You can even generate coverage report (read `$ nosetests --help`).
 
 ## Ettercap ##
 
