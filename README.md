@@ -9,7 +9,7 @@ We recommend the use of a mininet VM (http://mininet.org/download/) to run minic
     git clone https://github.com/scy-phy/minicps
     cd; git clone http://github.com/noxrepo/pox
     sudo apt-get install python-pip python-nose tee
-    sudo pip install cpppo pycomm nose-conver3
+    sudo pip install cpppo pycomm nose-cov
 
 In order to reduce the network traffic in an IPv4-only environment, you can **DISABLE** the Linux IPv6 kernel module:
 
@@ -18,6 +18,12 @@ In order to reduce the network traffic in an IPv4-only environment, you can **DI
 then add `ipv6.disable=1` as first parameter in the string. Note that the `...` poriton of the string depends on your grub config.
 
     GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1 ..."
+
+then
+
+    # update-grub
+
+then reboot your machine and check it with `ifconfig` that no `inet6` is listed.
 
 Instruction taken from [here](https://github.com/mininet/mininet/issues/454).
 
