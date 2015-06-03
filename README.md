@@ -72,10 +72,6 @@ If you use Linux's `iptables` uncomment:
 
 Install `python-sphinx` and its dependencies, then `cd` into `minicps/docs` and run
 
-    $ mkdir logs
-
-then
-
     $ make html
 
 then open a new terminal and type
