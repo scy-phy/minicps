@@ -1,5 +1,5 @@
 .. minicps documentation master file, created by
-   sphinx-quickstart on Wed Apr 15 18:45:02 2015.
+   sphinx-quickstart2 on Wed Jun  3 10:14:56 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 3
 
    api
+   tests
+   misc
 
 
 

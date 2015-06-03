@@ -1,4 +1,4 @@
-The minicps API reference
+minicps API reference
 =============================
 
 .. automodule:: minicps
