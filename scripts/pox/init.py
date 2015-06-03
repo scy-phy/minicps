@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 Script to perform pox init.
 
