@@ -68,27 +68,58 @@ If you use Linux's `iptables` uncomment:
     redir_command_on = "iptables -t nat -A PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"
     redir_command_off = "iptables -t nat -D PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"
 
+## Build sphinx docs ##
+
+Install `python-sphinx` and its dependencies, then `cd` into `minicps/docs` and run
+
+    $ mkdir logs
+
+then
+
+    $ make html
+
+then open a new terminal and type
+
+    $ python -m SimpleHTTPServer
+
+then open a browser and go to `localhost:8000` then visit the `_build/html` folder.
+
+*Please proofread it and report any issue.*
+
 ## Links ##
 
 SWaT:
+
 [datasheetarchive](http://www.datasheetarchive.com/)
+
 [Allen-Bradley ControlLogix products page](http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview)
 
 SDN:
+
 [thenewstack article series](http://thenewstack.io/defining-software-defined-networking-part-1/)
+
 [ONF repo](http://opennetworkingfoundation.github.io/libfluid/index.html)
+
 [mininet](http://mininet.org/)
+
 [sdnhub](http://sdnhub.org/)
 
 OpenFlow:
+
 [OFv1.30 spec](https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.0.pdf)
+
 [OF Packet Format](http://archive.openflow.org/wk/images/c/c5/Openflow_packet_format.pdf)
+
 [NOX(POX)](http://www.noxrepo.org/)
+
 [POX wiki](https://openflow.stanford.edu/display/ONL/POX+Wiki)
+
 [Ryu](https://osrg.github.io/ryu/)
-[List](http://yuba.stanford.edu/~casado/of-sw.html)
+
+[More software](http://yuba.stanford.edu/~casado/of-sw.html)
 
 Videos:
+
 [Scott Shenker: why SDN](https://osrg.github.io/ryu/)
 
 
