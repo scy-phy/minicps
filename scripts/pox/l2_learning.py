@@ -32,15 +32,14 @@ _flood_delay = 0  # sec
 class LearningSwitch(object):
 
     """
-    Create a LearningSwitch OpenFlow API
-    for each switch in the network
     """
 
     def __init__(self, connection, transparent):
-        """TODO: to be defined1.
-
-        :connection: TODO
+        """
         :transparent: TODO
+
+        :hold_down_expired: static flag that signal when
+        _flood_delay equals 0
 
         """
         self.connection = connection
@@ -62,17 +61,24 @@ class LearningSwitch(object):
 
     def _handle_PacketIn(self, event):
         """
-        flood mgmt
+        Manage PacketIn events sent by event,connection datapaths.
 
         """
         packet = event.parsed
 
 
         def flood(message=None):
-            """TODO: Docstring for flood.
+            """
+            create a packet_out with flood rule
+            waiting _flood_delay sec before sending the instruction to the switch
+
+            :message: optional log.debug message
 
             """
+
             msg = of.ofp_packet_out()  # create of_packet_out
+
+            # flood
             if time.time() - self.connection.connect_time >= _flood_delay:
                 if self.hold_down_expired is False:
                     self.hold_down_expired = True
@@ -82,9 +88,12 @@ class LearningSwitch(object):
                 log.debug("%i: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
                 action = of.ofp_action_output(port=of.OFPP_FLOOD)
                 msg.actions.append(action)
+
+            # wait
             else:
                 log.info("Holding down flood for %s" % (dpid_to_str(event.dpid)))
                 pass
+
             msg.data = event.ofp
             msg.in_port = event.port
             self.connection.send(msg)
@@ -145,8 +154,7 @@ class LearningSwitch(object):
 class l2_learning(object):
 
     """
-    l2_learning pox component that used L3EthStarAttack
-    class to manage flood and flow_mod events.
+    useless l2_learning pox component
     """
 
     def __init__(self, transparent):
@@ -156,7 +164,7 @@ class l2_learning(object):
 
         """
 
-        # l2_learning obj subscribes to core.openflow components events
+        # l2_learning methods subscribes to all events raised by nexus
         core.openflow.addListeners(self)
 
         self.transparent = transparent

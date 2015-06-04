@@ -157,13 +157,15 @@ def test_L3EthStarAttackArpEnip():
     topo = L3EthStarAttack()
 
     # built-in mininet controller
-    net = Mininet(topo=topo, link=TCLink)
+    # net = Mininet(topo=topo, link=TCLink)
+    # logger.info("started mininet default controller")
 
-    # net = Mininet(topo=topo, link=TCLink, controller=None)
-    # net.addController( 'c0',
-    #         controller=RemoteController,
-    #         ip='127.0.0.1',
-    #         port=c.OF_MISC['controller_port'] )
+    net = Mininet(topo=topo, link=TCLink, controller=None)
+    net.addController( 'c0',
+            controller=RemoteController,
+            ip='127.0.0.1',
+            port=c.OF_MISC['controller_port'] )
+    logger.info("started remote controller")
 
     # then you can create a custom controller class and
     # init automatically when invoking mininet
@@ -184,7 +186,10 @@ def test_L3EthStarAttackArpEnip():
 
     # enip communication btw plc1 server and hmi client
     # TODO: work with multiple realistic tags
+
+    logger.info("passive remote ARP poisoning mounted")
     CLI(net)
+
     taglist = 'pump=INT[10]'
     server_cmd = "./scripts/cpppo/server.sh %s %s %s %s" % (
             './temp/workshop/cppposerver.err',
@@ -199,6 +204,7 @@ def test_L3EthStarAttackArpEnip():
             './temp/workshop/cpppoclient.out')
     hmi.cmd(client_cmd)
 
-    # CLI(net)
+    logger.info("ENIP traffic from hmi to plc1 generated")
+    CLI(net)
 
     net.stop()

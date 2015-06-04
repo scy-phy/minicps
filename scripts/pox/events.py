@@ -84,6 +84,8 @@ def launch():
     """
     
     raiser = EventRaiser()
+    raiser_log = pformat(raiser._eventMixin_events, indent=4)
+    log.debug("raiser: %s" % raiser_log)
 
     raiser_listeners_ids = {}  # store info related to raiser listeners id
 

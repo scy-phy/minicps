@@ -10,14 +10,14 @@ Prereq:
         hub.py
 
 Learn:  
-        what are core.openflow (nexus) and openflow.of_01 componenets
-        what are a pox Event, Connection, ofp and Nexus objs
+        what are core.openflow(nexus) and openflow.of_01 componenets
+        what are a pox Event, Connection, ofp(openflow payload) and Nexus objs
         what is OpenFlow's dpid and how pox manages it
 
         how to pass commandline arguments to pox
         how to parse a packet from an event obj
-        how to construct a of_packet_out to tell the switch to flood
-        how to construct a of_flow_add to tell the switch a new flow rule
+        how to construct a packet_out to tell the switch to flood
+        how to construct a flow_add to tell the switch a new flow rule
 
         OpenFlow has a set of well defined port to flood packets
 
@@ -51,39 +51,39 @@ def decode_ofp_header(header):
     """
 
     # mirrors minicps constants
-    OF10_MSG_TYPES= {
-        0:  'OFPT_HELLO',  # Symmetric 
-        1:  'OFPT_ERROR',  # Symmetric 
-        2:  'OFPT_ECHO_REQUEST',  # Symmetric 
-        3:  'OFPT_ECHO_REPLY',  # Symmetric 
-        4:  'OFPT_VENDOR',  # Symmetric 
+    OF_MSG_TYPES= {
+        0:  'OFPT_HELLO',
+        1:  'OFPT_ERROR',
+        2:  'OFPT_ECHO_REQUEST',
+        3:  'OFPT_ECHO_REPLY',
+        4:  'OFPT_VENDOR',
 
-        5:  'OFPT_FEATURES_REQUEST',  # Controller -> Switch
-        6:  'OFPT_FEATURES_REPLY',  # Controller -> Switch
-        7:  'OFPT_GET_CONFIG_REQUEST',  # Controller -> Switch
-        8:  'OFPT_GET_CONFIG_REPLY',  # Controller -> Switch
-        9:  'OFPT_SET_CONFIG',  # Controller -> Switch
+        5:  'OFPT_FEATURES_REQUEST',
+        6:  'OFPT_FEATURES_REPLY',
+        7:  'OFPT_GET_CONFIG_REQUEST',
+        8:  'OFPT_GET_CONFIG_REPLY',
+        9:  'OFPT_SET_CONFIG',
 
-        10: 'OFPT_PACKET_IN',  # Async
-        11: 'OFPT_FLOW_REMOVED',  # Async
-        12: 'OFPT_PORT_STATUS',  # Async
+        10: 'OFPT_PACKET_IN',
+        11: 'OFPT_FLOW_REMOVED',
+        12: 'OFPT_PORT_STATUS',
 
-        13: 'OFPT_PACKET_OUT',  # Controller -> Switch
-        14: 'OFPT_FLOW_MOD',  # Controller -> Switch
-        15: 'OFPT_PORT_MOD',  # Controller -> Switch
+        13: 'OFPT_PACKET_OUT',
+        14: 'OFPT_FLOW_MOD',
+        15: 'OFPT_PORT_MOD',
 
-        16: 'OFPT_STATS_REQUEST',  # Controller -> Switch
-        17: 'OFPT_STATS_REPLY',  # Controller -> Switch
+        16: 'OFPT_STATS_REQUEST',
+        17: 'OFPT_STATS_REPLY',
 
-        18: 'OFPT_BARRIER_REQUEST',  # Controller -> Switch
-        19: 'OFPT_BARRIER_REPLY',  # Controller -> Switch
+        18: 'OFPT_BARRIER_REQUEST',
+        19: 'OFPT_BARRIER_REPLY',
 
-        20: 'OFPT_QUEUE_GET_CONFIG_REQUEST',  # Controller -> Switch
-        21: 'OFPT_QUEUE_GET_CONFIG_REPLY',  # Controller -> Switch
+        20: 'OFPT_QUEUE_GET_CONFIG_REQUEST',
+        21: 'OFPT_QUEUE_GET_CONFIG_REPLY',
     }
 
-    if header in OF10_MSG_TYPES:
-        return OF10_MSG_TYPES[header]
+    if header in OF_MSG_TYPES:
+        return OF_MSG_TYPES[header]
     else:
         return "%d not present" % header
 
@@ -227,11 +227,21 @@ def _handle_PacketIn(event):
     Bytes to be sent to the Controller in each PacketIn payload
     default payload size is 128 B
 
+    pox matching conventions:
+        dt_xxx = datalink (MAC)
+        nw_xxx = network (IP)
+        tp_xxx = transmission port (TCP)
+        xxx can be src and dst
+
+    physical ports are specified by int while virtual port
+    are specified by symbolic name (eg: of.OFPP_FLOOD)
+
+    you can use event.ofp PacketIn payload as PacketOut payload
     """
     event_info(event)
 
-    all_ports = of.OFPP_FLOOD  # 65531
-    # log.debug("OFPP_FLOOD: %r" % all_ports)
+    ALL_PORTS = of.OFPP_FLOOD  # 65531
+    # log.debug("OFPP_FLOOD: %r" % ALL_PORTS)
 
     # parsed contains the openflow payload that usually is
     # the first part of the packet sent from host to s3
@@ -249,41 +259,47 @@ def _handle_PacketIn(event):
     dst_key = (event.connection, packet.dst)
     dst_port = table.get(dst_key)
 
-    # tell the switch to flood -> send a of_packet_out pkt
+    # tell the switch to flood -> send a packet_out pkt
     if dst_port is None:
-        # data is a reference to the event that called that function
-        of_packet_out = of.ofp_packet_out(data=event.ofp)
+        packet_out = of.ofp_packet_out()
+        packet_out.data = event.ofp  # reuse PacketIn payload as PacketOut payload
 
         # create a flood action
-        action = of.ofp_action_output(port=all_ports)
-        of_packet_out.actions.append(action)
+        action = of.ofp_action_output(port=ALL_PORTS)
+        packet_out.actions.append(action)
 
-        # send the of_packet_out
-        event.connection.send(of_packet_out)
+        # send the packet_out
+        event.connection.send(packet_out)
 
     # tell the switch two new rules -> send two flow_mod pkts
     else:
 
-        # first rule map PacketIn source mac to
         flow_mod = of.ofp_flow_mod()
 
-        # create matching rule
-        flow_mod.match.dl_src = packet.dst
-        flow_mod.match.dl_dst = packet.src
+        # flow_mod contains a match object that can be used to send
+        # rules to the switch
+        flow_mod.match.dl_src = packet.dst  # if packet comes from destination MAC
+        flow_mod.match.dl_dst = packet.src  # if packet destination is source MAC
 
-        # tell which port to use with those matching rules
-        action = of.ofp_action_output(port=event.port)
+        # define an action object to be appended to the actions list
+        # the action tell the switch to use event.port as output port
+        # event.port was the port on which the switch recieved the packet
+        # that generates the PackeIn
+        action = of.ofp_action_output(port=event.port)  # then forward packet to event.port
+
+        # flow mod contains a actions list that can be used
+        # to tell the switch what it shuld do in case of
+        # the rule is matched
         flow_mod.actions.append(action)
 
         event.connection.send(flow_mod)
 
-        # do the same inverting source and destinantion 
         flow_mod = of.ofp_flow_mod()
 
-        flow_mod.match.dl_src = packet.src
-        flow_mod.match.dl_dst = packet.dst
+        flow_mod.match.dl_src = packet.src  # if pacekt comes from source MAC
+        flow_mod.match.dl_dst = packet.dst  # if pacekt destination is destination MAC
 
-        action = of.ofp_action_output(port=dst_port)
+        action = of.ofp_action_output(port=dst_port)  # then forward packet to dst_port
         flow_mod.actions.append(action)
 
         event.connection.send(flow_mod)
@@ -344,19 +360,24 @@ def launch(std_flood_port=True):
 
     ./pox.py log.level --DEBUG l2_pairs --std_flood_port=False
 
-    :std_flood_port: flag to switch the port used to flood
-    used because of hw switch compatibility
+    of.OFPP_FLOOD forward packet to all ports except the one
+    from which the packet is coming in and the ones that are
+    setted with disabled flood (see OFPPC_NO_FLOOD)
+
+    of.OFPP_ALL forward packet to all ports except the one
+    from which the packet is coming.
+
 
     """
 
     log.info("running.")
 
     if std_flood_port:
-        all_ports = of.OFPP_ALL
-        # log.debug("OFPP_ALL port number=%s" % (all_ports))
+        ALL_PORTS = of.OFPP_ALL
+        # log.debug("OFPP_ALL port number=%s" % (ALL_PORTS))
     else:
-        all_ports = of.OFPP_FLOOD
-        # log.debug("OFPP_FLOOD port number=%s" % (all_ports))
+        ALL_PORTS = of.OFPP_FLOOD
+        # log.debug("OFPP_FLOOD port number=%s" % (ALL_PORTS))
 
     core.openflow.addListenerByName("PacketIn", _handle_PacketIn, priority=1)
     core.openflow.addListenerByName("ConnectionUp", _handle_ConnectionUp, priority=1)
