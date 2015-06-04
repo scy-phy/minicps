@@ -34,6 +34,8 @@ log = core.getLogger()
 #       check periodically the consistency of the static mapping quering the switches.
 #       add nicira self-learning capability to auto-proove consistency of the mapping
 #       blacklist arp spoofer
+#       add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
+#       and send flow modification on connection up and remove flows on connection down
 
 
 class ArpPoison(Event):
@@ -44,7 +46,7 @@ class ArpPoison(Event):
         Event.__init__(self)
 
 
-class AntiArpPosoning(object):
+class AntiArpPoison(object):
 
     """
     Class able to detect datapath ArpPoisoning
@@ -55,9 +57,9 @@ class AntiArpPosoning(object):
 
     def __init__(self, event, ip_to_mac, ips_port, flood_port ):
         """
-        blocking handlers: self._detect_arp_poison
+        blocking handlers: self._detect_arp_poison blocks PacketIn handling
         """
-        self.event = event
+
         self.connection = event.connection  # convenient reference
         self.connection._eventMixin_events.add(ArpPoison)
         self.ip_to_mac = ip_to_mac
@@ -70,6 +72,7 @@ class AntiArpPosoning(object):
         # connection_log = pformat(event.connection._eventMixin_events, indent=4)
         # log.debug("event.connection: %s" % connection_log)
 
+        self.connection.addListenerByName("ConnectionUp", self._handle_ConnectionUp, priority=1, once=False)
         self.connection.addListenerByName("PacketIn", self._detect_arp_poison, priority=1, once=False)
         self.connection.addListenerByName("PacketIn", self._handle_PacketIn, priority=0, once=False)
         self.connection.addListenerByName("ArpPoison", self._handle_ArpPoison, priority=1, once=False)
@@ -86,7 +89,20 @@ class AntiArpPosoning(object):
         """
         Flood a packet 
         """
-        pass
+        flood_port = self.flood_port
+        packet = event.parsed
+        log.debug("flood: dataptath %i: %s -> %s" % (event.dpid, packet.src, packet.dst))
+
+        msg = of.ofp_packet_out()
+        action = of.ofp_action_output(port=flood_port)
+        msg.actions.append(action)
+
+        msg.data = event.ofp  # PacketOut payload in the same as PacketIn
+        log.debug(str(msg.in_port))
+        msg.in_port = event.port
+        log.debug(str(msg.in_port))
+
+        self.connection.send(msg)
 
 
     def arp_detector_1(self, event):
@@ -150,27 +166,34 @@ class AntiArpPosoning(object):
         """
         Use it to update other switches
         """
-        log.info("_handle_ArpPoison: %d" % self.event.dpid)
+        log.info("_handle_ArpPoison: %d" % event.dpid)
 
-        pass
         # ap_handler_1(event)
         # ap_handler_2(event)
 
 
+    def _handle_ConnectionUp(self, event):
+        """
+        TODO: send flowmods to statically init the switch
+        """
+        log.info("_handle_ConnectionUp: %d" % event.dpid)
+
+
     def _handle_ConnectionDown(self, event):
         """
-        TODO
+        TODO: remove all flow from the switch
         """
-        pass
+        log.info("_handle_ConnectionDown: %d" % event.dpid)
 
 
     def _handle_PacketIn(self, event):
         """
         Std PacketIn handling
         """
-        log.info("_handle_PacketIn: %d" % self.event.dpid)
+        log.info("_handle_PacketIn: %d" % event.dpid)
 
-        # if multicast:
+        self.flood(event)
+        # if multicast: # dl_dst = ff:ff:ff:ff:ff:ff
         #     flood()
         # elif already_mapped:
         #     add_flow(source, destination)
@@ -211,7 +234,7 @@ def _init_static(event):
 
     init switch flooding and IPS ports
 
-    init AntiArpPosoning datapath interface
+    init AntiArpPoison datapath interface
 
     """
     log.info("_init_static: %d" % event.dpid)
@@ -224,7 +247,7 @@ def _init_static(event):
     ips_port = 4000  # used to redirect suspect traffic
     # timeout = 10  # sec, still NOT used
 
-    AntiArpPosoning(event, ip_to_mac, ips_port, flood_port)
+    AntiArpPoison(event, ip_to_mac, ips_port, flood_port)
 
 
 def launch(par=False):
