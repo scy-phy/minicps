@@ -42,8 +42,14 @@ log = core.getLogger()
 
 class ArpPoison(Event):
 
-    """ArpPoison event"""
+    """
+    By default core.openflow and connection can raise the same
+    set of events.
 
+    ArpPoison is added only to the connection obj set.
+    """
+
+    # TODO: Remove __init__
     def __init__(self):
         Event.__init__(self)
 
@@ -57,8 +63,7 @@ class AntiArpPoison(object):
     outside this class.
     """
 
-    # def __init__(self, event, ip_to_mac, mac_to_port, ips_port, flood_port ):
-    def __init__(self, event):
+    def __init__(self, connection):
         """
         blocking handlers: self._detect_arp_poison blocks PacketIn handling
 
@@ -66,20 +71,21 @@ class AntiArpPoison(object):
         raise one ConnectionUp event for each switch
         """
 
-        self.connection = event.connection  # convenient reference
+        self.connection = connection  # convenient reference
         self.connection._eventMixin_events.add(ArpPoison)
-        # self.ip_to_mac = ip_to_mac
-        # self.mac_to_port = mac_to_port
-        # self.ips_port = ips_port
-        # self.flood_port = flood_port
+
+        # connection_log = pformat(event.connection._eventMixin_events, indent=4)
+        # log.debug("connection obj can raise those events: %s" % connection_log)
 
         # once=True because core.openflow will raise 
-        core.openflow.addListenerByName("ConnectionUp", self._static_mapping, priority=1, once=True)
         core.openflow.addListenerByName("ConnectionUp", self._handle_ConnectionUp, priority=0, once=True)
 
+        self.connection.addListenerByName("PacketIn", self._static_mapping, priority=2, once=True)
         self.connection.addListenerByName("PacketIn", self._detect_arp_poison, priority=1, once=False)
         self.connection.addListenerByName("PacketIn", self._handle_PacketIn, priority=0, once=False)
+
         self.connection.addListenerByName("ArpPoison", self._handle_ArpPoison, priority=1, once=False)
+
         self.connection.addListenerByName("AggregateFlowStatsReceived", self._handle_AggregateFlowStatsReceived,
                 priority=1, once=False)
 
@@ -120,6 +126,7 @@ class AntiArpPoison(object):
         :stat_type: see of.OFPST_XXXXX int constants
         defaults to OFPST_AGGREGATE
         """
+        pass
         # msg = of.ofp_stats_request()
         # log.debug("request stat: %s %d" % (type(stat), state))
         # ofp_stats_request_log = pformat(msg.__dict__, indent=4)
@@ -128,7 +135,7 @@ class AntiArpPoison(object):
         # self.connection.send(msg)
 
 
-    def arp_detector_1(self, event):
+    def ap_detector_1(self, event):
         """
         Try to detect arp poisoning
 
@@ -139,7 +146,7 @@ class AntiArpPoison(object):
         return arp_poisoning
 
 
-    def arp_detector_2(self, event):
+    def ap_detector_2(self, event):
         """
         Try to detect arp poisoning
 
@@ -159,8 +166,8 @@ class AntiArpPoison(object):
         eg: PacketIn won't trigger _handle_PacketIn
         """	
 
-        arp_poisoning = self.arp_detector_1(event)
-        # arp_poisoning = self.arp_detector_2(event)
+        arp_poisoning = self.ap_detector_1(event)
+        # arp_poisoning = self.ap_detector_2(event)
 
         if arp_poisoning:
             self.connection.raiseEvent(ArpPoison)
@@ -195,36 +202,6 @@ class AntiArpPoison(object):
         # ap_handler_2(event)
 
 
-    def _static_mapping(self, event):
-        """
-        Listen once to ConnectionUp
-        """
-        log.info("_static_mapping: %d" % event.dpid)
-
-        self.ip_to_mac, self.mac_to_port = swat_map1()
-        self.flood_port = of.OFPP_FLOOD
-        # self.flood_port = of.OFPP_ALL
-        self.ips_port = 4000  # used to redirect suspect traffic
-        # self.timeout = 10  # sec, still NOT used
-
-        # debug attributes
-        aap_log = pformat(self.__dict__, indent=4)
-        log.debug("self.__dict__: %s" % aap_log)
-        # connection_log = pformat(event.connection._eventMixin_events, indent=4)
-        # log.debug("event.connection: %s" % connection_log)
-
-        # for mac, port in self.mac_to_port.items():
-        #     # log.debug("key: %s value: %s" % (mac, port))
-        #     msg = of.ofp_flow_mod()
-        #     msg.idle_timeout = of.OFP_FLOW_PERMANENT
-        #     msg.hard_timeout = of.OFP_FLOW_PERMANENT
-        #     msg.match.dl_dst = mac
-        #     action = of.ofp_action_output(port=port)  # then forward packet to port
-        #     msg.actions.append(action)
-        #     self.connection.send(msg)
-        #     time.sleep(0.5)
-
-
     def _handle_ConnectionUp(self, event):
         """
         send flowmods to statically init the switch with
@@ -243,11 +220,50 @@ class AntiArpPoison(object):
         log.info("_handle_ConnectionDown: %d" % event.dpid)
 
 
+    def _static_mapping(self, event):
+        """
+        special handler for PacketIn
+        add static mapping attribute to AntiArpPoison class
+        init switch flooding and IPS ports
+        TODO: send flow_mod related to static mapping (proactive) 
+        """
+        log.info("_static_mapping: %d" % event.dpid)
+
+        self.ip_to_mac, self.mac_to_port = swat_map1()
+        self.flood_port = of.OFPP_FLOOD
+        # self.flood_port = of.OFPP_ALL
+        self.ips_port = 4000  # used to redirect suspect traffic
+        # self.timeout = 10  # sec, still NOT used
+
+        # debug attributes
+        # aap_log = pformat(self.__dict__, indent=4)
+        # log.debug("self.__dict__: %s" % aap_log)
+
+        # self.connection.send( of.ofp_flow_mod ( action=of.ofp_action_output(port=2),
+        #                                         match = of.ofp_match( dl_dst = 'ff:ff:ff:ff:ff:ff')))
+
+        # for mac, port in self.mac_to_port.items():
+        #     # log.debug("key: %s value: %s" % (mac, port))
+        #     msg = of.ofp_flow_mod()
+        #     msg.idle_timeout = of.OFP_FLOW_PERMANENT
+        #     msg.hard_timeout = of.OFP_FLOW_PERMANENT
+        #     # msg.match.dl_type = 0x800  # match only IP packets
+        #     msg.match.dl_dst = mac
+        #     action = of.ofp_action_output(port=port)  # then forward packet to port
+        #     msg.actions.append(action)
+        #     self.connection.send(msg)
+        #     time.sleep(2)
+                                                                          
+        return EventHalt
+
+
     def _handle_PacketIn(self, event):
         """
         Std PacketIn handling
         """
         log.info("_handle_PacketIn: %d" % event.dpid)
+
+        pass
 
         # self.flood(event)
         # if multicast: # dl_dst = ff:ff:ff:ff:ff:ff
@@ -309,29 +325,28 @@ def swat_map1():
 
 def _init_datapath(event):
     """
-    Create a static mapping (proactive) 
-
-    init switch flooding and IPS ports
-
-    init AntiArpPoison datapath interface
-
+    special handler to init one AntiArpPoison obj
+    for each new datapath.
     """
-    log.info("_init_static: %d" % event.dpid)
-    AntiArpPoison(event)
 
-    # ip_to_mac, mac_to_port = swat_map1()
-    # flood_port = of.OFPP_FLOOD
-    # flood_port = of.OFPP_ALL
-    # ips_port = 4000  # used to redirect suspect traffic
-    # timeout = 10  # sec, still NOT used
-
-    # AntiArpPoison(event, ip_to_mac, mac_to_port, ips_port, flood_port)
+    AntiArpPoison(event.connection)
 
 
 def launch(par=False):
     """
     _init_static_mapping listens to each ConnectionUp event.
+
+    core.openflow raise ConnectionUp for each new datapath.
+
+    event represents messages from switch to the controller
+    and are managed using _handlers
+
+    connection obj manage messages from the controller to
+    the switch because it allows to send of messages.
+    
     """
 
-    # core.openflow.addListenerByName("ConnectionUp", _init_static, priority=5)
+    # nexus_log = pformat(core.openflow._eventMixin_events, indent=4)
+    # log.debug("core.openflow obj can raise those events: %s" % nexus_log)
+
     core.openflow.addListenerByName("ConnectionUp", _init_datapath, priority=2)
