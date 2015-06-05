@@ -31,7 +31,7 @@ def test_EthStar():
     raise SkipTest
 
     topo = EthStar(n=6)
-    net = Mininet(topo)  # TODO: subclass Mininet with Minicps and replace it
+    net = Mininet(topo, listenPort=c.OF_MISC['switch_debug_port'])  # TODO: subclass Mininet with Minicps and replace it
     net.start()
 
     plc1, plc2 = net.get('plc1', 'plc2')  # get host obj reference by name
@@ -65,7 +65,7 @@ def test_L3EthStarBuild():
     raise SkipTest
 
     topo = L3EthStar()
-    net = Mininet(topo=topo, link=TCLink)
+    net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     CLI(net)
@@ -90,7 +90,7 @@ def test_L3EthStarEnip():
     open(c.TEMP_DIR+'/l3/cpppoclient.err', 'w').close()
 
     topo = L3EthStar()
-    net = Mininet(topo=topo, link=TCLink)
+    net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     plc1, workstn = net.get('plc1', 'workstn')
@@ -115,7 +115,7 @@ def test_L3EthStarArpMitm():
     open(c.TEMP_DIR+'/l3/plc1arppoisoning.out', 'w').close()
 
     topo = L3EthStar()
-    net = Mininet(topo=topo, link=TCLink)
+    net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     plc1, plc2, plc3 = net.get('plc1', 'plc2', 'plc3')
@@ -160,7 +160,7 @@ def test_L3EthStarAttackArpEnip():
     # net = Mininet(topo=topo, link=TCLink)
     # logger.info("started mininet default controller")
 
-    net = Mininet(topo=topo, link=TCLink, controller=None)
+    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
     net.addController( 'c0',
             controller=RemoteController,
             ip='127.0.0.1',

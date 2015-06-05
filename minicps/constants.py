@@ -36,6 +36,10 @@ import os
 
 POX_PATH='~/'
 
+POX = {
+    './pox.py openflow.of_01 --port=6633 --address=127.0.0.1 log.level --DEBUG swat_controller',
+}
+
 def _pox_opts(components, info_level, logfile_opts,
         log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
 
@@ -91,6 +95,7 @@ OF_MISC = {
     'user_switch': 'user',
     'kernel_switch': 'ovsk',
     'controller_port': 6633,
+    'switch_debug_port': 6634,
     'flood_port': 65531,
 }
 
