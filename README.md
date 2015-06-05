@@ -44,7 +44,7 @@ Instruction taken from [here](https://github.com/mininet/mininet/issues/454).
 ## Testing ##
 
 
-You can intentionally skipe a particular test adding/uncommenting `raise SkipTest`.
+You can intentionally skip a particular test adding/uncommenting `raise SkipTest`.
 You can see skipped test summary in the nosetest output.
 
 To run a single test whitin a script use `/path/to/test:test_name` (witouth parenthesis).
