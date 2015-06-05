@@ -33,7 +33,7 @@ def test_L3EthStarMapping():
     # raise SkipTest
 
     topo = L3EthStar()
-    net = Mininet(topo=topo, link=TCLink)
+    net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     # TODO: add log info

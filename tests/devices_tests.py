@@ -39,7 +39,7 @@ def test_POXL2Pairs():
 
     topo = L3EthStar()
     controller = POXL2Pairs
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     CLI(net)
@@ -55,7 +55,7 @@ def test_RemoteController():
     # raise SkipTest
 
     topo = L3EthStarAttack()
-    net = Mininet( topo=topo, controller=None, link=TCLink)
+    net = Mininet( topo=topo, controller=None, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.addController( 'c0',
             controller=RemoteController,
             ip='127.0.0.1',
@@ -77,7 +77,7 @@ def test_POXProva():
 
     topo = L3EthStar()
     controller = POXProva
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     CLI(net)
@@ -93,7 +93,7 @@ def test_POXAntiArpPoison():
 
     topo = L3EthStar()
     controller = POXAntiArpPoison
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -121,7 +121,7 @@ def test_POXL2PairsRtt():
 
     topo = L3EthStar()
     controller = POXL2Pairs
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -147,7 +147,7 @@ def test_POXL2LearningRtt():
 
     topo = L3EthStar()
     controller = POXL2Learning
-    net = Mininet(topo=topo, controller=controller, link=TCLink)
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -162,5 +162,3 @@ def test_POXL2LearningRtt():
     # CLI(net)
 
     net.stop()
-
-
