@@ -44,8 +44,8 @@ args = parser.parse_args()
 print "pox path is: %s" % args.pox
 print "minicps path is: %s" % args.minicps
 
-choice = raw_input('type [ok] to confirm: ')
-if choice != 'ok':
+choice = raw_input('please confirm: [Yn]')
+if choice == 'n' or choice == 'no':
     print "Abort init.py"
 else:
     TARGET = '%s/scripts/pox' % args.minicps
