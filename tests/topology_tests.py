@@ -152,12 +152,12 @@ def test_L3EthStarAttackArpEnip():
     can be used to mitigate ARP poisoning.
 
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
 
     # built-in mininet controller
-    # net = Mininet(topo=topo, link=TCLink)
+    # net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     # logger.info("started mininet default controller")
 
     net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
@@ -175,6 +175,9 @@ def test_L3EthStarAttackArpEnip():
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
     # assert(type(plc1.IP())==str)
 
+    logger.info("pre-arp poisoning phase (eg open wireshark)")
+    CLI(net)
+
     # PASSIVE remote ARP poisoning
     target_ip1 = plc1.IP()
     target_ip2 = hmi.IP()
@@ -187,7 +190,7 @@ def test_L3EthStarAttackArpEnip():
     # enip communication btw plc1 server and hmi client
     # TODO: work with multiple realistic tags
 
-    logger.info("passive remote ARP poisoning mounted")
+    logger.info("attacker arp poisoned hmi and plc1")
     CLI(net)
 
     taglist = 'pump=INT[10]'
@@ -206,5 +209,79 @@ def test_L3EthStarAttackArpEnip():
 
     logger.info("ENIP traffic from hmi to plc1 generated")
     CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarAttackDoubleAp():
+    """
+    plc2 ARP poison plc3 and plc4 (passive internal)
+    swat external attacker ARP poison plc1 and hmi (passive external)
+
+    cpppo is used to simulate enip client/server
+    
+    remote controller (eg: pox) 
+    can be used to mitigate ARP poisoning.
+
+    """
+    # raise SkipTest
+
+    topo = L3EthStarAttack()
+
+    # net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+    # logger.info("started mininet default controller")
+
+    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+    net.addController( 'c0',
+            controller=RemoteController,
+            ip='127.0.0.1',
+            port=c.OF_MISC['controller_port'] )
+    logger.info("started remote controller")
+
+    net.start()
+    plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
+    plc2, plc3, plc4 = net.get('plc2', 'plc3', 'plc4')
+
+    logger.info("pre-arp poisoning phase (eg open wireshark)")
+    CLI(net)
+
+    # PASSIVE remote ARP poisoning
+    target_ip1 = plc1.IP()
+    target_ip2 = hmi.IP()
+    attacker_interface = 'attacker-eth0'
+    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % (
+            target_ip1,
+            target_ip2, attacker_interface)
+    attacker.cmd(attacker_cmd)
+    logger.info("attacker arp poisoned hmi and plc1")
+
+    target_ip1 = plc3.IP()
+    target_ip2 = plc4.IP()
+    attacker_interface = 'plc2-eth0'
+    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % (
+            target_ip1,
+            target_ip2, attacker_interface)
+    plc2.cmd(attacker_cmd)
+    logger.info("plc2 arp poisoned plc3 and plc4")
+
+    CLI(net)
+
+    # taglist = 'pump=INT[10]'
+    # server_cmd = "./scripts/cpppo/server.sh %s %s %s %s" % (
+    #         './temp/workshop/cppposerver.err',
+    #         plc1.IP(),
+    #         taglist,
+    #         './temp/workshop/cppposerver.out')
+    # plc1.cmd(server_cmd)
+    # client_cmd = "./scripts/cpppo/client.sh %s %s %s %s" % (
+    #         './temp/workshop/cpppoclient.err',
+    #         plc1.IP(),
+    #         'pump[0]=0',
+    #         './temp/workshop/cpppoclient.out')
+    # hmi.cmd(client_cmd)
+
+    # logger.info("ENIP traffic from hmi to plc1 generated")
+    # CLI(net)
 
     net.stop()
