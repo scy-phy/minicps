@@ -20,6 +20,7 @@ eg3: reverse MITM attack using the attacker as a target and a hidden node as is 
 
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
+import pox.lib.packet as pkt
 from pox.lib.recoco import Timer
 from pox.lib.util import dpidToStr
 from pox.lib.addresses import IPAddr, EthAddr
@@ -70,10 +71,13 @@ class AntiArpPoison(object):
 
         ConnectionUp handler are called only once because core.openflow will
         raise one ConnectionUp event for each switch
+
+        ip_to_mac and mac_to_port are used for dynamic (reactive) mapping.
         """
 
         self.connection = connection  # convenient reference
         self.connection._eventMixin_events.add(ArpPoison)
+
         self.ip_to_mac = {}
         self.mac_to_port = {}
 
@@ -175,6 +179,8 @@ class AntiArpPoison(object):
     def get_dst_addresses(self, packet):
         """
         :returns: ipsrc and macsrc as str
+
+        TODO: manage 00:00:00:00:00:00 MAC
         """
         arp = packet.find('arp')
         if arp is not None:
@@ -191,41 +197,67 @@ class AntiArpPoison(object):
         # log.debug("macsrc: %s" % (macsrc))
 
         if macdst == '00:00:00:00:00:00':
-            print packet.__dict__
+            log.debug(packet.__dict__)
 
         return ipdst, macdst
 
 
-    def ap_detector_1(self, ipsrc, macsrc):
+    def ap_detect_arp_request(self, event, packet):
         """
-        Try to detect internal and external arp poisoning
+        Try to detect ap from an arp_request package
 
+        Usually the attacker send some arp_request to
+        its target. Notice that internal arp spoofing
+        cannot be detected in this case
+
+        :event: TODO
+        :packet: TODO
+        :returns: TODO
+
+        """
+        pass
+        # print packet.payload
+
+
+    def ap_detect_arp_reply(self, event, packet):
+        """
+        Try to detect ap from an arp_reply package
+
+        Usually the attacker send periodically misleading arp
+        reply to target hosts.
+
+        :event: use to retrieve information about the datapath
+        :packet: arp reply payload
         :returns: flag
+
         """
+        sender_ip = str(packet.payload.protosrc)
+        sender_mac = str(packet.payload.hwsrc)
 
-        if (ipsrc in self.static_ip_to_mac) and (self.static_ip_to_mac[ipsrc] != macsrc):
-            log.warning("Internal arp spoofing: %s IP tries to impersonate %s MAC device" % (
-                ipsrc, macsrc))
-            return True
+        if (sender_ip in self.ip_to_mac):
 
-        elif (ipsrc not in self.static_ip_to_mac) and (macsrc in self.static_ip_to_mac.values()):
-            log.warning("External arp spoofing: %s IP tries to impersonate %s MAC device" % (
-                ipsrc, macsrc))
-            return True
+            # Internal attack
 
-        else:
-            return False
+            if sender_mac != self.ip_to_mac[sender_ip]:
 
+                # Internal attack
+                if sender_mac in self.ip_to_mac.values():
+                    for key, value in self.ip_to_mac.items():
+                        if value == sender_mac:
+                            attacker_ip = key
+                            break
+                    log.warning("internal ap detected on device %i: %s MAC with %s IP tries to impersonate %s IP wirh %s MAC" % (
+                        event.dpid, sender_mac, attacker_ip, sender_ip, self.static_ip_to_mac[sender_ip]))
+                    return True
 
-    def ap_detector_2(self, event):
-        """
-        Try to detect arp poisoning
+                # External attack
+                else:
+                    log.warning("external ap detected on device %i: %s MAC tries to impersonate %s IP wirh %s MAC" % (
+                        event.dpid, sender_mac, sender_ip, self.static_ip_to_mac[sender_ip]))
 
-        :returns: flag
-        """
-        arp_poisoning = False
+                    return True
 
-        return arp_poisoning
+        return False
 
 
     def ap_handler_1(self, event):
@@ -249,14 +281,15 @@ class AntiArpPoison(object):
     def _static_mapping(self, event):
         """
         special handler for PacketIn
-        add static mapping attribute to AntiArpPoison class
+        add static mapping attributes to AntiArpPoison class
         init switch flooding and IPS ports
         TODO: send flow_mod related to static mapping (proactive) 
         """
         log.info("_static_mapping: %d" % self.connection.dpid)
 
         # TODO: use static_mac_to_port to premap switches
-        self.static_ip_to_mac, self.static_mac_to_port = swat_map1()
+        self.static_ip_to_mac = swat_ip_map_1()
+        self.ip_to_mac = swat_ip_map_1()
 
         self.flood_port = of.OFPP_FLOOD
         # self.flood_port = of.OFPP_ALL
@@ -302,6 +335,9 @@ class AntiArpPoison(object):
         and ArpPoison event and block lower priority
         event handling chain.
 
+        packet obj contains a type int attribute and
+        a series of CONST_TYPE attacched to identify it
+
         eg: PacketIn won't trigger _handle_PacketIn
         """	
 
@@ -310,13 +346,18 @@ class AntiArpPoison(object):
             log.warning("Ignoring incomplete packet")
             return
 
-        ipsrc, macsrc = self.get_src_addresses(packet)
-
-        arp_poisoning = self.ap_detector_1(ipsrc, macsrc)
-        # arp_poisoning = self.ap_detector_2(event)
+        arp_poisoning = False
+        if packet.type == packet.ARP_TYPE:
+            if packet.payload.opcode == pkt.arp.REQUEST:
+                arp_poisoning = self.ap_detect_arp_request(event, packet)
+            elif packet.payload.opcode == pkt.arp.REPLY:
+                arp_poisoning = self.ap_detect_arp_reply(event, packet)
+            else:
+                pass
 
         if arp_poisoning:
             self.connection.raiseEvent(ArpPoison)
+            log.warning("%i: Halting handling chain." % event.dpid)
             return EventHalt
         else:
             pass
@@ -422,14 +463,13 @@ class AntiArpPoison(object):
         log.info("_handle_ConnectionDown: %d" % self.connection.dpid)
 
 
-def swat_map1():
+def swat_ip_map_1():
     """
     six plcs and hmi.
     
-    pox uses underscore MAC representation
     """
 
-    static_ip_to_mac = {
+    ip_to_mac = {
         '192.168.1.10':  '00:1d:9c:c7:b0:70',
         '192.168.1.20':  '00:1d:9c:c8:bc:46',
         '192.168.1.30':  '00:1d:9c:c8:bd:f2',
@@ -439,7 +479,17 @@ def swat_map1():
         '192.168.1.100': '00:1d:9c:c6:72:e8',
     }
 
-    static_mac_to_port = {
+    return ip_to_mac
+
+
+def swat_port_map_1():
+    """
+    six plcs and hmi
+
+    pox uses underscore MAC representation
+    """
+
+    mac_to_port = {
         '00:1d:9c:c7:b0:70': 1,
         '00:1d:9c:c8:bc:46': 2,
         '00:1d:9c:c8:bd:f2': 3,
@@ -449,7 +499,7 @@ def swat_map1():
         '00:1d:9c:c6:72:e8': 7,
     }
 
-    return static_ip_to_mac, static_mac_to_port
+    return mac_to_port
 
 
 def _init_datapath(event):
