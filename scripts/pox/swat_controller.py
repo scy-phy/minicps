@@ -31,13 +31,14 @@ import time
 log = core.getLogger()
 
 
-# TODO:
-#       check periodically the consistency of the static mapping quering the switches.
-#       add nicira self-learning capability to auto-proove consistency of the mapping
-#       blacklist arp spoofer
-#       add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
-#       and send flow modification on connection up and remove flows on connection down
-#       add timers to control DoS
+# TODO S:
+       # check periodically the consistency of the static mapping quering the switches.
+       # add nicira self-learning capability to auto-proove consistency of the mapping
+       # blacklist arp spoofer
+       # add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
+       # and send flow modification on connection up and remove flows on connection down
+       # add timers to control DoS
+       # get rid of ArpPoison event?
 
 
 class ArpPoison(Event):
@@ -73,14 +74,15 @@ class AntiArpPoison(object):
 
         self.connection = connection  # convenient reference
         self.connection._eventMixin_events.add(ArpPoison)
+        self.ip_to_mac = {}
+        self.mac_to_port = {}
 
         # connection_log = pformat(event.connection._eventMixin_events, indent=4)
         # log.debug("connection obj can raise those events: %s" % connection_log)
 
-        # once=True because core.openflow will raise 
+        core.openflow.addListenerByName("ConnectionUp", self._static_mapping, priority=2, once=True)
         core.openflow.addListenerByName("ConnectionUp", self._handle_ConnectionUp, priority=0, once=True)
 
-        self.connection.addListenerByName("PacketIn", self._static_mapping, priority=2, once=True)
         self.connection.addListenerByName("PacketIn", self._detect_arp_poison, priority=1, once=False)
         self.connection.addListenerByName("PacketIn", self._handle_PacketIn, priority=0, once=False)
 
@@ -90,11 +92,27 @@ class AntiArpPoison(object):
                 priority=1, once=False)
 
 
-    def drop(self, event):
+# HELPER METHODS
+    def drop(self, event, duration):
         """
-        Drop a packet
+        Drop a packet after duration 
         """
-        pass
+
+        if duration is not None:
+            if not isinstance(duration, tuple):  # idle_timeout, hard_timeout
+                duration = (duration, duration)
+            msg = of.ofp_flow_mod()
+            msg.match = of.ofp_match.from_packet(packet)
+            msg.idle_timeout = duration[0]
+            msg.hard_timeout = duration[1]
+            msg.buffer_id = event.ofp.buffer_id
+            msg.in_port = event.port
+            self.connection.send(msg)
+        elif event.ofp.buffer_id is not None:
+            msg = of.ofp_packet_out()
+            msg.buffer_id = event.ofp.buffer_id
+            msg.in_port = event.port
+            self,connection.send(msg)
 
 
     def flood(self, event):
@@ -103,16 +121,14 @@ class AntiArpPoison(object):
         """
         flood_port = self.flood_port
         packet = event.parsed
-        log.debug("flood: dataptath %i: %s -> %s" % (event.dpid, packet.src, packet.dst))
 
         msg = of.ofp_packet_out()
         action = of.ofp_action_output(port=flood_port)
         msg.actions.append(action)
 
         msg.data = event.ofp  # PacketOut payload in the same as PacketIn
-        log.debug(str(msg.in_port))
         msg.in_port = event.port
-        log.debug(str(msg.in_port))
+        # log.debug(str(msg.in_port))
 
         self.connection.send(msg)
 
@@ -135,15 +151,70 @@ class AntiArpPoison(object):
         # self.connection.send(msg)
 
 
-    def ap_detector_1(self, event):
+    def get_src_addresses(self, packet):
         """
-        Try to detect arp poisoning
+        :returns: ipsrc and macsrc as str
+        """
+        arp = packet.find('arp')
+        if arp is not None:
+            ipsrc=str(arp.protosrc)
+            macsrc=str(arp.hwsrc)
+
+        else:
+            ip = packet.find('ipv4')
+            if ip is not None:
+                ipsrc=str(ip.srcip)
+                macsrc=str(packet.src)
+
+        # log.debug("ipsrc: %s" % (ipsrc))
+        # log.debug("macsrc: %s" % (macsrc))
+
+        return ipsrc, macsrc
+
+
+    def get_dst_addresses(self, packet):
+        """
+        :returns: ipsrc and macsrc as str
+        """
+        arp = packet.find('arp')
+        if arp is not None:
+            ipdst=str(arp.protodst)
+            macdst=str(arp.hwdst)
+
+        else:
+            ip = packet.find('ipv4')
+            if ip is not None:
+                ipdst=str(ip.dstip)
+                macdst=str(packet.dst)
+
+        # log.debug("ipsrc: %s" % (ipsrc))
+        # log.debug("macsrc: %s" % (macsrc))
+
+        if macdst == '00:00:00:00:00:00':
+            print packet.__dict__
+
+        return ipdst, macdst
+
+
+    def ap_detector_1(self, ipsrc, macsrc):
+        """
+        Try to detect internal and external arp poisoning
 
         :returns: flag
         """
-        arp_poisoning = False
 
-        return arp_poisoning
+        if (ipsrc in self.static_ip_to_mac) and (self.static_ip_to_mac[ipsrc] != macsrc):
+            log.warning("Internal arp spoofing: %s IP tries to impersonate %s MAC device" % (
+                ipsrc, macsrc))
+            return True
+
+        elif (ipsrc not in self.static_ip_to_mac) and (macsrc in self.static_ip_to_mac.values()):
+            log.warning("External arp spoofing: %s IP tries to impersonate %s MAC device" % (
+                ipsrc, macsrc))
+            return True
+
+        else:
+            return False
 
 
     def ap_detector_2(self, event):
@@ -155,25 +226,6 @@ class AntiArpPoison(object):
         arp_poisoning = False
 
         return arp_poisoning
-
-
-    def _detect_arp_poison(self, event):
-        """
-        if event contains arp poisoning raise
-        and ArpPoison event and block lower priority
-        event handling chain.
-
-        eg: PacketIn won't trigger _handle_PacketIn
-        """	
-
-        arp_poisoning = self.ap_detector_1(event)
-        # arp_poisoning = self.ap_detector_2(event)
-
-        if arp_poisoning:
-            self.connection.raiseEvent(ArpPoison)
-            return EventHalt
-        else:
-            pass
 
 
     def ap_handler_1(self, event):
@@ -192,33 +244,7 @@ class AntiArpPoison(object):
         pass
 
 
-    def _handle_ArpPoison(self, event):
-        """
-        Use it to update other switches
-        """
-        log.warning("_handle_ArpPoison: %d" % event.dpid)
-
-        # ap_handler_1(event)
-        # ap_handler_2(event)
-
-
-    def _handle_ConnectionUp(self, event):
-        """
-        send flowmods to statically init the switch with
-        permanent flows.
-
-        mapping is naive port 1 is used to send pkt to plc1
-        ecc ...
-        """
-        log.info("_handle_ConnectionUp: %d" % event.dpid)
-
-
-    def _handle_ConnectionDown(self, event):
-        """
-        TODO: remove all flow from the switch
-        """
-        log.info("_handle_ConnectionDown: %d" % event.dpid)
-
+# HANDLERS
 
     def _static_mapping(self, event):
         """
@@ -227,12 +253,16 @@ class AntiArpPoison(object):
         init switch flooding and IPS ports
         TODO: send flow_mod related to static mapping (proactive) 
         """
-        log.info("_static_mapping: %d" % event.dpid)
+        log.info("_static_mapping: %d" % self.connection.dpid)
 
-        self.ip_to_mac, self.mac_to_port = swat_map1()
+        # TODO: use static_mac_to_port to premap switches
+        self.static_ip_to_mac, self.static_mac_to_port = swat_map1()
+
         self.flood_port = of.OFPP_FLOOD
         # self.flood_port = of.OFPP_ALL
+
         self.ips_port = 4000  # used to redirect suspect traffic
+
         # self.timeout = 10  # sec, still NOT used
 
         # debug attributes
@@ -253,44 +283,143 @@ class AntiArpPoison(object):
         #     msg.actions.append(action)
         #     self.connection.send(msg)
         #     time.sleep(2)
-                                                                          
-        return EventHalt
+
+
+    def _handle_ConnectionUp(self, event):
+        """
+        send flowmods to statically init the switch with
+        permanent flows.
+
+        mapping is naive port 1 is used to send pkt to plc1
+        ecc ...
+        """
+        log.info("_handle_ConnectionUp: %d" % self.connection.dpid)
+
+
+    def _detect_arp_poison(self, event):
+        """
+        if event contains arp poisoning raise
+        and ArpPoison event and block lower priority
+        event handling chain.
+
+        eg: PacketIn won't trigger _handle_PacketIn
+        """	
+
+        packet = event.parsed
+        if not packet.parsed:
+            log.warning("Ignoring incomplete packet")
+            return
+
+        ipsrc, macsrc = self.get_src_addresses(packet)
+
+        arp_poisoning = self.ap_detector_1(ipsrc, macsrc)
+        # arp_poisoning = self.ap_detector_2(event)
+
+        if arp_poisoning:
+            self.connection.raiseEvent(ArpPoison)
+            return EventHalt
+        else:
+            pass
+
+
+    def _handle_ArpPoison(self, event):
+        """
+        Use it to update other switches
+        """
+        log.warning("_handle_ArpPoison: %d" % self.connection.dpid)
+
+        # ap_handler_1(event)
+        # ap_handler_2(event)
 
 
     def _handle_PacketIn(self, event):
         """
         Std PacketIn handling
+
+        With flow_mod everything that is unspecified will
+        be wildcarded (match everything)
+        Use CIDR notation to match subnets (partial IP fileds)
+
+        flow_mod matching rules are created using information
+        from the packet_in payload
+
         """
-        log.info("_handle_PacketIn: %d" % event.dpid)
+        # log.info("_handle_PacketIn: %d" % self.connection.dpid)
 
-        pass
+        packet = event.parsed
+        if not packet.parsed:
+            log.warning("Ignoring incomplete packet")
+            return
 
-        # self.flood(event)
-        # if multicast: # dl_dst = ff:ff:ff:ff:ff:ff
-        #     flood()
-        # elif already_mapped:
-        #     add_flow(source, destination)
-        #     add_flow(destination, source)
-        # else:
-        #     save_new_mapping
-        #     flood()
+        ipsrc, macsrc = self.get_src_addresses(packet)
+        ipdst, macdst = self.get_dst_addresses(packet)
+
+        self.mac_to_port[macsrc] = event.port
+
+        if ipsrc not in self.ip_to_mac and ipsrc not in self.static_ip_to_mac:
+            self.ip_to_mac[ipsrc] = macsrc
+            log.info("New %s->%s pair" % (ipsrc, macsrc))
+
+        # ????
+        if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
+            drop(event, 0)
+
+        # Multicast
+        elif packet.dst.is_multicast:
+            log.debug("%i: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
+            self.flood(event)
+
+        # Unknown destination
+        elif macdst not in self.mac_to_port:
+            log.info("Port from %s unknown -- flooding" % (macdst))
+            self.flood(event)
+
+        # Flow_mod
+        else:
+            port = self.mac_to_port[macdst]
+
+            # don't want to forward one the same port from which the switch recieve the packet
+            if port == event.port:
+                log.warning("Same port for packet from %s -> %s on %s.%s.  Drop."
+                        % (packet.src, packet.dst, dpid_to_str(event.dpid), port))
+                drop(event, 0)
+            # add flow
+            else:
+                log.debug("installing flow for %s.%i -> %s.%i"
+                    % (packet.src, event.port, packet.dst, port))
+                msg = of.ofp_flow_mod()
+
+                msg.match = of.ofp_match.from_packet(packet, event.port)
+                msg.idle_timeout = 10  # sec
+                msg.hardTimeout = 30 # sec
+                action = of.ofp_action_output(port=port)
+                msg.actions.append(action)
+                msg.data = event.ofp  # use the same payload
+                self.connection.send(msg)
 
 
     def _handle_FlowRemoved(self, event):
         """
         TODO
         """
-        log.info("_handle_FlowRemoved: %d" % event.dpid)
+        log.info("_handle_FlowRemoved: %d" % self.connection.dpid)
 
 
     def _handle_AggregateFlowStatsReceived(self, event):
         """
         Print event.stats list content.
         """
-        log.info("_handle_AggregateFlowStatsReceived: %d" % event.dpid)
+        log.info("_handle_AggregateFlowStatsReceived: %d" % self.connection.dpid)
         
         for stat in event.stats:
             log.info("stat: %s" % stat)
+
+
+    def _handle_ConnectionDown(self, event):
+        """
+        TODO: remove all flow from the switch
+        """
+        log.info("_handle_ConnectionDown: %d" % self.connection.dpid)
 
 
 def swat_map1():
@@ -300,7 +429,7 @@ def swat_map1():
     pox uses underscore MAC representation
     """
 
-    ip_to_mac = {
+    static_ip_to_mac = {
         '192.168.1.10':  '00:1d:9c:c7:b0:70',
         '192.168.1.20':  '00:1d:9c:c8:bc:46',
         '192.168.1.30':  '00:1d:9c:c8:bd:f2',
@@ -310,7 +439,7 @@ def swat_map1():
         '192.168.1.100': '00:1d:9c:c6:72:e8',
     }
 
-    mac_to_port = {
+    static_mac_to_port = {
         '00:1d:9c:c7:b0:70': 1,
         '00:1d:9c:c8:bc:46': 2,
         '00:1d:9c:c8:bd:f2': 3,
@@ -320,7 +449,7 @@ def swat_map1():
         '00:1d:9c:c6:72:e8': 7,
     }
 
-    return ip_to_mac, mac_to_port
+    return static_ip_to_mac, static_mac_to_port
 
 
 def _init_datapath(event):
