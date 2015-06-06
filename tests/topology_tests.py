@@ -249,7 +249,7 @@ def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
     CLI(net)
 
     # enip communication between workstn server and other hosts client
-    # TODO: work with multiple realistic tags
+    # TODO: work with multiple realistic tags => set the ranges parameters ?
 
     # TODO: store the tags in an array
     # set the cpppo tags PUMP=INT[tag_range] BOOL=INT[tag_range]
@@ -267,14 +267,14 @@ def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
         tag2_type,
         tag2_range)
     # create a cpppo server on workstn with the 2 tags
-
-    server_cmd = "python -m cpppo.server.enip --print -vv -a %s %s > %s &" % (
+    # TODO: use python -m cpppo.enip.server to deal with the 2 flags problem ? Or send 2 different cip paquets (1 for pump 1 for bool) ?
+    server_cmd = "./scripts/cpppo/server_multiple_tags.sh %s %s %s" % (
+        './temp/workshop/cppposerver.err',
         workstn.IP(),
-        tags,
-        "./temp/workshop/cppposerver.out")
-    output = workstn.cmd(server_cmd)
-    logger.info(server_cmd + ' ' + output)
-    logger.info("ENIP server launched on workstn host, processing ENIP traffic...")
+        tags)
+
+    workstn.cmd(server_cmd)
+    logger.info("ENIP server launched on workstn host, processing ENIP traffic, please wait...")
 
     for i in range(nb_messages-1):
         for host in net.hosts:
