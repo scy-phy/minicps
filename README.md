@@ -43,15 +43,25 @@ Instruction taken from [here](https://github.com/mininet/mininet/issues/454).
 
 ## Testing ##
 
-
-You can intentionally skipe a particular test adding/uncommenting `raise SkipTest`.
+You can intentionally skip a particular test adding/uncommenting `raise SkipTest`.
 You can see skipped test summary in the nosetest output.
 
-To run a single test whitin a script use `/path/to/test:test_name` (witouth parenthesis).
+If you want to run all the tests contained in the `topology_tests` module, type:
+
+    # nosetests tests/topology_tests
+
+To run a single test whitin a script use:
+
+    # nosetests tests/topology_tests:test_name
 
 use `-s` opt to prevent nosetest to capture stdout.
+
 use `-v` opt to obtain a more verbose output.
+
 You can even generate coverage report (read `$ nosetests --help`).
+
+Every switch listens to `6634` default debugging port. You can change it via `OF_MISC` 
+dict in the constants module.
 
 ## Ettercap ##
 
@@ -81,6 +91,13 @@ then open a new terminal and type
 then open a browser and go to `localhost:8000` then visit the `_build/html` folder.
 
 *Please proofread it and report any issue.*
+
+## Misc ##
+
+TODO: add dependency graph
+
+Snakefood is a nice tool able to generate dependency graphs from Python source code. Take a look at
+[it](http://furius.ca/snakefood/doc/snakefood-doc.html#introduction)
 
 ## Links ##
 
