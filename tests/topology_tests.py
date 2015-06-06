@@ -140,7 +140,7 @@ def test_L3EthStarArpMitm():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@with_named_setup(setup_func, teardown_func_clear)
 def test_L3EthStarAttackArpEnip():
     """
     attacker ARP poison plc1 and hmi using ettercap. 
@@ -213,7 +213,7 @@ def test_L3EthStarAttackArpEnip():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@with_named_setup(setup_func, teardown_func_clear)
 def test_L3EthStarAttackDoubleAp():
     """
     plc2 ARP poison plc3 and plc4 (passive internal)
