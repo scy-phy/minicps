@@ -43,18 +43,17 @@ log = core.getLogger()
        # use class methods where necessary
 
 
-class ArpPoison(Event):
+# class ArpPoison(Event):
+#     """
+#     By default core.openflow and connection can raise the same
+#     set of events.
 
-    """
-    By default core.openflow and connection can raise the same
-    set of events.
+#     ArpPoison is added only to the connection obj set.
+#     """
 
-    ArpPoison is added only to the connection obj set.
-    """
-
-    # TODO: Remove __init__
-    def __init__(self):
-        Event.__init__(self)
+#     # TODO: Remove __init__
+#     def __init__(self):
+#         Event.__init__(self)
 
 
 class AntiArpPoison(object):
@@ -77,7 +76,7 @@ class AntiArpPoison(object):
         """
 
         self.connection = connection  # convenient reference
-        self.connection._eventMixin_events.add(ArpPoison)
+        # self.connection._eventMixin_events.add(ArpPoison)
 
         self.ip_to_mac = {}
         self.mac_to_port = {}
@@ -91,7 +90,7 @@ class AntiArpPoison(object):
         self.connection.addListenerByName("PacketIn", self._detect_arp_poison, priority=1, once=False)
         self.connection.addListenerByName("PacketIn", self._handle_PacketIn, priority=0, once=False)
 
-        self.connection.addListenerByName("ArpPoison", self._handle_ArpPoison, priority=1, once=False)
+        # self.connection.addListenerByName("ArpPoison", self._handle_ArpPoison, priority=1, once=False)
 
         self.connection.addListenerByName("AggregateFlowStatsReceived", self._handle_AggregateFlowStatsReceived,
                 priority=1, once=False)
@@ -225,6 +224,9 @@ class AntiArpPoison(object):
         if sender_mac not in self.ip_to_mac.values() or sender_ip not in self.ip_to_mac:
             log.warning("on device %i: new device with %s IP and %s MAC ask info about %s IP with %s MAC" % (
                 event.dpid, sender_ip, sender_mac, dst_ip, dst_mac))
+            return True
+
+        return False
 
 
     def ap_detect_arp_reply(self, event, packet):
@@ -262,13 +264,12 @@ class AntiArpPoison(object):
                 else:
                     log.warning("external ap detected on device %i: %s MAC tries to impersonate %s IP with %s MAC" % (
                         event.dpid, sender_mac, sender_ip, self.static_ip_to_mac[sender_ip]))
-
                     return True
 
         return False
 
 
-    def ap_handler_1(self, event):
+    def redirect_to_ips(self, event):
         """
         redirect attacker traffic to IPS
         update all other switches
@@ -276,10 +277,18 @@ class AntiArpPoison(object):
         pass
 
 
-    def ap_handler_2(self, event):
+    def ban_host(self, event, duration):
         """
-        kick-out the attacker
-        update all other switches
+        send a flow_mod that ban a host
+        from the network
+        """
+        pass
+
+
+    def update_arp_caches(self, event):
+        """
+        send packet_out arp_reply to all
+        hosts to remap their arp caches
         """
         pass
 
@@ -357,27 +366,32 @@ class AntiArpPoison(object):
         arp_poisoning = False
         if packet.type == packet.ARP_TYPE:
             if packet.payload.opcode == pkt.arp.REQUEST:
-                arp_poisoning = self.ap_detect_arp_request(event, packet)
+                if self.ap_detect_arp_request(event, packet):
+                    self.ap_handle_arp_request(event, packet)
+                    log.warning("%i: Halting handling chain." % event.dpid)
+                    return EventHalt
+
             elif packet.payload.opcode == pkt.arp.REPLY:
-                arp_poisoning = self.ap_detect_arp_reply(event, packet)
+                if self.ap_detect_arp_reply(event, packet):
+                    self.ap_handle_arp_reply(event, packet)
+                    log.warning("%i: Halting handling chain." % event.dpid)
+                    return EventHalt
+
         # TODO: manage IPv4 packet
 
-        if arp_poisoning:
-            self.connection.raiseEvent(ArpPoison)
-            log.warning("%i: Halting handling chain." % event.dpid)
-            return EventHalt
-        else:
-            pass
 
-
-    def _handle_ArpPoison(self, event):
+    def ap_handle_arp_request(self, event, packet):
         """
-        Use it to update other switches
+        Handle ARP poisoning attempt detected from ARP request packets.
         """
-        log.warning("_handle_ArpPoison: %d" % self.connection.dpid)
+        log.warning("ap_handle_arp_request: %d" % self.connection.dpid)
 
-        # ap_handler_1(event)
-        # ap_handler_2(event)
+
+    def ap_handle_arp_reply(self, event, packet):
+        """
+        Handle ARP poisoning attempt detected from ARP reply packets.
+        """
+        log.warning("ap_handle_arp_reply: %d" % self.connection.dpid)
 
 
     def _handle_PacketIn(self, event):
