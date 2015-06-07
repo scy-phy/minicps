@@ -20,6 +20,8 @@ from minicps.constants import _mininet_functests, setup_func, teardown_func, tea
 
 from time import sleep
 
+import random
+
 import logging
 logger = logging.getLogger('minicps.topology')
 setLogLevel(c.TEST_LOG_LEVEL)
@@ -225,7 +227,7 @@ def test_L3EthStarAttackDoubleAp():
     can be used to mitigate ARP poisoning.
 
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
 
@@ -233,6 +235,8 @@ def test_L3EthStarAttackDoubleAp():
     # logger.info("started mininet default controller")
 
     net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+
+    # mininet remote controller
     net.addController( 'c0',
             controller=RemoteController,
             ip='127.0.0.1',
@@ -283,5 +287,92 @@ def test_L3EthStarAttackDoubleAp():
 
     # logger.info("ENIP traffic from hmi to plc1 generated")
     # CLI(net)
+
+    net.stop()
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
+    """
+    a L3EthStar topology with some basic cpppo traffic between plcs.
+    2 flags are used PUMP[INT] and BOOL[INT]
+
+    cpppo is used to simulate enip client/server    
+    """
+    # raise SkipTest
+
+    # use the L3EthStar topology
+    topo = L3EthStar()
+
+    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+
+    net.addController( 'c0',
+            controller=RemoteController,
+            ip='127.0.0.1',
+            port=c.OF_MISC['controller_port'] )
+    logger.info("started remote controller")
+
+    net.start()
+    workstn = net.get('workstn')
+
+    # starting capture use xterm workstn wireshark -k -i workstn-eth0&
+    logger.info("type the following command to see the traffic :")
+    logger.info("xterm "+ workstn.name)
+    logger.info("then on the xterm type :")
+    # TODO: automatically generate interface name
+    logger.info("wireshark -k -i " + workstn.name + "-eth0" + " &")
+    CLI(net)
+
+    # enip communication between workstn server and other hosts client
+    # TODO: work with multiple realistic tags => set the ranges parameters ?
+
+    # TODO: store the tags in an array
+    # set the cpppo tags PUMP=INT[tag_range] BOOL=INT[tag_range]
+    tag1_name = "PUMP"
+    tag1_type = "INT"
+    tag1_range = tag_range
+    tag2_name = "BOOL"
+    tag2_type = "INT"
+    tag2_range = tag_range
+    tags = "%s=%s[%d] %s=%s[%d]" % (
+        tag1_name,
+        tag1_type,
+        tag1_range,
+        tag2_name,
+        tag2_type,
+        tag2_range)
+    # create a cpppo server on workstn with the 2 tags
+    # TODO: use python -m cpppo.enip.server to deal with the 2 flags problem ? Or send 2 different cip paquets (1 for pump 1 for bool) ?
+    server_cmd = "./scripts/cpppo/server_multiple_tags.sh %s %s %s" % (
+        './temp/workshop/cppposerver.err',
+        workstn.IP(),
+        tags)
+
+    workstn.cmd(server_cmd)
+    logger.info("ENIP server launched on workstn host, processing ENIP traffic, please wait...")
+
+    for i in range(nb_messages-1):
+        for host in net.hosts:
+            if host.name != 'workstn':
+                # set the client tags
+                tag_i = random.randrange(0, tag_range)
+                tag1_value = random.randint(min, max)
+                tag2_value = random.randint(0,1)
+                # writing
+                tags = "%s[%d]=%d %s[%d]=%d" % (
+                    tag1_name,
+                    tag_i,
+                    tag1_value,
+                    tag2_name,
+                    tag_i,
+                    tag2_value)
+                # send them to the server workstn
+                client_cmd = "./scripts/cpppo/client_multiple_tags.sh %s %s %s" % (
+                    './temp/workshop/cpppoclient.err',
+                    workstn.IP(),
+                    tags)
+                host.cmd(client_cmd)
+    logger.info("ENIP traffic from generated, end of the test.")
+    CLI(net)
 
     net.stop()
