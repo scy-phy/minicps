@@ -40,6 +40,7 @@ log = core.getLogger()
        # and send flow modification on connection up and remove flows on connection down
        # add timers to control DoS
        # get rid of ArpPoison event?
+       # use class methods where necessary
 
 
 class ArpPoison(Event):
@@ -215,8 +216,15 @@ class AntiArpPoison(object):
         :returns: TODO
 
         """
-        pass
-        # print packet.payload
+        sender_ip = str(packet.payload.protosrc)
+        sender_mac = str(packet.payload.hwsrc)
+
+        dst_ip = str(packet.payload.protodst)
+        dst_mac = str(packet.payload.hwdst)
+    
+        if sender_mac not in self.ip_to_mac.values() or sender_ip not in self.ip_to_mac:
+            log.warning("on device %i: new device with %s IP and %s MAC ask info about %s IP with %s MAC" % (
+                event.dpid, sender_ip, sender_mac, dst_ip, dst_mac))
 
 
     def ap_detect_arp_reply(self, event, packet):
@@ -234,7 +242,7 @@ class AntiArpPoison(object):
         sender_ip = str(packet.payload.protosrc)
         sender_mac = str(packet.payload.hwsrc)
 
-        if (sender_ip in self.ip_to_mac):
+        if sender_ip in self.ip_to_mac:
 
             # Internal attack
 
@@ -246,13 +254,13 @@ class AntiArpPoison(object):
                         if value == sender_mac:
                             attacker_ip = key
                             break
-                    log.warning("internal ap detected on device %i: %s MAC with %s IP tries to impersonate %s IP wirh %s MAC" % (
+                    log.warning("internal ap detected on device %i: %s MAC with %s IP tries to impersonate %s IP with %s MAC" % (
                         event.dpid, sender_mac, attacker_ip, sender_ip, self.static_ip_to_mac[sender_ip]))
                     return True
 
                 # External attack
                 else:
-                    log.warning("external ap detected on device %i: %s MAC tries to impersonate %s IP wirh %s MAC" % (
+                    log.warning("external ap detected on device %i: %s MAC tries to impersonate %s IP with %s MAC" % (
                         event.dpid, sender_mac, sender_ip, self.static_ip_to_mac[sender_ip]))
 
                     return True
@@ -352,8 +360,7 @@ class AntiArpPoison(object):
                 arp_poisoning = self.ap_detect_arp_request(event, packet)
             elif packet.payload.opcode == pkt.arp.REPLY:
                 arp_poisoning = self.ap_detect_arp_reply(event, packet)
-            else:
-                pass
+        # TODO: manage IPv4 packet
 
         if arp_poisoning:
             self.connection.raiseEvent(ArpPoison)
@@ -392,6 +399,7 @@ class AntiArpPoison(object):
             log.warning("Ignoring incomplete packet")
             return
 
+        # TODO: get rid of these two helper method
         ipsrc, macsrc = self.get_src_addresses(packet)
         ipdst, macdst = self.get_dst_addresses(packet)
 
