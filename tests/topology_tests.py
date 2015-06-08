@@ -292,7 +292,7 @@ def test_L3EthStarAttackDoubleAp():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
+def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=False):
     """
     a L3EthStar topology with some basic cpppo traffic between plcs.
     2 flags are used PUMP[INT] and BOOL[INT]
@@ -313,66 +313,84 @@ def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
     logger.info("started remote controller")
 
     net.start()
-    workstn = net.get('workstn')
 
-    # starting capture use xterm workstn wireshark -k -i workstn-eth0&
-    logger.info("type the following command to see the traffic :")
-    logger.info("xterm "+ workstn.name)
-    logger.info("then on the xterm type :")
-    # TODO: automatically generate interface name
-    logger.info("wireshark -k -i " + workstn.name + "-eth0" + " &")
+    # starting capture by user input
+    hosts_names = ""
+    for host in net.hosts:
+        hosts_names += host.name + " "
+    logger.info("type the following command to see the traffic on a host: " + "xterm <host name>")
+    logger.info("Hosts available: " + hosts_names)
+    hosts_ifaces = ""
+    for host in net.hosts:
+        hosts_ifaces += str(host.intfs) + " "
+    logger.info("then on the xterm type: " + "wireshark -k -i <host-interface> &")
+    logger.info("Interfaces available: " + hosts_ifaces)
+    logger.info("then exit mininet console")
     CLI(net)
 
     # enip communication between workstn server and other hosts client
-    # TODO: work with multiple realistic tags => set the ranges parameters ?
+    # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=INT[tag_range]
+    tags_array = {}
+    tags_array["PUMP"] = "INT", tag_range
+    tags_array["BOOL"] = "INT", tag_range
 
-    # TODO: store the tags in an array
-    # set the cpppo tags PUMP=INT[tag_range] BOOL=INT[tag_range]
-    tag1_name = "PUMP"
-    tag1_type = "INT"
-    tag1_range = tag_range
-    tag2_name = "BOOL"
-    tag2_type = "INT"
-    tag2_range = tag_range
-    tags = "%s=%s[%d] %s=%s[%d]" % (
-        tag1_name,
-        tag1_type,
-        tag1_range,
-        tag2_name,
-        tag2_type,
-        tag2_range)
-    # create a cpppo server on workstn with the 2 tags
-    # TODO: use python -m cpppo.enip.server to deal with the 2 flags problem ? Or send 2 different cip paquets (1 for pump 1 for bool) ?
-    server_cmd = "./scripts/cpppo/server_multiple_tags.sh %s %s %s" % (
-        './temp/workshop/cppposerver.err',
-        workstn.IP(),
-        tags)
+    tags = ""
+    for tag_name in tags_array:
+        type, value = tags_array[tag_name]
+        tags += "%s=%s[%d] " % (
+            tag_name,
+            type,
+            value)
+        
+    # create all cpppo server on plcs with the 2 tags
+    for host in net.hosts:
+        if( (host.name).find("plc") != -1 ):
+            server_cmd = "python -m cpppo.server.enip -l %s %s %s &" % (
+                "temp/workshop/" + host.name + "-server.log",
+                host.IP(),
+                tags)
+            output = host.cmd(server_cmd)
+    logger.info("ENIP servers launched on plcs")
 
-    workstn.cmd(server_cmd)
-    logger.info("ENIP server launched on workstn host, processing ENIP traffic, please wait...")
-
-    for i in range(nb_messages-1):
-        for host in net.hosts:
-            if host.name != 'workstn':
-                # set the client tags
-                tag_i = random.randrange(0, tag_range)
-                tag1_value = random.randint(min, max)
-                tag2_value = random.randint(0,1)
-                # writing
-                tags = "%s[%d]=%d %s[%d]=%d" % (
-                    tag1_name,
-                    tag_i,
-                    tag1_value,
-                    tag2_name,
-                    tag_i,
-                    tag2_value)
-                # send them to the server workstn
-                client_cmd = "./scripts/cpppo/client_multiple_tags.sh %s %s %s" % (
-                    './temp/workshop/cpppoclient.err',
-                    workstn.IP(),
-                    tags)
-                host.cmd(client_cmd)
-    logger.info("ENIP traffic from generated, end of the test.")
+    if(auto_mode):
+        # client part, traffic randomly generated
+        logger.info("processing ENIP traffic, please wait...")    
+        logger.info(str(nb_messages) + " messages to generate")
+        for i in range(nb_messages):
+            for host in net.hosts:
+                if((host.name).find("plc") != -1):
+                    for other_host in net.hosts:
+                        if((other_host != host) and ((other_host.name).find("plc") != -1)):
+                            # random choice, read a tag or write it (1 read and 0 write)
+                            read_write = random.randint(0,1)
+                            tags = ""
+                            tag_i = random.randrange(0, tag_range)
+                            # set the client tags
+                            # read instructions
+                            if(read_write == 1):
+                                for tag_name in tags_array:
+                                    tags += "%s[%d] " % (
+                                        tag_name,
+                                        tag_i)
+                                    # write instructions
+                            else:
+                                for tag_name in tags_array:
+                                    if(tag_name != "BOOL"):
+                                        tag_value = random.randint(min, max)
+                                    else:
+                                        tag_value = random.randint(0,1)
+                                        # write instructions
+                                        tags += "%s[%d]=%d " % (
+                                            tag_name,
+                                            tag_i,
+                                            tag_value)
+                            # send them to the server on the other_host
+                            client_cmd = "python -m cpppo.server.enip.client -l %s -a %s %s" % (
+                                "temp/workshop/" + host.name + "-client.log",
+                                other_host.IP(),
+                                tags)
+                            output = host.cmd(client_cmd)
+            logger.info("message " + str(i+1) + " sent by all hosts")
+        logger.info("ENIP traffic from clients to server generated, end of the test.")
     CLI(net)
-
     net.stop()
