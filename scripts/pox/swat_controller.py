@@ -196,9 +196,6 @@ class AntiArpPoison(object):
         # log.debug("ipsrc: %s" % (ipsrc))
         # log.debug("macsrc: %s" % (macsrc))
 
-        if macdst == '00:00:00:00:00:00':
-            log.debug(packet.__dict__)
-
         return ipdst, macdst
 
 
@@ -223,7 +220,7 @@ class AntiArpPoison(object):
     
         if sender_mac not in self.ip_to_mac.values() or sender_ip not in self.ip_to_mac:
             log.warning("on device %i: new device with %s IP and %s MAC ask info about %s IP with %s MAC" % (
-                event.dpid, sender_ip, sender_mac, dst_ip, dst_mac))
+                event.dpid, sender_ip, sender_mac, dst_ip, self.ip_to_mac[dst_ip]))
             return True
 
         return False
@@ -311,7 +308,7 @@ class AntiArpPoison(object):
         self.flood_port = of.OFPP_FLOOD
         # self.flood_port = of.OFPP_ALL
 
-        self.ips_port = 4000  # used to redirect suspect traffic
+        self.ips_port = 10  # used to redirect suspect traffic
 
         # self.timeout = 10  # sec, still NOT used
 
@@ -348,14 +345,14 @@ class AntiArpPoison(object):
 
     def _detect_arp_poison(self, event):
         """
-        if event contains arp poisoning raise
-        and ArpPoison event and block lower priority
-        event handling chain.
-
         packet obj contains a type int attribute and
         a series of CONST_TYPE attacched to identify it
 
-        eg: PacketIn won't trigger _handle_PacketIn
+        return EventHalt blocks successive lower priority
+        handlers.
+
+        look inside ap_detect_arp_request and ap_detect_arp_reply 
+        to manage separately the two cases.
         """	
 
         packet = event.parsed
@@ -386,20 +383,17 @@ class AntiArpPoison(object):
         """
         log.warning("ap_handle_arp_request: %d" % self.connection.dpid)
 
-        # in_port = event.port
-        # sender_ip = str(packet.payload.protosrc)
-        # sender_mac = str(packet.payload.hwsrc)
+        msg = of.ofp_packet_out()
+        msg.data = packet
+        msg.in_port = event.port
+        # msg.data = event.ofp  # PacketOut payload in the same as PacketIn
 
-        # msg = of.ofp_flow_mod()
-        # msg.match.in_port = in_port
-        # msg.match.dl_src = EthAddr(sender_mac)
-        # msg.idle_timeout = of.OFP_FLOW_PERMANENT
-        # msg.hard_timeout = of.OFP_FLOW_PERMANENT
-        # msg.match.nw_src = IPAddr(sender_ip)
+        action = of.ofp_action_output(port=self.ips_port)
+        msg.actions.append(action)
 
-        # event.connection.send(msg)
-        # log.warning("datapath %i will drop every packet coming from port: %d" % (
-        #     event.dpid, event.port))
+        event.connection.send(msg)
+        log.warning("packet mirrored on port: %d" % (
+            self.ips_port))
 
 
     def ap_handle_arp_reply(self, event, packet):
@@ -421,10 +415,16 @@ class AntiArpPoison(object):
 
         msg = of.ofp_flow_mod()
         msg.match.in_port = in_port
+        
         msg.match.dl_src = EthAddr(sender_mac)
         # msg.match.nw_src = IPAddr(sender_ip)
+        # msg.match.dl_type = 0x800 # match only IP traffic
         msg.idle_timeout = of.OFP_FLOW_PERMANENT
         msg.hard_timeout = of.OFP_FLOW_PERMANENT
+
+        # uncomment to stop dropping and start redirection to IPS_port
+        # action = of.ofp_action_output(port=self.ips_port)
+        # msg.actions.append(action)
 
         event.connection.send(msg)
         log.warning("datapath %i will drop every packet coming from port: %d" % (
@@ -462,14 +462,14 @@ class AntiArpPoison(object):
 
         # ????
         if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
-            drop(event, 0)
+            self.drop(event, 0)
 
         # Multicast
-        elif packet.dst.is_multicast:
+        elif packet.dst.is_multicast or macdst == '00:00:00:00:00:00':
             log.debug("%i: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
             self.flood(event)
 
-        # Unknown destination
+        # Unknown destination apart from ARP request default
         elif macdst not in self.mac_to_port:
             log.info("Port from %s unknown -- flooding" % (macdst))
             self.flood(event)
@@ -490,8 +490,8 @@ class AntiArpPoison(object):
                 msg = of.ofp_flow_mod()
 
                 msg.match = of.ofp_match.from_packet(packet, event.port)
-                msg.idle_timeout = 10  # sec
-                msg.hardTimeout = 30 # sec
+                msg.idle_timeout = 5  # sec
+                msg.hardTimeout = 10 # sec
                 action = of.ofp_action_output(port=port)
                 msg.actions.append(action)
                 msg.data = event.ofp  # use the same payload
