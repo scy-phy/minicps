@@ -292,7 +292,7 @@ def test_L3EthStarAttackDoubleAp():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8):
+def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=False):
     """
     a L3EthStar topology with some basic cpppo traffic between plcs.
     2 flags are used PUMP[INT] and BOOL[INT]
@@ -352,44 +352,45 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8):
             output = host.cmd(server_cmd)
     logger.info("ENIP servers launched on plcs")
 
-    # client part, traffic randomly generated
-    logger.info("processing ENIP traffic, please wait...")    
-    logger.info(str(nb_messages) + " messages to generate")
-    for i in range(nb_messages):
-        for host in net.hosts:
-            if((host.name).find("plc") != -1):
-                for other_host in net.hosts:
-                    if((other_host != host) and ((other_host.name).find("plc") != -1)):
-                        # random choice, read a tag or write it (0 read and 1 write)
-                        read_write = random.randint(0,1)
-                        tags = ""
-                        tag_i = random.randrange(0, tag_range)
-                        # set the client tags
-                        # read instructions
-                        if( read_write == 0 ):
-                            for tag_name in tags_array:
-                                tags += "%s[%d] " % (
-                                    tag_name,
-                                    tag_i)
-                        # write instructions
-                        else:
-                            for tag_name in tags_array:
-                                if( tag_name != "BOOL" ):
-                                    tag_value = random.randint(min, max)
-                                else:
-                                    tag_value = random.randint(0,1)
-                                # write instructions
-                                tags += "%s[%d]=%d " % (
-                                    tag_name,
-                                    tag_i,
-                                    tag_value)
-                        # send them to the server on the other_host
-                        client_cmd = "python -m cpppo.server.enip.client -l %s -a %s %s" % (
-                            "temp/workshop/" + host.name + "-client.log",
-                            other_host.IP(),
-                            tags)
-                        output = host.cmd(client_cmd)
-        logger.info("message " + str(i+1) + " sent by all hosts")
-    logger.info("ENIP traffic from clients to server generated, end of the test.")
+    if(auto_mode):
+        # client part, traffic randomly generated
+        logger.info("processing ENIP traffic, please wait...")    
+        logger.info(str(nb_messages) + " messages to generate")
+        for i in range(nb_messages):
+            for host in net.hosts:
+                if((host.name).find("plc") != -1):
+                    for other_host in net.hosts:
+                        if((other_host != host) and ((other_host.name).find("plc") != -1)):
+                            # random choice, read a tag or write it (1 read and 0 write)
+                            read_write = random.randint(0,1)
+                            tags = ""
+                            tag_i = random.randrange(0, tag_range)
+                            # set the client tags
+                            # read instructions
+                            if(read_write == 1):
+                                for tag_name in tags_array:
+                                    tags += "%s[%d] " % (
+                                        tag_name,
+                                        tag_i)
+                                    # write instructions
+                            else:
+                                for tag_name in tags_array:
+                                    if(tag_name != "BOOL"):
+                                        tag_value = random.randint(min, max)
+                                    else:
+                                        tag_value = random.randint(0,1)
+                                        # write instructions
+                                        tags += "%s[%d]=%d " % (
+                                            tag_name,
+                                            tag_i,
+                                            tag_value)
+                            # send them to the server on the other_host
+                            client_cmd = "python -m cpppo.server.enip.client -l %s -a %s %s" % (
+                                "temp/workshop/" + host.name + "-client.log",
+                                other_host.IP(),
+                                tags)
+                            output = host.cmd(client_cmd)
+            logger.info("message " + str(i+1) + " sent by all hosts")
+        logger.info("ENIP traffic from clients to server generated, end of the test.")
     CLI(net)
     net.stop()
