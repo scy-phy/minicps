@@ -315,64 +315,55 @@ def test_L3EthStarTraffic(nb_messages=20, tag_range=10, min=0, max=8):
     net.start()
     workstn = net.get('workstn')
 
-    # starting capture use xterm workstn wireshark -k -i workstn-eth0&
-    logger.info("type the following command to see the traffic :")
-    logger.info("xterm "+ workstn.name)
-    logger.info("then on the xterm type :")
+    # starting capture by user input
+    logger.info("type the following command to see the traffic: " + "xterm "+ workstn.name)
     # TODO: automatically generate interface name
-    logger.info("wireshark -k -i " + workstn.name + "-eth0" + " &")
+    logger.info("then on the xterm type: " + "wireshark -k -i " + workstn.name + "-eth0" + " &")
+    logger.info("then exit mininet console")
     CLI(net)
 
     # enip communication between workstn server and other hosts client
-    # TODO: work with multiple realistic tags => set the ranges parameters ?
+    # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=INT[tag_range]
+    tags_array = {}
+    tags_array["PUMP"] = "INT", tag_range
+    tags_array["BOOL"] = "INT", tag_range
 
-    # TODO: store the tags in an array
-    # set the cpppo tags PUMP=INT[tag_range] BOOL=INT[tag_range]
-    tag1_name = "PUMP"
-    tag1_type = "INT"
-    tag1_range = tag_range
-    tag2_name = "BOOL"
-    tag2_type = "INT"
-    tag2_range = tag_range
-    tags = "%s=%s[%d] %s=%s[%d]" % (
-        tag1_name,
-        tag1_type,
-        tag1_range,
-        tag2_name,
-        tag2_type,
-        tag2_range)
+    tags = ""
+    for tag_name in tags_array:
+        type, value = tags_array[tag_name]
+        tags += "%s=%s[%d] " % (
+            tag_name,
+            type,
+            value)
     # create a cpppo server on workstn with the 2 tags
-    # TODO: use python -m cpppo.enip.server to deal with the 2 flags problem ? Or send 2 different cip paquets (1 for pump 1 for bool) ?
-    server_cmd = "./scripts/cpppo/server_multiple_tags.sh %s %s %s" % (
-        './temp/workshop/cppposerver.err',
+    server_cmd = "python -m cpppo.server.enip %s %s &" % (
         workstn.IP(),
         tags)
-
-    workstn.cmd(server_cmd)
+    output = workstn.cmd(server_cmd)
     logger.info("ENIP server launched on workstn host, processing ENIP traffic, please wait...")
-
-    for i in range(nb_messages-1):
+    logger.info(str(nb_messages) + " messages to generate")
+    for i in range(nb_messages):
         for host in net.hosts:
             if host.name != 'workstn':
                 # set the client tags
-                tag_i = random.randrange(0, tag_range)
-                tag1_value = random.randint(min, max)
-                tag2_value = random.randint(0,1)
-                # writing
-                tags = "%s[%d]=%d %s[%d]=%d" % (
-                    tag1_name,
-                    tag_i,
-                    tag1_value,
-                    tag2_name,
-                    tag_i,
-                    tag2_value)
+                tags = ""
+                for tag_name in tags_array:
+                    tag_i = random.randrange(0, tag_range)
+                    if( tag_name != "BOOL" ):
+                        tag_value = random.randint(min, max)
+                    else:
+                        tag_value = random.randint(0,1)
+                    # write instructions
+                    tags += "%s[%d]=%d " % (
+                        tag_name,
+                        tag_i,
+                        tag_value)
                 # send them to the server workstn
-                client_cmd = "./scripts/cpppo/client_multiple_tags.sh %s %s %s" % (
-                    './temp/workshop/cpppoclient.err',
+                client_cmd = "python -m cpppo.server.enip.client -a %s %s" % (
                     workstn.IP(),
                     tags)
-                host.cmd(client_cmd)
-    logger.info("ENIP traffic from generated, end of the test.")
+                output = host.cmd(client_cmd)
+        logger.info("message " + str(i+1) + " sent by all hosts")
+    logger.info("ENIP traffic from clients to server generated, end of the test.")
     CLI(net)
-
     net.stop()
