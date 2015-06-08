@@ -20,7 +20,7 @@ from mininet.cli import CLI
 
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
-from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva
+from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva, POXSwatController
 from minicps.constants import _arp_cache_rtts, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
 import time
@@ -52,7 +52,7 @@ def test_RemoteController():
     """Test L3EthStar with a remote controller
     eg: pox controller
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
     net = Mininet( topo=topo, controller=None, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
@@ -68,15 +68,12 @@ def test_RemoteController():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_POXProva():
-    """See log file for controller info
-
-    See POXProva to set the pox component
-    """
-    raise SkipTest
+def test_POXSwatController():
+    """See /logs folder for controller info"""
+    # raise SkipTest
 
     topo = L3EthStar()
-    controller = POXProva
+    controller = POXSwatController
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 

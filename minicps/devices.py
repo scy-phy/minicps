@@ -67,8 +67,7 @@ class POXL2Learning(Controller):
 
 class POXProva(Controller):
 
-    """Use it to test POX controller
-    """
+    """Use it to test components using POX_PATH."""
 
     def start(self):
         POX_PATH='hub'  # pox/ext/ dir
@@ -84,15 +83,29 @@ class POXProva(Controller):
         self.cmd('kill %' + self.pox)
 
 
-class POXAntiArpPoison(Controller):
+class POXSwatController(Controller):
 
-    """Build a controller based on temp/antiarppoison.py
-    """
+    """Build a controller based on temp/antiarppoison.py"""
 
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.antiarppoison', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts('swat_controller', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
+class POXAntiArpPoison(Controller):
+
+    """Build a controller based on temp/antiarppoison.py"""
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts('antiarppoison', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
