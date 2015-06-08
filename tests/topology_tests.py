@@ -17,6 +17,7 @@ from mininet.cli import CLI
 from minicps import constants as c
 from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
 from minicps.constants import _mininet_functests, setup_func, teardown_func, teardown_func_clear, with_named_setup
+from minicps.devices import POXSwatController
 
 from time import sleep
 
@@ -142,7 +143,7 @@ def test_L3EthStarArpMitm():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func_clear)
+@with_named_setup(setup_func, teardown_func)
 def test_L3EthStarAttackArpEnip():
     """
     attacker ARP poison plc1 and hmi using ettercap. 
@@ -227,21 +228,21 @@ def test_L3EthStarAttackDoubleAp():
     can be used to mitigate ARP poisoning.
 
     """
-    raise SkipTest
+    # raise SkipTest
 
     topo = L3EthStarAttack()
 
     # net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     # logger.info("started mininet default controller")
 
-    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+    net = Mininet(topo=topo, link=TCLink, controller=POXSwatController, listenPort=c.OF_MISC['switch_debug_port'])
 
     # mininet remote controller
-    net.addController( 'c0',
-            controller=RemoteController,
-            ip='127.0.0.1',
-            port=c.OF_MISC['controller_port'] )
-    logger.info("started remote controller")
+    # net.addController( 'c0',
+    #         controller=RemoteController,
+    #         ip='127.0.0.1',
+    #         port=c.OF_MISC['controller_port'] )
+    # logger.info("started remote controller")
 
     net.start()
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
@@ -299,7 +300,7 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=F
 
     cpppo is used to simulate enip client/server    
     """
-    # raise SkipTest
+    raise SkipTest
 
     # use the L3EthStar topology
     topo = L3EthStar()
