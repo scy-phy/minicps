@@ -23,7 +23,7 @@ import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt
 from pox.lib.recoco import Timer
 from pox.lib.util import dpidToStr
-from pox.lib.addresses import IPAddr, EthAddr
+from pox.lib.addresses import IPAddr, IPAddr6, EthAddr  # used for flow_mod matching
 from pox.lib.revent import Event, EventMixin, EventHalt
 
 from pprint import pformat
@@ -368,8 +368,8 @@ class AntiArpPoison(object):
             if packet.payload.opcode == pkt.arp.REQUEST:
                 if self.ap_detect_arp_request(event, packet):
                     self.ap_handle_arp_request(event, packet)
-                    log.warning("%i: Halting handling chain." % event.dpid)
-                    return EventHalt
+                    # log.warning("%i: Halting handling chain." % event.dpid)
+                    # return EventHalt
 
             elif packet.payload.opcode == pkt.arp.REPLY:
                 if self.ap_detect_arp_reply(event, packet):
@@ -386,12 +386,49 @@ class AntiArpPoison(object):
         """
         log.warning("ap_handle_arp_request: %d" % self.connection.dpid)
 
+        # in_port = event.port
+        # sender_ip = str(packet.payload.protosrc)
+        # sender_mac = str(packet.payload.hwsrc)
+
+        # msg = of.ofp_flow_mod()
+        # msg.match.in_port = in_port
+        # msg.match.dl_src = EthAddr(sender_mac)
+        # msg.idle_timeout = of.OFP_FLOW_PERMANENT
+        # msg.hard_timeout = of.OFP_FLOW_PERMANENT
+        # msg.match.nw_src = IPAddr(sender_ip)
+
+        # event.connection.send(msg)
+        # log.warning("datapath %i will drop every packet coming from port: %d" % (
+        #     event.dpid, event.port))
+
 
     def ap_handle_arp_reply(self, event, packet):
         """
         Handle ARP poisoning attempt detected from ARP reply packets.
+
+        Install a permanent flow on the current datapath that will
+        drop packet coming from current in_port only from the current MAC
+        (and optionally current IP).
+
+        an empty actions list tells the switch to drop packets that match
+        this rule.
         """
         log.warning("ap_handle_arp_reply: %d" % self.connection.dpid)
+
+        in_port = event.port
+        sender_ip = str(packet.payload.protosrc)
+        sender_mac = str(packet.payload.hwsrc)
+
+        msg = of.ofp_flow_mod()
+        msg.match.in_port = in_port
+        msg.match.dl_src = EthAddr(sender_mac)
+        # msg.match.nw_src = IPAddr(sender_ip)
+        msg.idle_timeout = of.OFP_FLOW_PERMANENT
+        msg.hard_timeout = of.OFP_FLOW_PERMANENT
+
+        event.connection.send(msg)
+        log.warning("datapath %i will drop every packet coming from port: %d" % (
+            event.dpid, event.port))
 
 
     def _handle_PacketIn(self, event):
@@ -419,7 +456,7 @@ class AntiArpPoison(object):
 
         self.mac_to_port[macsrc] = event.port
 
-        if ipsrc not in self.ip_to_mac and ipsrc not in self.static_ip_to_mac:
+        if ipsrc not in self.ip_to_mac:
             self.ip_to_mac[ipsrc] = macsrc
             log.info("New %s->%s pair" % (ipsrc, macsrc))
 
