@@ -292,7 +292,7 @@ def test_L3EthStarAttackDoubleAp():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=False):
+def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
     """
     a L3EthStar topology with some basic cpppo traffic between plcs.
     2 flags are used PUMP[INT] and BOOL[INT]
@@ -361,13 +361,13 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=F
                 if((host.name).find("plc") != -1):
                     for other_host in net.hosts:
                         if((other_host != host) and ((other_host.name).find("plc") != -1)):
-                            # random choice, read a tag or write it (1 read and 0 write)
-                            read_write = random.randint(0,1)
+                            # random choice, read a tag or write it (True read and False write)
+                            read_write = random.choice([True, False])
                             tags = ""
                             tag_i = random.randrange(0, tag_range)
                             # set the client tags
                             # read instructions
-                            if(read_write == 1):
+                            if(read_write == True):
                                 for tag_name in tags_array:
                                     tags += "%s[%d] " % (
                                         tag_name,
@@ -378,7 +378,7 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=F
                                     if(tag_name != "BOOL"):
                                         tag_value = random.randint(min, max)
                                     else:
-                                        tag_value = random.randint(0,1)
+                                        tag_value = random.getrandbits(1)
                                         # write instructions
                                         tags += "%s[%d]=%d " % (
                                             tag_name,
