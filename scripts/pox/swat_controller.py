@@ -219,8 +219,8 @@ class AntiArpPoison(object):
         dst_mac = str(packet.payload.hwdst)
     
         if sender_mac not in self.ip_to_mac.values() or sender_ip not in self.ip_to_mac:
-            log.warning("on device %i: new device with %s IP and %s MAC ask info about %s IP with %s MAC" % (
-                event.dpid, sender_ip, sender_mac, dst_ip, self.ip_to_mac[dst_ip]))
+            log.warning("%d: new device with %s IP and %s MAC ask info about %s IP" % (
+                event.dpid, sender_ip, sender_mac, dst_ip))
             return True
 
         return False
@@ -253,13 +253,13 @@ class AntiArpPoison(object):
                         if value == sender_mac:
                             attacker_ip = key
                             break
-                    log.warning("internal ap detected on device %i: %s MAC with %s IP tries to impersonate %s IP with %s MAC" % (
+                    log.warning("%d internal ap detected: %s MAC with %s IP tries to impersonate %s IP with %s MAC" % (
                         event.dpid, sender_mac, attacker_ip, sender_ip, self.static_ip_to_mac[sender_ip]))
                     return True
 
                 # External attack
                 else:
-                    log.warning("external ap detected on device %i: %s MAC tries to impersonate %s IP with %s MAC" % (
+                    log.warning("%d external ap detected: %s MAC tries to impersonate %s IP with %s MAC" % (
                         event.dpid, sender_mac, sender_ip, self.static_ip_to_mac[sender_ip]))
                     return True
 
@@ -299,7 +299,7 @@ class AntiArpPoison(object):
         init switch flooding and IPS ports
         TODO: send flow_mod related to static mapping (proactive) 
         """
-        log.info("_static_mapping: %d" % self.connection.dpid)
+        log.info("%d: _static_mapping" % self.connection.dpid)
 
         # TODO: use static_mac_to_port to premap switches
         self.static_ip_to_mac = swat_ip_map_1()
@@ -340,7 +340,7 @@ class AntiArpPoison(object):
         mapping is naive port 1 is used to send pkt to plc1
         ecc ...
         """
-        log.info("_handle_ConnectionUp: %d" % self.connection.dpid)
+        log.info("%d: _handle_ConnectionUp" % self.connection.dpid)
 
 
     def _detect_arp_poison(self, event):
@@ -381,7 +381,7 @@ class AntiArpPoison(object):
         """
         Handle ARP poisoning attempt detected from ARP request packets.
         """
-        log.warning("ap_handle_arp_request: %d" % self.connection.dpid)
+        log.debug("%d: ap_handle_arp_request" % self.connection.dpid)
 
         msg = of.ofp_packet_out()
         msg.data = packet
@@ -392,8 +392,8 @@ class AntiArpPoison(object):
         msg.actions.append(action)
 
         event.connection.send(msg)
-        log.warning("packet mirrored on port: %d" % (
-            self.ips_port))
+        log.warning("%d: arp request packet mirrored on port %d" % (
+            event.dpid, self.ips_port))
 
 
     def ap_handle_arp_reply(self, event, packet):
@@ -407,7 +407,7 @@ class AntiArpPoison(object):
         an empty actions list tells the switch to drop packets that match
         this rule.
         """
-        log.warning("ap_handle_arp_reply: %d" % self.connection.dpid)
+        log.debug("%d: ap_handle_arp_reply" % self.connection.dpid)
 
         in_port = event.port
         sender_ip = str(packet.payload.protosrc)
@@ -427,7 +427,7 @@ class AntiArpPoison(object):
         # msg.actions.append(action)
 
         event.connection.send(msg)
-        log.warning("datapath %i will drop every packet coming from port: %d" % (
+        log.warning("%d: datapath will drop every packet coming from port: %d" % (
             event.dpid, event.port))
 
 
@@ -443,7 +443,7 @@ class AntiArpPoison(object):
         from the packet_in payload
 
         """
-        # log.info("_handle_PacketIn: %d" % self.connection.dpid)
+        log.debug("%d: _handle_PacketIn" % self.connection.dpid)
 
         packet = event.parsed
         if not packet.parsed:
@@ -458,7 +458,7 @@ class AntiArpPoison(object):
 
         if ipsrc not in self.ip_to_mac:
             self.ip_to_mac[ipsrc] = macsrc
-            log.info("New %s->%s pair" % (ipsrc, macsrc))
+            log.info("%d: new %s->%s pair" % (event.dpid, ipsrc, macsrc))
 
         # ????
         if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
@@ -485,8 +485,8 @@ class AntiArpPoison(object):
                 drop(event, 0)
             # add flow
             else:
-                log.debug("installing flow for %s.%i -> %s.%i"
-                    % (packet.src, event.port, packet.dst, port))
+                log.debug("%d: installing flow for %s.%i -> %s.%i"
+                    % (event.dpid, packet.src, event.port, packet.dst, port))
                 msg = of.ofp_flow_mod()
 
                 msg.match = of.ofp_match.from_packet(packet, event.port)
@@ -502,14 +502,14 @@ class AntiArpPoison(object):
         """
         TODO
         """
-        log.info("_handle_FlowRemoved: %d" % self.connection.dpid)
+        log.debug("%d: _handle_FlowRemoved" % self.connection.dpid)
 
 
     def _handle_AggregateFlowStatsReceived(self, event):
         """
         Print event.stats list content.
         """
-        log.info("_handle_AggregateFlowStatsReceived: %d" % self.connection.dpid)
+        log.debug("%d: _handle_AggregateFlowStatsReceived" % self.connection.dpid)
         
         for stat in event.stats:
             log.info("stat: %s" % stat)
@@ -519,7 +519,7 @@ class AntiArpPoison(object):
         """
         TODO: remove all flow from the switch
         """
-        log.info("_handle_ConnectionDown: %d" % self.connection.dpid)
+        log.debug("%d: _handle_ConnectionDown" % self.connection.dpid)
 
 
 def swat_ip_map_1():
