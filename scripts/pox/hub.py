@@ -17,7 +17,6 @@ Learn:
     what is an action
     how to subscribe to an event setting a callback (handler) function
     what is _handle_ConnectionUp event
-    OpenFlow has a set of well defined port to flood packets
 """
 
 from pox.core import core
