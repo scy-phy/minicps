@@ -1,6 +1,6 @@
 # MiniCPS #
 
-MiniCPS is a lightweight simulatior for accurate network traffic in an
+MiniCPS is a lightweight simulator for accurate network traffic in an
 industrial control system, with basic support for physical layer
 interaction.
 
@@ -28,7 +28,7 @@ you can **disable** the Linux IPv6 kernel module:
     # vim /etc/default/grub
 
 then add `ipv6.disable=1` as first parameter in the string.
-Note that the `...` poriton of the string depends on your grub config.
+Note that the `...` portion of the string depends on your grub config.
 
     GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1 ..."
 
@@ -44,17 +44,17 @@ Instruction taken from [here](https://github.com/mininet/mininet/issues/454).
 ## Testing ##
 
 You can intentionally skip a particular test adding/uncommenting `raise SkipTest`.
-You can see skipped test summary in the nosetest output.
+You can see skipped test summary in the nosetests output.
 
 If you want to run all the tests contained in the `topology_tests` module, type:
 
     # nosetests tests/topology_tests
 
-To run a single test whitin a script use:
+To run a single test within a script use:
 
     # nosetests tests/topology_tests:test_name
 
-use `-s` opt to prevent nosetest to capture stdout.
+use `-s` opt to prevent nosetests to capture stdout.
 
 use `-v` opt to obtain a more verbose output.
 
@@ -77,6 +77,17 @@ If you use Linux's `iptables` uncomment:
 
     redir_command_on = "iptables -t nat -A PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"
     redir_command_off = "iptables -t nat -D PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"
+
+## Logging ##
+
+The relevant log files are stored in the `logs` dir.
+
+Each minicps module and its associated testing module is managed by a dedicated `logging` obj,
+You can tweak the number of backups file that are automatically rotating and their size, through
+the `constants` module.
+
+Each `scripts/pox/component` generate a separate logfile that is overwritten each time you run
+a new `mininet` instance.
 
 ## Build sphinx docs ##
 
