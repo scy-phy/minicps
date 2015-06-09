@@ -293,25 +293,29 @@ def test_L3EthStarAttackDoubleAp():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
+def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
     """
-    a L3EthStar topology with some basic cpppo traffic between plcs.
-    2 flags are used PUMP[INT] and BOOL[INT]
+    a L3EthStar topology with some basic cpppo traffic between the plcs.
+    2 flags are used PUMP=INT[tag_range] and BOOL=SINT[tag_range].
 
-    cpppo is used to simulate enip client/server    
+    the number of exchanges can be set, and also the size of the tag array, and the mini/maxi values the PUMP tag can have
+    the default controller used is the swat one. It can be changed or set to None to use a remote controller.
+
+    cpppo is used to simulate enip client/server, nb_messages*nb_plcs*(nb_plcs-1) are sent, randomly either in read or write mode, the pump numbers and the write values are also chosen randomly
     """
     raise SkipTest
 
     # use the L3EthStar topology
     topo = L3EthStar()
 
-    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+    net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
 
-    net.addController( 'c0',
-            controller=RemoteController,
-            ip='127.0.0.1',
-            port=c.OF_MISC['controller_port'] )
-    logger.info("started remote controller")
+    if(controller == None):
+        net.addController( 'c0',
+                           controller=RemoteController,
+                           ip='127.0.0.1',
+                           port=c.OF_MISC['controller_port'] )
+        logger.info("started remote controller")
 
     net.start()
 
