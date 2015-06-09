@@ -22,7 +22,7 @@ from pox.core import core
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt
 from pox.lib.recoco import Timer
-from pox.lib.util import dpidToStr
+from pox.lib.util import dpid_to_str
 from pox.lib.addresses import IPAddr, IPAddr6, EthAddr  # used for flow_mod matching
 from pox.lib.revent import Event, EventMixin, EventHalt
 
@@ -39,8 +39,8 @@ log = core.getLogger()
        # add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
        # and send flow modification on connection up and remove flows on connection down
        # add timers to control DoS
-       # get rid of ArpPoison event?
        # use class methods where necessary
+       # use send_arp_reply to answer arp request that the controller already know
 
 
 # class ArpPoison(Event):
@@ -67,16 +67,17 @@ class AntiArpPoison(object):
 
     def __init__(self, connection):
         """
-        blocking handlers: self._detect_arp_poison blocks PacketIn handling
+        blocking handlers: self._detect_arp_poison blocks PacketIn handling.
 
-        ConnectionUp handler are called only once because core.openflow will
-        raise one ConnectionUp event for each switch
+        ConnectionUp handler are called only once per datapath and it is
+        raised only by core.openflow.
 
         ip_to_mac and mac_to_port are used for dynamic (reactive) mapping.
+
+        synch timers are only initted and NOT started automatically.
         """
 
         self.connection = connection  # convenient reference
-        # self.connection._eventMixin_events.add(ArpPoison)
 
         self.ip_to_mac = {}
         self.mac_to_port = {}
@@ -84,6 +85,7 @@ class AntiArpPoison(object):
         # connection_log = pformat(event.connection._eventMixin_events, indent=4)
         # log.debug("connection obj can raise those events: %s" % connection_log)
 
+        # Asynch handlers
         core.openflow.addListenerByName("ConnectionUp", self._static_mapping, priority=2, once=True)
         core.openflow.addListenerByName("ConnectionUp", self._handle_ConnectionUp, priority=0, once=True)
 
@@ -94,6 +96,16 @@ class AntiArpPoison(object):
 
         self.connection.addListenerByName("AggregateFlowStatsReceived", self._handle_AggregateFlowStatsReceived,
                 priority=1, once=False)
+
+        # Synch handlers
+        self.arpcache_timer = Timer(
+            5,
+            self._handle_arpcache_restore,  # handler able to cancel the timer
+            absoluteTime=False,
+            recurring=True,
+            started=False,  # do NOT start automatically, start it during ConnectionUp
+            selfStoppable=False,  # timer can be cancelled by the handler
+            args=['arpcache_timer'])
 
 
 # HELPER METHODS
@@ -153,6 +165,43 @@ class AntiArpPoison(object):
         # log.debug("ofp_stats_request: %s" % ofp_stats_request_log)
         # msg.type(stat_type)
         # self.connection.send(msg)
+
+
+    def send_arp_reply(self, ipsrc, macsrc,
+            ipdst, macdst, port):
+        """
+        Send a custom arp_reply to port number
+        directly from the controller.
+        """
+        log.debug("%d: recieve arp_reply from controller" % (self.connection.dpid))
+
+        assert(type(ipsrc) == str)
+        assert(type(macsrc) == str)
+        assert(type(ipdst) == str)
+        assert(type(macdst) == str)
+        assert(type(port) == int)
+
+        arp_reply = pkt.arp()
+        arp_reply.opcode = pkt.arp.REPLY
+        arp_reply.protosrc = IPAddr(ipsrc)
+        arp_reply.hwsrc = EthAddr(macsrc)
+        arp_reply.protodst = IPAddr(ipdst)
+        arp_reply.hwdst = EthAddr(macdst)
+
+        ether = pkt.ethernet()
+        ether.type = pkt.ethernet.ARP_TYPE
+        ether.src = ipdst
+        ether.dst = macdst
+        # ether.payload = arp_reply
+        ether.set_payload(arp_reply)
+        log.debug("%d: arp_reply: %s" % (self.connection.dpid, arp_reply))
+        # log.debug("%d: ether: %s" % (self.connection.dpid, ether))
+
+        msg = of.ofp_packet_out()
+        msg.data = ether.pack()
+        action = of.ofp_action_output(port=port)
+        msg.actions.append(action)
+        self.connection.send(msg)
 
 
     def get_src_addresses(self, packet):
@@ -282,16 +331,77 @@ class AntiArpPoison(object):
         pass
 
 
-    def update_arp_caches(self, event):
+# SYNCH HANDLERS
+    def _handle_arpcache_restore(self, *args):
         """
         send packet_out arp_reply to all
         hosts to remap their arp caches
+
+        eg: if plc1 pinged plc3 and plc3 pinged plc2
+            then plc1 will now how to ping plc2
+
+        :*args: list passed at timer init.
         """
-        pass
+        log.info("%d: _handle_arpcache_restore" % self.connection.dpid)
+
+        ip_to_mac_list = self.ip_to_mac.items()
+        mac_to_port_list = self.mac_to_port.items()
+        log.debug(mac_to_port_list)
+
+        for sender_ip, sender_mac in ip_to_mac_list:
+
+            for rec_mac, port in mac_to_port_list:
+
+                if self.ip_to_mac[sender_ip] == rec_mac:
+                    continue
+
+                else:
+
+                    # compute rec_ip
+                    for k, v in ip_to_mac_list:
+                        if v == rec_mac:
+                            rec_ip = k
+                            break
+
+                    self.send_arp_reply(
+                        sender_ip,
+                        sender_mac,
+                        rec_ip,
+                        rec_mac,
+                        int(port))
+
+                    # log.debug("%d: %s IP has this % MAC => %s IP %s MAC on port %s" % (
+                    #     self.connection.dpid,
+                    #     sender_ip, sender_mac,
+                    #     rec_ip, rec_mac,
+                    #     port))
 
 
-# HANDLERS
+        # TODO: save port mapping for each host then send on that port
+        # all the locations of the other hosts
+        # tuples_list = self.ip_to_mac.items()
+        # self.send_arp_reply(
+        #     tuples_list[0][0],
+        #     tuples_list[0][1],
+        #     tuples_list[1][0],
+        #     tuples_list[1][1],
+        #     2)
 
+        # self.send_arp_reply(
+        #     tuples_list[2][0],
+        #     tuples_list[2][1],
+        #     tuples_list[1][0],
+        #     tuples_list[1][1],
+        #     2)
+
+        # self.send_arp_reply(
+        #     tuples_list[2][0],
+        #     tuples_list[2][1],
+        #     tuples_list[0][0],
+        #     tuples_list[0][1],
+        #     2)
+
+# ASYNCH HANDLERS
     def _static_mapping(self, event):
         """
         special handler for PacketIn
@@ -303,14 +413,15 @@ class AntiArpPoison(object):
 
         # TODO: use static_mac_to_port to premap switches
         self.static_ip_to_mac = swat_ip_map_1()
-        self.ip_to_mac = swat_ip_map_1()
+        self.static_mac_to_port = swat_port_map_1()
+
+        # self.ip_to_mac = swat_ip_map_1()
+        # self.mac_to_port = swat_port_map_1()
 
         self.flood_port = of.OFPP_FLOOD
         # self.flood_port = of.OFPP_ALL
 
         self.ips_port = 10  # used to redirect suspect traffic
-
-        # self.timeout = 10  # sec, still NOT used
 
         # debug attributes
         # aap_log = pformat(self.__dict__, indent=4)
@@ -341,6 +452,10 @@ class AntiArpPoison(object):
         ecc ...
         """
         log.info("%d: _handle_ConnectionUp" % self.connection.dpid)
+
+        # start timer only once
+        # log.debug("%d: starting synch timers." % self.connection.dpid)
+        # self.arpcache_timer.start()
 
 
     def _detect_arp_poison(self, event):
@@ -375,6 +490,8 @@ class AntiArpPoison(object):
                     return EventHalt
 
         # TODO: manage IPv4 packet
+        # elif isinstance(packet.next, ipv4):
+        #     pass
 
 
     def ap_handle_arp_request(self, event, packet):
@@ -443,7 +560,8 @@ class AntiArpPoison(object):
         from the packet_in payload
 
         """
-        log.debug("%d: _handle_PacketIn" % self.connection.dpid)
+        # log.info("%d: _handle_PacketIn" % self.connection.dpid)
+
 
         packet = event.parsed
         if not packet.parsed:
@@ -458,7 +576,7 @@ class AntiArpPoison(object):
 
         if ipsrc not in self.ip_to_mac:
             self.ip_to_mac[ipsrc] = macsrc
-            log.info("%d: new %s->%s pair" % (event.dpid, ipsrc, macsrc))
+            log.info("%d: new %s->%s pair out on port %d" % (event.dpid, ipsrc, macsrc, event.port))
 
         # ????
         if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
@@ -466,12 +584,12 @@ class AntiArpPoison(object):
 
         # Multicast
         elif packet.dst.is_multicast or macdst == '00:00:00:00:00:00':
-            log.debug("%i: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
+            # log.debug("%d: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
             self.flood(event)
 
         # Unknown destination apart from ARP request default
         elif macdst not in self.mac_to_port:
-            log.info("Port from %s unknown -- flooding" % (macdst))
+            # log.debug("%d: port from %s unknown -- flooding" % (event.dpid, macdst))
             self.flood(event)
 
         # Flow_mod
@@ -482,11 +600,11 @@ class AntiArpPoison(object):
             if port == event.port:
                 log.warning("Same port for packet from %s -> %s on %s.%s.  Drop."
                         % (packet.src, packet.dst, dpid_to_str(event.dpid), port))
-                drop(event, 0)
+                self.drop(event, 0)
             # add flow
             else:
-                log.debug("%d: installing flow for %s.%i -> %s.%i"
-                    % (event.dpid, packet.src, event.port, packet.dst, port))
+                # log.debug("%d: installing flow for %s.%i -> %s.%i"
+                #     % (event.dpid, packet.src, event.port, packet.dst, port))
                 msg = of.ofp_flow_mod()
 
                 msg.match = of.ofp_match.from_packet(packet, event.port)
