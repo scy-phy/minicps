@@ -117,7 +117,7 @@ class LearningSwitch(object):
                 msg = of.ofp_packet_out()
                 msg.buffer_id = event.ofp.buffer_id
                 msg.in_port = event.port
-                self,connection.send(msg)
+                self.connection.send(msg)
 
 
         self.macToPort[packet.src] = event.port

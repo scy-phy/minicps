@@ -331,10 +331,10 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
     CLI(net)
 
     # enip communication between workstn server and other hosts client
-    # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=INT[tag_range]
+    # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=SINT[tag_range]
     tags_array = {}
     tags_array["PUMP"] = "INT", tag_range
-    tags_array["BOOL"] = "INT", tag_range
+    tags_array["BOOL"] = "SINT", tag_range
 
     tags = ""
     for tag_name in tags_array:
@@ -347,7 +347,7 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
     # create all cpppo server on plcs with the 2 tags
     for host in net.hosts:
         if( (host.name).find("plc") != -1 ):
-            server_cmd = "python -m cpppo.server.enip -l %s %s %s &" % (
+            server_cmd = "python -m cpppo.server.enip -vv -l %s %s %s &" % (
                 "temp/workshop/" + host.name + "-server.log",
                 host.IP(),
                 tags)
@@ -387,7 +387,7 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
                                             tag_i,
                                             tag_value)
                             # send them to the server on the other_host
-                            client_cmd = "python -m cpppo.server.enip.client -l %s -a %s %s" % (
+                            client_cmd = "python -m cpppo.server.enip.client -vv -l %s -a %s %s" % (
                                 "temp/workshop/" + host.name + "-client.log",
                                 other_host.IP(),
                                 tags)
