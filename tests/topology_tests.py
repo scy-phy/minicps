@@ -10,7 +10,7 @@ from nose.plugins.skip import Skip, SkipTest
 from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.log import setLogLevel
-from mininet.node import CPULimitedHost, RemoteController
+from mininet.node import CPULimitedHost, RemoteController, Host
 from mininet.link import TCLink
 from mininet.cli import CLI
 
@@ -228,7 +228,7 @@ def test_L3EthStarAttackDoubleAp():
     can be used to mitigate ARP poisoning.
 
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
 
@@ -391,6 +391,8 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
                                             tag_i,
                                             tag_value)
                             # send them to the server on the other_host
+                            # use -m to force use of the Multiple Service Packet request
+                            # use -n to force the client to use plain Read/Write Tag commands
                             client_cmd = "python -m cpppo.server.enip.client -vv -l %s -a %s %s" % (
                                 "temp/workshop/" + host.name + "-client.log",
                                 other_host.IP(),
@@ -399,4 +401,73 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
             logger.info("message " + str(i+1) + " sent by all hosts")
         logger.info("ENIP traffic from clients to server generated, end of the test.")
     CLI(net)
+    net.stop()
+
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, tag_range=1, timeout=120, timer=1):
+    """
+    a L3EthStar topology TODO
+    """
+    # raise SkipTest
+
+    # use the L3EthStar topology
+    topo = L3EthStar()
+    
+    net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
+
+    if(controller == None):
+        net.addController( 'c0',
+                           controller=RemoteController,
+                           ip='127.0.0.1',
+                           port=c.OF_MISC['controller_port'] )
+        logger.info("started remote controller")
+
+    net.start()
+    plc1, hmi = net.get('plc1', 'histn')
+    directory = 'temp/monitoring_test/'
+    
+    tags_array = {}
+    tags_array["FLOW"] = "REAL", tag_range
+    tags_array["BOOL"] = "SINT", tag_range
+
+    tags = ""
+    for tag_name in tags_array:
+        type, value = tags_array[tag_name]
+        tags += "%s=%s[%d] " % (
+            tag_name,
+            type,
+            value)
+        
+    # create a cpppo server on plc1
+    server_cmd = "python -m cpppo.server.enip -vv -l %s -a %s %s &" % (
+        directory + plc1.name + "-server.log",
+        plc1.IP(),
+        tags)
+    output = plc1.cmd(server_cmd)
+
+    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing it's tags accordingly to the flow level
+    plc1.cmd("python tests/plc_routine.py %s %s %d %d %f %f %s %s %s %s &" % (
+        directory + "sensor.txt",
+        directory + "action.txt",
+        timeout,
+        timer,
+        hh_lvl,
+        ll_lvl,
+        "FLOW",
+        "BOOL",
+        plc1.IP(),
+        directory + "plc-cmd.log"))
+
+    CLI(net)
+
+    # hmi.cmd("python tests/hmi_routine.py %f %f %s %s %s %s %s &" %(
+    #     timeout,
+    #     timer,
+    #     "FLOW",
+    #     "BOOL",
+    #     plc1.IP(),
+    #     "temp/monitoring_test/hmi-cmd.log",
+    #     "temp/monitoring_test/hmi.png"))
+
+    sleep(timeout)
     net.stop()
