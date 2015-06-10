@@ -79,4 +79,21 @@ PING 192.168.1.30 (192.168.1.30) 56(84) bytes of data.
 # where plc1 fools plc2 (plc3 IP mapped to plc1 MAC)
 # and plc3 (plc2 IP mapped to plc1 MAC)
 
+# ex4: look at PacketIn OpenFlow coming to the controller
+
+DEBUG:l2_pairs:first payload: [ARP REQUEST hw:1 p:2048
+00:1d:9c:c7:b0:70>00:00:00:00:00:00 192.168.1.10>192.168.1.50]
+DEBUG:l2_pairs:dpid: 3
+DEBUG:l2_pairs:inport: 1
+DEBUG:l2_pairs:first payload: [ARP REPLY hw:1 p:2048
+00:1d:9c:c8:bc:2f>00:1d:9c:c7:b0:70 192.168.1.50>192.168.1.10]
+DEBUG:l2_pairs:dpid: 3
+DEBUG:l2_pairs:inport: 5
+DEBUG:l2_pairs:Rules for 00:1d:9c:c8:bc:2f <-> 00:1d:9c:c7:b0:70
+DEBUG:l2_pairs:first payload: [ARP REQUEST hw:1 p:2048
+00:1d:9c:c7:b0:70>00:00:00:00:00:00 192.168.1.10>192.168.1.50]
+DEBUG:l2_pairs:dpid: 3
+DEBUG:l2_pairs:inport: 1
+
+# ARP REQUEST in mac broadcast from plc1 to plc5
 

@@ -235,14 +235,15 @@ def test_L3EthStarAttackDoubleAp():
     # net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     # logger.info("started mininet default controller")
 
-    net = Mininet(topo=topo, link=TCLink, controller=POXSwatController, listenPort=c.OF_MISC['switch_debug_port'])
+    # net = Mininet(topo=topo, link=TCLink, controller=POXSwatController, listenPort=c.OF_MISC['switch_debug_port'])
 
     # mininet remote controller
-    # net.addController( 'c0',
-    #         controller=RemoteController,
-    #         ip='127.0.0.1',
-    #         port=c.OF_MISC['controller_port'] )
-    # logger.info("started remote controller")
+    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+    net.addController( 'c0',
+            controller=RemoteController,
+            ip='127.0.0.1',
+            port=c.OF_MISC['controller_port'] )
+    logger.info("started remote controller")
 
     net.start()
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
