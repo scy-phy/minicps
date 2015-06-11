@@ -432,8 +432,8 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
 
     # the two tags : flow=REAL and pump=SINT (BOOL, 0 or 1)
     tags_array = {}
-    tag1 = "flow"
-    tag2 = "pump"
+    tag1 = "flow1"
+    tag2 = "pump1"
     tags_array[tag1] = "REAL"
     tags_array[tag2] = "SINT"
 

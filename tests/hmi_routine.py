@@ -32,6 +32,11 @@ def hmi_routine(timeout, timer, tag1, tag2, ipaddr, save_file_name):
     pump_axis = []
     x_axis = []
 
+    # start_time = time()
+    # while sleep(timer):
+    #     hmi_action(tag1, tag2, ipaddr, flow_axis, pump_axis, x_axis)
+    #     if(time() - start_time >= timeout):
+    #        break
     rt = RepeatedTimer(timer, hmi_action, tag1, tag2, ipaddr, flow_axis, pump_axis, x_axis)
     try:
         sleep(timeout)

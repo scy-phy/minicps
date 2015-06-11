@@ -6,7 +6,7 @@ import os
 from RepeatedTimer import RepeatedTimer # to change with a while(sleep(x)) ?
 
 def pump_action(action, flow_lvl, hh_lvl, ll_lvl):
-    if flow_lvl <= hh_lvl:
+    if flow_lvl <= hh_lvl: # f1 - f2 < eps
         return 1
     elif flow_lvl >= hh_lvl:
         return 0
