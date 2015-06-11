@@ -296,7 +296,7 @@ def test_L3EthStarAttackDoubleAp():
 @with_named_setup(setup_func, teardown_func)
 def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
     """
-    a L3EthStar topology with some basic cpppo traffic between the plcs.
+    a L3EthStarAttack topology with some basic cpppo traffic between the plcs.
     2 flags are used PUMP=INT[tag_range] and BOOL=SINT[tag_range].
 
     the number of exchanges can be set, and also the size of the tag array, and the mini/maxi values the PUMP tag can have
@@ -306,8 +306,8 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
     """
     raise SkipTest
 
-    # use the L3EthStar topology
-    topo = L3EthStar()
+    # use the L3EthStarAttack topology
+    topo = L3EthStarAttack() 
 
     net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
 
@@ -337,8 +337,10 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
     # enip communication between workstn server and other hosts client
     # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=SINT[tag_range]
     tags_array = {}
-    tags_array["PUMP"] = "INT", tag_range
-    tags_array["BOOL"] = "SINT", tag_range
+    tag1 = "PUMP"
+    tag2 = "BOOL"
+    tags_array[tag1] = "INT", tag_range
+    tags_array[tag2] = "SINT", tag_range
 
     tags = ""
     for tag_name in tags_array:
@@ -349,8 +351,9 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
             value)
         
     # create all cpppo server on plcs with the 2 tags
+    plc_name = "plc"
     for host in net.hosts:
-        if( (host.name).find("plc") != -1 ):
+        if( (host.name).find(plc_name) != -1 ):
             server_cmd = "python -m cpppo.server.enip -vv -l %s %s %s &" % (
                 "temp/workshop/" + host.name + "-server.log",
                 host.IP(),
@@ -364,9 +367,9 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
         logger.info(str(nb_messages) + " messages to generate")
         for i in range(nb_messages):
             for host in net.hosts:
-                if((host.name).find("plc") != -1):
+                if((host.name).find(plc_name) != -1):
                     for other_host in net.hosts:
-                        if((other_host != host) and ((other_host.name).find("plc") != -1)):
+                        if((other_host != host) and ((other_host.name).find(plc_name) != -1)):
                             # random choice, read a tag or write it (True read and False write)
                             read_write = random.choice([True, False])
                             tags = ""
@@ -381,7 +384,7 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
                                     # write instructions
                             else:
                                 for tag_name in tags_array:
-                                    if(tag_name != "BOOL"):
+                                    if(tag_name != tag2):
                                         tag_value = random.randint(min, max)
                                     else:
                                         tag_value = random.getrandbits(1)
@@ -404,14 +407,15 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
     net.stop()
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, tag_range=1, timeout=120, timer=1):
+def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, timeout=20, timer=1):
     """
-    a L3EthStar topology TODO
+    a L3EthStarAttack topology where plc1 is running a enip server, which reads flow values in a sensor file and writes the according pump behavior in an action file, and actalizes its tags values (pump a sint, and flow a real)
+    hmi is running a enip client which frequently queries the plc1 server in order to draw flow graph and pump decisions graph.
     """
     # raise SkipTest
 
-    # use the L3EthStar topology
-    topo = L3EthStar()
+    # use the L3EthStarAttack topology
+    topo = L3EthStarAttack()
     
     net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
 
@@ -423,29 +427,30 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
         logger.info("started remote controller")
 
     net.start()
-    plc1, hmi = net.get('plc1', 'histn')
+    plc1, hmi = net.get('plc1', 'hmi')
     directory = 'temp/monitoring_test/'
-    
+
+    # the two tags : flow=REAL and pump=SINT (BOOL, 0 or 1)
     tags_array = {}
-    tags_array["FLOW"] = "REAL", tag_range
-    tags_array["BOOL"] = "SINT", tag_range
+    tag1 = "flow"
+    tag2 = "pump"
+    tags_array[tag1] = "REAL"
+    tags_array[tag2] = "SINT"
 
     tags = ""
     for tag_name in tags_array:
-        type, value = tags_array[tag_name]
-        tags += "%s=%s[%d] " % (
+        tag_type = tags_array[tag_name]
+        tags += "%s=%s " % (
             tag_name,
-            type,
-            value)
+            tag_type)
         
     # create a cpppo server on plc1
-    server_cmd = "python -m cpppo.server.enip -vv -l %s -a %s %s &" % (
+    server_cmd = "python -m cpppo.server.enip -vv -l %s %s &" % (
         directory + plc1.name + "-server.log",
-        plc1.IP(),
         tags)
     output = plc1.cmd(server_cmd)
 
-    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing it's tags accordingly to the flow level
+    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
     plc1.cmd("python tests/plc_routine.py %s %s %d %d %f %f %s %s %s %s &" % (
         directory + "sensor.txt",
         directory + "action.txt",
@@ -453,21 +458,20 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
         timer,
         hh_lvl,
         ll_lvl,
-        "FLOW",
-        "BOOL",
+        tag1,
+        tag2,
         plc1.IP(),
         directory + "plc-cmd.log"))
 
-    CLI(net)
+    # start the hmi which queries the server and draw flow and pump graphs
+    logger.info("Please wait " + str(timeout) + " seconds.")
+    out = hmi.cmd("python tests/hmi_routine.py %f %f %s %s %s %s" %(
+        timeout,
+        timer,
+        tag1,
+        tag2,
+        plc1.IP(),
+        directory + "hmi.pdf"))
 
-    # hmi.cmd("python tests/hmi_routine.py %f %f %s %s %s %s %s &" %(
-    #     timeout,
-    #     timer,
-    #     "FLOW",
-    #     "BOOL",
-    #     plc1.IP(),
-    #     "temp/monitoring_test/hmi-cmd.log",
-    #     "temp/monitoring_test/hmi.png"))
-
-    sleep(timeout)
+    logger.info(out)
     net.stop()
