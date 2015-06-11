@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-TODO: test
+Workshop script used to demo mininet, cpppo and minicps.
 """
 
 from mininet.net import Mininet
@@ -176,24 +176,55 @@ def mininetLauncher():
         # tags_array["BOOL"] = "SINT", tag_range
 
         tag_int = "flow%d=INT[%d]" % (i, tag_int_len)
-        # tag_bool = "pump%d=SINT[%d]" % (i, 1)  # represent a bool
-        tag_bool = "pump%d=SINT" % i  # represent a bool
+        tag_bool = "pump%d=INT[1]" % i  # represent a bool
 
-        print tag_int
-        print tag_bool
+        # print tag_int
+        # print tag_bool
 
         # default listen port is 44818
         # notice that in the loop im' cd'ing to plci folder
-        log_path = "%s_enip_server.log" % key
-        enip_server = "python -m cpppo.server.enip -l %s %s %s &" % (
-                log_path,
+        server_errlog = "%s_enip_server.err" % key
+        open(server_errlog, 'w').close()
+        enip_server = "python -m cpppo.server.enip -l %s %s %s -a %s &" % (
+                server_errlog,
                 tag_int,
-                tag_bool
+                tag_bool,
+                plc.IP()+':44818'
                 )
         plc.cmd(enip_server)
         # check server with plc1 ps, take note of the PID and than
         # query it again
 
+
+    # start a ENIP client on hmi that periodically read/write from plc1 enip server
+    hmi = net.get('hmi')
+    client_errlog = "temp/workshop/hmi_enip_client.err"
+    client_log = "temp/workshop/hmi_enip_client.log"
+    open(client_errlog, 'w').close()
+    open(client_log, 'w').close()
+    
+
+    # write and read
+    enip_client = "python -m cpppo.server.enip.client --print -l %s -a %s %s %s %s %s >> %s" % (
+        client_errlog,
+        PLCS_IP['plc1'],
+        "pump1=1",
+        "pump1",
+        "flow1[0-3]=0,1,2,3",
+        "flow1[0-3]",
+        client_log
+    )
+    # print enip_client
+
+    loop_cmd = """
+    while sleep 2; do 
+    %s
+    done
+    """ % (enip_client)
+
+    # hmi.cmd(enip_client)
+    hmi.cmd(loop_cmd)
+    print "Each plcx runs an cpppo ENIP server with pumpx and flowx[%d] int tags" % tag_int_len
 
     CLI(net)
 
