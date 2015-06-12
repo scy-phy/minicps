@@ -3,7 +3,7 @@
 import random
 
 nb_values = 100000
-sensor_file = open("../temp/monitoring_test/sensor.txt", 'w')
+sensor_file = open("plc1/plc1_sensor.txt", 'w')
 start = 5.0
 delta = 5.0
 hh_lvl = 1500.0
