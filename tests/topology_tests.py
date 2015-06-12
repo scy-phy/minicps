@@ -437,6 +437,7 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
     tags_array[tag1] = "REAL"
     tags_array[tag2] = "SINT"
 
+    # creates the tag string for the cpppo server
     tags = ""
     for tag_name in tags_array:
         tag_type = tags_array[tag_name]

@@ -1,30 +1,43 @@
 #!/usr/bin/python
 
 from time import sleep
-import sys
+from time import time
 import os
-from RepeatedTimer import RepeatedTimer # to change with a while(sleep(x)) ?
+import sys
+
+epsilon = sys.float_info.epsilon
 
 def pump_action(action, flow_lvl, hh_lvl, ll_lvl):
-    if flow_lvl <= hh_lvl: # f1 - f2 < eps
+    """
+    defines the behavior of the pump, when the water flow is normal or too high
+    """
+    if flow_lvl - hh_lvl < epsilon:
         return 1
-    elif flow_lvl >= hh_lvl:
+    elif flow_lvl - hh_lvl > epsilon:
         return 0
     else:
         return action
     
 def sensor_next_value(sensor_file):
+    """
+    read a line of the sensor file and return the float read
+    """
     line = sensor_file.readline()
     if not line:
         return -1
     else:
         return float(line.rstrip('\n\r'))
 
-def sensor_action_wrapper(sensor_file, action_file, action, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile, rt):
+def sensor_action_wrapper(sensor_file, action_file, action, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile):
+    """
+    defines the action executed by the plc each timer seconds:
+    -reads the current flow value
+    -decides if it opens or closes the pump
+    -writes its decision into the action file
+    -updates the flow and pump values on the enip server
+    """
     flow_lvl = sensor_next_value(sensor_file)
-    if flow_lvl == -1:
-        rt.stop()
-    else:
+    if flow_lvl != -1:
         action = pump_action(action, flow_lvl, hh_lvl, ll_lvl)
         action_file.write(str(action))
         tags_string1 = "%s=%3.2f" % (
@@ -38,18 +51,19 @@ def sensor_action_wrapper(sensor_file, action_file, action, hh_lvl, ll_lvl, tag1
 
         
 def plc_routine(sensor_file_name, action_file_name, timeout, timer, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile):
+     """
+    the routine called by the main function, in order to execute the
+    action every timer second during timeout seconds
+    """
     sensor_file = open(sensor_file_name, 'r')
     action_file = open(action_file_name, 'w')
 
     action = 0
-    rt = None
-    
-    rt = RepeatedTimer(timer, sensor_action_wrapper, sensor_file, action_file, action, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile, rt)
 
-    try:
-        sleep(timeout)
-    finally:
-        rt.stop()
+    start_time = time()
+    while(time() - start_time < timeout):
+        sleep(timer)
+        sensor_action_wrapper(sensor_file, action_file, action, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile)
 
     action_file.close()
     sensor_file.close()
