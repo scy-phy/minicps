@@ -10,7 +10,7 @@ from nose.plugins.skip import Skip, SkipTest
 from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.log import setLogLevel
-from mininet.node import CPULimitedHost, RemoteController
+from mininet.node import CPULimitedHost, RemoteController, Host
 from mininet.link import TCLink
 from mininet.cli import CLI
 
@@ -228,7 +228,7 @@ def test_L3EthStarAttackDoubleAp():
     can be used to mitigate ARP poisoning.
 
     """
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
 
@@ -294,25 +294,29 @@ def test_L3EthStarAttackDoubleAp():
 
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
+def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
     """
-    a L3EthStar topology with some basic cpppo traffic between plcs.
-    2 flags are used PUMP[INT] and BOOL[INT]
+    a L3EthStarAttack topology with some basic cpppo traffic between the plcs.
+    2 flags are used PUMP=INT[tag_range] and BOOL=SINT[tag_range].
 
-    cpppo is used to simulate enip client/server    
+    the number of exchanges can be set, and also the size of the tag array, and the mini/maxi values the PUMP tag can have
+    the default controller used is the swat one. It can be changed or set to None to use a remote controller.
+
+    cpppo is used to simulate enip client/server, nb_messages*nb_plcs*(nb_plcs-1) are sent, randomly either in read or write mode, the pump numbers and the write values are also chosen randomly
     """
     raise SkipTest
 
-    # use the L3EthStar topology
-    topo = L3EthStar()
+    # use the L3EthStarAttack topology
+    topo = L3EthStarAttack() 
 
-    net = Mininet(topo=topo, link=TCLink, controller=None, listenPort=c.OF_MISC['switch_debug_port'])
+    net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
 
-    net.addController( 'c0',
-            controller=RemoteController,
-            ip='127.0.0.1',
-            port=c.OF_MISC['controller_port'] )
-    logger.info("started remote controller")
+    if(controller == None):
+        net.addController( 'c0',
+                           controller=RemoteController,
+                           ip='127.0.0.1',
+                           port=c.OF_MISC['controller_port'] )
+        logger.info("started remote controller")
 
     net.start()
 
@@ -333,8 +337,10 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
     # enip communication between workstn server and other hosts client
     # set the cpppo tags, eg. PUMP=INT[tag_range] BOOL=SINT[tag_range]
     tags_array = {}
-    tags_array["PUMP"] = "INT", tag_range
-    tags_array["BOOL"] = "SINT", tag_range
+    tag1 = "PUMP"
+    tag2 = "BOOL"
+    tags_array[tag1] = "INT", tag_range
+    tags_array[tag2] = "SINT", tag_range
 
     tags = ""
     for tag_name in tags_array:
@@ -345,8 +351,9 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
             value)
         
     # create all cpppo server on plcs with the 2 tags
+    plc_name = "plc"
     for host in net.hosts:
-        if( (host.name).find("plc") != -1 ):
+        if( (host.name).find(plc_name) != -1 ):
             server_cmd = "python -m cpppo.server.enip -vv -l %s %s %s &" % (
                 "temp/workshop/" + host.name + "-server.log",
                 host.IP(),
@@ -360,9 +367,9 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
         logger.info(str(nb_messages) + " messages to generate")
         for i in range(nb_messages):
             for host in net.hosts:
-                if((host.name).find("plc") != -1):
+                if((host.name).find(plc_name) != -1):
                     for other_host in net.hosts:
-                        if((other_host != host) and ((other_host.name).find("plc") != -1)):
+                        if((other_host != host) and ((other_host.name).find(plc_name) != -1)):
                             # random choice, read a tag or write it (True read and False write)
                             read_write = random.choice([True, False])
                             tags = ""
@@ -377,7 +384,7 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
                                     # write instructions
                             else:
                                 for tag_name in tags_array:
-                                    if(tag_name != "BOOL"):
+                                    if(tag_name != tag2):
                                         tag_value = random.randint(min, max)
                                     else:
                                         tag_value = random.getrandbits(1)
@@ -387,6 +394,8 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
                                             tag_i,
                                             tag_value)
                             # send them to the server on the other_host
+                            # use -m to force use of the Multiple Service Packet request
+                            # use -n to force the client to use plain Read/Write Tag commands
                             client_cmd = "python -m cpppo.server.enip.client -vv -l %s -a %s %s" % (
                                 "temp/workshop/" + host.name + "-client.log",
                                 other_host.IP(),
@@ -395,4 +404,74 @@ def test_L3EthStarTraffic(nb_messages=5, tag_range=10, min=0, max=8, auto_mode=T
             logger.info("message " + str(i+1) + " sent by all hosts")
         logger.info("ENIP traffic from clients to server generated, end of the test.")
     CLI(net)
+    net.stop()
+
+@with_named_setup(setup_func, teardown_func)
+def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, timeout=20, timer=1):
+    """
+    a L3EthStarAttack topology where plc1 is running a enip server, which reads flow values in a sensor file and writes the according pump behavior in an action file, and actalizes its tags values (pump a sint, and flow a real)
+    hmi is running a enip client which frequently queries the plc1 server in order to draw flow graph and pump decisions graph.
+    """
+    # raise SkipTest
+
+    # use the L3EthStarAttack topology
+    topo = L3EthStarAttack()
+    
+    net = Mininet(topo=topo, link=TCLink, controller=controller, listenPort=c.OF_MISC['switch_debug_port'])
+
+    if(controller == None):
+        net.addController( 'c0',
+                           controller=RemoteController,
+                           ip='127.0.0.1',
+                           port=c.OF_MISC['controller_port'] )
+        logger.info("started remote controller")
+
+    net.start()
+    plc1, hmi = net.get('plc1', 'hmi')
+    directory = 'temp/monitoring_test/'
+
+    # the two tags : flow=REAL and pump=SINT (BOOL, 0 or 1)
+    tags_array = {}
+    tag1 = "flow"
+    tag2 = "pump"
+    tags_array[tag1] = "REAL"
+    tags_array[tag2] = "SINT"
+
+    tags = ""
+    for tag_name in tags_array:
+        tag_type = tags_array[tag_name]
+        tags += "%s=%s " % (
+            tag_name,
+            tag_type)
+        
+    # create a cpppo server on plc1
+    server_cmd = "python -m cpppo.server.enip -vv -l %s %s &" % (
+        directory + plc1.name + "-server.log",
+        tags)
+    output = plc1.cmd(server_cmd)
+
+    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
+    plc1.cmd("python tests/plc_routine.py %s %s %d %d %f %f %s %s %s %s &" % (
+        directory + "sensor.txt",
+        directory + "action.txt",
+        timeout,
+        timer,
+        hh_lvl,
+        ll_lvl,
+        tag1,
+        tag2,
+        plc1.IP(),
+        directory + "plc-cmd.log"))
+
+    # start the hmi which queries the server and draw flow and pump graphs
+    logger.info("Please wait " + str(timeout) + " seconds.")
+    out = hmi.cmd("python tests/hmi_routine.py %f %f %s %s %s %s" %(
+        timeout,
+        timer,
+        tag1,
+        tag2,
+        plc1.IP(),
+        directory + "hmi.pdf"))
+
+    logger.info(out)
     net.stop()
