@@ -407,7 +407,7 @@ def test_L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range
     net.stop()
 
 @with_named_setup(setup_func, teardown_func)
-def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, timeout=20, timer=1):
+def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, timeout=120, timer=1):
     """
     a L3EthStarAttack topology where plc1 is running a enip server, which reads flow values in a sensor file and writes the according pump behavior in an action file, and actalizes its tags values (pump a sint, and flow a real)
     hmi is running a enip client which frequently queries the plc1 server in order to draw flow graph and pump decisions graph.
@@ -435,7 +435,7 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
     tag1 = "flow1"
     tag2 = "pump1"
     tags_array[tag1] = "REAL"
-    tags_array[tag2] = "SINT"
+    tags_array[tag2] = "INT"
 
     # creates the tag string for the cpppo server
     tags = ""
@@ -446,7 +446,7 @@ def test_L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl
             tag_type)
         
     # create a cpppo server on plc1
-    server_cmd = "python -m cpppo.server.enip -vv -l %s %s &" % (
+    server_cmd = "python -m cpppo.server.enip -v -l %s %s &" % (
         directory + plc1.name + "-server.log",
         tags)
     output = plc1.cmd(server_cmd)

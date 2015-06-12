@@ -43,15 +43,15 @@ def sensor_action_wrapper(sensor_file, action_file, action, hh_lvl, ll_lvl, tag1
         tags_string1 = "%s=%3.2f" % (
             tag1,
             flow_lvl)
-        os.system("python -m cpppo.server.enip.client -vv -l %s -a %s %s" % (logfile, ipaddr, tags_string1))
+        # updates the flow and pump values on the cpppo server with a cpppo write order
+        os.system("python -m cpppo.server.enip.client -v -l %s -a %s %s" % (logfile, ipaddr, tags_string1))
         tags_string2 = "%s=%d" % (
             tag2,
             action)
-        os.system("python -m cpppo.server.enip.client -vv -l %s -a %s %s" % (logfile, ipaddr, tags_string2))
-
+        os.system("python -m cpppo.server.enip.client -v -l %s -a %s %s" % (logfile, ipaddr, tags_string2))
         
 def plc_routine(sensor_file_name, action_file_name, timeout, timer, hh_lvl, ll_lvl, tag1, tag2, ipaddr, logfile):
-     """
+    """
     the routine called by the main function, in order to execute the
     action every timer second during timeout seconds
     """

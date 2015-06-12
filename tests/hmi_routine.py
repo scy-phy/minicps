@@ -55,7 +55,17 @@ def hmi_routine(timeout, timer, tag1, tag2, ipaddr, save_file_name):
         hmi_action(tag1, tag2, ipaddr, flow_axis, pump_axis, x_axis)
         
     # computes and saves the graph
-    plt.plot(flow_axis)
+    plt.figure(1)
+    plt.subplot(211)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Flow level (cm)')
+    plt.plot(x_axis, flow_axis, 'bo')
+
+    plt.subplot(212)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Pump action')
+    plt.ylim([-0.5, 1.5])
+    plt.plot(x_axis, pump_axis, 'r')
     plt.savefig(save_file_name, bbox_inches='tight')
  
 def main():
