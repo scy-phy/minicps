@@ -224,7 +224,7 @@ def mininetLauncher():
 
     # hmi.cmd(enip_client)
     hmi.cmd(loop_cmd)
-    print "Each plcx runs an cpppo ENIP server with pumpx and flowx[%d] int tags" % tag_int_len
+    print "Each plcX runs an cpppo ENIP server with pumpX and flowX[%d] int tags" % tag_int_len
 
     CLI(net)
 
@@ -232,4 +232,9 @@ def mininetLauncher():
 
 
 if __name__ == '__main__':
+    # Change to the top directory
+    import os
+    import os.path
+
+    os.chdir(os.path.join(os.path.dirname(__file__), '..', '..'))
     mininetLauncher()
