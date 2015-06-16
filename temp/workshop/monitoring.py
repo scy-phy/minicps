@@ -41,51 +41,37 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
     net.start()
     plc1, hmi = net.get('plc1', 'hmi')
 
-    # the two tags : flow=REAL and pump=SINT (BOOL, 0 or 1)
-    tags_array = {}
-    tag1 = "flow1"
-    tag2 = "pump1"
-    tags_array[tag1] = "REAL"
-    tags_array[tag2] = "INT"
+    # the 3 tags : flow=REAL and pump=SINT (BOOL, 0 or 1)
+    # tags_dic = {}
+    # pump1 = "pump1"
+    # pump2 = "pump2"
+    # flow = "flow"
+    # tags_dic[pump1] = "INT"
+    # tags_dic[pump2] = "INT"
+    # tags_dic[flow] = "REAL"
 
     # creates the tag string for the cpppo server
-    tags = ""
-    for tag_name in tags_array:
-        tag_type = tags_array[tag_name]
-        tags += "%s=%s " % (
-            tag_name,
-            tag_type)
+    # tags = ""
+    # for tag_name in tags_dic:
+    #     tag_type = tags_dic[tag_name]
+    #     tags += "%s=%s " % (
+    #         tag_name,
+    #         tag_type)
         
-    # create a cpppo server on plc1
-    server_cmd = "python -m cpppo.server.enip -v -l %s %s &" % (
-        plc1.name + "/" + plc1.name + "_monitoring_server.log",
-        tags)
-    output = plc1.cmd(server_cmd)
+    # # # create a cpppo server on plc1
+    # server_cmd = "python -m cpppo.server.enip -v -l %s %s &" % (
+    #     plc1.name + "/" + plc1.name + "_monitoring_server.log",
+    #     tags)
+    # output = plc1.cmd(server_cmd)
 
-    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
-    plc1.cmd("python plc_routine.py %s %s %d %d %f %f %s %s %s %s &" % (
-        plc1.name + "/" + plc1.name + "_sensor.txt",
-        plc1.name + "/" + plc1.name + "_action.txt",
-        timeout,
-        timer,
-        hh_lvl,
-        ll_lvl,
-        tag1,
-        tag2,
-        plc1.IP(),
-        plc1.name + "/" + plc1.name + "_monitoring_client.log"))
+    # # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
+    # plc1.cmd("python plc_routine.py &")
 
-    # start the hmi which queries the server and draw flow and pump graphs
-    logger.info("Please wait " + str(timeout) + " seconds.")
-    out = hmi.cmd("python hmi_routine.py %f %f %s %s %s %s" %(
-        timeout,
-        timer,
-        tag1,
-        tag2,
-        plc1.IP(),
-        hmi.name + "/" + hmi.name + "_monitoring.pdf"))
-
-    logger.info(out)
+    # # start the hmi which queries the server and draw flow and pump graphs
+    # logger.info("Please wait " + str(timeout) + " seconds.")
+    # out = hmi.cmd("python hmi_routine.py")
+    
+    CLI(net)
     net.stop()
 
 def main():

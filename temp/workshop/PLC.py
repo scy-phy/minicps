@@ -39,7 +39,7 @@ class PLC(ICS):
         self.__out_pump.close()
 
     def circular_flow(self):
-        if(self.__sensor.height() - Tank.HH_LVL < EPS):
+        if(self.__sensor.height() - Tank.H_LVL < EPS):
             self.fill_tank()
         else:
             self.empty_tank()
@@ -67,14 +67,3 @@ class PLC(ICS):
         (out, err) = proc.communicate()
         proc = subprocess.Popen(["python -m cpppo.server.enip.client -a %s %s" % (self._ipaddr, tag_sensor)], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
-
-def main():
-    tags = {}
-    tags["flow"] = "REAL"
-    tags["pump1"] = "INT"
-    tags["pump2"] = "INT"
-    plc = PLC(tags, "192.168.1.10", 1, 120, "in.lol", "out.lol", "sens.lol")
-    plc.run()
-
-if __name__ == '__main__':
-    main()

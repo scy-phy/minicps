@@ -38,9 +38,7 @@ class HMI(ICS):
             (out, err) = proc.communicate()
             # parse the output of the subprocess
             ret = parse(str(out))
-            print out
-            print err
-            print self._ipaddr
+            print ret
 
             # append the values in the set
             if(tag_name == "pump1"):
@@ -50,14 +48,3 @@ class HMI(ICS):
             elif(tag_name == "flow"):
                 self.__flow.append(ret[0])
                 self.__x.append(time())
-
-def main():
-    tags = {}
-    tags["flow"] = "REAL"
-    tags["pump1"] = "INT"
-    tags["pump2"] = "INT"
-    hmi = HMI(tags, "192.168.1.10", 1, 20, "out.pdf")
-    hmi.run()
-
-if __name__ == '__main__':
-    main()

@@ -1,6 +1,6 @@
 class Pump(object):
 
-    def __init__(self, speed=20.0, diameter=4.0, height = 0.0):
+    def __init__(self, speed=42.0, diameter=0.8, height = 0.0):
         self.__open = False
         self.__speed = speed
         self.__diameter = diameter
