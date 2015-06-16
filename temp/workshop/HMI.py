@@ -38,7 +38,6 @@ class HMI(ICS):
             (out, err) = proc.communicate()
             # parse the output of the subprocess
             ret = parse(str(out))
-            print ret
 
             # append the values in the set
             if(tag_name == "pump1"):

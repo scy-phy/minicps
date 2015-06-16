@@ -55,12 +55,9 @@ class PLC(ICS):
         self.__out_pump_file.write(str(out_open) + '\n')
         self.__sensor_file.write(str(self.__sensor.height()) + '\n')
 
-        print in_open
-        print out_open
-        print self.__sensor.height()
-        tag_in_pump = "%s=%d" % (self._tags["pump1"], in_open)
-        tag_out_pump = "%s=%d" % (self._tags["pump2"], out_open)
-        tag_sensor = "%s=%3.2f" % (self._tags["flow"], self.__sensor.height())
+        tag_in_pump = "%s=%d" % ("pump1", in_open)
+        tag_out_pump = "%s=%d" % ("pump2", out_open)
+        tag_sensor = "%s=%3.2f" % ("flow", self.__sensor.height())
         proc = subprocess.Popen(["python -m cpppo.server.enip.client -a %s %s" % (self._ipaddr, tag_in_pump)], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
         proc = subprocess.Popen(["python -m cpppo.server.enip.client -a %s %s" % (self._ipaddr, tag_out_pump)], stdout=subprocess.PIPE, shell=True)
