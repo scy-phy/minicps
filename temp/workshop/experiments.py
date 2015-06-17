@@ -76,16 +76,10 @@ class EthStar(Topo):
 class L3EthStar(Topo):
 
     """
-    Connects Historian, Workstation and process PLCs
-    using a 5-port ethernet switch.
-    An industrial firewall service router filter the traffic.
+    Use link performance variation
     """
 
     def build(self, n=8):
-        """
-        mininet doesn't like long host names
-        eg: workstion abbreviated to workstn
-        """
 
         switch = self.addSwitch('s3')
 
@@ -103,12 +97,18 @@ class L3EthStar(Topo):
                 mac=OTHER_MACS['workstn'])
         self.addLink(workstn, switch)
 
+        hmi = self.addHost('hmi', ip=L2_HMI['hmi']+NETMASK,
+                mac=OTHER_MACS['hmi'])
+        self.addLink(hmi, switch)
+
 
 class L3EthStarAttack(Topo):
 
     """
-    Like L3EthStar but with an additional host used
-    as attacker
+    Link are ideal
+
+    attacker has aa:aa:aa:aa:aa:aa MAC address
+    and 192.168.1.77 IP address
     """
 
     def build(self, n=8):
@@ -146,11 +146,17 @@ class L3EthStarAttack(Topo):
         self.addLink(workstn, switch)
 
 
-def mininetLauncher():
+def mininetLauncher(number):
 
-    # topo = EthStar()
-    # topo = L3EthStar()
-    topo = L3EthStarAttack()
+    if number == 0:
+        topo = L3EthStar()
+    elif number == 1:
+        topo = L3EthStarAttack()
+    else:
+        exit("ERROR: Please enter either 0 or 1")
+
+    print "Launch experiment %d" % number
+
     net = Mininet(topo=topo, link=TCLink, listenPort=6634)
 
     net.start()
@@ -222,9 +228,14 @@ def mininetLauncher():
     done
     """ % (enip_client)
 
-    # hmi.cmd(enip_client)
-    hmi.cmd(loop_cmd)
+    if number == 0:
+        hmi.cmd(enip_client)
+    elif number == 1:
+        hmi.cmd(loop_cmd)
+        print "hmi is quering plc1 every 2 second an logging into temp/workshop/hmi_enip_client.log"
+
     print "Each plcX runs an cpppo ENIP server with pumpX and flowX[%d] int tags" % tag_int_len
+    print "Each plc runs a SimpleHTTPServer on port 80"
 
     CLI(net)
 
@@ -235,6 +246,15 @@ if __name__ == '__main__':
     # Change to the top directory
     import os
     import os.path
+    import sys
 
     os.chdir(os.path.join(os.path.dirname(__file__), '..', '..'))
-    mininetLauncher()
+
+    if len(sys.argv) > 1:
+        print sys.argv[0]
+        print sys.argv[1]
+        number = sys.argv[1]
+        mininetLauncher(int(number))
+    else:
+        exit("ERROR: Please pass either a command line argument [0] or [1]")
+
