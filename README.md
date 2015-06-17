@@ -132,6 +132,8 @@ OpenFlow:
 
 [OFv1.30 spec](https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.0.pdf)
 
+[Open vSwitch (OVS)](http://openvswitch.org/)
+
 [OF Packet Format](http://archive.openflow.org/wk/images/c/c5/Openflow_packet_format.pdf)
 
 [NOX(POX)](http://www.noxrepo.org/)
