@@ -41,12 +41,49 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
     net.start()
     plc1, hmi = net.get('plc1', 'hmi')
 
-    # # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
-    plc1.cmd("python plc_routine.py &")
 
-    # # start the hmi which queries the server and draw flow and pump graphs
-    hmi.cmd("python hmi_routine.py &")
+    flow = "flow"
+    pump1 = "pump1"
+    pump2 = "pump2"
+
+    tags = {}
+    tags[flow] = "REAL"
+    tags[pump1] = "INT"
+    tags[pump2] = "INT"
     
+    # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
+    plc1.cmd("python plc_routine.py %s %s %f %f %s %s %d %s %s %s %s %s %s &" % (
+        plc1.IP(),
+        plc1.name + "/",
+        timer,
+        timeout,
+        "out.json",
+        "server.log",
+        80,
+        flow,
+        tags[flow],
+        pump1,
+        tags[pump1],
+        pump2,
+        tags[pump2]))
+
+    # start the hmi which queries the server and draw flow and pump graphs
+    hmi.cmd("python hmi_routine.py %s %s %f %f %s %s %s %s %s %s %s &" %(
+        plc1.IP(),
+        hmi.name + "/",
+        timer,
+        timeout,
+        "graphs.pdf",
+        flow,
+        tags[flow],
+        pump1,
+        tags[pump1],
+        pump2,
+        tags[pump2]))
+
+    logger.info("Please wait %3.2f seconds." % timeout)
+    sleep(timeout)
+    logger.info("Test finished, exiting.")
     CLI(net)
     net.stop()
 

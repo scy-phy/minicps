@@ -1,3 +1,4 @@
+from time import time
 import subprocess
 import sys
 from Pump import Pump
@@ -10,21 +11,19 @@ from ICS import ICS
 
 class PLC(ICS):
 
-    def __init__(self, tags, ipaddr, timer, timeout, in_pump_filename, out_pump_filename, sensor_filename, in_pump=Pump(), out_pump=Pump(), sensor=Sensor(), tank=Tank()):
-        super(PLC, self).__init__(tags, ipaddr, timer, timeout)
+    def __init__(self, tags, ipaddr, directory, timer, timeout, filename, in_pump=Pump(), out_pump=Pump(), sensor=Sensor(), tank=Tank()):
+        super(PLC, self).__init__(tags, ipaddr, directory, timer, timeout)
         self.__in_pump = in_pump
         self.__out_pump = out_pump
         self.__sensor = sensor
         self.__tank = tank
 
-        self.__in_pump_file = open(in_pump_filename, 'w')
-        self.__out_pump_file = open(out_pump_filename, 'w')
-        self.__sensor_file = open(sensor_filename, 'w')
+        self.__file = open(self._dir + filename, 'w')
+        self.__file.write("{\n")
 
     def __del__(self):
-        self.__in_pump_file.close()
-        self.__out_pump_file.close()
-        self.__sensor_file.close()
+        self.__file.write("}")
+        self.__file.close()
 
     def fill_tank(self):
         self.__in_pump.open()
@@ -50,11 +49,16 @@ class PLC(ICS):
         self.__sensor.actualize(h)
         in_open = bool_to_int(self.__in_pump.is_open())
         out_open = bool_to_int(self.__out_pump.is_open())
-        
-        self.__in_pump_file.write(str(in_open) + '\n')
-        self.__out_pump_file.write(str(out_open) + '\n')
-        self.__sensor_file.write(str(self.__sensor.height()) + '\n')
 
+        self.__file.write("\t{\n")
+        self.__file.write("\t\t\"flow\": " + str(self.__sensor.height()) + ",\n")
+        self.__file.write("\t\t\"pumps\": [\n")
+        self.__file.write("\t\t\t\"pump1\": " + str(in_open) + ",\n")
+        self.__file.write("\t\t\t\"pump2\": " + str(out_open) + "\n")
+        self.__file.write("\t\t],\n")
+        self.__file.write("\t\t\"time\": " + str(time()) + "\n")
+        self.__file.write("\t},\n")
+        
         tag_in_pump = "%s=%d" % ("pump1", in_open)
         tag_out_pump = "%s=%d" % ("pump2", out_open)
         tag_sensor = "%s=%3.2f" % ("flow", self.__sensor.height())
