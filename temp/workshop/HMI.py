@@ -9,19 +9,29 @@ from Utils import parse
 
 class HMI(ICS):
 
-    def __init__(self, tags, ipaddr, timer, timeout, output_file_name):
-        super(HMI, self).__init__(tags, ipaddr, timer, timeout)
+    def __init__(self, tags, ipaddr, directory, timer, timeout, output_file_name):
+        super(HMI, self).__init__(tags, ipaddr, directory, timer, timeout)
         self.__file_name = output_file_name
         self.__in_pump = []
         self.__out_pump = []
         self.__flow = []
         self.__x = []
 
-
     def __del__(self):
         # computes and saves the graph
         # Three subplots sharing both x/y axes
         f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+
+        ax2.set_ylim([-0.5, 1.5])
+        ax3.set_ylim([-0.5, 1.5])
+        
+        ax3.set_xlabel('Time (s)')
+        ax1.set_ylabel('Flow level (cm)')
+        ax2.set_ylabel('In pump')
+        ax3.set_ylabel('Out pump')
+
+        ax1.set_title('Flow level and pumps reactions')
+
         ax1.scatter(self.__x, self.__flow, color='b')
         ax2.plot(self.__x, self.__in_pump, color='g')
         ax3.plot(self.__x, self.__out_pump, color='r')
@@ -29,7 +39,7 @@ class HMI(ICS):
         # all but bottom plot.
         f.subplots_adjust(hspace=0)
         plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
-        plt.savefig(self.__file_name, bbox_inches='tight')
+        plt.savefig(self._dir + self.__file_name, bbox_inches='tight')
 
     def action(self):
         for tag_name in self._tags:

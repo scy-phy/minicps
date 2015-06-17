@@ -1,14 +1,25 @@
 #!/usr/bin/python
 
 from PLC import PLC
+import sys
 
 def main():
+    ipaddr = sys.argv[1]
+    directory = sys.argv[2]
+    timer = float(sys.argv[3])
+    timeout = float(sys.argv[4])
+    file_name = sys.argv[5]
+    logfile = sys.argv[6]
+    port = int(sys.argv[7])
+
     tags = {}
-    tags["flow"] = "REAL"
-    tags["pump1"] = "INT"
-    tags["pump2"] = "INT"
-    plc = PLC(tags, "192.168.1.10", 1, 120, "plc1/in_pump.txt", "plc1/out_pump.txt", "plc1/sensor.txt")
-    plc.start_server("plc1/server.log")
+    tags[sys.argv[8]] = sys.argv[9]
+    tags[sys.argv[10]] = sys.argv[11]
+    tags[sys.argv[12]] = sys.argv[13]
+
+    plc = PLC(tags, ipaddr, directory, timer, timeout, file_name)
+    plc.start_enip_server(logfile)
+    plc.start_http_server(port)
     plc.run()
 
 if __name__ == '__main__':

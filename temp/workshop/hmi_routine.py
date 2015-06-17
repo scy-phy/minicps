@@ -1,14 +1,22 @@
 #!/usr/bin/python
 
 from HMI import HMI
+import sys
 
 def main():
+    ipaddr = sys.argv[1]
+    directory = sys.argv[2]
+    timer = float(sys.argv[3])
+    timeout = float(sys.argv[4])
+    file_name = sys.argv[5]
+    
     tags = {}
-    tags["flow"] = "REAL"
-    tags["pump1"] = "INT"
-    tags["pump2"] = "INT"
-    hmi = HMI(tags, "192.168.1.10", 1, 120, "hmi/graphs.pdf")
-    hmi.run()
+    tags[sys.argv[6]] = sys.argv[7]
+    tags[sys.argv[8]] = sys.argv[9]
+    tags[sys.argv[10]] = sys.argv[11]
 
+    hmi = HMI(tags, ipaddr, directory, timer, timeout, file_name)
+    hmi.run()
+    
 if __name__ == '__main__':
     main()

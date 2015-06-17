@@ -2,33 +2,48 @@ from time import sleep
 from time import time
 from threading import Thread
 import abc
-from os import system
+import subprocess
+import os
+import signal
 
 class ICS(object):
     __metaclass__ = abc.ABCMeta
     
-    def __init__(self, tags, ipaddr, timer, timeout):
+    def __init__(self, tags, ipaddr, directory, timer, timeout):
         self._tags = tags
         self._ipaddr = ipaddr
+        self._dir = directory
         self._timer = timer
         self.__timeout = timeout
         self.__thread = None
+        self.__enip_pro = None
+        self.__http_pro = None
+        os.system("cd %s" % (self._dir))
 
     def __del__(self):
         if(self.__thread != None):
             self.__thread.join()
+        if(self.__http_pro != None):
+            os.killpg(self.__http_pro.pid, signal.SIGTERM)
+        if(self.__enip_pro != None):
+            os.killpg(self.__enip_pro.pid, signal.SIGTERM)
     
-    def start_server(self, file_name):
+    def start_enip_server(self, file_name):
         tags = ""
         for tag_name in self._tags:
             tag_type = self._tags[tag_name]
             tags += "%s=%s " % (
                 tag_name,
                 tag_type)
-        system("python -m cpppo.server.enip -a %s -v -l %s %s &" % (
+        cmd = "python -m cpppo.server.enip -a %s -v -l %s %s &" % (
             self._ipaddr,
-            file_name,
-            tags))
+            self._dir + file_name,
+            tags)
+        self.__enip_pro = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
+
+    def start_http_server(self, port):
+        cmd = "python -m SimpleHTTPServer %d" % port
+        self.__http_pro = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
 
     @abc.abstractmethod
     def action(self): # input
