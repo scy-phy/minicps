@@ -52,7 +52,7 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
     tags[pump2] = "INT"
     
     # start the plc thread, reading flow level from a file and writing its actions into another, and actualizing its tags accordingly to the flow level
-    plc1.cmd("python plc_routine.py %s %s %f %f %s %s %d %s %s %s %s %s %s &" % (
+    out = plc1.cmd("python plc_routine.py %s %s %f %f %s %s %d %s %s %s %s %s %s &" % (
         plc1.IP(),
         plc1.name + "/",
         timer,
@@ -68,7 +68,7 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
         tags[pump2]))
 
     # start the hmi which queries the server and draw flow and pump graphs
-    hmi.cmd("python hmi_routine.py %s %s %f %f %s %s %s %s %s %s %s &" %(
+    out = hmi.cmd("python hmi_routine.py %s %s %f %f %s %s %s %s %s %s %s &" %(
         plc1.IP(),
         hmi.name + "/",
         timer,
@@ -84,7 +84,7 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
     logger.info("Please wait %3.2f seconds." % timeout)
     sleep(timeout)
     logger.info("Test finished, exiting.")
-    CLI(net)
+    # CLI(net)
     net.stop()
 
 def main():

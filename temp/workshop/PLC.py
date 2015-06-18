@@ -25,6 +25,7 @@ class PLC(ICS):
         self.__out_pump = out_pump
         self.__sensor = sensor
         self.__tank = tank
+        self.__increase = True
 
         self.__file = open(self._dir + filename, 'w')
         self.__file.write("{\n")
@@ -66,6 +67,24 @@ class PLC(ICS):
         else:
             self.empty_tank()
 
+    def circular_flow(self, high, low, increase):
+        if(increase and (self.__sensor.height() - high < EPS)):
+            self.fill_tank()
+            print "ici"
+            return increase
+        elif(increase and (self.__sensor.height() - high >= EPS)):
+            self.empty_tank()
+            print "da"
+            return False
+        elif(not increase and (self.__sensor.height() - low < EPS)):
+            self.fill_tank()
+            print "here"
+            return True
+        elif(not increase and (self.__sensor.height() - low >= EPS)):
+            self.empty_tank()
+            print "poule"
+            return increase
+        
     def action(self):
         """
         The PLC action is:
@@ -74,7 +93,9 @@ class PLC(ICS):
         To updates its ENIP server values
         """
         # Flow order
-        self.maintain_level(Tank.H_LVL)
+        # self.maintain_level(Tank.H_LVL)
+        
+        self.__increase = self.circular_flow(Tank.H_LVL, Tank.L_LVL, self.__increase)
         # Computes the new flow level
         h = self.__tank.tank_flow([self.__in_pump], [self.__out_pump], self.__sensor, self._timer)
         self.__sensor.actualize(h)
