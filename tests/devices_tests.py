@@ -83,8 +83,7 @@ def test_POXSwatController():
 
 @with_named_setup(setup_func, teardown_func)
 def test_POXAntiArpPoison():
-    """TODO Test AntiArpPoison controller.
-    """
+    """TODO Test AntiArpPoison controller."""
     raise SkipTest
 
     topo = L3EthStar()
@@ -165,7 +164,7 @@ def test_Workshop():
     # raise SkipTest
 
     topo = L3EthStarAttack()
-    net = Mininet(topo=topo, controller=POXSwatController, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+    net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
     net.start()
 
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
@@ -178,18 +177,20 @@ def test_Workshop():
     target_ip1 = plc1.IP()
     target_ip2 = hmi.IP()
     attacker_interface = 'attacker-eth0'
-    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % (
+    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s &' % (
             target_ip1,
-            target_ip2, attacker_interface)
+            target_ip2, 
+            attacker_interface)
     attacker.cmd(attacker_cmd)
     logger.info("attacker arp poisoned hmi and plc1")
 
     target_ip1 = plc3.IP()
     target_ip2 = plc4.IP()
     attacker_interface = 'plc2-eth0'
-    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s' % (
+    attacker_cmd = 'scripts/attacks/arp-mitm.sh %s %s %s &' % (
             target_ip1,
-            target_ip2, attacker_interface)
+            target_ip2,
+            attacker_interface)
     plc2.cmd(attacker_cmd)
     logger.info("plc2 arp poisoned plc3 and plc4")
 

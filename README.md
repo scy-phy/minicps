@@ -134,6 +134,8 @@ OpenFlow:
 
 [Open vSwitch (OVS)](http://openvswitch.org/)
 
+[OpenFlow wireshark support and wiki](https://wiki.wireshark.org/OpenFlow)
+
 [OF Packet Format](http://archive.openflow.org/wk/images/c/c5/Openflow_packet_format.pdf)
 
 [NOX(POX)](http://www.noxrepo.org/)
