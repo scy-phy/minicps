@@ -84,7 +84,7 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
     logger.info("Please wait %3.2f seconds." % timeout)
     sleep(timeout)
     logger.info("Test finished, exiting.")
-    # CLI(net)
+    CLI(net)
     net.stop()
 
 def main():
