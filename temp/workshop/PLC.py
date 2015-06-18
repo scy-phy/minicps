@@ -68,21 +68,21 @@ class PLC(ICS):
             self.empty_tank()
 
     def circular_flow(self, high, low, increase):
+        """
+        Maintain the flow level between two given levels
+        and alternate between filling and emptying
+        """
         if(increase and (self.__sensor.height() - high < EPS)):
             self.fill_tank()
-            print "ici"
             return increase
         elif(increase and (self.__sensor.height() - high >= EPS)):
             self.empty_tank()
-            print "da"
             return False
         elif(not increase and (self.__sensor.height() - low < EPS)):
             self.fill_tank()
-            print "here"
             return True
         elif(not increase and (self.__sensor.height() - low >= EPS)):
             self.empty_tank()
-            print "poule"
             return increase
         
     def action(self):
