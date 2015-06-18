@@ -314,6 +314,8 @@ def test_Workshop():
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
     plc2, plc3, plc4 = net.get('plc2', 'plc3', 'plc4')
 
+    logger.info("./pox.py openflow.of_01 --port=6633 --address=127.0.0.1 log.level --DEBUG swat_controller")
+
     logger.info("pre-arp poisoning phase (eg open wireshark)")
     CLI(net)
 
