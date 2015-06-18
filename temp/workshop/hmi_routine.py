@@ -4,6 +4,10 @@ from HMI import HMI
 import sys
 
 def main():
+    """
+    Parses argv and creates an HMI object
+    Then run the thread of this HMI object
+    """
     ipaddr = sys.argv[1]
     directory = sys.argv[2]
     timer = float(sys.argv[3])

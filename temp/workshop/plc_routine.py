@@ -4,6 +4,10 @@ from PLC import PLC
 import sys
 
 def main():
+    """
+    Parses argv and creates an PLC object
+    Then run the thread of this PLC object
+    """
     ipaddr = sys.argv[1]
     directory = sys.argv[2]
     timer = float(sys.argv[3])
