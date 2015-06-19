@@ -4,10 +4,26 @@
 Workshop script used to demo mininet, cpppo and minicps.
 """
 
-from mininet.net import Mininet
+import sys
+sys.path.append("../../")
+
+from time import sleep
+import random
+
 from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.log import setLogLevel
+from mininet.node import CPULimitedHost, RemoteController, Host
 from mininet.link import TCLink
 from mininet.cli import CLI
+
+from minicps import constants as c
+from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
+from minicps.devices import POXSwatController
+
+import logging
+logger = logging.getLogger('minicps.topology')
+setLogLevel(c.TEST_LOG_LEVEL)
 
 LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
 
@@ -146,7 +162,7 @@ class L3EthStarAttack(Topo):
         self.addLink(workstn, switch)
 
 
-def mininetLauncher(number):
+def mininetLauncher(number, timeout=120, timer=1):
 
     if number == 0:
         topo = L3EthStar()
@@ -162,53 +178,41 @@ def mininetLauncher(number):
     net.start()
 
     hosts = net.items()
+    plc1, hmi = net.get('plc1', 'hmi')
+    
+    # set the enip tags
+    flow = "flow"
+    pump1 = "pump1"
+    pump2 = "pump2"
 
-    # starts webservers listening on port 80
-    # quet it using wget -O - plc_ip
-    tag_int_len = 20
+    tags = {}
+    tags[flow] = "REAL"
+    tags[pump1] = "INT"
+    tags[pump2] = "INT"
+
+    # starts enip and web servers on each plc and run a fill/empty tank
     for i in range(1, 7):
         key = 'plc'+str(i)
         plc = net.get(key)
-        # hosts[key].cmd(simple_http)
-        plc.cmd('cd temp/workshop/%s' % key)
+        plc.cmd("python plc_routine.py %s %s %f %f %s %s %d %s %s %s %s %s %s &" % (
+            plc.IP(),
+            plc.name + "/",
+            timer,
+            timeout,
+            "out.json",
+            "server.log",
+            80,
+            flow,
+            tags[flow],
+            pump1,
+            tags[pump1],
+            pump2,
+            tags[pump2]))
 
-        simple_http = "python -m SimpleHTTPServer 80 &"
-        enip_server = ""
-        plc.cmd(simple_http)
-
-        # create all cpppo server on plcs with the 2 tags
-        # tags_array = {}
-        # tags_array["PUMP"] = "INT", tag_range
-        # tags_array["BOOL"] = "SINT", tag_range
-
-        tag_int = "flow%d=INT[%d]" % (i, tag_int_len)
-        tag_bool = "pump%d=INT[1]" % i  # represent a bool
-
-        # print tag_int
-        # print tag_bool
-
-        # default listen port is 44818
-        # notice that in the loop im' cd'ing to plci folder
-        server_errlog = "%s_enip_server.err" % key
-        open(server_errlog, 'w').close()
-        enip_server = "python -m cpppo.server.enip -l %s %s %s -a %s &" % (
-                server_errlog,
-                tag_int,
-                tag_bool,
-                plc.IP()+':44818'
-                )
-        plc.cmd(enip_server)
-        # check server with plc1 ps, take note of the PID and than
-        # query it again
-
-
-    # start a ENIP client on hmi that periodically read/write from plc1 enip server
-    hmi = net.get('hmi')
-    client_errlog = "temp/workshop/hmi_enip_client.err"
-    client_log = "temp/workshop/hmi_enip_client.log"
+    client_errlog = "hmi/hmi_enip_client.err"
+    client_log = "hmi/hmi_enip_client.log"
     open(client_errlog, 'w').close()
     open(client_log, 'w').close()
-    
 
     # write and read
     enip_client = "python -m cpppo.server.enip.client --print -l %s -a %s %s %s %s %s >> %s" % (
@@ -216,40 +220,38 @@ def mininetLauncher(number):
         PLCS_IP['plc1'],
         "pump1=1",
         "pump1",
-        "flow1[0-3]=0,1,2,3",
-        "flow1[0-3]",
+        "flow=2",
+        "flow",
         client_log
     )
-    # print enip_client
-
-    loop_cmd = """
-    while sleep 2; do 
-    %s
-    done
-    """ % (enip_client)
 
     if number == 0:
         hmi.cmd(enip_client)
     elif number == 1:
-        hmi.cmd(loop_cmd)
-        print "hmi is quering plc1 every 2 second an logging into temp/workshop/hmi_enip_client.log"
+        # start a ENIP client on hmi that periodically read from plc1 enip server and monitors the result in a http web page
+        hmi.cmd("python hmi_routine.py %s %s %f %f %s %s %s %s %s %s %s &" %(
+            plc1.IP(),
+            hmi.name + "/",
+            timer,
+            timeout,
+            "graphs.png",
+            flow,
+            tags[flow],
+            pump1,
+            tags[pump1],
+            pump2,
+            tags[pump2]))
+        print "HMI is quering plc1 every %3.2f seconds." % timer
 
-    print "Each plcX runs an cpppo ENIP server with pumpX and flowX[%d] int tags" % tag_int_len
-    print "Each plc runs a SimpleHTTPServer on port 80"
-
+    print "Each plcX runs an cpppo ENIP server with pump1, pump2 (INT) and flow (REAL) tags."
+    print "Each plc and the hmi runs a SimpleHTTPServer on port 80."
+    print "Please wait %3.2f seconds before trying to see the hmi output." % timeout
     CLI(net)
 
     net.stop()
 
 
 if __name__ == '__main__':
-    # Change to the top directory
-    import os
-    import os.path
-    import sys
-
-    os.chdir(os.path.join(os.path.dirname(__file__), '..', '..'))
-
     if len(sys.argv) > 1:
         print sys.argv[0]
         print sys.argv[1]

@@ -4,7 +4,7 @@ class Pump(object):
     It as attributes as a flow speed, a diameter and a height from the ground of the tank
     It also has two states: open and closed
     """
-    def __init__(self, speed=42.0, diameter=0.8, height = 0.0):
+    def __init__(self, speed=90.0, diameter=0.8, height = 0.0):
         self.__open = False
         self.__speed = speed
         self.__diameter = diameter

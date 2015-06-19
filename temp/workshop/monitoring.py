@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger('minicps.topology')
 setLogLevel(c.TEST_LOG_LEVEL)
 
-def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.0, timeout=120, timer=1):
+def L3EthStarMonitoring(controller=POXSwatController, timeout=120, timer=1):
     """
     a L3EthStarAttack topology where plc1 is running a enip server, which reads flow values in a sensor file and writes the according pump behavior in an action file, and actalizes its tags values (pump a sint, and flow a real)
     hmi is running a enip client which frequently queries the plc1 server in order to draw flow graph and pump decisions graph.
