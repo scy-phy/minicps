@@ -23,7 +23,7 @@ class ICS(object):
         """
         self._tags = tags
         self._ipaddr = ipaddr
-        self._dir = directory
+        self.__dir = directory
         self._timer = timer
         self.__timeout = timeout
         # This thread will execute the action() method every timer seconds during timeout seconds
@@ -31,7 +31,7 @@ class ICS(object):
         # Store server processes information, in order to stop them in the destructor
         self.__enip_proc = None
         self.__http_proc = None
-        os.system("cd %s" % (self._dir))
+        os.chdir(self.__dir)
 
     def __del__(self):
         """
@@ -59,7 +59,7 @@ class ICS(object):
         # Launch the ENIP server
         cmd = "python -m cpppo.server.enip -a %s -v -l %s %s &" % (
             self._ipaddr,
-            self._dir + file_name,
+            file_name,
             tags)
         # Store process informations in order to be able to stop it in the destructor
         self.__enip_proc = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)

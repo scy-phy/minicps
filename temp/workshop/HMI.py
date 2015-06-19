@@ -3,7 +3,7 @@ from time import time
 from Utils import parse # parse function read a string and extract all numbers (integers or floats)
 import abc
 import matplotlib
-matplotlib.use('pdf')
+# matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import subprocess
 
@@ -50,7 +50,7 @@ class HMI(ICS):
         f.subplots_adjust(hspace=0)
         plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
         # Save the file
-        plt.savefig(self._dir + self.__file_name, bbox_inches='tight')
+        plt.savefig(self.__file_name, bbox_inches='tight')
 
     def action(self):
         """

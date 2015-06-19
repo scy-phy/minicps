@@ -21,6 +21,7 @@ def main():
 
     hmi = HMI(tags, ipaddr, directory, timer, timeout, file_name)
     hmi.run()
+    hmi.start_http_server(80)
     
 if __name__ == '__main__':
     main()

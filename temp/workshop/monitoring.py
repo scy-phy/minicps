@@ -73,7 +73,7 @@ def L3EthStarMonitoring(controller=POXSwatController, hh_lvl=1000.0, ll_lvl=500.
         hmi.name + "/",
         timer,
         timeout,
-        "graphs.pdf",
+        "graphs.png",
         flow,
         tags[flow],
         pump1,

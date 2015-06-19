@@ -27,7 +27,7 @@ class PLC(ICS):
         self.__tank = tank
         self.__increase = True
 
-        self.__file = open(self._dir + filename, 'w')
+        self.__file = open(filename, 'w')
         self.__file.write("{\n")
 
     def __del__(self):
