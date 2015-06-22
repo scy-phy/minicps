@@ -253,7 +253,6 @@ def mininetLauncher(number, timeout=120, timer=1):
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(timeout)
     CLI(net)
-    thread.join()
     net.stop()
 
 
