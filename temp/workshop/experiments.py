@@ -7,6 +7,8 @@ Workshop script used to demo mininet, cpppo and minicps.
 import sys
 sys.path.append("../../")
 
+import signal
+from time import time
 from time import sleep
 import random
 
@@ -161,6 +163,8 @@ class L3EthStarAttack(Topo):
                 mac=OTHER_MACS['workstn'])
         self.addLink(workstn, switch)
 
+def handler(signum, frame):
+   print "Flow picture available at http://192.168.1.100."
 
 def mininetLauncher(number, timeout=120, timer=1):
 
@@ -242,12 +246,14 @@ def mininetLauncher(number, timeout=120, timer=1):
             pump2,
             tags[pump2]))
         print "HMI is quering plc1 every %3.2f seconds." % timer
-
-    print "Each plcX runs an cpppo ENIP server with pump1, pump2 (INT) and flow (REAL) tags."
-    print "Each plc and the hmi runs a SimpleHTTPServer on port 80."
-    print "Please wait %3.2f seconds before trying to see the hmi output." % timeout
+        print "Each plcX runs an cpppo ENIP server with pump1, pump2 (INT) and flow (REAL) tags."
+        print "Each plc and the hmi runs a SimpleHTTPServer on port 80."
+        print "Please wait %3.2f seconds before trying to see the hmi output." % timeout
+        # Call receive_alarm in 2 seconds
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(timeout)
     CLI(net)
-
+    thread.join()
     net.stop()
 
 
@@ -259,4 +265,3 @@ if __name__ == '__main__':
         mininetLauncher(int(number))
     else:
         exit("ERROR: Please pass either a command line argument [0] or [1]")
-
