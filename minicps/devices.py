@@ -32,6 +32,7 @@ import logging
 logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
 
+# POX
 class POXL2Pairs(Controller):
 
     """Build a controller able to update switches
@@ -113,90 +114,87 @@ class POXAntiArpPoison(Controller):
         self.cmd('kill %' + self.pox)
 
 
-class PLC(Host):
 
-    """Docstring for PLC. """
+        
+# NetworkX: use Edge and Vertex to avoid conflicts with mininet terminology
+class Vertex(object):
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Host.__init__(self)
+    """
+    Base networkx -> mininet host object
 
-        pass
+    Host and Node class names are used by mininet
+
+    """
+
+    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0,
+            logic=None):
+        """
+
+        :name: TODO
+        :ip: TODO
+        :mac: TODO
+        :netmask: TODO
+        :cpu_alloc: TODO
+        :logic: pointer to the Node logic
+
+        """
+        self.name = name
+        self.ip = ip
+        self.netmask = netmask
+        self.mac = mac
+        self.cpu_alloc = cpu_alloc
+
+        self._logic = logic
 
 
-class DumbSwitch(Node):
+class PLC(Vertex):
 
-    """Docstring for DumbSwitch. """
+    """PLC"""
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
-
-        pass
+    #TODO: add logic
 
 
-class DumbRouter(Node):
+class DumbSwitch(Vertex):
+
+    """DumbSwitch"""
+
+
+class HMI(Vertex):
+
+    """HMI"""
+    #TODO: add logic
+
+        
+class Workstn(Vertex):
+
+    """Workstn"""
+
+
+class Histn(Vertex):
+
+    """Histn"""
+        
+        
+class DumbRouter(Vertex):
 
     """Docstring for DumbRouter. """
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
 
-        pass
-
-
-class Firewall(Node):
+class Firewall(Vertex):
 
     """Docstring for Firewall. """
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
 
-        pass
-
-
-class SCADA(Node):
+class SCADA(Vertex):
 
     """Docstring for SCADA. """
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
 
-        pass
-
-
-class HMI(Node):
-
-    """Docstring for HMI. """
-
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
-
-        pass
-
-
-class Historian(Node):
+class Historian(Vertex):
 
     """Docstring for Historian. """
 
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
 
-        pass
-
-
-# Wireless devices
-class AccessPoint(Node):
+class AccessPoint(Vertex):
 
     """Docstring for AccessPoint. """
-
-    def __init__(self):
-        """TODO: to be defined1. """
-        Node.__init__(self)
-
-        pass
