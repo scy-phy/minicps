@@ -122,18 +122,17 @@ class Vertex(object):
     """
     Base networkx -> mininet host object
 
-    Host and Node class names are used by mininet
-
     """
 
+    # TODO: finish doc
     def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0):
         """
 
-        :name: TODO
-        :ip: TODO
-        :mac: TODO
-        :netmask: TODO
-        :cpu_alloc: TODO
+        :name: name used in mininet
+        :ip: ipv4
+        :mac: ethernet address
+        :netmask: CIDR notation eg: /24
+        :cpu_alloc: floating point percentage of CPU allocation
 
         """
         self.name = name

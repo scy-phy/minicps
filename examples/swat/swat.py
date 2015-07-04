@@ -1,5 +1,15 @@
 """
 Build SWaT testbed with MiniCPS
+
+graph_name functions are used to build networkx graphs representing the
+topology you want to build.
+
+mininet_name functions are used to setup mininet configs
+eg: preload webservers, enip servers, attacks, ecc...
+
+launcher interacts with MiniCPS topologies module and optionally plot and/or
+save a graph representation in the examples/swat folder.
+
 """
 
 # TODO: check the log files, merge with swat controller
@@ -20,9 +30,10 @@ from mininet.link import TCLink
 from mininet.log import setLogLevel
 
 import networkx as nx
+import matplotlib.pyplot as plt
 
 
-def test_graph():
+def graph_test():
     """
     Two plcs, hmi and s3
 
@@ -51,16 +62,20 @@ def test_graph():
     return graph
 
 
-def level1_graph(attacker=False):
+def graph_level1(attacker=False):
     """
     SWaT testbed L1 graph + L2 hmi + L3 histn and L3 workstn + optional
     attacker
+
+    :attacker: add an additional Attacker device to the graph
 
     :returns: graph
     """
 
     graph = nx.Graph()
     # graph = nx.DiGraph()
+
+    graph.name = 'swat_level1'
     
     # Init switches
     s3 = DumbSwitch('s3')
@@ -95,13 +110,9 @@ def level1_graph(attacker=False):
     return graph
 
 
-def laucher(graph):
+def mininet_std(net):
     """Launch the miniCPS SWaT simulation"""
 
-
-    # Build miniCPS topo
-    topo = TopoFromNxGraph(graph)
-    net = Mininet(topo=topo, link=TCLink, listenPort=6634)
     net.start()
 
     CLI(net)
@@ -109,6 +120,40 @@ def laucher(graph):
     net.stop()
 
 
+def mininet_workshop(net):
+    """
+    Settings used for the Think-in workshop
+
+    :net: TODO
+
+    """
+    pass
+
+
+def laucher(graph, mininet_config, draw_mpl=False):
+    """
+    Launch the miniCPS SWaT simulation
+    
+    :graph: networkx graph
+    :mininet_config: fucntion pointer to the mininet configuration
+    :draw_mpl: flag to draw and save the graph using matplotlib
+    """
+
+    # TODO: show only names and list attributes
+    if draw_mpl:
+        nx.draw_networkx(graph)
+        plt.axis('off')
+        # plt.show()
+        plt.savefig("examples/swat/%s.pdf" % graph.name)
+
+    # Build miniCPS topo
+    topo = TopoFromNxGraph(graph)
+    net = Mininet(topo=topo, link=TCLink, listenPort=6634)
+
+    mininet_config(net)
+
+
+
 if __name__ == '__main__':
-    swat_graph = level1_graph(attacker=True)
-    laucher(swat_graph)
+    swat_graph = graph_level1(attacker=True)
+    laucher(swat_graph, mininet_std, draw_mpl=True)
