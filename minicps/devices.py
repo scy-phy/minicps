@@ -125,7 +125,7 @@ class Vertex(object):
     """
 
     # TODO: finish doc
-    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0):
+    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0):
         """
 
         :name: name used in mininet
@@ -166,10 +166,14 @@ class Attacker(Vertex):
         # FIXME: delegate attack to mininet code?
 
 
-
 class DumbSwitch(Vertex):
 
-    """DumbSwitch"""
+    """Docstring for DumbSwitch. """
+
+    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0):
+        Vertex.__init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0)
+
+        self._is_switch = True  # used to discriminate btw node types
 
 
 class HMI(Vertex):

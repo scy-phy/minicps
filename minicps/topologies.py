@@ -49,11 +49,12 @@ class TopoFromNxGraph(Topo):
         hosts = {}
         for node in graph.nodes():
 
-            logger.debug('node.name: %s' % node.name)
 
-            if node.name.startswith('s'):  # TODO: weak condition
+            if node.__dict__.has_key('_is_switch'):
+                logger.debug('add switch: %s' % node.name)
                 hosts[node.name] = self.addSwitch(node.name)
             else:
+                logger.debug('add: %s' % node.name)
                 hosts[node.name] = self.addHost(node.name,
                     ip=node.ip+node.netmask, mac=node.mac)
                 # TODO: check '' ip, mac and netmask
