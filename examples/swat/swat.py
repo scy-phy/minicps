@@ -9,7 +9,7 @@ sys.path.append(os.getcwd())
 
 from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn
 from minicps.links import EthLink
-from minicps.topology import TopoFromNxGraph
+from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
 from constants import *  # those are SWaT specific constants

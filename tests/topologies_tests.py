@@ -15,7 +15,7 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 
 from minicps import constants as c
-from minicps.topology import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
+from minicps.topologies import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
 from minicps.constants import _mininet_functests, setup_func, teardown_func, teardown_func_clear, with_named_setup
 from minicps.devices import POXSwatController
 
@@ -24,7 +24,7 @@ from time import sleep
 import random
 
 import logging
-logger = logging.getLogger('minicps.topology')
+logger = logging.getLogger('minicps.topologies')
 setLogLevel(c.TEST_LOG_LEVEL)
 
 
