@@ -25,8 +25,9 @@ import networkx as nx
 
 
 # https://networkx.github.io/documentation/latest/reference/readwrite.html
+# TODO: add more TopoFrom that convert to NxGraph and reuse this class
+#       rename topology into topologies
 
-# TODO: add more TopoFrom...
 class TopoFromNxGraph(Topo):
 
     """
@@ -50,7 +51,7 @@ class TopoFromNxGraph(Topo):
 
             logger.debug('node.name: %s' % node.name)
 
-            if node.name.startswith('s'):
+            if node.name.startswith('s'):  # TODO: weak condition
                 hosts[node.name] = self.addSwitch(node.name)
             else:
                 hosts[node.name] = self.addHost(node.name,

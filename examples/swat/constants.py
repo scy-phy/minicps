@@ -1,5 +1,16 @@
 """
 SWaT constants
+
+L0 rings are isolated dicts.
+L1 network devices are divided into dicts according to the device type.
+Devices are mapped with actual SWaT IP, MAC and netmasks.
+
+Dedicated dict map and set each SWaT network level link parameters.
+It is also possible to fine tune each link in a single network level.
+Network level node numbers are stored in constats eg: L3_NODES, and
+they are used for example to distribute evenly CPU processing power.
+Dict key mirror where possible mininet device names, indeed it is
+super easy to create a new Topo class using those dictionaries.
 """
 
 #CONSTANTS

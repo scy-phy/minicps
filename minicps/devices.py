@@ -126,8 +126,7 @@ class Vertex(object):
 
     """
 
-    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0,
-            logic=None):
+    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0):
         """
 
         :name: TODO
@@ -135,7 +134,6 @@ class Vertex(object):
         :mac: TODO
         :netmask: TODO
         :cpu_alloc: TODO
-        :logic: pointer to the Node logic
 
         """
         self.name = name
@@ -144,14 +142,30 @@ class Vertex(object):
         self.mac = mac
         self.cpu_alloc = cpu_alloc
 
-        self._logic = logic
-
 
 class PLC(Vertex):
 
     """PLC"""
 
-    #TODO: add logic
+    # FIXME: delegate plc logic code to mininet?
+
+
+class Attacker(Vertex):
+
+    """Attacker"""
+
+    def ettercap_mitm_pap(self, target_ip1, target_ip2, attacker_interface):
+        """
+        Mount a ettercap Man in the Middle passive ARP poisoning attack
+
+        :target_ip1: TODO
+        :target_ip2: TODO
+        :attacker_interface: TODO
+
+        """
+        pass
+        # FIXME: delegate attack to mininet code?
+
 
 
 class DumbSwitch(Vertex):

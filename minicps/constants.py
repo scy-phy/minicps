@@ -4,17 +4,6 @@ minicps constants.
 TEST_LOG_LEVEL affetcs all the tests. 
 output, info and debug are in increasing order of verbosity.
 
-L0 rings are isolated dicts.
-L1 network devices are divided into dicts according to the device type.
-Devices are mapped with actual SWaT IP, MAC and netmasks.
-
-Dedicated dict map and set each SWaT network level link parameters.
-It is also possible to fine tune each link in a single network level.
-Network level node numbers are stored in constats eg: L3_NODES, and
-they are used for example to distribute evenly CPU processing power.
-Dict key mirror where possible mininet device names, indeed it is
-super easy to create a new Topo class using those dictionaries.
-
 There is a logger for each module/module_tests pair. Each pair
 reference to the same object instance and save log into
 minicps/log/modname.log. Log format and filters are hardcoded,
@@ -33,7 +22,6 @@ from nose.tools import *
 import os
 
 # OPENFLOW
-
 POX_PATH='~/'
 
 POX = {
@@ -183,22 +171,24 @@ TEST_LOG_LEVEL='info'
 
 TEMP_DIR = './temp'
 
-def _getlog_path():
-    """
-    :returns: path to minicps/logs
+# def _getlog_path():
+#     """
+#     :returns: path to minicps/logs
 
-    """
-    cwd = os.getcwd()
-    log_path = None
+#     """
+#     cwd = os.getcwd()
+#     print 'DEBUG _getlog_path: cwd %s' % cwd
+#     log_path = None
 
-    index = cwd.find('minicps')
+#     index = cwd.find('minicps/')
 
-    if index == -1:
-        log_path = './logs'
-    else:
-        log_path = cwd[0:index]+'logs'
+#     if index == -1:
+#         log_path = 'logs/'
+#     else:
+#         log_path = cwd[0:index]+'logs'
+#     print 'DEBUG _getlog_path: log_path %s' % log_path
 
-    return log_path
+#     return log_path
 
 
 def _buildLogger(loggername, maxBytes, backupCount):
@@ -214,16 +204,15 @@ def _buildLogger(loggername, maxBytes, backupCount):
 
     """
 
-    # TODO: find a way to not hardcode the level
-    
     logger = logging.getLogger(loggername)
     logger.setLevel(logging.DEBUG)
 
-    log_path = _getlog_path()
-    assert(log_path != None, "No log path found")
+    # log_path = _getlog_path()
+    # assert log_path != None, "No log path found" 
 
     fh = logging.handlers.RotatingFileHandler(
-            log_path+loggername+'.log',
+            # log_path+loggername+'.log',
+            'logs/'+loggername+'.log',
             maxBytes=maxBytes,
             backupCount=backupCount)
     fh.setLevel(logging.DEBUG)
