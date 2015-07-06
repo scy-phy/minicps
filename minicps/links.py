@@ -2,6 +2,7 @@
 Collection of Link subclasses to be used by MiniCPS.
 """
 
+
 class Edge(object):
 
     """

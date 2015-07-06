@@ -17,7 +17,7 @@ save a graph representation in the examples/swat folder.
 import sys, os
 sys.path.append(os.getcwd())
 
-from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn
+from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
 from minicps.links import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
@@ -106,7 +106,6 @@ def graph_level1(attacker=False):
         OTHER_MACS['attacker'])
         graph.add_edge(nodes['attacker'], s3, object=link)
 
-
     return graph
 
 
@@ -148,7 +147,8 @@ def laucher(graph, mininet_config, draw_mpl=False):
 
     # Build miniCPS topo
     topo = TopoFromNxGraph(graph)
-    net = Mininet(topo=topo, link=TCLink, listenPort=6634)
+    controller = POXSwat
+    net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
 
     mininet_config(net)
 

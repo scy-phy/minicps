@@ -31,90 +31,6 @@ from minicps.constants import _buildLogger, _pox_opts
 import logging
 logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
-
-# POX
-class POXL2Pairs(Controller):
-
-    """Build a controller able to update switches
-    flow tables according to MAC learning."""
-
-    def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.l2_pairs', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
-        self.cmd(self.pox, pox_opts)
-
-    def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
-        self.cmd('kill %' + self.pox)
-
-
-class POXL2Learning(Controller):
-
-    """Build a controller able to update switches
-    flow tables according to flow-based criteria
-    (not only MAC-based flow matching)."""
-
-    def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.l2_learning', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
-        self.cmd(self.pox, pox_opts)
-
-    def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
-        self.cmd('kill %' + self.pox)
-
-
-class POXProva(Controller):
-
-    """Use it to test components using POX_PATH."""
-
-    def start(self):
-        POX_PATH='hub'  # pox/ext/ dir
-
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(POX_PATH, 'DEBUG', './logs/'+type(self).__name__+'.log,w')
-        self.cmd(self.pox, pox_opts)
-        # self.cmd(self.pox, 'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
-
-    def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
-        self.cmd('kill %' + self.pox)
-
-
-class POXSwatController(Controller):
-
-    """Build a controller based on temp/antiarppoison.py"""
-
-    def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('swat_controller', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
-        self.cmd(self.pox, pox_opts)
-
-    def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
-        self.cmd('kill %' + self.pox)
-
-
-class POXAntiArpPoison(Controller):
-
-    """Build a controller based on temp/antiarppoison.py"""
-
-    def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('antiarppoison', 'DEBUG', './logs/'+type(self).__name__+'.log,w')
-        self.cmd(self.pox, pox_opts)
-
-    def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
-        self.cmd('kill %' + self.pox)
-
-
-
         
 # NetworkX: use Edge and Vertex to avoid conflicts with mininet terminology
 class Vertex(object):
@@ -168,7 +84,10 @@ class Attacker(Vertex):
 
 class DumbSwitch(Vertex):
 
-    """Docstring for DumbSwitch. """
+    """
+    _is_switch bool is used to discriminate btw mininet switch requiring
+    addSwitch methoo and normal hosts requiring addHost method.
+    """
 
     def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0):
         Vertex.__init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0)
@@ -215,3 +134,86 @@ class Historian(Vertex):
 class AccessPoint(Vertex):
 
     """Docstring for AccessPoint. """
+
+
+
+# Mininet
+class POXL2Pairs(Controller):
+
+    """Build a controller able to update switches
+    flow tables according to MAC learning."""
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts('forwarding.l2_pairs', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
+class POXL2Learning(Controller):
+
+    """Build a controller able to update switches
+    flow tables according to flow-based criteria
+    (not only MAC-based flow matching)."""
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts('forwarding.l2_learning', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
+class POXProva(Controller):
+
+    """Use it to test components using POX_PATH."""
+
+    def start(self):
+        POX_PATH='hub'  # pox/ext/ dir
+
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts(POX_PATH, 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+        # self.cmd(self.pox, 'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
+class POXSwat(Controller):
+
+    """Build a controller based on temp/antiarppoison.py"""
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts('swat_controller', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
+
+
+class POXAntiArpPoison(Controller):
+
+    """Build a controller based on temp/antiarppoison.py"""
+
+    def start(self):
+        logger.info('Inside %s' % type(self).__name__)
+        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
+        pox_opts = _pox_opts('antiarppoison', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        self.cmd(self.pox, pox_opts)
+
+    def stop(self):
+        logger.info('Leaving %s' % type(self).__name__)
+        self.cmd('kill %' + self.pox)
