@@ -1,6 +1,8 @@
 """
 swat_controller
 
+log path is logs/ and it is chosen in the minicps.devices POXSwat class.
+
 based on http://www.irongeek.com/i.php?page=security/security-and-software-defined-networking-sdn-openflow
 
 ARP poisoning resistant: passive, active, internal node, external node
@@ -29,9 +31,7 @@ from pox.lib.revent import Event, EventMixin, EventHalt
 from pprint import pformat
 import time
 
-# FIXME: use the same topologies logger
 log = core.getLogger()
-
 
 # TODO S:
        # check periodically the consistency of the static mapping quering the switches.

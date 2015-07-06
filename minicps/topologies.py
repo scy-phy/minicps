@@ -62,18 +62,18 @@ class TopoFromNxGraph(Topo):
             params = node[1]
             # logger.debug(params)
             if params.has_key('is_switch'):
-                logger.debug('add switch: %s' % name)
+                # logger.debug('add switch: %s' % name)
                 hosts[name] = self.addSwitch(name)
             else:
-                logger.debug('add: %s' % name)
+                # logger.debug('add: %s' % name)
                 hosts[name] = self.addHost(name,
                     ip=params['ip']+params['netmask'], mac=params['mac'])
                 # TODO: check '' ip, mac and netmask
 
         for edge in graph.edges(data=True):
-            logger.debug('edge: %s' % str(edge))
+            # logger.debug('edge: %s' % str(edge))
             link_opts = edge[2]
-            logger.debug('link_opts: %s' % link_opts)
+            # logger.debug('link_opts: %s' % link_opts)
             self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)
 
         logger.info('Leaving %s' % class_name)

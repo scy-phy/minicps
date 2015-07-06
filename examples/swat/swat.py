@@ -14,7 +14,8 @@ save a graph representation in the examples/swat folder.
 
 # TODO: check the log files, merge with swat controller
 
-import sys, os
+import sys
+import os
 sys.path.append(os.getcwd())
 
 from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
@@ -32,7 +33,9 @@ from mininet.log import setLogLevel
 import networkx as nx
 import matplotlib.pyplot as plt
 
-# FIXME: add the same topologies logger
+import logging
+logger = logging.getLogger('minicps.topologies')
+setLogLevel(c.TEST_LOG_LEVEL)
 
 
 def graph_level1(attacker=False):
@@ -138,20 +141,13 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
         g_gexf = nx.write_gexf(graph, "examples/swat/l1_gexf.xml")
         # g2 = nx.read_gexf("examples/swat/g_gexf.xml")
 
+    for node in graph.nodes(data=True):
+        logger.debug( '%s attributes: %s' % (node[0], node[1]))
+
+    for edge in graph.edges(data=True):
+        logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
+
     # Build miniCPS topo
-
-    # FIXME: use logger
-    # for node in graph.nodes(data=True):
-    #     print node[0], node[1]
-    # print ''
-    # for node in rgraph.nodes(data=True):
-    #     print node[0], node[1]
-    # for edge in graph.edges(data=True):
-    #     print edge[2]
-    # print ''
-    # for edge in rgraph.edges(data=True):
-    #     print edge[2]
-
     topo = TopoFromNxGraph(graph)
     controller = POXSwat
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
