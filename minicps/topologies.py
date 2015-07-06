@@ -1,5 +1,6 @@
 """
-Recreate the SWaT network with the highest level of precision.
+
+Mininet:
 
 DMZ AP, L3, L2 L1  wireless star networks and L0 wireless DLR
 cannot be simulated because miniet lacks wireless (IEEE 802.11)
@@ -10,6 +11,14 @@ eg: build() insted of __init__() constructor.
 
 Switch naming convention: s2 indicates SWaT L2 network, not to
 be confused with link layer.
+
+
+Networkx:
+
+Incoming graphs have to satisfy some constraints to build correctly:
+    - attributes must be passed as dict using add_edge(name, params=dict) and
+      add_node(name, params=dict)
+    - TODO
 """
 
 from mininet.net import Mininet
@@ -27,7 +36,6 @@ import networkx as nx
 # https://networkx.github.io/documentation/latest/reference/readwrite.html
 # TODO: add more TopoFrom that convert to NxGraph and reuse this class
 #       rename topology into topologies
-
 class TopoFromNxGraph(Topo):
 
     """
@@ -41,31 +49,35 @@ class TopoFromNxGraph(Topo):
     def build(self, graph):
         """
         Process net_graph and build a mininet topo.
+
+        :graph: network information embedded as parameters
         """
         class_name = type(self).__name__
         logger.info('Inside %s' % class_name)
 
         # Crate all minicps nodes and save them into a dict
         hosts = {}
-        for node in graph.nodes():
-
-
-            if node.__dict__.has_key('_is_switch'):
-                logger.debug('add switch: %s' % node.name)
-                hosts[node.name] = self.addSwitch(node.name)
+        for node in graph.nodes(data=True):
+            name = node[0]
+            params = node[1]['params']
+            if params.has_key('_is_switch'):
+                logger.debug('add switch: %s' % name)
+                hosts[name] = self.addSwitch(name)
             else:
-                logger.debug('add: %s' % node.name)
-                hosts[node.name] = self.addHost(node.name,
-                    ip=node.ip+node.netmask, mac=node.mac)
+                logger.debug('add: %s' % name)
+                hosts[name] = self.addHost(name,
+                    ip=params['ip']+params['netmask'], mac=params['mac'])
                 # TODO: check '' ip, mac and netmask
 
         for edge in graph.edges(data=True):
             logger.debug('edge: %s' % str(edge))
-            link_opts = edge[2]['object'].opts
+            link_opts = edge[2]['params']
             logger.debug('link_opts: %s' % link_opts)
-            self.addLink(hosts[edge[0].name], hosts[edge[1].name], **link_opts)
+            self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)
 
         logger.info('Leaving %s' % class_name)
+
+
         
 
 # class L3EthStar(Topo):

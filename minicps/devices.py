@@ -1,15 +1,18 @@
 """
-Minicps assumes that pox is cloned into your $HOME dir,
-for more information visit:
-https://openflow.stanford.edu/display/ONL/POX+Wiki
+Mininet
 
-To add a new pox controller code the control plane inside pox module
-then add a new Controller subclass and link your script in start()
-method with dot notation. 
-eg: pox/forwarding/script.py -> forwarding.script &
+Vertex is the base device class, its subclasses represent a particular network
+device.
 
 By default Mininet runs Open vSwitch in OpenFlow mode,
 which requires an OpenFlow controller.
+
+
+POX
+
+Minicps assumes that pox is cloned into your $HOME dir,
+for more information visit:
+https://openflow.stanford.edu/display/ONL/POX+Wiki
 
 Controller subclasses are started and stopped automatically by Mininet.
 RemoteController must be started and stopped by the user.
@@ -55,7 +58,12 @@ class Vertex(object):
         self.ip = ip
         self.netmask = netmask
         self.mac = mac
-        self.cpu_alloc = cpu_alloc
+        self.cpu_alloc = cpu_alloc  # TODO: take a look first in mininet
+
+    def get_params(self):
+        """Wrapper around __dict__"""
+
+        return self.__dict__
 
 
 class PLC(Vertex):
@@ -93,6 +101,11 @@ class DumbSwitch(Vertex):
         Vertex.__init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0)
 
         self._is_switch = True  # used to discriminate btw node types
+
+    def get_params(self):
+        """Wrapper around __dict__"""
+
+        return self.__dict__
 
 
 class HMI(Vertex):

@@ -79,6 +79,7 @@ def graph_level1(attacker=False):
     
     # Init switches
     s3 = DumbSwitch('s3')
+    graph.add_node('s3', params=s3.get_params())
 
     # Init links
     link = EthLink(bw=30, delay=0, loss=0)
@@ -88,23 +89,30 @@ def graph_level1(attacker=False):
     for i in range(1, 7):
         key = 'plc'+str(i)
         nodes[key] = PLC(key, L1_PLCS_IP[key], L1_NETMASK, PLCS_MAC[key])
-        graph.add_edge(nodes[key], s3, object=link)
+        graph.add_node(key, params=nodes[key].get_params())
+        graph.add_edge(key, 's3', params=link.get_params())
+    assert len(graph) == 7, "plc nodes error"
 
     nodes['hmi'] = HMI('hmi', L2_HMI['hmi'], L1_NETMASK, OTHER_MACS['hmi'])
-    graph.add_edge(nodes['hmi'], s3, object=link)
+    graph.add_node('hmi', params=nodes['hmi'].get_params())
+    graph.add_edge('hmi', 's3', params=link.get_params())
 
     nodes['histn'] = Histn('histn', L3_PLANT_NETWORK['histn'], L1_NETMASK,
             OTHER_MACS['histn'])
-    graph.add_edge(nodes['histn'], s3, object=link)
+    graph.add_node('histn', params=nodes['histn'].get_params())
+    graph.add_edge('histn', 's3', params=link.get_params())
 
     nodes['workstn'] = Histn('workstn', L3_PLANT_NETWORK['workstn'], L1_NETMASK,
             OTHER_MACS['workstn'])
-    graph.add_edge(nodes['workstn'], s3, object=link)
+    graph.add_node('workstn', params=nodes['workstn'].get_params())
+    graph.add_edge('workstn', 's3', params=link.get_params())
 
     if attacker:
         nodes['attacker'] = Attacker('attacker', L1_PLCS_IP['attacker'], L1_NETMASK,
         OTHER_MACS['attacker'])
-        graph.add_edge(nodes['attacker'], s3, object=link)
+        graph.add_node('attacker', params=nodes['attacker'].get_params())
+        graph.add_edge('attacker', 's3', params=link.get_params())
+        assert len(graph) == 11, "attacker node error"
 
     return graph
 
@@ -129,7 +137,7 @@ def mininet_workshop(net):
     pass
 
 
-def laucher(graph, mininet_config, draw_mpl=False):
+def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     """
     Launch the miniCPS SWaT simulation
     
@@ -138,14 +146,20 @@ def laucher(graph, mininet_config, draw_mpl=False):
     :draw_mpl: flag to draw and save the graph using matplotlib
     """
 
-    # TODO: show only names and list attributes
+    # TODO: use different color for plcs, switch and attacker
     if draw_mpl:
         nx.draw_networkx(graph)
         plt.axis('off')
         # plt.show()
         plt.savefig("examples/swat/%s.pdf" % graph.name)
+    if write_gexf:
+        g_gexf = nx.write_gexf(graph, "examples/swat/g_gexf.xml")
+        # g2 = nx.read_gexf("examples/swat/g_gexf.xml")
 
     # Build miniCPS topo
+    # topo = TopoFromNxGraph(graph)
+    # g_gexf = nx.write_gexf(graph, "examples/swat/g_gexf.xml")
+    # rgraph = nx.read_gexf("examples/swat/l1.gexf.xml", relabel=True)
     topo = TopoFromNxGraph(graph)
     controller = POXSwat
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
