@@ -59,8 +59,9 @@ class TopoFromNxGraph(Topo):
         hosts = {}
         for node in graph.nodes(data=True):
             name = node[0]
-            params = node[1]['params']
-            if params.has_key('_is_switch'):
+            params = node[1]
+            # logger.debug(params)
+            if params.has_key('is_switch'):
                 logger.debug('add switch: %s' % name)
                 hosts[name] = self.addSwitch(name)
             else:
@@ -71,7 +72,7 @@ class TopoFromNxGraph(Topo):
 
         for edge in graph.edges(data=True):
             logger.debug('edge: %s' % str(edge))
-            link_opts = edge[2]['params']
+            link_opts = edge[2]
             logger.debug('link_opts: %s' % link_opts)
             self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)
 

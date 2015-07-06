@@ -10,9 +10,10 @@ class Edge(object):
 
     """Base Edge networkx -> mininet link object"""
 
-    def __init__(self, bw, delay, loss=0, max_queue_size=1000, use_htb=True):
+    def __init__(self, id, bw, delay, loss=0, max_queue_size=1000, use_htb=True):
         """
 
+        :name: edge unique id
         :bw: TODO
         :delay: TODO
         :loss: TODO
@@ -20,6 +21,7 @@ class Edge(object):
         :use_htb: TODO
 
         """
+        self.id = id
         self.bw = bw
         self.delay = delay
         self.loss = loss

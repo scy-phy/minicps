@@ -29,6 +29,7 @@ from pox.lib.revent import Event, EventMixin, EventHalt
 from pprint import pformat
 import time
 
+# FIXME: use the same topologies logger
 log = core.getLogger()
 
 

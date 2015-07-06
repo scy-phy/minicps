@@ -44,17 +44,17 @@ class Vertex(object):
     """
 
     # TODO: finish doc
-    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0):
+    def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
         """
 
-        :name: name used in mininet
+        :label: node unique id used also as mininet hostname
         :ip: ipv4
         :mac: ethernet address
         :netmask: CIDR notation eg: /24
         :cpu_alloc: floating point percentage of CPU allocation
 
         """
-        self.name = name
+        self.label = label
         self.ip = ip
         self.netmask = netmask
         self.mac = mac
@@ -93,14 +93,14 @@ class Attacker(Vertex):
 class DumbSwitch(Vertex):
 
     """
-    _is_switch bool is used to discriminate btw mininet switch requiring
+    is_switch bool is used to discriminate btw mininet switch requiring
     addSwitch methoo and normal hosts requiring addHost method.
     """
 
-    def __init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0):
-        Vertex.__init__(self, name, ip='', netmask='', mac='', cpu_alloc=0.0)
+    def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
+        Vertex.__init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0)
 
-        self._is_switch = True  # used to discriminate btw node types
+        self.is_switch = True  # used to discriminate btw node types
 
     def get_params(self):
         """Wrapper around __dict__"""
