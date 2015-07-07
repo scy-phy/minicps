@@ -64,6 +64,8 @@ target/
 *.err
 *.log
 *.log*
+*.xml
+*.pdf
 
 # Caps
 *.pcapng
