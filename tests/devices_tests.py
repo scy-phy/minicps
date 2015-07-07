@@ -19,8 +19,7 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 
 from minicps import constants as c
-from minicps.topologies import EthStar, Minicps, DLR, L3EthStar, L3EthStarAttack
-from minicps.devices import POXL2Pairs, POXL2Learning, POXAntiArpPoison, POXProva, POXSwatController
+from minicps.devices import *
 from minicps.constants import _arp_cache_rtts, setup_func, teardown_func, teardown_func_clear, with_named_setup
 
 import time
@@ -28,6 +27,32 @@ import time
 import logging
 logger = logging.getLogger('minicps.devices')
 setLogLevel(c.TEST_LOG_LEVEL)
+
+
+@with_named_setup(setup_func, teardown_func)
+def test_ControlDevice():
+    """
+    Test concurrency
+    """
+    # raise SkipTest
+
+    fs1 = FlowSensor.start('temp/phy-layer/fs1', flow_level=1).proxy()
+    fs2 = FlowSensor.start('temp/phy-layer/fs2', flow_level=2).proxy()
+    mv = MotorizedValve.start('temp/phy-layer/mv2', True).proxy()
+    plc1_logic = PLCLogic1.start('temp/phy-layer/plc1_logic').proxy()
+    sub1 = SWATSub1.start('temp/phy-layer/sub1').proxy()
+
+    try:
+        future = fs1.append('wow')
+        answer = future.get()
+        print answer
+
+    finally:
+        fs1.stop()
+        fs2.stop()
+        mv.stop()
+        plc1_logic.stop()
+        sub1.stop()
 
 
 @with_named_setup(setup_func, teardown_func)
@@ -161,7 +186,7 @@ def test_POXL2LearningRtt():
 @with_named_setup(setup_func, teardown_func)
 def test_Workshop():
     """Ideal link double MITM"""
-    # raise SkipTest
+    raise SkipTest
 
     topo = L3EthStarAttack()
     net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])

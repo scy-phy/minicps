@@ -12,7 +12,6 @@ class Edge(object):
 
     def __init__(self, id, bw, delay, loss=0, max_queue_size=1000, use_htb=True):
         """
-
         :name: edge unique id
         :bw: TODO
         :delay: TODO

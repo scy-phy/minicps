@@ -66,6 +66,7 @@ target/
 *.log*
 *.xml
 *.pdf
+*.json
 
 # Caps
 *.pcapng
