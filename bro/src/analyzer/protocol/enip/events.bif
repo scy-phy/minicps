@@ -12,3 +12,31 @@
 ## c: The connection
 ##
 event enip_event%(c: connection%);
+
+## Generated for any Enip message regardless if the particular function
+## is further supported or not.
+##
+## c: The connection.
+##
+## headers: The headers for the enip function.
+##
+## is_orig: True if the event is raised for the originator side.
+event enip_message%(c: connection, headers: RecordVal, is_orig: bool%);
+
+## Generated for any Enip exception message.
+##
+## c: The connection.
+##
+## headers: The headers for the enip function.
+##
+## code: The exception code.
+event enip_exception%(c: connection, headers: RecordVal, code: count%);
+
+## Generated for a Enip nop message.
+##
+## c: The connection.
+##
+## headers: The headers for the enip function.
+##
+## unused: The rest of the message.
+event enip_nop_request%(c: connection, headers: RecordVal, unused: Val%);

@@ -4,10 +4,7 @@
 #define ANALYZER_PROTOCOL_ENIP_ENIP_H
 
 #include "events.bif.h"
-
-
 #include "analyzer/protocol/tcp/TCP.h"
-
 #include "enip_pac.h"
 
 namespace analyzer { namespace enip {

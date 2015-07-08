@@ -8,13 +8,13 @@ enum cmd_codes {
         NOP                           = 0x0000,
 	LIST_SERVICES 	   	      = 0x0004,
 	LIST_IDENTITY 	   	      = 0x0063,
-	LIST_INTERFACES    	      = 0x0064,
+	LIST_INTERFACES    	      = 0x0064, # Optional
 	REGISTER_SESSION   	      = 0x0065,
 	UNREGISTER_SESSION 	      = 0x0066,
 	SEND_RR_DATA	   	      = 0x006F,
 	SEND_UNIT_DATA 	   	      = 0x0070,
-	INDICATE_STATUS    	      = 0x0072,
-	CANCEL 		   	      = 0x0073,
+	INDICATE_STATUS    	      = 0x0072, # Optional
+	CANCEL 		   	      = 0x0073, # Optional
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
@@ -55,12 +55,10 @@ type ENIP_Request(header: ENIP_Header) = case header.cmd of {
 	UNREGISTER_SESSION -> unregisterSession: ListServicesRequest(header);
 	SEND_RR_DATA 	   -> sendRRData: 	 SendRRData(header);
 	SEND_UNIT_DATA 	   -> sendUnitData: 	 SendUnitData(header);
-# 	INDICATE_STATUS    -> indicateStatus: 	 IndicateStatusRequest(header);
-# 	CANCEL 		   -> cancel: 		 CancelRequest(header);
 
 	# All the rest
 	default		   -> unknown:		 bytestring &restofdata;
-}
+};
 
 type ENIP_Response(header: ENIP_Header) = case header.cmd of {
 	LIST_SERVICES 	   -> listServices: 	 ListServicesResponse(header);
@@ -68,11 +66,13 @@ type ENIP_Response(header: ENIP_Header) = case header.cmd of {
 	LIST_INTERFACES    -> listInterfaces: 	 ListIResponse(header);
 	REGISTER_SESSION   -> registerSession: 	 RegisterSessionResponse(header);
 	SEND_RR_DATA 	   -> sendRRData: 	 SendRRData(header);
-# 	INDICATE_STATUS    -> indicateStatus: 	 IndicateStatusResponse(header);
-# 	CANCEL 		   -> cancel: 		 CancelResponse(header);
 
 	# All the rest
 	default		   -> unknown:		 bytestring &restofdata;
+};
+
+type Exception(header: ENIP_Header) = record {
+        code: uint8;
 };
 
 # REQUEST CMD=0
