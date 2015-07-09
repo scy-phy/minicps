@@ -1,0 +1,8 @@
+remark,"CSV-Import-Export"
+remark,"Date = Thu Jul 09 14:17:40 2015"
+remark,"Version = RSLogix 5000 v20.01"
+remark,"Owner = SUTD_ITrust"
+remark,"Company = SUTD_ITrust"
+0.3
+TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES
+TAG,MainProgram,_P_UF_FEED_DUTY_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"

@@ -1,0 +1,13 @@
+remark,"CSV-Import-Export"
+remark,"Date = Thu Jul 09 14:17:22 2015"
+remark,"Version = RSLogix 5000 v20.01"
+remark,"Owner = SUTD_ITrust"
+remark,"Company = SUTD_ITrust"
+0.3
+TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES
+TAG,MainProgram,AIN_FBD_X_01,"","AIN_FBD","","(Constant := false, ExternalAccess := Read/Write)"
+TAG,MainProgram,_MV_201_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"
+TAG,MainProgram,_P_HCL_DUTY_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"
+TAG,MainProgram,_P_NACL_DUTY_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"
+TAG,MainProgram,_P_NAOCL_FAC_DUTY_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"
+TAG,MainProgram,_P_NAOCL_UF_DUTY_SR,"","DOMINANT_SET","","(Constant := false, ExternalAccess := Read/Write)"
