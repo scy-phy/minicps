@@ -4,9 +4,12 @@
 
 ![alt text](block-scheme.png)
 
-* Each SWaT device is simulated in `mininet` as Linux container.
+* Each device is simulated in `mininet` as Linux container.
 * Tags, sensors value and actuator values are modeled as DB records.
-* I'll use `sqlite3` module from Python stdlib.
+* Use `sqlite3` module from Python stdlib.
+
+> TODO: use multiprocess or multi-threading from one process inside a
+> container?
 
 > TODO: use `multiprocesses`, `threading`, `pykka` or `gevent` ?
 
@@ -16,16 +19,11 @@
 
     examples/swat/state_db.py
 
-> TODO: use crypto for records?
-
-> TODO: implement read/write PLC access level?
-
-> TODO: import db directly from real controller plc tags ?
-
 * schema
+    * import db filtering the real tag names
     * dict table
         * TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES
-    * PLC1 can access only suprocess1 records but can retrieve other records
+    * PLC1 can access only subprocess1 records but can retrieve other records
       communicating directly with PLC2
 
 * tag_types
@@ -103,4 +101,8 @@ Like Simple example but with:
 * `plc1_logic.py` will communicate with plc1 enip client thread and take a
   decision (write the state db)
 
+## Future ##
+
+* Crypto DB
+* Implement read/write PLC access level?
 
