@@ -22,6 +22,33 @@ logger = logging.getLogger('swat')
 
 # DB
 STATE_DB_PATH = 'examples/swat/state.db'
+PLC1_DB_PATH = 'examples/swat/plc1.db'
+PLC2_DB_PATH = 'examples/swat/plc2.db'
+PLC3_DB_PATH = 'examples/swat/plc3.db'
+PLC4_DB_PATH = 'examples/swat/plc4.db'
+PLC5_DB_PATH = 'examples/swat/plc5.db'
+PLC5_DB_PATH = 'examples/swat/plc5.db'
+PLC6_DB_PATH = 'examples/swat/plc6.db'
+
+SCHEMA = """
+        create table Tag (
+            SCOPE             text not null,
+            NAME              text not null,
+            DATATYPE          text not null,
+            VALUE             text,
+            PID               integer not null,
+            PRIMARY KEY (SCOPE, NAME, PID)
+        );
+        """
+        # VALUE             text default '',
+
+# state_db specific filters, functions and aggregators
+DATATYPES = [
+        'INT',
+        'DINT',
+        'BOOL',
+        'REAL',
+]
 
 def create_db(db_path, schema):
     """TODO: Docstring for init.

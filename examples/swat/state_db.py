@@ -1,27 +1,9 @@
 import os
 import sqlite3
 
-from constants import create_db, remove_db, init_db, STATE_DB_PATH, logger
-
-SCHEMA = """
-        create table Tag (
-            SCOPE             text not null,
-            NAME              text not null,
-            DATATYPE          text not null,
-            VALUE             text,
-            PID               integer not null,
-            PRIMARY KEY (SCOPE, NAME, PID)
-        );
-        """
-        # VALUE             text default '',
-
-# state_db specific filters, functions and aggregators
-DATATYPES = [
-        'INT',
-        'DINT',
-        'BOOL',
-        'REAL',
-]
+from constants import logger
+from constants import create_db, remove_db, init_db
+from constants import STATE_DB_PATH, SCHEMA, DATATYPES
 
 class Aggregate(object):
     """Docstring for Aggregate. """

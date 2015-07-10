@@ -35,7 +35,7 @@
 
 ### HMI ###
 
-    examples/swat/hmi_logic.py
+    examples/swat/hmi.py
 
 | Threads/Procs |
 | ------------- |
@@ -46,7 +46,7 @@
 
 ### PLC ###
 
-    examples/swat/plcX_logic.py
+    examples/swat/plcX.py
 
 
 | Threads/Procs |
@@ -87,24 +87,24 @@ Start Minicps with a star topology with two PLCs, HMI, the state db `sdb` and th
 physical process `ppr` hosts.
 * `sdb` will run `state_db.py`.
 * `ppr` will run `physical_process.py`
-* `plc1` will run `plc1_logic.py`
-* `hmi` will run `hmi_logic.py`
+* `plc1` will run `plc1.py`
+* `hmi` will run `hmi.py`
 * `physical_process.py` will periodically read/write the state db
-* `plc1_logic.py` will periodically read/write the state db
-* `hmi_logic.py` will periodically query plc1 enip server thread and show
+* `plc1.py` will periodically read/write the state db
+* `hmi.py` will periodically query plc1 enip server thread and show
   results through a webserver interface
 
 ## Another example ##
 
 Like Simple example but with:
 
-* `plc1_logic.py` will periodically read/write the state db tags regarding
+* `plc1.py` will periodically read/write the state db tags regarding
   subprocess 1
-* `plc2_logic.py` will periodically read/write the state db tags regarding
+* `plc2.py` will periodically read/write the state db tags regarding
   subprocess 2
 * `plc1` enip client thread will ask to plc2 enip server thread for some value
 * `plc2` enip server will send the value
-* `plc1_logic.py` will communicate with plc1 enip client thread and take a
+* `plc1.py` will communicate with plc1 enip client thread and take a
   decision (write the state db)
 
 ## Future ##
