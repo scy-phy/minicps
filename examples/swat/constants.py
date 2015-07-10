@@ -13,7 +13,33 @@ Dict key mirror where possible mininet device names, indeed it is
 super easy to create a new Topo class using those dictionaries.
 """
 
-#CONSTANTS
+# DB
+def show_tags(conn, table='', pid='0', how_many=0):
+    """
+    Show all entries from the dict table
+    
+    SQL commands must be separated
+    """
+
+    cursor = conn.cursor()
+    cmd = "SELECT * FROM %s" % table
+
+    if pid > '0' and pid < '8':
+        cmd += ' WHERE pid = %s' % pid
+
+    cursor.execute(cmd)
+
+    if how_many == 0:
+        records = cursor.fetchall()
+    elif how_many == 1:
+        records = cursor.fetchone()
+    else:
+        records = cursor.fetchmany(how_many)
+
+    for record in records:
+        logger.debug(record)
+
+# CONSTANTS
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',

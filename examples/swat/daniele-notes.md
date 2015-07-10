@@ -13,16 +13,13 @@
 
 > TODO: use `multiprocesses`, `threading`, `pykka` or `gevent` ?
 
-> TODO: use ENIP to communicate everywhere ?
-
 ## State DB ##
 
     examples/swat/state_db.py
 
 * schema
-    * import db filtering the real tag names
-    * dict table
-        * TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES
+    * Tag table
+        * text: NAME, DATATYPE, VALUE
     * PLC1 can access only subprocess1 records but can retrieve other records
       communicating directly with PLC2
 
@@ -56,22 +53,27 @@
 | PLC_Logic     |
 
 * schema
-    * name
-    * type
-        * TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES
-    * ...
+    * Tag
+        * like state_db + timestamp
+    * Use it like a cache
+    * Re-use it for the Historian
 
-* tag_types
+* tag types:
     * user defined -> use Class
     * `program` accessible only by PLC_logic thread
     * `controller` accessible by all PLC threads
+
+* tag attributes:
+    * `Constant` writable only by RSLogix 5000 (default `True`)
+    * `ExternalAccess` set permission for devices external to PLC (default `Read/Write`)
+    * `RADIX` TODO
 
 * logic
     * init the ENIP server db
 
 ## Simple example ##
 
-> TODO: once ready move it as a tutorial doc
+> TODO: once ready move it as a sphinx tutorial doc
 
 Simplifying assumptions:
 * ignore PLC db
@@ -103,6 +105,10 @@ Like Simple example but with:
 
 ## Future ##
 
+
+
 * Crypto DB
-* Implement read/write PLC access level?
+* Implement read/write PLC access
+* Model User Defined Tags as dedicated classes and import them into the DB
+* Use Hystorian node 
 
