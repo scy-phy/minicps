@@ -19,9 +19,13 @@
 
 * schema
     * Tag table
-        * text: NAME, DATATYPE, VALUE
+        * text not null: SCOPE, NAME, DATATYPE
+        * text: VALUE
+        * integer: PID
+        * PRIMARY KEY(SCOPE, NAME, PID)
     * PLC1 can access only subprocess1 records but can retrieve other records
       communicating directly with PLC2
+    * filter in: INT, DINT, BOOL, REAL
 
 * tag_types
     * user defined -> use Class

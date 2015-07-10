@@ -31,6 +31,7 @@ from pox.lib.revent import Event, EventMixin, EventHalt
 from pprint import pformat
 import time
 
+# TODO: from constatns import logger
 log = core.getLogger()
 
 # TODO S:

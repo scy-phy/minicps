@@ -13,8 +13,78 @@ Dict key mirror where possible mininet device names, indeed it is
 super easy to create a new Topo class using those dictionaries.
 """
 
+import sqlite3
+import logging
+import os
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('swat')
+
 # DB
-def show_tags(conn, table='', pid='0', how_many=0):
+STATE_DB_PATH = 'examples/swat/state.db'
+
+def create_db(db_path, schema):
+    """TODO: Docstring for init.
+    :db_path: full or relative path to the file.db
+    :schema: str containing the schema
+
+    """
+    with sqlite3.connect(db_path) as conn:
+        conn.executescript(schema)
+        logger.info('Created schema')
+
+
+def remove_db(db_path):
+    """TODO: Docstring for init.
+    :returns: TODO
+
+    """
+    logger.info('Removing %s' % db_path)
+    try:
+        os.remove(db_path)
+    except Exception, err:
+        logger.warning(err)
+    
+
+def init_db(db_path, datatypes):
+    """
+    Init a DB from RSLogix 5000 exported csv file
+
+    :db_path: full or relative path to the file.db
+    :datatypes: list of DATATYPES
+
+    """
+    with sqlite3.connect(db_path) as conn:
+        logger.info('Init tables')
+
+        for i in range(1, 7):
+            plc_filename = "examples/swat/real-tags/P%d-Tags.CSV" % i
+            with open(plc_filename, "rt") as f:
+
+                text = f.read()
+                tags = text.split('\n')  # new-line splitted list of tags
+
+                cursor = conn.cursor()
+
+                for tag in tags[7:-1]:
+                    fields = tag.split(',')
+                    datatype = fields[4][1:-1]  # extract BOOL from "BOOL" 
+
+                    if datatype in datatypes:
+                        scope = fields[1]
+                        name = fields[2]
+                        logger.debug('NAME: %s  DATATYPE: %s' % (name,
+                            datatype))
+                        cmd = """
+                        INSERT INTO Tag (SCOPE, NAME, DATATYPE, PID)
+                        VALUES ('%s', '%s', '%s', %d)
+                        """ % (scope, name, datatype, i)
+                        cursor.execute(cmd)
+
+                conn.commit()
+
+
+def show_db_tags(conn, table='', pid='0', how_many=0):
     """
     Show all entries from the dict table
     
