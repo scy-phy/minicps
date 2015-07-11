@@ -220,6 +220,7 @@ def _buildLogger(loggername, maxBytes, backupCount):
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
+    # no thread information
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)

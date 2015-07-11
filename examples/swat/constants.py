@@ -17,7 +17,38 @@ import sqlite3
 import logging
 import os
 
-logging.basicConfig(level=logging.DEBUG)
+
+# Threads
+
+def wait_for_event_timeout(event, timeout, ename):
+    """
+    Use it inside thread to synch (non-blocking)
+
+    :swat_event: Custom threading.Event subclass
+    :timeout: wait timeout second before generating an Exception
+    :returns: nothing in normal conditions otherwise raise an Exception
+
+    """
+    msg = "Waiting for %s to be set" % (ename)
+    logging.debug(msg)
+    while not event.is_set():
+        event_is_set = event.wait(timeout)
+
+        if event_is_set:
+            msg = "%s is set" % (ename)
+            logging.debug(msg)
+            return
+        else:
+            emsg = "%s not set after %s sec" % (
+                    ename, str(timeout))
+            raise Exception(emsg)
+
+
+# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+        level=logging.DEBUG,
+        # TODO: use the same log format for minicps?
+        format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
 logger = logging.getLogger('swat')
 
 # DB
