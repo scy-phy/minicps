@@ -108,6 +108,7 @@ def mininet_std(net):
     net.start()
 
     CLI(net)
+    # launch device simulation scripts
 
     net.stop()
 
@@ -127,7 +128,7 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     Launch the miniCPS SWaT simulation
     
     :graph: networkx graph
-    :mininet_config: fucntion pointer to the mininet configuration
+    :mininet_config: function pointer to the mininet configuration
     :draw_mpl: flag to draw and save the graph using matplotlib
     """
 

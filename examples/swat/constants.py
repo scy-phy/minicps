@@ -18,8 +18,9 @@ import logging
 import os
 
 
-# Threads
+# ENIP
 
+# Threads
 def wait_for_event_timeout(event, timeout, ename):
     """
     Use it inside thread to synch (non-blocking)
