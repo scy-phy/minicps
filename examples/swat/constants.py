@@ -18,7 +18,36 @@ import logging
 import os
 
 
-# ENIP
+# Process
+P1_TAGS = {
+    'fit_101': 'AI_FIT_101_FLOW',
+    'mv_101_c': 'DO_MV_101_CLOSE',
+    'mv_101_o': 'DO_MV_101_OPEN',
+    'lit_101': 'AI_LIT_101_LEVEL',
+    'p_101': 'DO_P_101_START',
+    'fit_201': 'AI_FIT_201_FLOW',
+    'lit_301': 'AI_LIT_301_LEVEL',
+}
+
+# mm
+LIT_101 = {  # raw water tank
+    'LL': 250.0,  
+    'L': 500.0,  
+    'H': 800.0,  
+    'H': 1200.0,  
+}
+
+LIT_301 = {  # ultrafiltration tank
+    'LL': 250.0,  
+    'L': 800.0,  
+    'H': 1000.0,  
+    'H': 1200.0,  
+}
+
+# m^3 / h
+FIT_201 = 0.5
+
+
 
 # Threads
 def wait_for_event_timeout(event, timeout, ename):
@@ -45,12 +74,15 @@ def wait_for_event_timeout(event, timeout, ename):
             raise Exception(emsg)
 
 
+
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(
         level=logging.DEBUG,
-        # TODO: use the same log format for minicps?
-        format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
 logger = logging.getLogger('swat')
+
+
 
 # DB
 STATE_DB_PATH = 'examples/swat/state.db'
@@ -81,6 +113,27 @@ DATATYPES = [
         'BOOL',
         'REAL',
 ]
+
+
+def update_statedb(VALUE, NAME, PID, SCOPE='TODO'):
+    """Update Tag table
+
+    :VALUE: str
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        UPDATE Tag 
+        SET VALUE = '%s'
+        WHERE NAME = '%s' AND PID = %s
+        """ % (VALUE, NAME, PID)
+        cursor.execute(cmd)
+        conn.commit()
 
 def create_db(db_path, schema):
     """TODO: Docstring for init.
@@ -142,7 +195,6 @@ def init_db(db_path, datatypes):
 
                 conn.commit()
 
-
 def show_db_tags(conn, table='', pid='0', how_many=0):
     """
     Show all entries from the dict table
@@ -167,6 +219,82 @@ def show_db_tags(conn, table='', pid='0', how_many=0):
 
     for record in records:
         logger.debug(record)
+
+# FIXME: set default PID and generalize the query
+def read_statedb(NAME, PID, SCOPE='TODO'):
+    """Read multiple tags
+
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+    :returns: list of tuples
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        SELECT * FROM Tag 
+        WHERE NAME = '%s' AND PID = %s
+        """ % (NAME, PID)
+        cursor.execute(cmd)
+
+        records = cursor.fetchall()
+        for record in records:
+            logger.debug(record)
+
+        return records
+
+def read_single_statedb(NAME, PID, SCOPE='TODO'):
+    """Update Tag table
+
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+    :returns: list of tuples
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        SELECT * FROM Tag 
+        WHERE NAME = '%s' AND PID = %s
+        """ % (NAME, PID)
+        cursor.execute(cmd)
+
+        record = cursor.fetchone()
+        logger.debug(record)
+
+        return record
+
+def db2cpppo(record):
+    """Convert from sqlite3 db record to cpppo tag string
+
+    :record: tuple from the state db
+    :returns: string
+
+    """
+    SCOPE = record[0]
+    NAME = record[1]
+    DATATYPE = record[2]
+    VALUE = record[3]
+    PID = record[4]
+
+    if DATATYPE not in DATATYPES:
+        logger.info("%s is not in the state db" % DATATYPE)
+        cppo_str = ''
+    else:
+        # cpppo uses SINT as BOOL
+        if DATATYPE == 'BOOL':
+            DATATYPE = 'SINT'
+
+        cppo_str = NAME+'='+DATATYPE
+        logger.debug("%s -> %s" % (record, cppo_str))
+
+    return cppo_str
+
+
 
 # CONSTANTS
 L0_RING1 = {

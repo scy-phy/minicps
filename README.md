@@ -112,6 +112,10 @@ Snakefood is a nice tool able to generate dependency graphs from Python source c
 
 ## Links ##
 
+Sqlite3:
+
+[SQL](https://www.sqlite.org/lang.html)
+
 SWaT:
 
 [datasheetarchive](http://www.datasheetarchive.com/)

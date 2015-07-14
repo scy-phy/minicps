@@ -118,6 +118,8 @@ wireless and wired tag.
 > TODO: once ready move it as a sphinx tutorial doc
 
 Simplifying assumptions:
+* testbed in AUTO mode
+* no alarms
 * ignore PLC db.
 * ignore wireless communications (and tags).
 * assume that \_HTY tags are always True (ideal data generation)

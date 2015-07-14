@@ -33,10 +33,6 @@ from mininet.log import setLogLevel
 import networkx as nx
 import matplotlib.pyplot as plt
 
-import logging
-logger = logging.getLogger('minicps.topologies')
-setLogLevel(c.TEST_LOG_LEVEL)
-
 
 def graph_level1(attacker=False):
     """
@@ -112,7 +108,6 @@ def mininet_std(net):
 
     net.stop()
 
-
 def mininet_workshop(net):
     """
     Settings used for the Think-in workshop
@@ -121,6 +116,20 @@ def mininet_workshop(net):
 
     """
     pass
+
+def minicps_tutorial(net):
+    """
+    Settings used for the Think-in workshop
+
+    :net: TODO
+
+    """
+    net.start()
+
+    CLI(net)
+    # launch device simulation scripts
+
+    net.stop()
 
 
 def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
@@ -164,4 +173,4 @@ if __name__ == '__main__':
     rgraph = nx.read_gexf("examples/swat/l1_gexf.xml", relabel=False)
 
     # laucher(swat_graph, mininet_std, draw_mpl=False)
-    laucher(rgraph, mininet_std, draw_mpl=False)
+    laucher(rgraph, minicps_tutorial, draw_mpl=False)
