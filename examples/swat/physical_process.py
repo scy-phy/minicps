@@ -9,6 +9,9 @@ from constants import PROCESS_NUMBER
 from constants import GRAVITATION
 from constants import TIMER
 from constants import TIMEOUT
+from constants import P1_INPUT_FLOW
+from constants import P1_INPUT_VALVES
+from constants import P1_OUTPUT_VALVES
 from constants import STATE_DB_PATH
 from constants import TABLE
 from time import sleep
@@ -107,12 +110,12 @@ if __name__ == '__main__':
             input_valves = []
             output_valves = []
 
-            for index in input_flow_list:
-                input_flows.append(fetch_value(STATE_DB_PATH, TABLE, input_flow_list[index], i))
-            for index in input_valve_list:
-                input_valves.append(fetch_value(STATE_DB_PATH, TABLE, input_valve_list[index], i))
-            for index in output_list:
-                output_valves.append(fetch_value(STATE_DB_PATH, TABLE, output_list[index], i))
+            for index in P1_INPUT_FLOW:
+                input_flows.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
+            for index in P1_INPUT_VALVES:
+                input_valves.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
+            for index in P1_OUTPUT_VALVES:
+                output_valves.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
             current_flow = fetch_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i)
             new_flow = compute_new_flow_level(input_flows, input_valves, current_flow, output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
 
