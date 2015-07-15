@@ -89,17 +89,15 @@ the `constants` module.
 Each `scripts/pox/component` generate a separate logfile that is overwritten each time you run
 a new `mininet` instance.
 
-## Build sphinx docs ##
+## Build html sphinx docs ##
 
-Install `python-sphinx` and its dependencies, then `cd` into `minicps/docs` and run
+Install `python-sphinx` and its dependencies. Install
+[sphinx_rtd_theme](https://github.com/snide/sphinx_rtd_theme) or change the
+`html_theme` in `docs/conf.py` then `cd` into `minicps/docs` and run
 
     $ make html
 
-then open a new terminal and type
-
-    $ python -m SimpleHTTPServer
-
-then open a browser and go to `localhost:8000` then visit the `_build/html` folder.
+Then open `_build/html/index.html` and navigate the docs.
 
 *Please proofread it and report any issue.*
 
