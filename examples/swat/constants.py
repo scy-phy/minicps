@@ -61,6 +61,8 @@ PLC5_DB_PATH = 'examples/swat/plc5.db'
 PLC5_DB_PATH = 'examples/swat/plc5.db'
 PLC6_DB_PATH = 'examples/swat/plc6.db'
 
+TABLE = 'Tag'
+
 SCHEMA = """
         create table Tag (
             SCOPE             text not null,
@@ -370,3 +372,12 @@ CIP_SERIAL_NUMBERS = {
     'plc7':  'TODO',
     'attacker': 'TODO',
 }
+
+PROCESS_NUMBER = 6
+GRAVITATION = 9.81
+
+VALVE_DIAMETER = 0.2
+TANK_DIAMETER = 1.38
+
+TIMER = 0.2
+TIMEOUT = 120
