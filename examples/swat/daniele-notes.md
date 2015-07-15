@@ -2,7 +2,7 @@
 
 ## General view ##
 
-![alt text](block-scheme.png)
+![Alt text](block-scheme.png)
 
 * Each device is simulated in `mininet` as Linux container.
 * Tags, sensors value and actuator values are modeled as DB records.
@@ -27,8 +27,13 @@
       communicating directly with PLC2
     * filter in: INT, DINT, BOOL, REAL
 
-* tag_types
-    * user defined -> use Class
+* UDT
+    * Base class for each type of tags with constant constructor
+    * Use Class Wrappers to model PLC TAGs
+
+Use sqlite `?` DB's API parameter substitution to to perform queries.
+
+![Alt text](db_query.png)
 
 Tag names follows a naming scheme. SWaT store and update different version of
 wireless and wired tag.

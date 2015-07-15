@@ -18,7 +18,103 @@ import logging
 import os
 
 
-# PROCESS
+# PLC TAGS
+
+# UDT Bases
+class UDT_FIT(object):
+
+    """UDT_FIT"""
+
+    def __init__(self):
+    
+        self.Pv = '0.0'
+        self.Heu = '0.0'
+        self.Leu = '0.0'
+        self.SAHH = '0.0'
+        self.SAH = '0.0'
+        self.SAL - '0.0'
+        self.SALL = '0.0'
+        self.Totaliser = '0.0'
+        self.AHH = '0'
+        self.AH = '0'
+        self.AL = '0'
+        self.ALL = '0'
+        self.Sim = '0'
+        self.Sim_PV = '0.0'
+        self.Wifi_Enb = '0'
+        self.Rst_Totaliser = '0'
+        self.Hty = '0'
+
+
+class UDT_LIT(object):
+
+    """UDT_LIT"""
+
+    def __init__(self):
+    
+        self.Pv = '0.0'
+        self.Heu = '0.0'
+        self.Leu = '0.0'
+        self.SAHH = '0.0'
+        self.SAH = '0.0'
+        self.SAL - '0.0'
+        self.SALL = '0.0'
+        self.AHH = '0'
+        self.AH = '0'
+        self.AL = '0'
+        self.ALL = '0'
+        self.Wifi_Enb = '0'
+        self.Hty = '0'
+        self.Sim = '0'
+        self.Sim_PV = '0.0'
+
+
+class UDT_MV(object):
+
+    """UDT_MV"""
+
+    def __init__(self):
+        self.Cmd = [ '' for i in range(0,16) ]
+        self.Status = [ '' for i in range(0,16) ]
+        self.Reset = '0'
+        self.Auto = '0'
+        self.FTO = '0'
+        self.FTC = '0'
+        self.Avl= '0'
+
+
+class UDT_P(object):
+
+    """UDT_P"""
+
+    def __init__(self):
+        self.Cmd = [ '' for i in range(0,16) ]
+        self.Status = [ '' for i in range(0,16) ]
+        self.RunMin = '0.0'
+        self.Total_RunMin = '0.0'
+        self.RunHr = '0.0'
+        self.Total_RunHr = '0.0'
+        self.Remote = '0'
+        self.Auto = '0'
+        self.Fault = '0'
+        self.Avi = '0'
+        self.Permissive = [ '' for i in range(0,32) ]
+        self.Shutdown = [ '' for i in range(0,32) ]
+        self.SD = [ '' for i in range(0,32) ]
+        self.Reset = '0'
+        self.Reset_RunHr = '0'
+        self.FTR = '0'
+        self.FTS = '0'
+    
+
+
+# UDT Aliases
+class HMI_FIT101(UDT_FIT):
+
+    """Docstring for HMI_FIT101. """
+    def __init__(self):
+        """TODO: to be defined1. """
+        
 
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
@@ -42,6 +138,10 @@ P1_PLC2_TAGS = {
 P1_PLC3_TAGS = {
     'lit_301': 'AI_LIT_301_LEVEL',
 }
+
+
+
+# PROCESS
 
 # mm
 LIT_101 = {  # raw water tank
