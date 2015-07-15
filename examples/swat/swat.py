@@ -23,6 +23,7 @@ from minicps.links import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
+# FIXME: import only necessary data objects
 from constants import *  # those are SWaT specific constants
 
 from mininet.cli import CLI
@@ -124,8 +125,16 @@ def minicps_tutorial(net):
     :net: TODO
 
     """
+    # init the db
+    os.system("python examples/swat/state_db.py")
+    logger.debug("DB ready")
+
     net.start()
 
+    plc1, plc2, plc3, hmi = net.get('plc1', 'plc2', 'plc3', 'hmi')
+
+    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    
     CLI(net)
     # launch device simulation scripts
 

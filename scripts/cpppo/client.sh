@@ -13,4 +13,5 @@
 #    tagname1 tagname[1-3]=1,2,3 read and write
 # $4 output.log path
 
-enip_client --print -l $1 -a $2 $3 | tee -a $4
+# enip_client --print -l $1 -a $2 $3 | tee -a $4
+python -m cpppo.server.enip.client --print -l $1 -a $2 $3 | tee -a $4

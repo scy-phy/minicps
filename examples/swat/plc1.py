@@ -1,40 +1,43 @@
 """
-PLC1 multithreaded simulation
+plc1.py
 
-plc_db init the db and set event_db. 
+plc init:
+    cpppo enip server
 
-enip_server wait for event_db to be setted within a timeout and fire an
-Exception in case of timeout (non-blocking).
-
-enip_client bla bla bla
-
-plc_logic bla bla bla
+plc main loop:
+    sequential read/write from/to the state db and its internal cpppo enip
+    server.
 
 """
 import sqlite3
 import os
 import time
 
-from constants import logger, 
-from constants import P1_TAGS, LIT_101, LIT_301, FIT_201
-from constants import db2cpppo
+from constants import logger
+from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
+from constants import db2cpppo, read_single_statedb, init_cpppo_server
+from constants import L1_PLCS_IP
 
 
 if __name__ == '__main__':
     """
-    plc1 main loop
+    TODO
     """
 
     # init the ENIP server
-    db_tags = P1_TAGS.values()
-
-    cpppo_tags = db2cpppo(db_tags)
+    db_tags = []
+    db_tags.extend(P1_PLC1_TAGS.values())
+    # db_tags.extend(P2_PLC1_TAGS.values())
+    init_cpppo_server(db_tags, '1')
+    
+    write_cpppo(L1_PLCS_IP['plc1'], 'P1', '1')
 
     # synch with plc2, plc3
-    time.sleep(1)
+    # time.sleep(1)
 
     # look a Stridhar graph
     while True:
+        # cmd = read_single_statedb('AI_FIT_101_FLOW', '1')
         logger.debug("plc1 main loop")
         break
 

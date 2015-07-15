@@ -18,14 +18,28 @@ import logging
 import os
 
 
-# Process
-P1_TAGS = {
+# PROCESS
+
+# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
+# and REAL (32-bit float)
+P1_PLC1_TAGS = {
     'fit_101': 'AI_FIT_101_FLOW',
     'mv_101_c': 'DO_MV_101_CLOSE',
     'mv_101_o': 'DO_MV_101_OPEN',
     'lit_101': 'AI_LIT_101_LEVEL',
     'p_101': 'DO_P_101_START',
+    # FIXME: use UDT
+    # 'fit_201': 'AI_FIT_201_FLOW',
+    # 'lit_301': 'AI_LIT_301_LEVEL',
+}
+
+P1_PLC2_TAGS = {
     'fit_201': 'AI_FIT_201_FLOW',
+    'mv_201_c': 'DO_MV_201_CLOSE',
+    'mv_201_o': 'DO_MV_201_OPEN',
+}
+
+P1_PLC3_TAGS = {
     'lit_301': 'AI_LIT_301_LEVEL',
 }
 
@@ -34,14 +48,14 @@ LIT_101 = {  # raw water tank
     'LL': 250.0,  
     'L': 500.0,  
     'H': 800.0,  
-    'H': 1200.0,  
+    'HH': 1200.0,  
 }
 
 LIT_301 = {  # ultrafiltration tank
     'LL': 250.0,  
     'L': 800.0,  
     'H': 1000.0,  
-    'H': 1200.0,  
+    'HH': 1200.0,  
 }
 
 # m^3 / h
@@ -49,7 +63,7 @@ FIT_201 = 0.5
 
 
 
-# Threads
+# THREADS
 def wait_for_event_timeout(event, timeout, ename):
     """
     Use it inside thread to synch (non-blocking)
@@ -75,12 +89,41 @@ def wait_for_event_timeout(event, timeout, ename):
 
 
 
-# logging.basicConfig(level=logging.DEBUG)
+# LOGGING
 logging.basicConfig(
         level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
 logger = logging.getLogger('swat')
+
+
+
+# CPPPO
+def init_cpppo_server(db_tags, pid):
+    """Init cpppo enip server
+
+    :db_tags: list of state db NAME fileds
+    :pid: str
+
+    """
+
+    record = read_single_statedb(db_tags[0], '1')
+    cpppo_tags = db2cpppo(record)+'[1]'
+    for db_tag in db_tags[1:]:
+        record = read_single_statedb(db_tag, '1')
+        cpppo_tags += (' '+db2cpppo(record)+'[1]')
+
+    # DEBUG TAGS
+    cpppo_tags += ' P1=SINT'
+    cpppo_tags += ' P2=INT'
+    cpppo_tags += ' P3=DINT'
+    cpppo_tags += ' P4=REAL'
+
+    logger.debug(cpppo_tags)
+
+    cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
+    enip_server_pid = os.system(cmd)
+    logger.debug(enip_server_pid)
 
 
 
@@ -269,7 +312,11 @@ def read_single_statedb(NAME, PID, SCOPE='TODO'):
         return record
 
 def db2cpppo(record):
-    """Convert from sqlite3 db record to cpppo tag string
+    """
+    Convert from sqlite3 db record to cpppo tag string
+    No vector tag support.
+    BOOL are converted into INT (SINT are tags don't work)
+    
 
     :record: tuple from the state db
     :returns: string
@@ -287,7 +334,7 @@ def db2cpppo(record):
     else:
         # cpppo uses SINT as BOOL
         if DATATYPE == 'BOOL':
-            DATATYPE = 'SINT'
+            DATATYPE = 'INT'
 
         cppo_str = NAME+'='+DATATYPE
         logger.debug("%s -> %s" % (record, cppo_str))
@@ -296,7 +343,7 @@ def db2cpppo(record):
 
 
 
-# CONSTANTS
+# NETWORK
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',
@@ -456,13 +503,6 @@ L1_NODES = 0 # TODO
 L2_NODES = 0 # TODO
 L3_NODES = PLCS/2 + 2  # 13/2 gives 6
 
-# TODO: use real tag name and data types
-# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
-# and REAL (32-bit float)
-TAGS = {
-    'pump3': 'pump3=INT[10]',
-    'flow3': 'flow3=INT[10]',
-}
 
 CIP_VENDOR_IDS = {
     'plc1':  'TODO',
