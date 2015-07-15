@@ -160,11 +160,11 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
         g_gexf = nx.write_gexf(graph, "examples/swat/l1_gexf.xml")
         # g2 = nx.read_gexf("examples/swat/g_gexf.xml")
 
-    for node in graph.nodes(data=True):
-        logger.debug( '%s attributes: %s' % (node[0], node[1]))
+    # for node in graph.nodes(data=True):
+    #     logger.debug( '%s attributes: %s' % (node[0], node[1]))
 
-    for edge in graph.edges(data=True):
-        logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
+    # for edge in graph.edges(data=True):
+    #     logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
 
     # Build miniCPS topo
     topo = TopoFromNxGraph(graph)

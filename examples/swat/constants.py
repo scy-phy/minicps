@@ -91,6 +91,7 @@ def wait_for_event_timeout(event, timeout, ename):
 
 # LOGGING
 logging.basicConfig(
+        filename = "logs/swat.log",
         level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
@@ -114,16 +115,67 @@ def init_cpppo_server(db_tags, pid):
         cpppo_tags += (' '+db2cpppo(record)+'[1]')
 
     # DEBUG TAGS
-    cpppo_tags += ' P1=SINT'
-    cpppo_tags += ' P2=INT'
+    cpppo_tags += ' P1=INT'
+    cpppo_tags += ' P2=SINT' # doesn't work
     cpppo_tags += ' P3=DINT'
     cpppo_tags += ' P4=REAL'
 
     logger.debug(cpppo_tags)
 
     cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
-    enip_server_pid = os.system(cmd)
-    logger.debug(enip_server_pid)
+    rc = os.system(cmd)
+    logger.debug('init_cpppo_server rc: %s' % rc)
+
+def write_cpppo(ip, TAGNAME, val):
+    """Write cpppo 
+
+    :ip: TODO
+    :TAGNAME: TODO
+    :val: TODO
+
+    """
+
+    # TODO: write multiple values
+    expr = TAGNAME+'='+val
+    cmd = "python -m cpppo.server.enip.client --print -a %s %s" % (ip, expr)
+    rc = os.system(cmd)
+    logger.debug('write_cpppo rc: %s' % rc)
+
+def read_cpppo(ip, TAGNAME, cpppo_cache):
+    """Read from a cpppo enip server store value in a temp cache and remove
+    it.
+
+    :ip: cpppo server IP
+    :TAGNAME: TODO
+    :cpppo_cache: path to the cpppo enip client cache
+
+    :returns: str value
+
+    """
+
+    # TODO: read multiple values
+
+    # TODO: append with >>
+    cmd = "python -m cpppo.server.enip.client --print -a %s %s > %s" % (
+            ip,
+            TAGNAME, 
+            cpppo_cache)
+    rc = os.system(cmd)
+    logger.debug('read_cpppo rc: %s' % rc)
+
+    # TODO: support for vector tags
+    with open(cpppo_cache, "r") as file_ptr:
+        line = file_ptr.readline()
+
+        words = line.split()
+        print words
+        status = words[3][1:-1]
+        if status != 'OK':
+            value = '-1'
+        else:
+            value = words[2][1:-2]
+
+    return value
 
 
 

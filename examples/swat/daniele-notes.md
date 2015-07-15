@@ -35,6 +35,8 @@ wireless and wired tag.
 
 > TODO: maybe attack it
 
+**Raw data tags** are in the form:
+
     [W_]XX_YYY_SNN_ZZZZ[_HTY]
 
 * `W` is optional and denote *wireless* tags
@@ -47,8 +49,32 @@ wireless and wired tag.
   from simulation)
 * e.g.: `W_AI_FIT_101_FLOW` is wireless flow indicator transmitter for subprocess1 number 1
 
+**Public interface tags** are in the form:
+
+    HMI_YYYSNN
+
+* `TT_UDT` is the `DATATYPE` where `TT` is a convenient name to remember the
+  User Defined Type
+* e.g.: `HMI_MV101` with DATATYPE `MV_UDT`
+
+# CIP/ENIP #
+
+## pycomm ##
+
+* issues:
+    * only CIP/ENIP subset client
+
+## cpppo ##
+
+* issues:
+    * CIP/ENIP subset client/server
+    * broken history module
+    * `BOOL` tags are not supported
+    * `SINT` (8-bit) tags are broken
+    * use `INT` tags also for `BOOL` datatyps
 
 ## Physical Process ##
+
 
 * steps
     * list the required tags
@@ -70,6 +96,7 @@ wireless and wired tag.
 | xxxxxxxxxxx   |
 | xxxxxxxxxxx   |
 | xxxxxxxxxxx   |
+
 
 ### HMI ###
 
@@ -118,12 +145,14 @@ wireless and wired tag.
 > TODO: once ready move it as a sphinx tutorial doc
 
 Simplifying assumptions:
+* state db will read raw data
 * testbed in AUTO mode
 * no alarms
 * ignore PLC db.
 * ignore wireless communications (and tags).
 * assume that \_HTY tags are always True (ideal data generation)
 * assume perfect communications btw PLCs and RIOs (no loss, neglibible delay)
+* ignore PLC internal raw data computation
 
 Start Minicps with a star topology with two PLCs, HMI, the state db `sdb` and the
 physical process `ppr` hosts.
@@ -151,8 +180,7 @@ Like Simple example but with:
 
 ## Future ##
 
-
-
+* MVC model
 * Crypto DB
 * Implement read/write PLC access
 * Model User Defined Tags as dedicated classes and import them into the DB

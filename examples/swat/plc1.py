@@ -16,6 +16,7 @@ import time
 from constants import logger
 from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
 from constants import db2cpppo, read_single_statedb, init_cpppo_server
+from constants import write_cpppo, read_cpppo
 from constants import L1_PLCS_IP
 
 
@@ -31,6 +32,10 @@ if __name__ == '__main__':
     init_cpppo_server(db_tags, '1')
     
     write_cpppo(L1_PLCS_IP['plc1'], 'P1', '1')
+
+    val = read_cpppo(L1_PLCS_IP['plc1'], 'P1', 'examples/swat/plc1_cpppo.cache')
+
+    logger.debug("read_cpppo: %s" % val)
 
     # synch with plc2, plc3
     # time.sleep(1)
