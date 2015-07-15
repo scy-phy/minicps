@@ -18,8 +18,52 @@ import logging
 import os
 
 
-# Threads
+# PROCESS
 
+# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
+# and REAL (32-bit float)
+P1_PLC1_TAGS = {
+    'fit_101': 'AI_FIT_101_FLOW',
+    'mv_101_c': 'DO_MV_101_CLOSE',
+    'mv_101_o': 'DO_MV_101_OPEN',
+    'lit_101': 'AI_LIT_101_LEVEL',
+    'p_101': 'DO_P_101_START',
+    # FIXME: use UDT
+    # 'fit_201': 'AI_FIT_201_FLOW',
+    # 'lit_301': 'AI_LIT_301_LEVEL',
+}
+
+P1_PLC2_TAGS = {
+    'fit_201': 'AI_FIT_201_FLOW',
+    'mv_201_c': 'DO_MV_201_CLOSE',
+    'mv_201_o': 'DO_MV_201_OPEN',
+}
+
+P1_PLC3_TAGS = {
+    'lit_301': 'AI_LIT_301_LEVEL',
+}
+
+# mm
+LIT_101 = {  # raw water tank
+    'LL': 250.0,  
+    'L': 500.0,  
+    'H': 800.0,  
+    'HH': 1200.0,  
+}
+
+LIT_301 = {  # ultrafiltration tank
+    'LL': 250.0,  
+    'L': 800.0,  
+    'H': 1000.0,  
+    'HH': 1200.0,  
+}
+
+# m^3 / h
+FIT_201 = 0.5
+
+
+
+# THREADS
 def wait_for_event_timeout(event, timeout, ename):
     """
     Use it inside thread to synch (non-blocking)
@@ -44,12 +88,96 @@ def wait_for_event_timeout(event, timeout, ename):
             raise Exception(emsg)
 
 
-# logging.basicConfig(level=logging.DEBUG)
+
+# LOGGING
 logging.basicConfig(
+        filename = "logs/swat.log",
         level=logging.DEBUG,
-        # TODO: use the same log format for minicps?
-        format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
 logger = logging.getLogger('swat')
+
+
+
+# CPPPO
+def init_cpppo_server(db_tags, pid):
+    """Init cpppo enip server
+
+    :db_tags: list of state db NAME fileds
+    :pid: str
+
+    """
+
+    record = read_single_statedb(db_tags[0], '1')
+    cpppo_tags = db2cpppo(record)+'[1]'
+    for db_tag in db_tags[1:]:
+        record = read_single_statedb(db_tag, '1')
+        cpppo_tags += (' '+db2cpppo(record)+'[1]')
+
+    # DEBUG TAGS
+    cpppo_tags += ' P1=INT'
+    cpppo_tags += ' P2=SINT' # doesn't work
+    cpppo_tags += ' P3=DINT'
+    cpppo_tags += ' P4=REAL'
+
+    logger.debug(cpppo_tags)
+
+    cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
+    rc = os.system(cmd)
+    logger.debug('init_cpppo_server rc: %s' % rc)
+
+def write_cpppo(ip, TAGNAME, val):
+    """Write cpppo 
+
+    :ip: TODO
+    :TAGNAME: TODO
+    :val: TODO
+
+    """
+
+    # TODO: write multiple values
+    expr = TAGNAME+'='+val
+    cmd = "python -m cpppo.server.enip.client --print -a %s %s" % (ip, expr)
+    rc = os.system(cmd)
+    logger.debug('write_cpppo rc: %s' % rc)
+
+def read_cpppo(ip, TAGNAME, cpppo_cache):
+    """Read from a cpppo enip server store value in a temp cache and remove
+    it.
+
+    :ip: cpppo server IP
+    :TAGNAME: TODO
+    :cpppo_cache: path to the cpppo enip client cache
+
+    :returns: str value
+
+    """
+
+    # TODO: read multiple values
+
+    # TODO: append with >>
+    cmd = "python -m cpppo.server.enip.client --print -a %s %s > %s" % (
+            ip,
+            TAGNAME, 
+            cpppo_cache)
+    rc = os.system(cmd)
+    logger.debug('read_cpppo rc: %s' % rc)
+
+    # TODO: support for vector tags
+    with open(cpppo_cache, "r") as file_ptr:
+        line = file_ptr.readline()
+
+        words = line.split()
+        print words
+        status = words[3][1:-1]
+        if status != 'OK':
+            value = '-1'
+        else:
+            value = words[2][1:-2]
+
+    return value
+
+
 
 # DB
 STATE_DB_PATH = 'examples/swat/state.db'
@@ -82,6 +210,27 @@ DATATYPES = [
         'BOOL',
         'REAL',
 ]
+
+
+def update_statedb(VALUE, NAME, PID, SCOPE='TODO'):
+    """Update Tag table
+
+    :VALUE: str
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        UPDATE Tag 
+        SET VALUE = '%s'
+        WHERE NAME = '%s' AND PID = %s
+        """ % (VALUE, NAME, PID)
+        cursor.execute(cmd)
+        conn.commit()
 
 def create_db(db_path, schema):
     """TODO: Docstring for init.
@@ -143,7 +292,6 @@ def init_db(db_path, datatypes):
 
                 conn.commit()
 
-
 def show_db_tags(conn, table='', pid='0', how_many=0):
     """
     Show all entries from the dict table
@@ -169,7 +317,87 @@ def show_db_tags(conn, table='', pid='0', how_many=0):
     for record in records:
         logger.debug(record)
 
-# CONSTANTS
+# FIXME: set default PID and generalize the query
+def read_statedb(NAME, PID, SCOPE='TODO'):
+    """Read multiple tags
+
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+    :returns: list of tuples
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        SELECT * FROM Tag 
+        WHERE NAME = '%s' AND PID = %s
+        """ % (NAME, PID)
+        cursor.execute(cmd)
+
+        records = cursor.fetchall()
+        for record in records:
+            logger.debug(record)
+
+        return records
+
+def read_single_statedb(NAME, PID, SCOPE='TODO'):
+    """Update Tag table
+
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+    :returns: list of tuples
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        SELECT * FROM Tag 
+        WHERE NAME = '%s' AND PID = %s
+        """ % (NAME, PID)
+        cursor.execute(cmd)
+
+        record = cursor.fetchone()
+        logger.debug(record)
+
+        return record
+
+def db2cpppo(record):
+    """
+    Convert from sqlite3 db record to cpppo tag string
+    No vector tag support.
+    BOOL are converted into INT (SINT are tags don't work)
+    
+
+    :record: tuple from the state db
+    :returns: string
+
+    """
+    SCOPE = record[0]
+    NAME = record[1]
+    DATATYPE = record[2]
+    VALUE = record[3]
+    PID = record[4]
+
+    if DATATYPE not in DATATYPES:
+        logger.info("%s is not in the state db" % DATATYPE)
+        cppo_str = ''
+    else:
+        # cpppo uses SINT as BOOL
+        if DATATYPE == 'BOOL':
+            DATATYPE = 'INT'
+
+        cppo_str = NAME+'='+DATATYPE
+        logger.debug("%s -> %s" % (record, cppo_str))
+
+    return cppo_str
+
+
+
+# NETWORK
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',
@@ -329,13 +557,6 @@ L1_NODES = 0 # TODO
 L2_NODES = 0 # TODO
 L3_NODES = PLCS/2 + 2  # 13/2 gives 6
 
-# TODO: use real tag name and data types
-# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
-# and REAL (32-bit float)
-TAGS = {
-    'pump3': 'pump3=INT[10]',
-    'flow3': 'flow3=INT[10]',
-}
 
 CIP_VENDOR_IDS = {
     'plc1':  'TODO',

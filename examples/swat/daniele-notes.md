@@ -30,8 +30,73 @@
 * tag_types
     * user defined -> use Class
 
+Tag names follows a naming scheme. SWaT store and update different version of
+wireless and wired tag.
+
+> TODO: maybe attack it
+
+**Raw data tags** are in the form:
+
+    [W_]XX_YYY_SNN_ZZZZ[_HTY]
+
+* `W` is optional and denote *wireless* tags
+* `XX` is the signal type: DO, DI, AI, AO
+* `YYY` is the name of the device associated to the tag
+* `S` is the subprocess number: 1, 2, ... , 6
+* `NN` is the device number
+* `ZZZZ` is a verb directly related to `YYY`
+* `HTY` is a `BOOL` set by RIO to validate the integrity of data (omitted
+  from simulation)
+* e.g.: `W_AI_FIT_101_FLOW` is wireless flow indicator transmitter for subprocess1 number 1
+
+**Public interface tags** are in the form:
+
+    HMI_YYYSNN
+
+* `TT_UDT` is the `DATATYPE` where `TT` is a convenient name to remember the
+  User Defined Type
+* e.g.: `HMI_MV101` with DATATYPE `MV_UDT`
+
+# CIP/ENIP #
+
+## pycomm ##
+
+* issues:
+    * only CIP/ENIP subset client
+
+## cpppo ##
+
+* issues:
+    * CIP/ENIP subset client/server
+    * broken history module
+    * `BOOL` tags are not supported
+    * `SINT` (8-bit) tags are broken
+    * use `INT` tags also for `BOOL` datatyps
+
+## Physical Process ##
+
+
+* steps
+    * list the required tags
+    * init them in the PLC enip server
+    * understands the interlock
+
+### Subprocess 1 ###
+
 
 ## SWaT devices ##
+
+### Historian ###
+
+    examples/swat/histn.py
+
+| Threads/Procs |
+| ------------- |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
+
 
 ### HMI ###
 
@@ -80,8 +145,14 @@
 > TODO: once ready move it as a sphinx tutorial doc
 
 Simplifying assumptions:
-* ignore PLC db
-* implement only a subset of state db
+* state db will read raw data
+* testbed in AUTO mode
+* no alarms
+* ignore PLC db.
+* ignore wireless communications (and tags).
+* assume that \_HTY tags are always True (ideal data generation)
+* assume perfect communications btw PLCs and RIOs (no loss, neglibible delay)
+* ignore PLC internal raw data computation
 
 Start Minicps with a star topology with two PLCs, HMI, the state db `sdb` and the
 physical process `ppr` hosts.
@@ -109,8 +180,7 @@ Like Simple example but with:
 
 ## Future ##
 
-
-
+* MVC model
 * Crypto DB
 * Implement read/write PLC access
 * Model User Defined Tags as dedicated classes and import them into the DB

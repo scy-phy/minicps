@@ -23,6 +23,7 @@ from minicps.links import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
+# FIXME: import only necessary data objects
 from constants import *  # those are SWaT specific constants
 
 from mininet.cli import CLI
@@ -32,10 +33,6 @@ from mininet.log import setLogLevel
 
 import networkx as nx
 import matplotlib.pyplot as plt
-
-import logging
-logger = logging.getLogger('minicps.topologies')
-setLogLevel(c.TEST_LOG_LEVEL)
 
 
 def graph_level1(attacker=False):
@@ -108,9 +105,9 @@ def mininet_std(net):
     net.start()
 
     CLI(net)
+    # launch device simulation scripts
 
     net.stop()
-
 
 def mininet_workshop(net):
     """
@@ -121,13 +118,35 @@ def mininet_workshop(net):
     """
     pass
 
+def minicps_tutorial(net):
+    """
+    Settings used for the Think-in workshop
+
+    :net: TODO
+
+    """
+    # init the db
+    os.system("python examples/swat/state_db.py")
+    logger.debug("DB ready")
+
+    net.start()
+
+    plc1, plc2, plc3, hmi = net.get('plc1', 'plc2', 'plc3', 'hmi')
+
+    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    
+    CLI(net)
+    # launch device simulation scripts
+
+    net.stop()
+
 
 def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     """
     Launch the miniCPS SWaT simulation
     
     :graph: networkx graph
-    :mininet_config: fucntion pointer to the mininet configuration
+    :mininet_config: function pointer to the mininet configuration
     :draw_mpl: flag to draw and save the graph using matplotlib
     """
 
@@ -141,11 +160,11 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
         g_gexf = nx.write_gexf(graph, "examples/swat/l1_gexf.xml")
         # g2 = nx.read_gexf("examples/swat/g_gexf.xml")
 
-    for node in graph.nodes(data=True):
-        logger.debug( '%s attributes: %s' % (node[0], node[1]))
+    # for node in graph.nodes(data=True):
+    #     logger.debug( '%s attributes: %s' % (node[0], node[1]))
 
-    for edge in graph.edges(data=True):
-        logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
+    # for edge in graph.edges(data=True):
+    #     logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
 
     # Build miniCPS topo
     topo = TopoFromNxGraph(graph)
@@ -163,4 +182,4 @@ if __name__ == '__main__':
     rgraph = nx.read_gexf("examples/swat/l1_gexf.xml", relabel=False)
 
     # laucher(swat_graph, mininet_std, draw_mpl=False)
-    laucher(rgraph, mininet_std, draw_mpl=False)
+    laucher(rgraph, minicps_tutorial, draw_mpl=False)
