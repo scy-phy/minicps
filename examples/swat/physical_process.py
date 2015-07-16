@@ -14,10 +14,13 @@ from constants import P1_INPUT_VALVES
 from constants import P1_OUTPUT_VALVES
 from constants import STATE_DB_PATH
 from constants import TABLE
+from constants import read_single_statedb
+from constants import update_statedb
 from time import sleep
 from time import time
 from math import sqrt as sqrt
 from math import pow as power
+
 ###################################
 #         PHYSICAL PROCESS
 ###################################
@@ -73,31 +76,6 @@ def compute_new_flow_level(FIT_list, MV_list, LIT, P_list, tank_diameter, valve_
     return height
 
 ###################################
-#          CONTROLLER
-###################################
-def fetch_value(db_path, table, field, pid):
-    with sqlite3.connect(db_path) as conn:
-        try:
-            t = (field, pid)
-            cursor = conn.cursor()
-            cursor.execute('SELECT VALUE FROM Tag WHERE NAME=? AND PID=?', t)
-            record = cursor.fetchone()
-            return record
-        except sqlite3.Error, e:
-            print "Error %s" % e.args[0]
-            return None
-
-def update_value(db_path, table, field, pid, value):
-    with sqlite3.connect(db_path) as conn:
-        try:
-            t = (value, field, pid)
-            cursor = conn.cursor()
-            cursor.execute('UPDATE Tag SET VALUE=? WHERE NAME=? AND PID=?', t)
-            conn.commit()
-        except sqlite3.Error, e:
-            print "Error %s" % e.args[0]
-
-###################################
 #               MAIN
 ###################################
 if __name__ == '__main__':
@@ -112,21 +90,22 @@ if __name__ == '__main__':
             output_valves = []
 
             for index in P1_INPUT_FLOW:
-                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                value = read_single_statedb(i, index)
                 if value is not None:
                     input_flows.append(value)
             for index in P1_INPUT_VALVES:
-                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                value = read_single_statedb(i, index)
                 if value is not None:
                     input_valves.append(value)
             for index in P1_OUTPUT_VALVES:
-                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                value = read_single_statedb(i, index)
                 if value is not None:
                     output_valves.append(value)
 
-            current_flow = fetch_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i)
+                current_flow = read_single_statedb(i, 'AI_LIT_%d01_LEVEL' % i)
             if current_flow is not None:
                 new_flow = compute_new_flow_level(input_flows, input_valves, current_flow, output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
-                update_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i, new_flow)
+                print new_flow
+                update_statedb(new_flow, i, 'AI_LIT_%d01_LEVEL' % i) 
 
             sleep(TIMER)
