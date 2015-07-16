@@ -23,7 +23,7 @@ event enip_message%(c: connection, headers: RecordVal, is_orig: bool%);
 ## headers: The headers for the enip function.
 ##
 ## unused: The rest of the message.
-event enip_unused%(c: connection, headers: RecordVal, unused: Val%);
+event enip_unused%(c: connection, headers: ENIP_Header, unused: Unused_data%);
 
 ## Generated for Enip Register messages.
 ##
