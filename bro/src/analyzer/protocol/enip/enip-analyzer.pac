@@ -4,11 +4,10 @@
 	#define SIZE 8
 
 	RecordVal* HeaderToBro(ENIP_Header *header);
-	%}
+%}
 
 %code{
-	RecordVal* HeaderToBro(ENIP_Header *header)
-		{
+	RecordVal* HeaderToBro(ENIP_Header *header){
 		RecordVal* enip_header = new RecordVal(BifType::Record::EnipHeaders);
 		enip_header->Assign(0, new Val(header->cmd(), TYPE_COUNT));
 		enip_header->Assign(1, new Val(header->len(), TYPE_COUNT));
@@ -17,8 +16,8 @@
 		enip_header->Assign(4, bytestring_to_val(header->sc()));
 		enip_header->Assign(5, new Val(header->opt(), TYPE_COUNT));
 		return enip_header;
-		}
-	%}
+	}
+%}
 
 refine typeattr ENIP_PDU += &let {
 	proc: bool = $context.flow.proc_enip_message(this);
@@ -30,78 +29,128 @@ refine connection ENIP_Conn += {
 		bool confirmed;
 		bool orig_pdu;
 		bool resp_pdu;
-		%}
+	%}
 
 	%init{
 		confirmed = false;
 		orig_pdu = false;
 		resp_pdu = false;
-		%}
+	%}
 
-	function SetPDU(is_orig: bool): bool
-		%{
-		if ( is_orig )
+	function SetPDU(is_orig: bool): bool%{
+		if( is_orig )
 			orig_pdu = true;
 		else
 			resp_pdu = true;
 
 		return true;
-		%}
+	%}
 
-	function SetConfirmed(): bool
-		%{
+	function SetConfirmed(): bool%{
 		confirmed = true;
 		return true;
-		%}
+	%}
 
-	function IsConfirmed(): bool
-		%{
+	function IsConfirmed(): bool%{
 		return confirmed && orig_pdu && resp_pdu;
-		%}
+	%}
 };
 
 refine flow ENIP_Flow += {
-	function proc_enip_message(msg: ENIP_PDU): bool
-		%{
+	function proc_enip_message(msg: ENIP_PDU): bool%{
 		BifEvent::generate_enip_event(connection()->bro_analyzer(), connection()->bro_analyzer()->Conn());
 		return true;
-		%}
+	%}
 
-		function deliver_message(header: ENIP_Header): bool
-		%{
-		if ( ::enip_message )
-			{
+	function deliver_message(header: ENIP_Header): bool%{
+		if( ::enip_message ){
 			BifEvent::generate_enip_message(connection()->bro_analyzer(),
 			                                  connection()->bro_analyzer()->Conn(),
 			                                  HeaderToBro(header),
 			                                  is_orig());
-			}
+		}
 
 		return true;
-		%}
+	%}
 
-	function deliver_ENIP_PDU(message: ENIP_PDU): bool
-		%{
+	function deliver_ENIP_PDU(message: ENIP_PDU): bool%{
 		// We will assume that if an entire PDU from both sides
 		// is successfully parsed then this is definitely enip.
 		connection()->SetPDU(${message.is_orig});
 
-		if ( !connection()->IsConfirmed() )
-			{
+		if ( !connection()->IsConfirmed() ){
 			connection()->SetConfirmed();
 			connection()->bro_analyzer()->ProtocolConfirmation();
+		}
+
+		return true;
+	%}
+
+	function deliver_unused(header: ENIP_Header, message: Unused_data, lol: string): bool%{
+		if(::enip_unused){
+			if(${header.cmd} == NOP){
+				if(${header.st} != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for status in enip nop message %d", ${header.st}));
+					return false;
+				}
+				if(${header.opt} != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for options in enip nop message %d", ${header.opt}));
+					return false;
+				}
 			}
+			else if(${header.cmd} == LIST_IDENTITY || ${header.cmd} == LIST_INTERFACES){
+				if(${header.len} != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for length in enip list identity or interfaces message %d", ${header.len}));
+					return false;
+				}
+				if(${header.st} != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for status in enip list identity or interfaces message %d", ${header.st}));
+					return false;
+				}
+				if(${header.opt} != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for options in enip list identity or interfaces message %d", ${header.opt}));
+					return false;
+				}
+				for(int i = 0; i < 8; i++){
+					if(${header.sc}[i] != 0x00){
+					connection()->bro_analyzer()->ProtocolViolation(
+					fmt("invalid value for sender context in enip list identity or interfaces message %d", ${header.sc}[i]));
+					return false;
+					}
+				}
+			}
+		}
+		else if(${header.cmd} == LIST_SERVICES){
+			if(${header.len} != 0x00){
+				connection()->bro_analyzer()->ProtocolViolation(
+				fmt("invalid value for length in enip list services message %d", ${header.len}));
+				return false;
+			}
+			if(${header.st} != 0x00){
+				connection()->bro_analyzer()->ProtocolViolation(
+				fmt("invalid value for status in enip list services message %d", ${header.st}));
+				return false;
+			}
+			if(${header.opt} != 0x00){
+				connection()->bro_analyzer()->ProtocolViolation(
+				fmt("invalid value for options in enip list services message %d", ${header.opt}));
+				return false;
+			}
+		}
 
+		BifEvent::generate_enip_unused(connection()->bro_analyzer(),
+						connection()->bro_analyzer()->Conn(),
+						HeaderToBro(header),
+						bytestring_to_val(${message.unused}));
 		return true;
 		%}
 
-	function deliver_unused(header: ENIP_Header, message: unused_data): bool
-		%{
-		if ( ::enip_unused )
-		       {
-		       if(${header.cmd} == LIST_IDENTITY)
-		       		return false;
-		       }
-		return true;
-		%}
+	# function deliver_register(header: ENIP_Header, message: Register): bool%{
+	# 	return true;
+	# %}
 };

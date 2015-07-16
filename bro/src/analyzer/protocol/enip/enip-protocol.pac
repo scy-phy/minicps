@@ -5,7 +5,7 @@
 #
 
 ##############################
-#         CONSTANTS
+#         CONSTANTS          #
 ##############################
 
 enum cmd_codes {
@@ -34,7 +34,7 @@ enum err_codes {
 };
 
 ##############################
-#        RECORD TYPES
+#        RECORD TYPES        #
 ##############################
 
 type ENIP_Header = record {
@@ -79,14 +79,14 @@ type Command_Specific_Data(header: ENIP_Header) = record {
 };
 
 type RR_Unit = record {
-        iface_handle: uint32 &check(iface_handle == 0);
+        iface_handle: uint32 &check(iface_handle == 0x00000000);
 	timeout: uint16;
 	data: bytestring &restofdata;
 };
 
 type Register = record {
-        protocol: uint16 &check(protocol == 0x01);
-	options:  uint16 &check(options  == 0x00);
+        protocol: uint16 &check(protocol == 0x0100);
+	options:  uint16 &check(options  == 0x0000);
 };
 
 type Data_Address = record {
@@ -110,15 +110,15 @@ type UCMM = record {
 	MR: uint8[data_len];
 };
 
-type unused_data = record {
+type Unused_data = record {
         unused: bytestring &restofdata;
 };
 
 type ENIP_Request(header: ENIP_Header) = case header.cmd of {
-        NOP 		   -> nop: 		 unused_data;
-	LIST_SERVICES 	   -> listServices: 	 unused_data;
-	LIST_IDENTITY 	   -> listIdentity: 	 unused_data;
-	LIST_INTERFACES    -> listInterfaces: 	 unused_data;
+        NOP 		   -> nop: 		 Unused_data;
+	LIST_SERVICES 	   -> listServices: 	 Unused_data;
+	LIST_IDENTITY 	   -> listIdentity: 	 Unused_data;
+	LIST_INTERFACES    -> listInterfaces: 	 Unused_data;
 	REGISTER_SESSION   -> registerSession: 	 Register;
 	UNREGISTER_SESSION -> unregisterSession: Register;
 	SEND_RR_DATA 	   -> sendRRData: 	 RR_Unit;
