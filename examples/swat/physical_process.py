@@ -18,7 +18,6 @@ from time import sleep
 from time import time
 from math import sqrt as sqrt
 from math import pow as power
-
 ###################################
 #         PHYSICAL PROCESS
 ###################################
@@ -63,12 +62,12 @@ def compute_new_flow_level(FIT_list, MV_list, LIT, P_list, tank_diameter, valve_
     returns: new flow level (m)
     """
     height = LIT
-    for i in input_list:
+    for i in FIT_list:
         if MV_list[i] != 0:
             # FIT_list[i] is supposed to be in m^3/h and timer in seconds => conversion
-            height += (timer/3600) * flow_to_height(FIT_list[i], diameter)
+            height += (timer/3600) * flow_to_height(FIT_list[i], tank_diameter)
     for i in P_list:
-        if P_LIST[i] != 0:
+        if P_list[i] != 0:
             # Toricelli formula gives the speed in m/s => no conversion
             height -= timer * speed_to_height(Toricelli(LIT, 0), valve_diameter, tank_diameter)
     return height
@@ -78,23 +77,25 @@ def compute_new_flow_level(FIT_list, MV_list, LIT, P_list, tank_diameter, valve_
 ###################################
 def fetch_value(db_path, table, field, pid):
     with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cmd = 'SELECT VALUE FROM %s WHERE NAME="%s" AND PID=%d;' % (table,
-                                                                   field,
-                                                                   pid)
-        cursor.execute(cmd)
-        record = cursor.fetchone()
-    return record
+        try:
+            t = (field, pid)
+            cursor = conn.cursor()
+            cursor.execute('SELECT VALUE FROM Tag WHERE NAME=? AND PID=?', t)
+            record = cursor.fetchone()
+            return record
+        except sqlite3.Error, e:
+            print "Error %s" % e.args[0]
+            return None
 
 def update_value(db_path, table, field, pid, value):
     with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cmd = 'UPDATE %s SET VALUE=%d WHERE NAME="%s" AND PID=%d;' % (table,
-                                                                        value,
-                                                                        field,
-                                                                        pid)
-        cursor.execute(cmd)
-        conn.commit()
+        try:
+            t = (value, field, pid)
+            cursor = conn.cursor()
+            cursor.execute('UPDATE Tag SET VALUE=? WHERE NAME=? AND PID=?', t)
+            conn.commit()
+        except sqlite3.Error, e:
+            print "Error %s" % e.args[0]
 
 ###################################
 #               MAIN
@@ -111,13 +112,21 @@ if __name__ == '__main__':
             output_valves = []
 
             for index in P1_INPUT_FLOW:
-                input_flows.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
+                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                if value is not None:
+                    input_flows.append(value)
             for index in P1_INPUT_VALVES:
-                input_valves.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
+                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                if value is not None:
+                    input_valves.append(value)
             for index in P1_OUTPUT_VALVES:
-                output_valves.append(fetch_value(STATE_DB_PATH, TABLE, index, i))
-            current_flow = fetch_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i)
-            new_flow = compute_new_flow_level(input_flows, input_valves, current_flow, output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
+                value = fetch_value(STATE_DB_PATH, TABLE, index, i)
+                if value is not None:
+                    output_valves.append(value)
 
-            update_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i, new_flow)
+            current_flow = fetch_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i)
+            if current_flow is not None:
+                new_flow = compute_new_flow_level(input_flows, input_valves, current_flow, output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
+                update_value(STATE_DB_PATH, TABLE, 'AI_LIT_%d01_LEVEL' % i, i, new_flow)
+
             sleep(TIMER)
