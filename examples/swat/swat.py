@@ -133,7 +133,8 @@ def minicps_tutorial(net):
 
     plc1, plc2, plc3, hmi = net.get('plc1', 'plc2', 'plc3', 'hmi')
 
-    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    # Init cpppo enip servers and run main loop
+    # plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
     
     CLI(net)
     # launch device simulation scripts

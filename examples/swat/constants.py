@@ -22,8 +22,8 @@ import os.path
 # PLC TAGS
 
 # UDT Bases
-class UDT_FIT(object):
-    """UDT_FIT"""
+class FIT_UDT(object):
+    """FIT_UDT"""
 
     def __init__(self):
     
@@ -46,8 +46,8 @@ class UDT_FIT(object):
         self.Hty = '0'
 
 
-class UDT_LIT(object):
-    """UDT_LIT"""
+class AIN_UDT(object):
+    """AIN_UDT: LIT"""
 
     def __init__(self):
     
@@ -68,8 +68,8 @@ class UDT_LIT(object):
         self.Sim_PV = '0.0'
 
 
-class UDT_MV(object):
-    """UDT_MV"""
+class MV_UDT(object):
+    """MV_UDT"""
 
     def __init__(self):
         self.Cmd = [ '' for i in range(0,16) ]
@@ -81,8 +81,8 @@ class UDT_MV(object):
         self.Avl= '0'
 
 
-class UDT_P(object):
-    """UDT_P"""
+class PMP_UDT(object):
+    """PMP_UDT"""
 
     def __init__(self):
         self.Cmd = [ '' for i in range(0,16) ]
@@ -105,7 +105,6 @@ class UDT_P(object):
 
 
 # UDT Aliases
-class HMI_FIT101(UDT_FIT):
 
     """Docstring for HMI_FIT101. """
     def __init__(self):
@@ -120,24 +119,34 @@ P1_PLC1_TAGS = {
     'mv_101_o': 'DO_MV_101_OPEN',
     'lit_101': 'AI_LIT_101_LEVEL',
     'p_101': 'DO_P_101_START',
-    # FIXME: use UDT
-    # 'fit_201': 'AI_FIT_201_FLOW',
-    # 'lit_301': 'AI_LIT_301_LEVEL',
+    # 'hmi_fit201.Pv': 'HMI_FIT201.Pv',
+    # 'hmi_mv201.Status': 'HMI_MV201.Status',
+    # 'hmi_lit301.Pv': 'HMI_LIT301.Pv',
 }
 
 P1_PLC2_TAGS = {
     'fit_201': 'AI_FIT_201_FLOW',
     'mv_201_c': 'DO_MV_201_CLOSE',
     'mv_201_o': 'DO_MV_201_OPEN',
+    # 'hmi_fit201.Pv': 'HMI_FIT201.Pv',
+    # 'hmi_mv201.Status': 'HMI_MV201.Status',
 }
 
 P1_PLC3_TAGS = {
     'lit_301': 'AI_LIT_301_LEVEL',
+    # 'hmi_lit301.Pv': 'HMI_LIT301.Pv',
 }
 
 
 
 # PROCESS
+
+# periods in sec
+T_PLC_R = 10E-3
+T_PLC_W = 10E-3
+
+T_PP_R = 2E-3
+T_PP_W = 2E-3
 
 # mm
 LIT_101 = {  # raw water tank
@@ -229,6 +238,7 @@ def db2cpppo(record):
 
     return cppo_str
 
+
 def init_cpppo_server(db_tags, pid):
     """Init cpppo enip server
 
@@ -254,7 +264,6 @@ def init_cpppo_server(db_tags, pid):
     cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
     rc = os.system(cmd)
     assert rc == 0, "init_cpppo_server"
-
 
 def write_cpppo(ip, tag_name, val):
     """Write cpppo 
@@ -341,6 +350,11 @@ DATATYPES = [
         'DINT',
         'BOOL',
         'REAL',
+
+        'FIT_UDT',
+        'AIN_UDT',  # eg: LIT
+        'MV_UDT',
+        'PMP_UDT',
 ]
 
 
@@ -370,10 +384,25 @@ def init_db(db_path, datatypes):
     Init a DB from RSLogix 5000 exported csv file
     sqlite3 uses ? placeholder for parameters substitution
 
+    TODO: UDT modeling convention
+
     :db_path: full or relative path to the file.db
     :datatypes: list of DATATYPES
 
     """
+
+    # Subprocess1 UDT modeling
+    # P1_UDT = [
+    #     ('', 'HMI_P101.Status', 'INT', '', 1),
+    #     ('', 'HMI_P101.Cmd', 'INT', '', 1),
+    #     ('', 'HMI_FIT101.Pv', 'REAL', '', 1),
+    # ]                                     1
+
+    # P2_UDT = [
+    #     ('', 'HMI_FIT201.Pv', 'REAL', '', 2),
+    #     ('', 'HMI_FIT201.Status', 'REAL', '', 2),
+    # ]
+
     with sqlite3.connect(db_path) as conn:
         logger.info('Init tables')
 
@@ -393,41 +422,16 @@ def init_db(db_path, datatypes):
                     if datatype in datatypes:
                         scope = fields[1]
                         name = fields[2]
-                        logger.debug('NAME: %s  DATATYPE: %s' % (name,
-                            datatype))
+                        # logger.debug('init_db: NAME: %s  DATATYPE: %s' % (name,
+                            # datatype))
                         par_sub = (scope, name, datatype, i)
                         cmd = """
                         INSERT INTO Tag (SCOPE, NAME, DATATYPE, PID)
                         VALUES (?, ?, ?, ?)
                         """
                         cursor.execute(cmd, par_sub)
+        conn.commit()
 
-                conn.commit()
-
-def show_db_tags(conn, table='', pid='0', how_many=0):
-    """
-    Show all entries from the dict table
-    
-    SQL commands must be separated
-    """
-
-    cursor = conn.cursor()
-    cmd = "SELECT * FROM %s" % table
-
-    if pid > '0' and pid < '8':
-        cmd += ' WHERE pid = %s' % pid
-
-    cursor.execute(cmd)
-
-    if how_many == 0:
-        records = cursor.fetchall()
-    elif how_many == 1:
-        records = cursor.fetchone()
-    else:
-        records = cursor.fetchmany(how_many)
-
-    for record in records:
-        logger.debug(record)
 
 # FIXME: set default PID and generalize the query
 def read_statedb(PID, NAME=None, SCOPE='TODO'):

@@ -40,13 +40,13 @@ def db_fun(arg1):
         
 if __name__ == '__main__':
 
-    # remove_db(STATE_DB_PATH)
+    remove_db(STATE_DB_PATH)
 
     db_is_new = not os.path.exists(STATE_DB_PATH)
     if db_is_new:
         create_db(STATE_DB_PATH, SCHEMA)
 
-    # init_db(STATE_DB_PATH, DATATYPES)
+    init_db(STATE_DB_PATH, DATATYPES)
 
     # DEBUG
     # records = read_statedb(1)
