@@ -16,6 +16,7 @@ from constants import STATE_DB_PATH
 from constants import TABLE
 from constants import read_single_statedb
 from constants import update_statedb
+from constants import select_value
 from time import sleep
 from time import time
 from math import sqrt as sqrt
@@ -65,11 +66,11 @@ def compute_new_flow_level(FIT_list, MV_list, LIT, P_list, tank_diameter, valve_
     returns: new flow level (m)
     """
     height = LIT
-    for i in FIT_list:
+    for i in (0, len(FIT_list) - 1):
         if MV_list[i] != 0:
             # FIT_list[i] is supposed to be in m^3/h and timer in seconds => conversion
             height += (timer/3600) * flow_to_height(FIT_list[i], tank_diameter)
-    for i in P_list:
+    for i in (0, len(P_list) - 1):
         if P_list[i] != 0:
             # Toricelli formula gives the speed in m/s => no conversion
             height -= timer * speed_to_height(Toricelli(LIT, 0), valve_diameter, tank_diameter)
@@ -84,28 +85,28 @@ if __name__ == '__main__':
     """
     start_time = time()
     while(time() - start_time < TIMEOUT):
-        for i in range(0,PROCESS_NUMBER):
+        for i in range(1, PROCESS_NUMBER + 1):
             input_flows = []
             input_valves = []
             output_valves = []
-
             for index in P1_INPUT_FLOW:
                 value = read_single_statedb(i, index)
                 if value is not None:
-                    input_flows.append(value)
+                    input_flows.append(select_value(value))
             for index in P1_INPUT_VALVES:
                 value = read_single_statedb(i, index)
                 if value is not None:
-                    input_valves.append(value)
+                    input_valves.append(select_value(value))
             for index in P1_OUTPUT_VALVES:
                 value = read_single_statedb(i, index)
                 if value is not None:
-                    output_valves.append(value)
+                    output_valves.append(select_value(value))
 
-                current_flow = read_single_statedb(i, 'AI_LIT_%d01_LEVEL' % i)
+            current_flow = read_single_statedb(i, 'AI_LIT_%d01_LEVEL' % i)
             if current_flow is not None:
-                new_flow = compute_new_flow_level(input_flows, input_valves, current_flow, output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
-                print new_flow
-                update_statedb(new_flow, i, 'AI_LIT_%d01_LEVEL' % i) 
+                print current_flow[3] # DEBUG
+                new_flow = compute_new_flow_level(input_flows, input_valves, select_value(current_flow), output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
+                print new_flow # DEBUG
+                update_statedb(new_flow, i, 'AI_LIT_%d01_LEVEL' % i)
 
             sleep(TIMER)
