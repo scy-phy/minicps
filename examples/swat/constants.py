@@ -26,7 +26,7 @@ class UDT_FIT(object):
     """UDT_FIT"""
 
     def __init__(self):
-    
+
         self.Pv = '0.0'
         self.Heu = '0.0'
         self.Leu = '0.0'
@@ -50,7 +50,7 @@ class UDT_LIT(object):
     """UDT_LIT"""
 
     def __init__(self):
-    
+
         self.Pv = '0.0'
         self.Heu = '0.0'
         self.Leu = '0.0'
@@ -110,7 +110,7 @@ class HMI_FIT101(UDT_FIT):
     """Docstring for HMI_FIT101. """
     def __init__(self):
         """TODO: to be defined1. """
-        
+
 
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
@@ -141,17 +141,17 @@ P1_PLC3_TAGS = {
 
 # mm
 LIT_101 = {  # raw water tank
-    'LL': 250.0,  
-    'L': 500.0,  
-    'H': 800.0,  
-    'HH': 1200.0,  
+    'LL': 250.0,
+    'L': 500.0,
+    'H': 800.0,
+    'HH': 1200.0,
 }
 
 LIT_301 = {  # ultrafiltration tank
-    'LL': 250.0,  
-    'L': 800.0,  
-    'H': 1000.0,  
-    'HH': 1200.0,  
+    'LL': 250.0,
+    'L': 800.0,
+    'H': 1000.0,
+    'HH': 1200.0,
 }
 
 # m^3 / h
@@ -204,7 +204,7 @@ def db2cpppo(record):
     Convert from sqlite3 db record to cpppo tag string
     No vector tag support.
     BOOL are converted into INT (SINT are tags don't work)
-    
+
 
     :record: tuple from the state db
     :returns: string
@@ -257,7 +257,7 @@ def init_cpppo_server(db_tags, pid):
 
 
 def write_cpppo(ip, tag_name, val):
-    """Write cpppo 
+    """Write cpppo
 
     :ip: TODO
     :tag_name: str equal to the state db NAME field
@@ -287,7 +287,7 @@ def read_cpppo(ip, tag_name, cpppo_cache):
     # TODO: append with >>
     cmd = "python -m cpppo.server.enip.client --print -a %s %s > %s" % (
             ip,
-            tag_name, 
+            tag_name,
             cpppo_cache)
     rc = os.system(cmd)
     assert rc == 0, "read_cpppo"
@@ -375,59 +375,64 @@ def init_db(db_path, datatypes):
 
     """
     with sqlite3.connect(db_path) as conn:
-        logger.info('Init tables')
+        try:
+            logger.info('Init tables')
 
-        for i in range(1, 7):
-            plc_filename = os.path.join(os.path.dirname(__file__), "real-tags", "P%d-Tags.CSV" % i)
-            with open(plc_filename, "rt") as f:
+            for i in range(1, 7):
+                plc_filename = os.path.join(os.path.dirname(__file__), "real-tags", "P%d-Tags.CSV" % i)
+                with open(plc_filename, "rt") as f:
 
-                text = f.read()
-                tags = text.split('\n')  # new-line splitted list of tags
+                    text = f.read()
+                    tags = text.split('\n')  # new-line splitted list of tags
 
-                cursor = conn.cursor()
+                    cursor = conn.cursor()
 
-                for tag in tags[7:-1]:
-                    fields = tag.split(',')
-                    datatype = fields[4][1:-1]  # extract BOOL from "BOOL" 
+                    for tag in tags[7:-1]:
+                        fields = tag.split(',')
+                        datatype = fields[4][1:-1]  # extract BOOL from "BOOL"
 
-                    if datatype in datatypes:
-                        scope = fields[1]
-                        name = fields[2]
-                        logger.debug('NAME: %s  DATATYPE: %s' % (name,
-                            datatype))
-                        par_sub = (scope, name, datatype, i)
-                        cmd = """
-                        INSERT INTO Tag (SCOPE, NAME, DATATYPE, PID)
-                        VALUES (?, ?, ?, ?)
-                        """
-                        cursor.execute(cmd, par_sub)
+                        if datatype in datatypes:
+                            scope = fields[1]
+                            name = fields[2]
+                            logger.debug('NAME: %s  DATATYPE: %s' % (name,
+                                                                     datatype))
+                            par_sub = (scope, name, datatype, i)
+                            cmd = """
+                            INSERT INTO Tag (SCOPE, NAME, DATATYPE, PID)
+                            VALUES (?, ?, ?, ?)
+                            """
+                            cursor.execute(cmd, par_sub)
 
-                conn.commit()
+                    conn.commit()
+        except sqlite3.Error, e:
+            logger.warning('Error %s:' % e.args[0])
 
 def show_db_tags(conn, table='', pid='0', how_many=0):
     """
     Show all entries from the dict table
-    
+
     SQL commands must be separated
     """
+    try:
+        cursor = conn.cursor()
+        cmd = "SELECT * FROM %s" % table
 
-    cursor = conn.cursor()
-    cmd = "SELECT * FROM %s" % table
+        if pid > '0' and pid < '8':
+            cmd += ' WHERE pid = %s' % pid
 
-    if pid > '0' and pid < '8':
-        cmd += ' WHERE pid = %s' % pid
+        cursor.execute(cmd)
 
-    cursor.execute(cmd)
+        if how_many == 0:
+            records = cursor.fetchall()
+        elif how_many == 1:
+            records = cursor.fetchone()
+        else:
+            records = cursor.fetchmany(how_many)
 
-    if how_many == 0:
-        records = cursor.fetchall()
-    elif how_many == 1:
-        records = cursor.fetchone()
-    else:
-        records = cursor.fetchmany(how_many)
-
-    for record in records:
-        logger.debug(record)
+        for record in records:
+            logger.debug(record)
+    except sqlite3.Error, e:
+        logger.warning('Error %s:' % e.args[0])
 
 # FIXME: set default PID and generalize the query
 def read_statedb(PID, NAME=None, SCOPE='TODO'):
@@ -440,25 +445,27 @@ def read_statedb(PID, NAME=None, SCOPE='TODO'):
     :returns: list of tuples
 
     """
-
     with sqlite3.connect(STATE_DB_PATH) as conn:
-        cursor = conn.cursor()
-        par_temp = [PID]
-        cmd = """
-        SELECT * FROM Tag 
-        WHERE PID = ?
-        """
+        try:
+            cursor = conn.cursor()
+            par_temp = [PID]
+            cmd = """
+            SELECT * FROM Tag
+            WHERE PID = ?
+            """
 
-        if NAME is not None:
-            cmd += 'AND NAME = ?'
-            par_temp.append(NAME)
+            if NAME is not None:
+                cmd += 'AND NAME = ?'
+                par_temp.append(NAME)
 
-        par_sub = tuple(par_temp)
-        cursor.execute(cmd, par_sub)
+            par_sub = tuple(par_temp)
+            cursor.execute(cmd, par_sub)
 
-        records = cursor.fetchall()
+            records = cursor.fetchall()
+            return records
+        except sqlite3.Error, e:
+            logger.warning('Error %s:' % e.args[0])
 
-        return records
 
 def read_single_statedb(PID, NAME, SCOPE='TODO'):
     """Update Tag table
@@ -472,17 +479,19 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
     """
 
     with sqlite3.connect(STATE_DB_PATH) as conn:
-        cursor = conn.cursor()
-        cmd = """
-        SELECT * FROM Tag 
-        WHERE PID = ? AND NAME = ?
-        """
-        par_sub = (PID, NAME)
-        cursor.execute(cmd, par_sub)
+        try:
+            cursor = conn.cursor()
+            cmd = """
+            SELECT * FROM Tag
+            WHERE PID = ? AND NAME = ?
+            """
+            par_sub = (PID, NAME)
+            cursor.execute(cmd, par_sub)
 
-        record = cursor.fetchone()
-
-        return record
+            record = cursor.fetchone()
+            return record
+        except sqlite3.Error, e:
+            logger.warning('Error %s:' % e.args[0])
 
 def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
     """Update Tag table
@@ -495,18 +504,21 @@ def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
     """
 
     with sqlite3.connect(STATE_DB_PATH) as conn:
-        cursor = conn.cursor()
-        cmd = """
-        UPDATE Tag 
-        SET VALUE = ?
-        WHERE PID = ? AND NAME = ?
-        """
-        par_sub = (VALUE, PID, NAME)
-        cursor.execute(cmd, par_sub)
-        conn.commit()
+        try:
+            cursor = conn.cursor()
+            cmd = """
+            UPDATE Tag
+            SET VALUE = ?
+            WHERE PID = ? AND NAME = ?
+            """
+            par_sub = (VALUE, PID, NAME)
+            cursor.execute(cmd, par_sub)
+            conn.commit()
+        except sqlite3.Error, e:
+            logger.warning('Error %s:' % e.args[0])
 
-
-
+def select_value(record):
+    return float(record[3])
 
 # NETWORK
 L0_RING1 = {

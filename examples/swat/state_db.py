@@ -18,10 +18,10 @@ class Aggregate(object):
 class UserDefinedType(object):
     """
     Used to store in a single record multiple values.
-    
+
     A UDT cannot store: Axis, MESSAGE, MOTION, GROUP, SFC_STEP, SFC_ACTION,
     SFC_STOP, PHASE, ALARM_ANALOG, ALARM_DIGITAL data types
-    
+
     """
 
     def __init__(self):
@@ -37,7 +37,7 @@ def db_fun(arg1):
     """
     pass
 
-        
+
 if __name__ == '__main__':
 
     # remove_db(STATE_DB_PATH)
@@ -49,17 +49,10 @@ if __name__ == '__main__':
     # init_db(STATE_DB_PATH, DATATYPES)
 
     # DEBUG
-    # records = read_statedb(1)
-    # print records
-    # record = read_single_statedb(1, 'AI_FIT_101_FLOW')
-    # print record
-    # update_statedb('33', 1, 'AI_FIT_101_FLOW')
-    # record = read_single_statedb(1, 'AI_FIT_101_FLOW')
-    # print record
-
-
-
-
-
-    
-
+    records = read_statedb(1)
+    print records
+    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    print record
+    update_statedb('33', 1, 'AI_FIT_101_FLOW')
+    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    print record
