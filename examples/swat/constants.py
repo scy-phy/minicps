@@ -23,7 +23,6 @@ import os.path
 
 # UDT Bases
 class UDT_FIT(object):
-
     """UDT_FIT"""
 
     def __init__(self):
@@ -48,7 +47,6 @@ class UDT_FIT(object):
 
 
 class UDT_LIT(object):
-
     """UDT_LIT"""
 
     def __init__(self):
@@ -71,7 +69,6 @@ class UDT_LIT(object):
 
 
 class UDT_MV(object):
-
     """UDT_MV"""
 
     def __init__(self):
@@ -85,7 +82,6 @@ class UDT_MV(object):
 
 
 class UDT_P(object):
-
     """UDT_P"""
 
     def __init__(self):
@@ -106,7 +102,6 @@ class UDT_P(object):
         self.Reset_RunHr = '0'
         self.FTR = '0'
         self.FTS = '0'
-    
 
 
 # UDT Aliases
@@ -203,6 +198,37 @@ logger = logging.getLogger('swat')
 
 
 # CPPPO
+
+def db2cpppo(record):
+    """
+    Convert from sqlite3 db record to cpppo tag string
+    No vector tag support.
+    BOOL are converted into INT (SINT are tags don't work)
+    
+
+    :record: tuple from the state db
+    :returns: string
+
+    """
+    SCOPE = record[0]
+    NAME = record[1]
+    DATATYPE = record[2]
+    VALUE = record[3]
+    PID = record[4]
+
+    if DATATYPE not in DATATYPES:
+        logger.info("%s is not in the state db" % DATATYPE)
+        cppo_str = ''
+    else:
+        # cpppo uses SINT as BOOL
+        if DATATYPE == 'BOOL':
+            DATATYPE = 'INT'
+
+        cppo_str = NAME+'='+DATATYPE
+        logger.debug("db2cpppo: %s -> %s" % (record, cppo_str))
+
+    return cppo_str
+
 def init_cpppo_server(db_tags, pid):
     """Init cpppo enip server
 
@@ -211,11 +237,11 @@ def init_cpppo_server(db_tags, pid):
 
     """
 
-    record = read_single_statedb(db_tags[0], '1')
-    cpppo_tags = db2cpppo(record)+'[1]'
+    record = read_single_statedb(pid, db_tags[0])
+    cpppo_tags = db2cpppo(record)
     for db_tag in db_tags[1:]:
-        record = read_single_statedb(db_tag, '1')
-        cpppo_tags += (' '+db2cpppo(record)+'[1]')
+        record = read_single_statedb(pid, db_tag)
+        cpppo_tags += (' '+db2cpppo(record))
 
     # DEBUG TAGS
     cpppo_tags += ' P1=INT'
@@ -223,48 +249,48 @@ def init_cpppo_server(db_tags, pid):
     cpppo_tags += ' P3=DINT'
     cpppo_tags += ' P4=REAL'
 
-    logger.debug(cpppo_tags)
+    logger.debug('cpppo_tags: %s' % cpppo_tags)
 
     cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
     rc = os.system(cmd)
-    logger.debug('init_cpppo_server rc: %s' % rc)
+    assert rc == 0, "init_cpppo_server"
 
-def write_cpppo(ip, TAGNAME, val):
+
+def write_cpppo(ip, tag_name, val):
     """Write cpppo 
 
     :ip: TODO
-    :TAGNAME: TODO
-    :val: TODO
+    :tag_name: str equal to the state db NAME field
+    :val: str
 
     """
 
     # TODO: write multiple values
-    expr = TAGNAME+'='+val
+    expr = tag_name+'='+val
     cmd = "python -m cpppo.server.enip.client --print -a %s %s" % (ip, expr)
     rc = os.system(cmd)
-    logger.debug('write_cpppo rc: %s' % rc)
+    assert rc == 0, "write_cpppo"
 
-def read_cpppo(ip, TAGNAME, cpppo_cache):
+def read_cpppo(ip, tag_name, cpppo_cache):
     """Read from a cpppo enip server store value in a temp cache and remove
     it.
 
     :ip: cpppo server IP
-    :TAGNAME: TODO
+    :tag_name: str equal to the state db NAME field
     :cpppo_cache: path to the cpppo enip client cache
 
-    :returns: str value
+    :returns: str value otherwise -1
 
     """
 
     # TODO: read multiple values
-
     # TODO: append with >>
     cmd = "python -m cpppo.server.enip.client --print -a %s %s > %s" % (
             ip,
-            TAGNAME, 
+            tag_name, 
             cpppo_cache)
     rc = os.system(cmd)
-    logger.debug('read_cpppo rc: %s' % rc)
+    assert rc == 0, "read_cpppo"
 
     # TODO: support for vector tags
     with open(cpppo_cache, "r") as file_ptr:
@@ -284,18 +310,20 @@ def read_cpppo(ip, TAGNAME, cpppo_cache):
 
 # DB
 STATE_DB_PATH = os.path.join(os.path.dirname(__file__), 'state.db')
-PLC1_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc1.db')
-PLC2_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc2.db')
-PLC3_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc3.db')
-PLC4_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc4.db')
-PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
-PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
-PLC6_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc6.db')
+
+# currently no PLC dbs
+# PLC1_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc1.db')
+# PLC2_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc2.db')
+# PLC3_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc3.db')
+# PLC4_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc4.db')
+# PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
+# PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
+# PLC6_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc6.db')
 
 TABLE = 'Tag'
 
 SCHEMA = """
-        create table Tag (
+        create table %s (
             SCOPE             text not null,
             NAME              text not null,
             DATATYPE          text not null,
@@ -303,7 +331,7 @@ SCHEMA = """
             PID               integer not null,
             PRIMARY KEY (SCOPE, NAME, PID)
         );
-        """
+        """ % TABLE
         # VALUE             text default '',
 
 # state_db specific filters, functions and aggregators
@@ -477,35 +505,6 @@ def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
         cursor.execute(cmd, par_sub)
         conn.commit()
 
-def db2cpppo(record):
-    """
-    Convert from sqlite3 db record to cpppo tag string
-    No vector tag support.
-    BOOL are converted into INT (SINT are tags don't work)
-    
-
-    :record: tuple from the state db
-    :returns: string
-
-    """
-    SCOPE = record[0]
-    NAME = record[1]
-    DATATYPE = record[2]
-    VALUE = record[3]
-    PID = record[4]
-
-    if DATATYPE not in DATATYPES:
-        logger.info("%s is not in the state db" % DATATYPE)
-        cppo_str = ''
-    else:
-        # cpppo uses SINT as BOOL
-        if DATATYPE == 'BOOL':
-            DATATYPE = 'INT'
-
-        cppo_str = NAME+'='+DATATYPE
-        logger.debug("%s -> %s" % (record, cppo_str))
-
-    return cppo_str
 
 
 

@@ -29,12 +29,11 @@ if __name__ == '__main__':
     db_tags = []
     db_tags.extend(P1_PLC1_TAGS.values())
     # db_tags.extend(P2_PLC1_TAGS.values())
-    init_cpppo_server(db_tags, '1')
+    init_cpppo_server(db_tags, 1)
     
-    write_cpppo(L1_PLCS_IP['plc1'], 'P1', '1')
+    write_cpppo(L1_PLCS_IP['plc1'], 'DO_MV_101_CLOSE', '1')
 
-    val = read_cpppo(L1_PLCS_IP['plc1'], 'P1', 'examples/swat/plc1_cpppo.cache')
-
+    val = read_cpppo(L1_PLCS_IP['plc1'], 'DO_MV_101_CLOSE', 'examples/swat/plc1_cpppo.cache')
     logger.debug("read_cpppo: %s" % val)
 
     # synch with plc2, plc3

@@ -48,16 +48,14 @@ if __name__ == '__main__':
 
     # init_db(STATE_DB_PATH, DATATYPES)
 
+    # DEBUG
     # records = read_statedb(1)
     # print records
-
-    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
-    print record
-
-    update_statedb('33', 1, 'AI_FIT_101_FLOW')
-
-    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
-    print record
+    # record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    # print record
+    # update_statedb('33', 1, 'AI_FIT_101_FLOW')
+    # record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    # print record
 
 
 

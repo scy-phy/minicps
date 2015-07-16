@@ -28,8 +28,8 @@
     * filter in: INT, DINT, BOOL, REAL
 
 * UDT
-    * Base class for each type of tags with constant constructor
     * Use Class Wrappers to model PLC TAGs
+    * Use `.` (DOT) separation inside NAME field
 
 Use sqlite `?` DB's API parameter substitution to to perform queries.
 
@@ -77,6 +77,8 @@ wireless and wired tag.
     * `BOOL` tags are not supported
     * `SINT` (8-bit) tags are broken
     * use `INT` tags also for `BOOL` datatyps
+    * heterogeneous array are not supported 
+    * use list of atomic tags to represent PLC UDT
 
 ## Physical Process ##
 
@@ -95,36 +97,20 @@ wireless and wired tag.
 
     examples/swat/histn.py
 
-| Threads/Procs |
-| ------------- |
-| xxxxxxxxxxx   |
-| xxxxxxxxxxx   |
-| xxxxxxxxxxx   |
-| xxxxxxxxxxx   |
+PLC init its http server and runs a infinite `while` loop.
 
 
 ### HMI ###
 
     examples/swat/hmi.py
 
-| Threads/Procs |
-| ------------- |
-| HTTP Server   |
-| ENIP Client   |
-| HMI_DB        |
-| HMI_Logic     |
+PLC init its http server and runs a infinite `while` loop.
 
 ### PLC ###
 
     examples/swat/plcX.py
 
-
-| Threads/Procs |
-| ------------- |
-| ENIP Server   |
-| ENIP Client   |
-| PLC_DB        |
-| PLC_Logic     |
+PLC init its cpppo enip server and runs a infinite `while` loop.
 
 * schema
     * Tag
@@ -150,6 +136,8 @@ wireless and wired tag.
 > TODO: once ready move it as a sphinx tutorial doc
 
 Simplifying assumptions:
+* no UDT support: state_db and cpppo enip server will store relevant fileds
+  of UDT
 * state db will read raw data
 * testbed in AUTO mode
 * no alarms
@@ -190,4 +178,11 @@ Like Simple example but with:
 * Implement read/write PLC access
 * Model User Defined Tags as dedicated classes and import them into the DB
 * Use Hystorian node 
+
+| Threads/Procs |
+| ------------- |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
+| xxxxxxxxxxx   |
 
