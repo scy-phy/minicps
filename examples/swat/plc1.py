@@ -15,8 +15,8 @@ import time
 
 from constants import logger
 from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
-from constants import db2cpppo, read_single_statedb, init_cpppo_server
-from constants import write_cpppo, read_cpppo
+from constants import db2cpppo, read_single_statedb, update_statedb
+from constants import write_cpppo, read_cpppo, init_cpppo_server
 from constants import L1_PLCS_IP
 
 

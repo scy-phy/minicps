@@ -307,6 +307,7 @@ SCHEMA = """
         # VALUE             text default '',
 
 # state_db specific filters, functions and aggregators
+# TODO: add UDT
 DATATYPES = [
         'INT',
         'DINT',
@@ -314,26 +315,6 @@ DATATYPES = [
         'REAL',
 ]
 
-
-def update_statedb(VALUE, NAME, PID, SCOPE='TODO'):
-    """Update Tag table
-
-    :VALUE: str
-    :NAME: str
-    :PID: str
-    :SCOPE: not implemented yet
-
-    """
-
-    with sqlite3.connect(STATE_DB_PATH) as conn:
-        cursor = conn.cursor()
-        cmd = """
-        UPDATE Tag 
-        SET VALUE = '%s'
-        WHERE NAME = '%s' AND PID = %s
-        """ % (VALUE, NAME, PID)
-        cursor.execute(cmd)
-        conn.commit()
 
 def create_db(db_path, schema):
     """TODO: Docstring for init.
@@ -345,7 +326,6 @@ def create_db(db_path, schema):
         conn.executescript(schema)
         logger.info('Created schema')
 
-
 def remove_db(db_path):
     """TODO: Docstring for init.
     :returns: TODO
@@ -356,11 +336,11 @@ def remove_db(db_path):
         os.remove(db_path)
     except Exception, err:
         logger.warning(err)
-    
 
 def init_db(db_path, datatypes):
     """
     Init a DB from RSLogix 5000 exported csv file
+    sqlite3 uses ? placeholder for parameters substitution
 
     :db_path: full or relative path to the file.db
     :datatypes: list of DATATYPES
@@ -387,11 +367,12 @@ def init_db(db_path, datatypes):
                         name = fields[2]
                         logger.debug('NAME: %s  DATATYPE: %s' % (name,
                             datatype))
+                        par_sub = (scope, name, datatype, i)
                         cmd = """
                         INSERT INTO Tag (SCOPE, NAME, DATATYPE, PID)
-                        VALUES ('%s', '%s', '%s', %d)
-                        """ % (scope, name, datatype, i)
-                        cursor.execute(cmd)
+                        VALUES (?, ?, ?, ?)
+                        """
+                        cursor.execute(cmd, par_sub)
 
                 conn.commit()
 
@@ -421,11 +402,12 @@ def show_db_tags(conn, table='', pid='0', how_many=0):
         logger.debug(record)
 
 # FIXME: set default PID and generalize the query
-def read_statedb(NAME, PID, SCOPE='TODO'):
+def read_statedb(PID, NAME=None, SCOPE='TODO'):
     """Read multiple tags
+    sqlite3 uses ? placeholder for parameters substitution
 
     :NAME: str
-    :PID: str
+    :PID: int
     :SCOPE: not implemented yet
     :returns: list of tuples
 
@@ -433,20 +415,26 @@ def read_statedb(NAME, PID, SCOPE='TODO'):
 
     with sqlite3.connect(STATE_DB_PATH) as conn:
         cursor = conn.cursor()
+        par_temp = [PID]
         cmd = """
         SELECT * FROM Tag 
-        WHERE NAME = '%s' AND PID = %s
-        """ % (NAME, PID)
-        cursor.execute(cmd)
+        WHERE PID = ?
+        """
+
+        if NAME is not None:
+            cmd += 'AND NAME = ?'
+            par_temp.append(NAME)
+
+        par_sub = tuple(par_temp)
+        cursor.execute(cmd, par_sub)
 
         records = cursor.fetchall()
-        for record in records:
-            logger.debug(record)
 
         return records
 
-def read_single_statedb(NAME, PID, SCOPE='TODO'):
+def read_single_statedb(PID, NAME, SCOPE='TODO'):
     """Update Tag table
+    sqlite3 uses ? placeholder for parameters substitution
 
     :NAME: str
     :PID: str
@@ -459,14 +447,35 @@ def read_single_statedb(NAME, PID, SCOPE='TODO'):
         cursor = conn.cursor()
         cmd = """
         SELECT * FROM Tag 
-        WHERE NAME = '%s' AND PID = %s
-        """ % (NAME, PID)
-        cursor.execute(cmd)
+        WHERE PID = ? AND NAME = ?
+        """
+        par_sub = (PID, NAME)
+        cursor.execute(cmd, par_sub)
 
         record = cursor.fetchone()
-        logger.debug(record)
 
         return record
+
+def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
+    """Update Tag table
+
+    :VALUE: str
+    :NAME: str
+    :PID: str
+    :SCOPE: not implemented yet
+
+    """
+
+    with sqlite3.connect(STATE_DB_PATH) as conn:
+        cursor = conn.cursor()
+        cmd = """
+        UPDATE Tag 
+        SET VALUE = ?
+        WHERE PID = ? AND NAME = ?
+        """
+        par_sub = (VALUE, PID, NAME)
+        cursor.execute(cmd, par_sub)
+        conn.commit()
 
 def db2cpppo(record):
     """

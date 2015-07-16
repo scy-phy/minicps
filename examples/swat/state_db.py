@@ -5,6 +5,9 @@ from constants import logger
 from constants import create_db, remove_db, init_db
 from constants import STATE_DB_PATH, SCHEMA, DATATYPES
 
+# used to debug
+from constants import read_statedb, read_single_statedb, update_statedb
+
 class Aggregate(object):
     """Docstring for Aggregate. """
 
@@ -44,6 +47,19 @@ if __name__ == '__main__':
         create_db(STATE_DB_PATH, SCHEMA)
 
     # init_db(STATE_DB_PATH, DATATYPES)
+
+    # records = read_statedb(1)
+    # print records
+
+    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    print record
+
+    update_statedb('33', 1, 'AI_FIT_101_FLOW')
+
+    record = read_single_statedb(1, 'AI_FIT_101_FLOW')
+    print record
+
+
 
 
 
