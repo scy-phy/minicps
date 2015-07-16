@@ -16,6 +16,7 @@ super easy to create a new Topo class using those dictionaries.
 import sqlite3
 import logging
 import os
+import os.path
 
 
 # PROCESS
@@ -91,7 +92,9 @@ def wait_for_event_timeout(event, timeout, ename):
 
 # LOGGING
 logging.basicConfig(
-        filename = "logs/swat.log",
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            os.path.pardir, os.path.pardir, 'logs', 'swat.log'),
         level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
@@ -180,14 +183,14 @@ def read_cpppo(ip, TAGNAME, cpppo_cache):
 
 
 # DB
-STATE_DB_PATH = 'examples/swat/state.db'
-PLC1_DB_PATH = 'examples/swat/plc1.db'
-PLC2_DB_PATH = 'examples/swat/plc2.db'
-PLC3_DB_PATH = 'examples/swat/plc3.db'
-PLC4_DB_PATH = 'examples/swat/plc4.db'
-PLC5_DB_PATH = 'examples/swat/plc5.db'
-PLC5_DB_PATH = 'examples/swat/plc5.db'
-PLC6_DB_PATH = 'examples/swat/plc6.db'
+STATE_DB_PATH = os.path.join(os.path.dirname(__file__), 'state.db')
+PLC1_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc1.db')
+PLC2_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc2.db')
+PLC3_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc3.db')
+PLC4_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc4.db')
+PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
+PLC5_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc5.db')
+PLC6_DB_PATH = os.path.join(os.path.dirname(__file__), 'plc6.db')
 
 TABLE = 'Tag'
 
@@ -267,7 +270,7 @@ def init_db(db_path, datatypes):
         logger.info('Init tables')
 
         for i in range(1, 7):
-            plc_filename = "examples/swat/real-tags/P%d-Tags.CSV" % i
+            plc_filename = os.path.join(os.path.dirname(__file__), "real-tags", "P%d-Tags.CSV" % i)
             with open(plc_filename, "rt") as f:
 
                 text = f.read()
