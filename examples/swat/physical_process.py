@@ -9,9 +9,9 @@ from constants import PROCESS_NUMBER
 from constants import GRAVITATION
 from constants import TIMER
 from constants import TIMEOUT
-from constants import P1_INPUT_FLOW
-from constants import P1_INPUT_VALVES
-from constants import P1_OUTPUT_VALVES
+from constants import P1_PLC1_TAGS
+from constants import P1_PLC2_TAGS
+from constants import P1_PLC3_TAGS
 from constants import STATE_DB_PATH
 from constants import TABLE
 from constants import read_single_statedb
@@ -21,6 +21,21 @@ from time import sleep
 from time import time
 from math import sqrt as sqrt
 from math import pow as power
+
+###################################
+#   REORGANIZING CONSTANTS FROM
+#          CONSTANTS.PY
+###################################
+
+P1_INPUT_FLOW = []
+P1_INPUT_VALVES = []
+P1_OUTPUT_VALVES = []
+def init():
+    for i in range (0, PROCESS_NUMBER):
+        P1_INPUT_FLOW.append('AI_FIT_%d01_FLOW' % (i + 1))
+        P1_INPUT_VALVES.append('DO_MV_%d01_OPEN' % (i + 1))
+        P1_OUTPUT_VALVES.append('DO_P_%d01_START' % (i + 1))
+
 
 ###################################
 #         PHYSICAL PROCESS
@@ -83,6 +98,8 @@ if __name__ == '__main__':
     """
     main thread
     """
+    init()
+
     start_time = time()
     while(time() - start_time < TIMEOUT):
         for i in range(1, PROCESS_NUMBER + 1):
