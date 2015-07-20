@@ -11,6 +11,16 @@ Network level node numbers are stored in constats eg: L3_NODES, and
 they are used for example to distribute evenly CPU processing power.
 Dict key mirror where possible mininet device names, indeed it is
 super easy to create a new Topo class using those dictionaries.
+
+BOOL tags are implemented using INT int cpppo because SINT datatype
+is broken and BOOL is not supported.
+Pump and motorized valve NAME.Status tags use this convention:
+        0:  Error
+        1:  Closed
+        2:  Open
+Dashes (-) are used instead of dots as field separators inside tag names
+because cpppo tag name cannot contain a dot .
+
 """
 
 import sqlite3
@@ -111,31 +121,33 @@ class PMP_UDT(object):
         """TODO: to be defined1. """
 
 
+# CPPPO
+
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
-P1_PLC1_TAGS = {
-    'fit_101': 'AI_FIT_101_FLOW',
-    'mv_101_c': 'DO_MV_101_CLOSE',
-    'mv_101_o': 'DO_MV_101_OPEN',
-    'lit_101': 'AI_LIT_101_LEVEL',
-    'p_101': 'DO_P_101_START',
-    # 'hmi_fit201.Pv': 'HMI_FIT201.Pv',
-    # 'hmi_mv201.Status': 'HMI_MV201.Status',
-    # 'hmi_lit301.Pv': 'HMI_LIT301.Pv',
-}
+P1_PLC1_TAGS = [
+    ('AI_FIT_101_FLOW', 'INT'),
+    ('DO_MV_101_CLOSE', 'INT'),
+    ('DO_MV_101_OPEN', 'INT'),
+    ('AI_LIT_101_LEVEL', 'INT'),
+    ('DO_P_101_START', 'INT'),
+    ('HMI_FIT201-Pv', 'REAL'),
+    ('HMI_MV201-Status', 'INT'),
+    ('HMI_LIT301-Pv', 'REAL'),
+]
 
-P1_PLC2_TAGS = {
-    'fit_201': 'AI_FIT_201_FLOW',
-    'mv_201_c': 'DO_MV_201_CLOSE',
-    'mv_201_o': 'DO_MV_201_OPEN',
-    # 'hmi_fit201.Pv': 'HMI_FIT201.Pv',
-    # 'hmi_mv201.Status': 'HMI_MV201.Status',
-}
+P1_PLC2_TAGS = [
+    ('AI_FIT_201_FLOW', 'INT'),
+    ('DO_MV_201_CLOSE', 'INT'),
+    ('DO_MV_201_OPEN', 'INT'),
+    ('HMI_FIT201-Pv', 'REAL'),
+    ('HMI_MV201-Status', 'INT'),
+]
 
-P1_PLC3_TAGS = {
-    'lit_301': 'AI_LIT_301_LEVEL',
-    # 'hmi_lit301.Pv': 'HMI_LIT301.Pv',
-}
+P1_PLC3_TAGS = [
+    ('AI_LIT_301_LEVEL', 'INT'),
+    ('HMI_LIT301-Pv', 'REAL'),
+]
 
 
 
@@ -239,27 +251,24 @@ def db2cpppo(record):
     return cppo_str
 
 
-def init_cpppo_server(db_tags, pid):
+def init_cpppo_server(tags):
     """Init cpppo enip server
 
-    :db_tags: list of state db NAME fileds
-    :pid: str
+    :tags: list of tuples (NAME, DATATYPE)
 
     """
 
-    record = read_single_statedb(pid, db_tags[0])
-    cpppo_tags = db2cpppo(record)
-    for db_tag in db_tags[1:]:
-        record = read_single_statedb(pid, db_tag)
-        cpppo_tags += (' '+db2cpppo(record))
+    cpppo_tags = tags[0][0]+'='+tags[0][1]
+    for tag in tags[1:]:
+        cpppo_tags += ' '+tag[0]+'='+tag[1]
 
     # DEBUG TAGS
-    cpppo_tags += ' P1=INT'
-    cpppo_tags += ' P2=SINT' # doesn't work
-    cpppo_tags += ' P3=DINT'
-    cpppo_tags += ' P4=REAL'
+    # cpppo_tags += ' P1=INT'
+    # cpppo_tags += ' P2=SINT' # doesn't work
+    # cpppo_tags += ' P3=DINT'
+    # cpppo_tags += ' P4=REAL'
 
-    logger.debug('cpppo_tags: %s' % cpppo_tags)
+    # logger.debug('cpppo_tags: %s' % cpppo_tags)
 
     cmd = 'python -m cpppo.server.enip --print -v %s &' % cpppo_tags
     rc = os.system(cmd)
@@ -762,6 +771,6 @@ TANK_DIAMETER = 1.38
 TIMER = 0.2
 TIMEOUT = 120
 
-P1_INPUT_FLOW = [P1_PLC1_TAGS['fit_101']]
-P1_INPUT_VALVES = [P1_PLC1_TAGS['mv_101_o']]
-P1_OUTPUT_VALVES = [P1_PLC1_TAGS['p_101']]
+# P1_INPUT_FLOW = [P1_PLC1_TAGS['fit_101']]
+# P1_INPUT_VALVES = [P1_PLC1_TAGS['mv_101_o']]
+# P1_OUTPUT_VALVES = [P1_PLC1_TAGS['p_101']]

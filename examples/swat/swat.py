@@ -14,6 +14,7 @@ save a graph representation in the examples/swat folder.
 
 # TODO: check the log files, merge with swat controller
 
+import time
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -134,7 +135,10 @@ def minicps_tutorial(net):
     plc1, plc2, plc3, hmi = net.get('plc1', 'plc2', 'plc3', 'hmi')
 
     # Init cpppo enip servers and run main loop
-    # plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
+    plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
+
     
     CLI(net)
     # launch device simulation scripts
