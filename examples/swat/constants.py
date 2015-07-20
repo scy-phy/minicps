@@ -123,10 +123,12 @@ class PMP_UDT(object):
 
 # CPPPO
 
+PLC1_CPPPO_CACHE = "examples/swat/plc1_cpppo.cache"
+
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
 P1_PLC1_TAGS = [
-    ('AI_FIT_101_FLOW', 'INT'),
+    # ('AI_FIT_101_FLOW', 'INT'),
     ('DO_MV_101_CLOSE', 'INT'),
     ('DO_MV_101_OPEN', 'INT'),
     ('AI_LIT_101_LEVEL', 'INT'),
@@ -137,7 +139,7 @@ P1_PLC1_TAGS = [
 ]
 
 P1_PLC2_TAGS = [
-    ('AI_FIT_201_FLOW', 'INT'),
+    # ('AI_FIT_201_FLOW', 'INT'),
     ('DO_MV_201_CLOSE', 'INT'),
     ('DO_MV_201_OPEN', 'INT'),
     ('HMI_FIT201-Pv', 'REAL'),
@@ -176,7 +178,7 @@ LIT_301 = {  # ultrafiltration tank
 }
 
 # m^3 / h
-FIT_201 = 0.5
+FIT_201 = 0.0
 
 
 
@@ -535,6 +537,7 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
 
             record = cursor.fetchone()
             return record
+
         except sqlite3.Error, e:
             logger.warning('Error %s:' % e.args[0])
 

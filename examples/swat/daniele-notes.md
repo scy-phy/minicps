@@ -28,8 +28,9 @@
     * filter in: INT, DINT, BOOL, REAL
 
 * UDT
-    * Use Class Wrappers to model PLC TAGs
-    * Use `.` (DOT) separation inside NAME field
+    * Currently relevant filed of UDT are modeled as single atomic tag. e.g.
+      HMI_LIT301-Pv REAL value
+    * Use `-` (dash) separation inside NAME field
 
 Use sqlite `?` DB's API parameter substitution to to perform queries.
 
@@ -61,6 +62,9 @@ wireless and wired tag.
 * `TT_UDT` is the `DATATYPE` where `TT` is a convenient name to remember the
   User Defined Type
 * e.g.: `HMI_MV101` with DATATYPE `MV_UDT`
+
+`AI_FLOW_*` tags are indexed as `INT` datatype in the state db but their
+value filed is interpreted as a `REAL`.
 
 # CIP/ENIP #
 
