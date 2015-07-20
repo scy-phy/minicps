@@ -124,17 +124,24 @@ class PMP_UDT(object):
 # CPPPO
 
 PLC1_CPPPO_CACHE = "examples/swat/plc1_cpppo.cache"
+PLC2_CPPPO_CACHE = "examples/swat/plc2_cpppo.cache"
+PLC3_CPPPO_CACHE = "examples/swat/plc3_cpppo.cache"
+PLC4_CPPPO_CACHE = "examples/swat/plc4_cpppo.cache"
+PLC5_CPPPO_CACHE = "examples/swat/plc5_cpppo.cache"
+PLC6_CPPPO_CACHE = "examples/swat/plc6_cpppo.cache"
 
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
 P1_PLC1_TAGS = [
     # ('AI_FIT_101_FLOW', 'INT'),
-    ('DO_MV_101_CLOSE', 'INT'),
-    ('DO_MV_101_OPEN', 'INT'),
-    ('AI_LIT_101_LEVEL', 'INT'),
+    # ('DO_MV_101_CLOSE', 'INT'),
+    # ('DO_MV_101_OPEN', 'INT'),
+    # ('AI_LIT_101_LEVEL', 'INT'),
     ('DO_P_101_START', 'INT'),
     ('HMI_FIT201-Pv', 'REAL'),
     ('HMI_MV201-Status', 'INT'),
+    ('HMI_MV101-Status', 'INT'),
+    ('HMI_P101-Status', 'INT'),
     ('HMI_LIT301-Pv', 'REAL'),
 ]
 
@@ -150,77 +157,6 @@ P1_PLC3_TAGS = [
     ('AI_LIT_301_LEVEL', 'INT'),
     ('HMI_LIT301-Pv', 'REAL'),
 ]
-
-
-
-# PROCESS
-
-# periods in sec
-T_PLC_R = 10E-3
-T_PLC_W = 10E-3
-
-T_PP_R = 2E-3
-T_PP_W = 2E-3
-
-# mm
-LIT_101 = {  # raw water tank
-    'LL': 250.0,
-    'L': 500.0,
-    'H': 800.0,
-    'HH': 1200.0,
-}
-
-LIT_301 = {  # ultrafiltration tank
-    'LL': 250.0,
-    'L': 800.0,
-    'H': 1000.0,
-    'HH': 1200.0,
-}
-
-# m^3 / h
-FIT_201 = 0.0
-
-
-
-# THREADS
-def wait_for_event_timeout(event, timeout, ename):
-    """
-    Use it inside thread to synch (non-blocking)
-
-    :swat_event: Custom threading.Event subclass
-    :timeout: wait timeout second before generating an Exception
-    :returns: nothing in normal conditions otherwise raise an Exception
-
-    """
-    msg = "Waiting for %s to be set" % (ename)
-    logging.debug(msg)
-    while not event.is_set():
-        event_is_set = event.wait(timeout)
-
-        if event_is_set:
-            msg = "%s is set" % (ename)
-            logging.debug(msg)
-            return
-        else:
-            emsg = "%s not set after %s sec" % (
-                    ename, str(timeout))
-            raise Exception(emsg)
-
-
-
-# LOGGING
-logging.basicConfig(
-        filename = os.path.join(
-            os.path.dirname(__file__),
-            os.path.pardir, os.path.pardir, 'logs', 'swat.log'),
-        level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
-logger = logging.getLogger('swat')
-
-
-
-# CPPPO
 
 def db2cpppo(record):
     """
@@ -325,6 +261,72 @@ def read_cpppo(ip, tag_name, cpppo_cache):
             value = words[2][1:-2]
 
     return value
+
+
+# PROCESS
+
+# periods in sec
+T_PLC_R = 10E-3
+T_PLC_W = 10E-3
+
+T_PP_R = 2E-3
+T_PP_W = 2E-3
+
+# mm
+LIT_101 = {  # raw water tank
+    'LL': 250.0,
+    'L': 500.0,
+    'H': 800.0,
+    'HH': 1200.0,
+}
+
+LIT_301 = {  # ultrafiltration tank
+    'LL': 250.0,
+    'L': 800.0,
+    'H': 1000.0,
+    'HH': 1200.0,
+}
+
+# m^3 / h
+FIT_201 = 0.0
+
+
+
+# THREADS
+def wait_for_event_timeout(event, timeout, ename):
+    """
+    Use it inside thread to synch (non-blocking)
+
+    :swat_event: Custom threading.Event subclass
+    :timeout: wait timeout second before generating an Exception
+    :returns: nothing in normal conditions otherwise raise an Exception
+
+    """
+    msg = "Waiting for %s to be set" % (ename)
+    logging.debug(msg)
+    while not event.is_set():
+        event_is_set = event.wait(timeout)
+
+        if event_is_set:
+            msg = "%s is set" % (ename)
+            logging.debug(msg)
+            return
+        else:
+            emsg = "%s not set after %s sec" % (
+                    ename, str(timeout))
+            raise Exception(emsg)
+
+
+
+# LOGGING
+logging.basicConfig(
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            os.path.pardir, os.path.pardir, 'logs', 'swat.log'),
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
+logger = logging.getLogger('swat')
 
 
 
