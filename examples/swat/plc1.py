@@ -20,6 +20,7 @@ from constants import write_cpppo, read_cpppo, init_cpppo_server
 from constants import L1_PLCS_IP
 from constants import T_PLC_R, T_PLC_W
 from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
+from constants import TIMEOUT
 
 
 if __name__ == '__main__':
@@ -39,17 +40,19 @@ if __name__ == '__main__':
     time.sleep(3)
     
     # DEBUG values
-    c = 0
-    SIM = 3
-    TIN1 = ['200.0', '400.0', '900.0', '1300.0']
-    TIN3 = ['200.0', '400.0', '1100.0','1300.0']
+    # c = 0
+    # SIM = 3
+    # TIN1 = ['200.0', '400.0', '900.0', '1300.0']
+    # TIN3 = ['200.0', '400.0', '1100.0','1300.0']
 
     logger.debug("Enter PLC1 main loop")
-    while True:
+    # while True:
+    start_time = time.time()
+    while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag
-        update_statedb(TIN1[c], 1, 'AI_FIT_101_FLOW')
-        lit101_str = read_single_statedb(1, 'AI_FIT_101_FLOW')[3]
+        # update_statedb(TIN1[c], 1, 'AI_FIT_101_FLOW')
+        lit101_str = read_single_statedb(1, 'AI_LIT_101_LEVEL')[3]
 
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
         val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
@@ -123,9 +126,11 @@ if __name__ == '__main__':
         # Write back values ?
 
         # Sleep
+        time.sleep(T_PLC_R)
 
         # DEBUG exit point
-        if c >= SIM:
-            break
-        else:
-            c += 1
+        # if c >= SIM:
+        #     break
+        # else:
+        #     c += 1
+    logger.debug("Exit PLC1 Main loop")

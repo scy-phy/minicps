@@ -14,13 +14,16 @@ from constants import P1_PLC2_TAGS
 from constants import P1_PLC3_TAGS
 from constants import STATE_DB_PATH
 from constants import TABLE
+from constants import T_PP_R
 from constants import read_single_statedb
 from constants import update_statedb
 from constants import select_value
+from constants import logger
 from time import sleep
 from time import time
 from math import sqrt as sqrt
 from math import pow as power
+from math import pi
 
 ###################################
 #   REORGANIZING CONSTANTS FROM
@@ -98,6 +101,8 @@ if __name__ == '__main__':
     """
     main thread
     """
+    sleep(3)
+
     init()
 
     start_time = time()
@@ -121,9 +126,14 @@ if __name__ == '__main__':
 
             current_flow = read_single_statedb(i, 'AI_LIT_%d01_LEVEL' % i)
             if current_flow is not None:
-                print current_flow[3] # DEBUG
-                new_flow = compute_new_flow_level(input_flows, input_valves, select_value(current_flow), output_valves, TANK_DIAMETER, VALVE_DIAMETER, TIMER)
-                print new_flow # DEBUG
+                logger.debug('PP - read from state db %s' % current_flow[3])
+                v = Toricelli(select_value(current_flow), 0)  # m/s
+                flow = v * power(VALVE_DIAMETER/2.0, 2) * pi * 3600.0  # m^3/h
+                update_statedb(flow, 2, 'AI_FIT_201_FLOW')
+                new_flow = compute_new_flow_level(input_flows, input_valves,
+                        select_value(current_flow), output_valves,
+                        TANK_DIAMETER, VALVE_DIAMETER, T_PP_R)
+                logger.debug('PP - write to state db %.4f' % new_flow)
                 update_statedb(new_flow, i, 'AI_LIT_%d01_LEVEL' % i)
 
-            sleep(TIMER)
+            sleep(T_PP_R)

@@ -571,6 +571,7 @@ def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
             logger.warning('Error %s:' % e.args[0])
 
 def select_value(record):
+    # logger.debug(record)
     return float(record[3])
 
 # NETWORK
@@ -777,6 +778,6 @@ VALVE_DIAMETER = 0.2
 TANK_DIAMETER = 1.38
 
 TIMER = 0.2
-TIMEOUT = 120
+TIMEOUT = 20
 
 PLC_NUMBER = 2

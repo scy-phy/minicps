@@ -52,6 +52,8 @@ if __name__ == '__main__':
         - bla
     """
 
+    sleep(3)
+
     start_http_server(80)
     values = {}
     values['time'] = []
