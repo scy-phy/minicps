@@ -26,6 +26,8 @@ from minicps import constants as c
 
 # FIXME: import only necessary data objects
 from constants import *  # those are SWaT specific constants
+# used to separate different log sessions
+logger.debug('----------'+time.asctime()+'----------')
 
 from mininet.cli import CLI
 from mininet.net import Mininet
@@ -138,7 +140,7 @@ def minicps_tutorial(net):
     plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
     plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
-    hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
+    # hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
 
     
     CLI(net)

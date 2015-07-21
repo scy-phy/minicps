@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # look a Stridhar graph
     c = 0
     SIM = 3
-    TIN1 = ['200.0', '400.0', '600.0', '1300.0']
+    TIN1 = ['200.0', '400.0', '900.0', '1300.0']
     TIN3 = ['200.0', '400.0', '1100.0','1300.0']
     logger.debug("Enter PLC1 main loop")
     while True:
@@ -54,18 +54,17 @@ if __name__ == '__main__':
         # Read and update HMI_tag
         update_statedb(TIN1[c], 1, 'AI_FIT_101_FLOW')
         lit101_str = read_single_statedb(1, 'AI_FIT_101_FLOW')[3]
+
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT301-Pv', lit101_str)
+        val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT301-Pv', PLC1_CPPPO_CACHE)
+        logger.debug("PLC1 - read_cpppo HMI_LIT301-Pv: %s" % val)
+
         lit101 = float(lit101_str)
-        logger.debug("PLC1 - lit101: %.2f" % lit101)
+        # logger.debug("PLC1 - lit101: %.2f" % lit101)
         # lit101 = TIN1[c]
 
 
-        # Convert str into real/int
-        # mv101 = int('1')
-        # p101 = int('1')
-
         # lit101
-
         if lit101 >= LIT_101['HH']:
             logger.warning("PLC1 - lit101 over HH: %.2f >= %.2f" % (
                 lit101, LIT_101['HH']))
@@ -73,14 +72,27 @@ if __name__ == '__main__':
         elif lit101 <= LIT_101['LL']:
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
-            p101 = '1'  # CLOSE
-            logger.warning("PLC1 - stopping p101 : 2 -> %s" % (p101))
+            # p101 = '1'  # CLOSE
+            update_statedb('1', 1, 'DO_P_101_START')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            logger.debug("PLC1 - read_cpppo HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
-            mv101 = '2'  # OPEN
+            # mv101 = '2'  # OPEN
+            update_statedb('0', 1, 'DO_MV_101_CLOSE')
+            update_statedb('1', 1, 'DO_MV_101_OPEN')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
+            logger.debug("PLC1 - read_cpppo HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
-            mv101 = '1'  # CLOSE
+            # mv101 = '1'  # CLOSE
+            update_statedb('1', 1, 'DO_MV_101_CLOSE')
+            update_statedb('0', 1, 'DO_MV_101_OPEN')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
+            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
+            logger.debug("PLC1 - read_cpppo HMI_MV101-Status: %s" % val)
 
         # lit301
         # lit301 = TIN3[c]
