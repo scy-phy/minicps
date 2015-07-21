@@ -15,3 +15,6 @@
 
 # enip_client --print -l $1 -a $2 $3 | tee -a $4
 python -m cpppo.server.enip.client --print -l $1 -a $2 $3 | tee -a $4
+
+# <tag>=<type>[<length>]   # eg. SCADA=INT[1000]
+

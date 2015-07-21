@@ -132,6 +132,8 @@ PLC6_CPPPO_CACHE = "examples/swat/plc6_cpppo.cache"
 
 # basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
 # and REAL (32-bit float)
+
+# TODO: use separate lists for cpppo and state_db
 P1_PLC1_TAGS = [
     # ('AI_FIT_101_FLOW', 'INT'),
     # ('DO_MV_101_CLOSE', 'INT'),
@@ -143,6 +145,7 @@ P1_PLC1_TAGS = [
     ('HMI_MV101-Status', 'INT'),
     ('HMI_P101-Status', 'INT'),
     ('HMI_LIT301-Pv', 'REAL'),
+    ('HMI_LIT101-Pv', 'REAL'),
 ]
 
 P1_PLC2_TAGS = [

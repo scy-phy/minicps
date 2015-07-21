@@ -35,19 +35,15 @@ if __name__ == '__main__':
     tags = []
     tags.extend(P1_PLC1_TAGS)
     # tags.extend(P2_PLC1_TAGS)
-
-    # time.sleep(0.5)
     init_cpppo_server(tags)
+    time.sleep(3)
     
-    # write_cpppo(L1_PLCS_IP['plc1'], 'DO_MV_101_CLOSE', '1')
-    # val = read_cpppo(L1_PLCS_IP['plc1'], 'DO_MV_101_CLOSE', 'examples/swat/plc1_cpppo.cache')
-    # logger.debug("read_cpppo: %s" % val)
-
-    # look a Stridhar graph
+    # DEBUG values
     c = 0
     SIM = 3
     TIN1 = ['200.0', '400.0', '900.0', '1300.0']
     TIN3 = ['200.0', '400.0', '1100.0','1300.0']
+
     logger.debug("Enter PLC1 main loop")
     while True:
 
@@ -55,9 +51,9 @@ if __name__ == '__main__':
         update_statedb(TIN1[c], 1, 'AI_FIT_101_FLOW')
         lit101_str = read_single_statedb(1, 'AI_FIT_101_FLOW')[3]
 
-        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT301-Pv', lit101_str)
-        val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT301-Pv', PLC1_CPPPO_CACHE)
-        logger.debug("PLC1 - read_cpppo HMI_LIT301-Pv: %s" % val)
+        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
+        val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
+        logger.debug("PLC1 - read_cpppo HMI_LIT101-Pv: %s" % val)
 
         lit101 = float(lit101_str)
         # logger.debug("PLC1 - lit101: %.2f" % lit101)
@@ -76,7 +72,7 @@ if __name__ == '__main__':
             update_statedb('1', 1, 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.debug("PLC1 - read_cpppo HMI_P101-Status: %s" % val)
+            logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
             # mv101 = '2'  # OPEN
@@ -84,7 +80,7 @@ if __name__ == '__main__':
             update_statedb('1', 1, 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
-            logger.debug("PLC1 - read_cpppo HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
             # mv101 = '1'  # CLOSE
@@ -92,23 +88,39 @@ if __name__ == '__main__':
             update_statedb('0', 1, 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
-            logger.debug("PLC1 - read_cpppo HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - mv101 close HMI_MV101-Status: %s" % val)
 
+        # DEBUG
         # lit301
         # lit301 = TIN3[c]
         # fit201 = float('0.6')
 
-        # if fit201 <= FIT_201:
-        #     p101 = '1'  # CLOSE
+        # read from PLC2
+        val = read_cpppo(L1_PLCS_IP['plc2'], 'HMI_FIT201-Pv', PLC1_CPPPO_CACHE)
+        logger.debug("PLC1 - read_cpppo HMI_FIT201-Pv: %s" % val)
+        fit201 = float(val)
 
-        # elif lit301 >= LIT_301['H']:
-        #     p101 = '1'  # CLOSE
+        # read from PLC3
+        val = read_cpppo(L1_PLCS_IP['plc3'], 'HMI_LIT301-Pv', PLC1_CPPPO_CACHE)
+        logger.debug("PLC1 - read_cpppo HMI_LIT301-Pv: %s" % val)
+        lit301 = float(val)
 
-        # elif lit301 <= LIT_301['L']:
-        #     p101 = '2'  # OPEN
+        if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
+            # p101 = '1'  # CLOSE
+            update_statedb('1', 1, 'DO_P_101_START')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
+
+        elif lit301 <= LIT_301['L']:
+            # p101 = '2'  # OPEN
+            update_statedb('2', 1, 'DO_P_101_START')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
 
 
-        # Write back values
+        # Write back values ?
 
         # Sleep
 
