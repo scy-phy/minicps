@@ -127,7 +127,8 @@ class Tank:
             if self.__FIT_out is not None:
                 v = Toricelli(float(current_flow[0][3]))  # m/s
                 flow = v * power(valve_diameter/2.0, 2) * pi * 3600.0  # m^3/h
-                update_statedb(flow, self.__subprocess+1, self.__FIT_out)
+                for index in self.__FIT_out:
+                    update_statedb(flow, index)
 
             new_flow = self.compute_new_flow_level(input_flows, input_valves, float(current_flow[0][3]), output_valves, valve_diameter)
             logger.debug('PP - write to state db %.4f' % new_flow)
