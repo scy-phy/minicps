@@ -454,7 +454,7 @@ def init_db(db_path, datatypes):
 
 
 # FIXME: set default PID and generalize the query
-def read_statedb(PID, NAME=None, SCOPE='TODO'):
+def read_statedb(PID=None, NAME=None, SCOPE='TODO'):
     """Read multiple tags
     sqlite3 uses ? placeholder for parameters substitution
 
@@ -487,7 +487,7 @@ def read_statedb(PID, NAME=None, SCOPE='TODO'):
 
 
 # FIXME: set default PID and generalize the query
-def read_statedb(PID, NAME=None, SCOPE='TODO'):
+def read_statedb(PID=None, NAME=None, SCOPE='TODO'):
     """Read multiple tags
     sqlite3 uses ? placeholder for parameters substitution
 
@@ -500,14 +500,22 @@ def read_statedb(PID, NAME=None, SCOPE='TODO'):
     with sqlite3.connect(STATE_DB_PATH) as conn:
         try:
             cursor = conn.cursor()
-            par_temp = [PID]
+            par_temp = []
             cmd = """
             SELECT * FROM Tag
-            WHERE PID = ?
             """
+            boolean = False
+
+            if PID is not None:
+                cmd += 'WHERE PID = ?'
+                par_temp.append(PID)
+                boolean = True
 
             if NAME is not None:
-                cmd += 'AND NAME = ?'
+                if boolean:
+                    cmd += 'AND NAME = ?'
+                else:
+                    cmd += 'WHERE NAME = ?'
                 par_temp.append(NAME)
 
             par_sub = tuple(par_temp)
@@ -546,7 +554,7 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
         except sqlite3.Error, e:
             logger.warning('Error %s:' % e.args[0])
 
-def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
+def update_statedb(VALUE, NAME, PID=None, SCOPE='TODO'):
     """Update Tag table
 
     :VALUE: str
@@ -559,12 +567,18 @@ def update_statedb(VALUE, PID, NAME, SCOPE='TODO'):
     with sqlite3.connect(STATE_DB_PATH) as conn:
         try:
             cursor = conn.cursor()
+            par_temp = [VALUE, NAME]
             cmd = """
             UPDATE Tag
             SET VALUE = ?
-            WHERE PID = ? AND NAME = ?
+            WHERE NAME = ?
             """
-            par_sub = (VALUE, PID, NAME)
+
+            if PID is not None:
+                par_temp.append(PID)
+                cmd += ' AND PID = ? '
+
+            par_sub = tuple(par_temp)
             cursor.execute(cmd, par_sub)
             conn.commit()
         except sqlite3.Error, e:
