@@ -1,4 +1,85 @@
-# Design #
+# MiniCPS #
+
+## Design ##
+
+### Roadmap ###
+
+* Audience: 
+    * researcher
+    * students
+    * professors
+
+* Skillset:
+    * python programming
+    * networking
+    * system security
+
+* Plugins:
+    * MySQL and NoSQL support
+    * Modbus/TCP support
+    * GUI and ncurses interfaces
+
+* Use cases aka Requirements:
+    * simulate a CPS testbed or a production system
+    * emulate a CPS testbed or a production system
+
+* Class hierarchy:
+    * public
+        * Bla
+    * private 
+        * \_Bla
+
+* Docs:
+    * Installations
+        * pip
+        * Debian
+        * Arch
+    * Public API
+    * SWaT Tutorial
+
+* Future:
+    * RESTful interface
+    * more graphics
+
+### Implementation ###
+
+The physical process state is simulated using a set of storing units, eg:
+files, SQL records and NoSQL records.
+
+Each component is emulated using either a Linux process (any script able to
+compute resutls) or a Linux container (Mininet).
+
+The components communicate using std protocol suite libs.
+
+The components may be affected by delays and loss.
+
+### Public API ###
+
+Interactive session example:
+
+    minicps> CPS path:
+    minicps> ~/swat
+    minicps> industrial protocol suite: [E]nip, [m]odbus
+    minicps> e
+    minicps> storing units: [S]qlite, [f]ile, [m]ysql 
+    minicps> s
+    minicps> topology representation: [G]raph, [m]ininet, 
+    minicps> g
+    minicps> graphs: [G]exf, g[m]l, [j]son
+    minicps> g
+    minicps> SDN support: [N]o or [y]es ?
+    minicps> y
+    minicps> SDN platform: [P]ox, [n]ox, [o]pendaylight
+    minicps> p
+    minicps> SDN controller path:
+    minicps> ~/swat/pox/controller.py
+
+Config file example:
+
+    TODO
+
+
+# e.g. SWaT #
 
 ## General view ##
 
