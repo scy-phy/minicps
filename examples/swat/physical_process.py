@@ -2,21 +2,16 @@
 SWaT physical process
 """
 
-import sqlite3
 from constants import TANK_DIAMETER
 from constants import VALVE_DIAMETER
 from constants import TIMER
 from constants import TIMEOUT
 from constants import GRAVITATION
-from constants import P1_PLC1_TAGS
-from constants import P1_PLC2_TAGS
-from constants import P1_PLC3_TAGS
-from constants import STATE_DB_PATH
 from constants import read_single_statedb
 from constants import read_statedb
 from constants import update_statedb
-from constants import select_value
 from constants import logger
+from constants import select_value
 from multiprocessing import Process
 from time import sleep
 from time import time
