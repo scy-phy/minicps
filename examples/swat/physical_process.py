@@ -49,7 +49,23 @@ def Toricelli(flow_level, valve_height=0):
 #         PHYSICAL PROCESS
 ###################################
 class Tank:
+    """
+    Class defining a tank in the physical process.
+    A Tank has:
+    -FIT_in: list of input flows tags
+    -MV: list of input of motorvalves tags controlling the FIT_in
+    -LIT: tank level tag
+    -P: list of output pumps tags
+    -FIT_out: list of output flows tags
+    -subprocess: number of subprocess in which the tank belongs
+    -diameter: tank diameter (m)
+    -timer: period in which the tank has to actualize its values (s)
+    -timeout: period of activity (s)
+    """
     def __init__(self, FIT_in, MV, LIT, P, FIT_out, subprocess, diameter, timer, timeout):
+        """
+        constructor
+        """
         self.__FIT_in = FIT_in
         self.__MV = MV
         self.__LIT = LIT
@@ -62,6 +78,9 @@ class Tank:
         self.__process = None
 
     def __del__(self):
+        """
+        destructor
+        """
         if(self.__process != None):
             self.__process.join()
 
@@ -90,6 +109,12 @@ class Tank:
         return height
 
     def action(self, valve_diameter):
+        """
+        Defines the action of a tank:
+        -queries all the input, output and level tags values
+        -computes the new flow level and the output flows
+        -updates the database
+        """
         input_flows = []
         input_valves = []
         if self.__P is not None:
@@ -130,6 +155,9 @@ class Tank:
             update_statedb(new_flow, self.__LIT)
 
     def action_wrapper(self, valve_diameter):
+        """
+        Wraps the action() method
+        """
         start_time = time()
         while(time() - start_time < self.__timeout):
             self.action(valve_diameter)
@@ -137,12 +165,17 @@ class Tank:
 
     def start(self, valve_diameter):
         """
-        Runs the action() process
+        Runs the action() method
         """
         self.__process = Process(target = self.action_wrapper, args = (valve_diameter,))
         self.__process.start()
 
 if __name__ == '__main__':
+    """
+    Main function in order to be used as a independant script
+    -constructs all the subprocess tanks
+    -runs them in parallel
+    """
     tank1 = Tank(['AI_FIT_101_FLOW'], ['DO_MV_101_OPEN'], 'AI_LIT_101_LEVEL', ['DO_P_101_START'], ['AI_FIT_201_FLOW'], 1, TANK_DIAMETER, TIMER, TIMEOUT)
     tank2 = Tank(['AI_FIT_201_FLOW'], ['DO_MV_201_OPEN'], 'AI_LIT_301_LEVEL', None, None, 2, TANK_DIAMETER, TIMER, TIMEOUT)
     tank1.start(VALVE_DIAMETER)
