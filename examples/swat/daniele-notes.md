@@ -5,14 +5,14 @@
 ### Roadmap ###
 
 * Audience: 
-    * researcher
+    * CPS researchers
     * students
     * professors
 
 * Skillset:
-    * python programming
+    * programming
     * networking
-    * system security
+    * security
 
 * Plugins:
     * MySQL and NoSQL support
@@ -41,21 +41,90 @@
     * RESTful interface
     * more graphics
 
-### Implementation ###
-
-The physical process state is simulated using a set of storing units, eg:
-files, SQL records and NoSQL records.
-
-Each component is emulated using either a Linux process (any script able to
-compute resutls) or a Linux container (Mininet).
-
-The components communicate using std protocol suite libs.
-
-The components may be affected by delays and loss.
 
 ### Public API ###
 
-Interactive session example:
+You provide a CPSNetwork as an input.
+Minicps will read information from the CPSNetwork, launch a mininet topology
+with the relevant configs (performance, controller, network addresses,
+storage, protocol) and optionally store information about your CPSNetwork
+e.g. network graph image using `matplotlib`.
+
+A CPSNetwork has Devices, Links, a Process and a State. 
+The Process generates PhysicalData.
+Devices generates Commands, PhysicalData and Signals (e.g. Alarms, Info, Errors)
+Devices can communicate among themselves using Protocols (e.g. ENIP and Modubus/TCP.
+Devices and the Process has shared access to the State of the CPSNetwork
+Devices can store information about the State of the CPSNetwork
+
+Is a Process:
+    WaterTreatment, ElectricGrid
+
+A Link has:
+    a bandwitdh, loss rate, delay
+
+A Device has:
+    an IP, a MAC, id
+
+Is a Protocol:
+    ENIP, Modbus/TCP,
+    Signaling.
+
+Is a Device:
+    Sensor, Actuator, ControlDevice, Tank
+
+Is a Sensor:
+    FlowSensor, LevelSensor, PhSensor, PressureSensor
+
+Is an Actuator:
+    Valve, Pump, AlarmButton
+
+Is a ControlDevice:
+    PLC, HMI, Historian, Workstation, RIO
+
+
+
+### Implementation ###
+
+Minicps will be implemented in pure Python, will be compatible with `pypy`
+and it will interface with the user through a CLI.
+
+Mininet framework provides multiple features to start our implementation.
+
+Mininet topologies can be provided in the form of text files and/or python
+scripts. The user will have several inputs options: `.xml` graph (`networkx`),
+`topology.py` 
+
+Mininet is based on Linux containers.
+Linux containers allow to assign an arbitrary number of processes to emulate
+a Device and the fact that is connected, e.g. container A will emulate a PLC
+and may contain at least one process representing the PLC logic and another
+one emulating a PLC ENIP networking module.
+
+Mininet allows performance setting like link shaping: bandwidth, loss rate,
+delay and per-host CPU allocation
+
+Mininet runs on a single Linux kernel (lightweight) and is compatible with
+Linux tools and protocol suite library (realistic), it supports multi-threaded
+and multiprocesses implementation and inter-process communications through
+system calls because the scheduler is directly the Linux kernel (low overhead).
+
+Mininet allows SDN development.
+
+The State of the CPS is emulated using shared storage units: files, sqlite,
+mysql, nosql and Devices and PhysicalProcess have shared access to it.
+
+The PhysicalProcess is emulated using any Linux process able to model the
+relevant scenario e.g. GNU/Octave, Matlab script.
+
+Due to the extensibility of our framework we envision the possibility to
+extend its functionality via plugins (add new industrial protocol supports,
+add a ncurses UI or a GUI) and its coverage through additional CPS
+network simulations other than SWaT (WADI, ecc)
+
+### Use cases ###
+
+**SWaT Interactive session example:**
 
     minicps> CPS path:
     minicps> ~/swat
@@ -74,10 +143,9 @@ Interactive session example:
     minicps> SDN controller path:
     minicps> ~/swat/pox/controller.py
 
-Config file example:
+**Config file example:**
 
     TODO
-
 
 # e.g. SWaT #
 
