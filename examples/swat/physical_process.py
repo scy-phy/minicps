@@ -6,7 +6,7 @@ from constants import TANK_DIAMETER
 from constants import VALVE_DIAMETER
 from constants import TIMER
 from constants import TIMEOUT
-from constants import GRAVITATION
+from constants import P_XX
 from constants import read_single_statedb
 from constants import read_statedb
 from constants import update_statedb
@@ -15,40 +15,9 @@ from constants import select_value
 from multiprocessing import Process
 from time import sleep
 from time import time
-from math import sqrt as sqrt
 from math import pow as power
 from math import pi
 
-def flow_to_height(flow, diameter):
-    """
-    flow: flow value (m^3/h)
-    diameter: tank diameter (m^2)
-    returns: height per hour corresponding (m/h)
-    """
-    return flow / diameter
-
-def speed_to_height(speed, valve_diameter, tank_diameter):
-    """
-    speed: speed of water in a pipe (m/s)
-    valve_diameter: (m)
-    tank_diamaeter: (m)
-
-    returns: height per second corresponding in the tank (m/s)
-    """
-    return speed * power(valve_diameter, 2) / power(tank_diameter, 2)
-
-def Toricelli(flow_level, valve_height=0.0):
-    """
-    Toricelli formula, which returns the speed of the flow (m/s) according to
-    the flow level (m) in the tank and the valve height (m),
-    considering the speed as a constant in the Bernoulli formula.
-    """
-    return sqrt(2 * GRAVITATION * (abs(flow_level - valve_height)))
-    # FIXME: check abs assumption
-
-###################################
-#         PHYSICAL PROCESS
-###################################
 class Tank:
     """
     Class defining a tank in the physical process.
@@ -64,7 +33,8 @@ class Tank:
     -timer: period in which the tank has to actualize its values (s)
     -timeout: period of activity (s)
     """
-    def __init__(self, FIT_in, MV, LIT, P, FIT_out, subprocess, tank_number, diameter, timer, timeout):
+    def __init__(self, FIT_in, MV, LIT, P, FIT_out,
+                 subprocess, tank_number, diameter, timer, timeout):
         """
         constructor
         """
@@ -79,7 +49,7 @@ class Tank:
         self.__timer = timer
         self.__timeout = timeout
         self.__process = None
-        logger.info('PP - tank number %d in subprocess %d created' % (self.__id, self.__subprocess))
+        logger.info('PP - Tank: %d,%d created' % (self.__id, self.__subprocess))
 
     def __del__(self):
         """
@@ -87,31 +57,42 @@ class Tank:
         """
         if(self.__process != None):
             self.__process.join()
-        logger.info('PP - tank number %d in subprocess %d removed' % (self.__id, self.__subprocess))
+        logger.info('PP - Tank: %d,%d removed' % (self.__id, self.__subprocess))
 
-    def compute_new_flow_level(self, FIT_list, MV_list, current_flow, P_list, valve_diameter):
+    def compute_new_water_level(self, FIT_list, MV_list,
+                                current_level, P_list, valve_diameter):
         """
         FIT_list: list of input flow values (m^3/h)
         MV_list: list of boolean which tell if the valve is open or not
-        current_flow: current flow level (m)
+        current_level: current water level (m)
         P_list: list of output valves which tells if they are open or not
         tank_diameter: (m)
         valve_diameter: (m)
-        timer: period in which the flow level is computed (s)
+        timer: period in which the water level is computed (s)
 
-        returns: new flow level (m)
+        returns: new water level (m)
         """
-        height = current_flow
+        level = current_level
+        print '-------------- %d  -------------------' % self.__subprocess
+        print '%f m' % level
+        volume = level * pi * power((self.__diameter / 2.0),2)
+        print '%f m^3' % volume
         for i in (0, len(FIT_list) - 1):
             if MV_list[i] != 0:
-                # FIT_list[i] is supposed to be in m^3/h and timer in seconds => conversion
-                height += self.__timer * (flow_to_height(FIT_list[i], self.__diameter) / 3600)
+                # FIT_list[i] is supposed to be in m^3/h and timer in seconds
+                volume += (self.__timer * FIT_list[i]) / 3600.0
+                print 'ajout de %f m^3' % ((self.__timer * FIT_list[i]) / 3600.0)
         if P_list is not None:
             for i in (0, len(P_list) - 1):
-                if P_list[i] != 0:
-                    # Toricelli formula gives the speed in m/s => no conversion
-                    height -= self.__timer * speed_to_height(Toricelli(current_flow), valve_diameter, self.__diameter)
-        return height
+                if int(P_list[i]) == 2:
+                    volume -= (self.__timer * P_XX) / 3600.0
+                    print 'retrait de %f m^3' % ((self.__timer * P_XX) / 3600.0)
+
+        print '%f m^3' % volume
+        level = volume / (pi * power((self.__diameter / 2.0),2))
+        print '%f m' % level
+        print '---------------------------------'
+        return level
 
     def action(self, valve_diameter):
         """
@@ -126,21 +107,25 @@ class Tank:
             output_valves = []
         else:
             output_valves = None
-            logger.warn('PP - tank number %d in subprocess %d has no output valves' % (self.__id, self.__subprocess))
+            logger.warn('PP - Tank: %d,%d : no output valves' % (self.__id,
+                                                                 self.__subprocess))
 
         for index in self.__FIT_in:
             value = read_single_statedb(self.__subprocess, index)
             if value is not None:
                 input_flows.append(select_value(value))
             else:
-                logger.warn('PP - tank number %d in subprocess %d can\'t read %s' % (self.__id, self.__subprocess, index))
+                logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                                                                 self.__subprocess, index))
 
         for index in self.__MV:
             value = read_single_statedb(self.__subprocess, index)
             if value is not None:
                 input_valves.append(select_value(value))
             else:
-                logger.warn('PP - tank number %d in subprocess %d can\'t read %s' % (self.__id, self.__subprocess, index))
+                logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                                                                 self.__subprocess,
+                                                                 index))
 
         if self.__P is not None:
             for index in self.__P:
@@ -148,31 +133,47 @@ class Tank:
                 if value is not None:
                     output_valves.append(select_value(value))
                 else:
-                    logger.warn('PP - tank number %d in subprocess %d can\'t read %s' % (self.__id, self.__subprocess, index))
+                    logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                                                                     self.__subprocess,
+                                                                     index))
 
-        current_flow = read_statedb(NAME=self.__LIT)
-        if current_flow is not None:
-            current_flow = float(current_flow[0][3]) / 1000.0
-            logger.debug('PP - tank number %d in subprocess %d current flow: %f' %
-                (self.__id, self.__subprocess, current_flow))
-
-            if current_flow <= 1E-3:
-                pass
+        current_level = read_statedb(NAME=self.__LIT)
+        if current_level is not None:
+            current_level = float(select_value(current_level[0])) / 1000.0
+            logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
+                                                                 self.__subprocess,
+                                                                 current_level))
+            if self.__FIT_out is not None:
+                i = 0
+                for index in self.__FIT_out:
+                    if output_valves[i] != 0:
+                        update_statedb(P_XX, index)
+                        logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
+                                                                                    self.__subprocess,
+                                                                                    index,
+                                                                                    P_XX))
+                    else:
+                        update_statedb(0.0, index)
+                        logger.debug('PP - Tank: %d,%d %s -> 0.0 written into DB' % (self.__id,
+                                                                                    self.__subprocess,
+                                                                                    index))
+                    i += 1
             else:
-                if self.__FIT_out is not None:
-                    v = Toricelli(current_flow)  # m/s
-                    flow = v * power(valve_diameter/2.0, 2) * pi * 3600.0  # m^3/h
-                    for index in self.__FIT_out:
-                        update_statedb(flow, index)
-                        logger.debug('PP - tank number %d in subprocess %d output flow: %f written into DB' % (self.__id, self.__subprocess, flow))
-                else:
-                    logger.warn('PP - tank number %d in subprocess %d has no output flows' % (self.__id, self.__subprocess))
-                new_flow = self.compute_new_flow_level(input_flows, input_valves,
-                        current_flow, output_valves, valve_diameter)
-                update_statedb(new_flow * 1000.0, self.__LIT)
-                logger.debug('PP - tank number %d in subprocess %d new flow: %f written into DB' % (self.__id, self.__subprocess, new_flow))
+                logger.warn('PP - Tank: %d,%d has no output flows' % (self.__id,
+                                                                      self.__subprocess))
+            new_level = self.compute_new_water_level(input_flows, input_valves,
+                                                     current_level, output_valves,
+                                                     valve_diameter)
+            new_level *= 1000.0 # convert m to mm
+            update_statedb(new_level, self.__LIT)
+            logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
+                                                                        self.__subprocess,
+                                                                        self.__LIT,
+                                                                        new_level))
         else:
-            logger.warn('PP - tank number %d in subprocess %d can\'t read %s' % (self.__id, self.__subprocess, self.__LIT))
+            logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                                                             self.__subprocess,
+                                                             self.__LIT))
 
     def action_wrapper(self, valve_diameter):
         """
@@ -187,9 +188,10 @@ class Tank:
         """
         Runs the action() method
         """
-        self.__process = Process(target = self.action_wrapper, args = (valve_diameter,))
+        self.__process = Process(target = self.action_wrapper,
+                                 args = (valve_diameter,))
         self.__process.start()
-        logger.info('PP - tank number %d in subprocess %d started' % (self.__id, self.__subprocess))
+        logger.info('PP - Tank: %d,%d started' % (self.__id, self.__subprocess))
 
 if __name__ == '__main__':
     """
@@ -197,8 +199,10 @@ if __name__ == '__main__':
     -constructs all the subprocess tanks
     -runs them in parallel
     """
-    sleep(3)
-    tank1 = Tank(['AI_FIT_101_FLOW'], ['DO_MV_101_OPEN'], 'AI_LIT_101_LEVEL', ['DO_P_101_START'], ['AI_FIT_201_FLOW'], 1, 1, TANK_DIAMETER, TIMER, TIMEOUT)
-    tank2 = Tank(['AI_FIT_201_FLOW'], ['DO_MV_201_OPEN'], 'AI_LIT_301_LEVEL', None, None, 2, 1, TANK_DIAMETER, TIMER, TIMEOUT)
+    tank1 = Tank(['AI_FIT_101_FLOW'], ['DO_MV_101_OPEN'], 'AI_LIT_101_LEVEL',
+                 ['DO_P_101_START'], ['AI_FIT_201_FLOW'], 1, 1, TANK_DIAMETER,
+                 TIMER, TIMEOUT)
+    tank2 = Tank(['AI_FIT_201_FLOW'], ['DO_MV_201_OPEN'], 'AI_LIT_301_LEVEL',
+                 None, None, 2, 1, TANK_DIAMETER, TIMER, TIMEOUT)
     tank1.start(VALVE_DIAMETER)
     tank2.start(VALVE_DIAMETER)
