@@ -73,25 +73,17 @@ class Tank:
         returns: new water level (m)
         """
         level = current_level
-        print '-------------- %d  -------------------' % self.__subprocess
-        print '%f m' % level
         volume = level * pi * power((self.__diameter / 2.0),2)
-        print '%f m^3' % volume
         for i in (0, len(FIT_list) - 1):
             if MV_list[i] != 0:
                 # FIT_list[i] is supposed to be in m^3/h and timer in seconds
                 volume += (self.__timer * FIT_list[i]) / 3600.0
-                print 'ajout de %f m^3' % ((self.__timer * FIT_list[i]) / 3600.0)
         if P_list is not None:
             for i in (0, len(P_list) - 1):
                 if int(P_list[i]) == 2:
                     volume -= (self.__timer * P_XX) / 3600.0
-                    print 'retrait de %f m^3' % ((self.__timer * P_XX) / 3600.0)
 
-        print '%f m^3' % volume
         level = volume / (pi * power((self.__diameter / 2.0),2))
-        print '%f m' % level
-        print '---------------------------------'
         return level
 
     def action(self, valve_diameter):
