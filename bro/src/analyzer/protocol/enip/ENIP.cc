@@ -16,9 +16,7 @@ ENIP_Analyzer::ENIP_Analyzer(Connection* c)
 
 	{
 	interp = new binpac::ENIP::ENIP_Conn(this);
-	
 	had_gap = false;
-	
 	}
 
 ENIP_Analyzer::~ENIP_Analyzer()
@@ -28,12 +26,10 @@ ENIP_Analyzer::~ENIP_Analyzer()
 
 void ENIP_Analyzer::Done()
 	{
-	
 	tcp::TCP_ApplicationAnalyzer::Done();
 
 	interp->FlowEOF(true);
 	interp->FlowEOF(false);
-	
 	}
 
 void ENIP_Analyzer::EndpointEOF(bool is_orig)
