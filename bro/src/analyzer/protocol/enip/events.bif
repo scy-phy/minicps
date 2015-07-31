@@ -23,3 +23,5 @@ event enip_list_i_request%(c: connection, header: EnipHeaders%);
 event enip_list_services_request%(c: connection, header: EnipHeaders%);
 
 event enip_register_request%(c: connection, header: EnipHeaders, protocol: count, options: count%);
+
+event enip_unregister%(c: connection, header: EnipHeaders%);

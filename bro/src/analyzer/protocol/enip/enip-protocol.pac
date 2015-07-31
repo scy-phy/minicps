@@ -71,12 +71,6 @@ type Target_Item_Services = record {
         name: uint8[16];
 } &byteorder=bigendian;
 
-type RR_Unit = record {
-        iface_handle: uint32 &check(iface_handle == 0x00000000);
-	timeout: uint16;
-	data: Common_Packet_Format;
-} &byteorder=bigendian;
-
 type Register = record {
         protocol: uint16 &check(protocol == 0x0100);
 	options:  uint16 &check(options  == 0x0000);
@@ -113,8 +107,8 @@ type Common_Packet_Format = record {
 type ENIP_Request(header: ENIP_Header) = case header.cmd of {
         NOP 		   -> nop: 		 Nop;
 	LIST_SERVICES 	   -> listServices: 	 List_Services_Request;
-	LIST_IDENTITY 	   -> listIdentity: 	 List_Identity_Request;
-	LIST_INTERFACES    -> listInterfaces: 	 List_Interfaces_Request;
+	LIST_IDENTITY 	   -> listIdentity: 	 List_I_Request;
+	LIST_INTERFACES    -> listInterfaces: 	 List_I_Request;
 	REGISTER_SESSION   -> registerSession: 	 Register_Request;
 	UNREGISTER_SESSION -> unregisterSession: Unregister;
 	SEND_RR_DATA 	   -> sendRRData: 	 Send_RR_Data_Request;
@@ -143,28 +137,30 @@ type List_Services_Request = record {
         unused: bytestring &restofdata;
 };
 
-type List_Identity_Request = record {
-        unused: bytestring &restofdata;
-};
-
-type List_Interfaces_Request = record {
+type List_I_Request = record {
         unused: bytestring &restofdata;
 };
 
 type Register_Request = record {
-        command_specific_data: Register;
+        protocol: uint16 &check(protocol == 0x0100);
+	options:  uint16 &check(options  == 0x0000);
 };
 
 type Unregister = record {
-        unregister: Register;
+        protocol: uint16 &check(protocol == 0x0100);
+	options:  uint16 &check(options  == 0x0000);
 };
 
 type Send_RR_Data_Request = record {
-        rr_unit: RR_Unit;
+        iface_handle: uint32 &check(iface_handle == 0x00000000);
+	timeout: uint16;
+	data: Common_Packet_Format;
 };
 
 type Send_Unit_Data_Request = record {
-        rr_unit: RR_Unit;
+        iface_handle: uint32 &check(iface_handle == 0x00000000);
+	timeout: uint16;
+	data: Common_Packet_Format;
 };
 
 type List_Services_Response = record {
@@ -183,9 +179,12 @@ type List_Identity_Response = record {
 };
 
 type Register_Response = record {
-        register_response: Register;
+        protocol: uint16 &check(protocol == 0x0100);
+	options:  uint16 &check(options  == 0x0000);
 };
 
 type Send_RR_Data_Response = record {
-        rr_unit: RR_Unit;
+        iface_handle: uint32 &check(iface_handle == 0x00000000);
+	timeout: uint16;
+	data: Common_Packet_Format;
 };
