@@ -2886,7 +2886,7 @@ type EnipHeaders: record {
 	len: count;
 	sh:  count;
 	st:  count;
-	sc:  vector of count;
+	sc:  index_vec;
 	opt: count;
 };
 

@@ -1,27 +1,15 @@
-## Generated for enip connections
-##
-## See `Google <http://lmgtfy.com/?q=enip>`__ for more information about enip
-##
-## c: The connection
-##
-event enip_event%(c: connection%);
+event enip_header%(c: connection, is_orig: bool, cmd: count, len: count, sh: count, st: count, sc: index_vec, opt: count%);
 
-## Generated for any Enip message regardless if the particular function
-## is further supported or not.
-##
-## c: The connection.
-##
-## header: The header.
-##
-## is_orig: True if the event is raised for the originator side.
-event enip_message%(c: connection, header: EnipHeaders, is_orig: bool%);
+event enip_data_address%(c: connection, is_orig: bool, id: count, len: count, data: index_vec%);
 
-event enip_nop%(c: connection, header: EnipHeaders%);
+event enip_common_packet_format%(c: connection, is_orig: bool, item_count: count%);
 
-event enip_list_i_request%(c: connection, header: EnipHeaders%);
+event enip_target_item%(c: connection, is_orig: bool, type_code: count, len: count%);
 
-event enip_list_services_request%(c: connection, header: EnipHeaders%);
+event enip_target_item_services%(c: connection, is_orig: bool, type_code: count, len: count, protocol: count, flags: count%);
 
-event enip_register_request%(c: connection, header: EnipHeaders, protocol: count, options: count%);
+event enip_register%(c: connection, is_orig: bool, protocol: count, options: count%);
 
-event enip_unregister%(c: connection, header: EnipHeaders%);
+event enip_rr_unit%(c: connection, is_orig: bool, iface_handle: count, time_out: count%);
+
+event enip_list%(c: connection, is_orig: bool, item_count: count%);

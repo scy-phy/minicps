@@ -1,269 +1,153 @@
 connection ENIP_Conn(bro_analyzer: BroAnalyzer) {
 	upflow   = ENIP_Flow(true);
 	downflow = ENIP_Flow(false);
-
-	%member{
-		// Fields used to determine if the protocol has been confirmed or not.
-		bool confirmed;
-		bool orig_pdu;
-		bool resp_pdu;
-	%}
-
-	%init{
-		confirmed = false;
-		orig_pdu = false;
-		resp_pdu = false;
-	%}
-
-	function SetPDU(is_orig: bool): bool%{
-		if( is_orig )
-			orig_pdu = true;
-		else
-			resp_pdu = true;
-
-		return true;
-	%}
-
-	function SetConfirmed(): bool%{
-		confirmed = true;
-		return true;
-	%}
-
-	function IsConfirmed(): bool%{
-		return confirmed && orig_pdu && resp_pdu;
-	%}
-};
-
-flow ENIP_Flow(is_orig: bool) {
-	datagram = ENIP_PDU(is_orig) withcontext(connection, this);
-
-	function deliver_message(header: ENIP_Header): bool%{
-		if( ::enip_message ){
-			BifEvent::generate_enip_message(connection()->bro_analyzer(),
-			                                  connection()->bro_analyzer()->Conn(),
-							  HeaderToBro(header),
-			                                  is_orig());
-		}
-
-		return true;
-	%}
-
-	function deliver_ENIP_PDU(message: ENIP_PDU): bool%{
-		// We will assume that if an entire PDU from both sides
-		// is successfully parsed then this is definitely enip.
-		connection()->SetPDU(${message.is_orig});
-
-		if ( !connection()->IsConfirmed() ){
-			connection()->SetConfirmed();
-			connection()->bro_analyzer()->ProtocolConfirmation();
-		}
-
-		return true;
-	%}
-
-	function deliver_nop(header: ENIP_Header, message: Nop): bool%{
-		if(${header.st} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for status in enip nop message %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for options in enip nop message %d", ${header.opt}));
-			return false;
-		}
-		if(::enip_nop){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_nop(connection()->bro_analyzer(),
-					connection()->bro_analyzer()->Conn(),
-					hd);
-			delete hd;
-			hd = nullptr;
-		}
-		return true;
-	%}
-
-	function deliver_list_i_request(header: ENIP_Header, message: List_I_Request): bool%{
-		if(${header.len} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for length in enip list identity or interfaces message %d", ${header.len}));
-			return false;
-		}
-		if(${header.st} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for status in enip list identity or interfaces message %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for options in enip list identity or interfaces message %d", ${header.opt}));
-			return false;
-		}
-		for(int i = 0; i < 8; i++){
-			if(${header.sc}[i] != 0x00){
-				connection()->bro_analyzer()->ProtocolViolation(
-				fmt("invalid value for sender context in enip list identity or interfaces message %d", ${header.sc}[i]));
-				return false;
-			}
-		}
-
-		if(::enip_list_i_request){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_list_i_request(connection()->bro_analyzer(),
-				connection()->bro_analyzer()->Conn(),
-				hd);
-			delete hd;
-			hd = nullptr;
-		}
-
-		return true;
-	%}
-
-	function deliver_list_services_request(header: ENIP_Header, message: List_Services_Request): bool%{
-		if(${header.len} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for length in enip list services message %d", ${header.len}));
-			return false;
-		}
-		if(${header.st} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for status in enip list services message %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x00){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for options in enip list services message %d", ${header.opt}));
-			return false;
-		}
-
-		if( ::enip_list_services_request ){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_list_services_request(connection()->bro_analyzer(),
-					connection()->bro_analyzer()->Conn(),
-					hd);
-			delete hd;
-			hd = nullptr;
-		}
-
-		return true;
-	%}
-
-	function deliver_Register_Request(header: ENIP_Header, message: Register_Request): bool%{
-		if(${header.len} != 0x0400){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip length in register request %d", ${header.len}));
-			return false;
-		}
-		if(${header.sh} != 0x0000000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip session handle in register request %d", ${header.sh}));
-			return false;
-		}
-		if(${header.st} != 0x0000000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip status in register request %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x0000000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip options in register request %d", ${header.opt}));
-			return false;
-		}
-
-		if(${message.protocol} != 0x0100){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip protocol version in register request %d", ${message.protocol}));
-			return false;
-		}
-		if(${message.options} != 0x0000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			    fmt("invalid value for enip protocol version in register request %d", ${message.options}));
-			return false;
-		}
-
-		if(::enip_register_request){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_register_request(connection()->bro_analyzer(),
-			                                                   connection()->bro_analyzer()->Conn(),
-			                                                   hd,
-									   ${message.protocol},
-									   ${message.options});
-			delete hd;
-			hd = nullptr;
-		}
-		return true;
-	%}
-
-	function deliver_unregister(header: ENIP_Header, message: Unregister): bool%{
-		if(${header.len} != 0x0000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for length in enip unregister message %d", ${header.st}));
-			return false;
-		}
-		if(${header.st} != 0x00000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for status in enip unregister message %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x00000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for options in enip unregister message %d", ${header.opt}));
-			return false;
-		}
-		if(::enip_unregister){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_unregister(connection()->bro_analyzer(),
-					connection()->bro_analyzer()->Conn(),
-					hd);
-			delete hd;
-			hd = nullptr;
-		}
-		return true;
-	%}
-
-	function deliver_send_rr_data_request(header: ENIP_Header, message: Send_RR_Data_Request): bool%{
-		if(${header.st} != 0x00000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for status in enip send rr data request message %d", ${header.st}));
-			return false;
-		}
-		if(${header.opt} != 0x00000000){
-			connection()->bro_analyzer()->ProtocolViolation(
-			fmt("invalid value for options in enip send rr data message %d", ${header.opt}));
-			return false;
-		}
-		if(::enip_unregister){
-			RecordVal* hd = HeaderToBro(header);
-			BifEvent::generate_enip_unregister(connection()->bro_analyzer(),
-					connection()->bro_analyzer()->Conn(),
-					hd);
-			delete hd;
-			hd = nullptr;
-
-// In BifEvent, log the Command Specific data ? (${message.data.items[i]})
-
-		}
-		return true;
-	%}
 };
 
 %header{
-	RecordVal* HeaderToBro(ENIP_Header *header);
+	#define SIZE 8
 %}
 
-%code{
-	RecordVal* HeaderToBro(ENIP_Header *header){
-		RecordVal* enip_header = new RecordVal(BifType::Record::EnipHeaders);
-		enip_header->Assign(0, new Val(header->cmd(), TYPE_COUNT));
-		enip_header->Assign(1, new Val(header->len(), TYPE_COUNT));
-		enip_header->Assign(2, new Val(header->sh(), TYPE_COUNT));
-		enip_header->Assign(3, new Val(header->st(), TYPE_COUNT));
-		enip_header->Assign(4, bytestring_to_val(header->sc()));
-		enip_header->Assign(5, new Val(header->opt(), TYPE_COUNT));
-		return enip_header;
-	}
-%}
+flow ENIP_Flow(is_orig: bool) {
+	datagram = ENIP_PDU(is_orig) withcontext(connection, this);
+	# flowunit
 
-#refine typeattr ENIP_PDU += &let {
-#	proc_enip_pdu = $context.flow.process_enip_pdu(this);
-#};
+	function enip_header(cmd: uint16, len: uint16, sh: uint32, st: uint32, sc: bytestring, opt: uint32): bool%{
+		if(::enip_header){
+			VectorVal* sclist = new VectorVal(internal_type("index_vec")->AsVectorType());
+
+			for(unsigned int i = 0; i < SIZE; ++i)
+				sclist->Assign(i, new Val(sc[i], TYPE_COUNT));
+
+			BifEvent::generate_enip_header(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), cmd, len, sh, st, sclist, opt);
+		}
+
+		return true;
+	%}
+
+	function enip_data_address(id: uint16, len: uint16, data: bytestring): bool%{
+		if(::enip_data_address){
+			VectorVal* data_val = new VectorVal(internal_type("index_vec")->AsVectorType());
+
+			for(unsigned int i = 0; i < len; ++i)
+				data_val->Assign(i, new Val(data[i], TYPE_COUNT));
+
+			BifEvent::generate_enip_data_address(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), id, len, data_val);
+		}
+
+		return true;
+	%}
+
+	function enip_common_packet_format(count: uint16): bool%{
+		if(::enip_common_packet_format){
+			BifEvent::generate_enip_common_packet_format(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), count);
+		}
+
+		return true;
+	%}
+
+	function enip_target_item(type_code: uint16, len: uint16): bool%{
+		if(::enip_target_item){
+			BifEvent::generate_enip_target_item(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), type_code, len);
+		}
+
+		return true;
+	%}
+
+	function enip_target_item_services(type_code: uint16, len: uint16, protocol: uint16, flags: uint16): bool%{
+		//TODO name: uint8[]
+		if(::enip_target_item_services){
+			// VectorVal* name_val = new VectorVal(internal_type("index_vec")->AsVectorType());
+
+			// for(unsigned int i = 0; i < 16; ++i)
+			// 	name_val->Assign(i, new Val(name, TYPE_COUNT));
+
+			BifEvent::generate_enip_target_item_services(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), type_code, len, protocol, flags);
+		}
+
+		return true;
+	%}
+
+	function enip_register(protocol: uint16, options: uint16): bool%{
+		if(::enip_register){
+			BifEvent::generate_enip_register(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), protocol, options);
+		}
+
+		return true;
+	%}
+
+	function enip_rr_unit(iface_handle: uint32, timeout: uint16): bool%{
+		if(::enip_rr_unit){
+			BifEvent::generate_enip_rr_unit(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), iface_handle, timeout);
+		}
+
+		return true;
+	%}
+
+	function enip_list(item_count: uint16): bool%{
+		if(::enip_list){
+			BifEvent::generate_enip_list(
+				connection()->bro_analyzer(),
+				connection()->bro_analyzer()->Conn(),
+				is_orig(), item_count);
+		}
+
+		return true;
+	%}
+};
+
+refine typeattr ENIP_Header += &let {
+	enip_header: bool = $context.flow.enip_header(cmd, len, sh, st, sc, opt);
+};
+
+refine typeattr Data_Address += &let {
+	enip_data_address: bool = $context.flow.enip_data_address(id, len, data);
+};
+
+refine typeattr Common_Packet_Format += &let {
+	enip_common_packet_format: bool = $context.flow.enip_common_packet_format(count);
+};
+
+refine typeattr Target_Item += &let {
+	enip_target_item: bool = $context.flow.enip_target_item(type_code, len);
+};
+
+refine typeattr Target_Item_Services += &let {
+	enip_target_item_services: bool = $context.flow.enip_target_item_services(type_code, len, protocol, flags);
+};
+
+refine typeattr Register += &let {
+	enip_register: bool = $context.flow.enip_register(protocol, options);
+};
+
+refine typeattr RR_Unit += &let {
+	enip_rr_unit: bool = $context.flow.enip_rr_unit(iface_handle, timeout);
+};
+
+refine typeattr List_I += &let {
+	enip_list: bool = $context.flow.enip_list(item_count);
+};
+
+refine typeattr List_Services += &let {
+	enip_list: bool = $context.flow.enip_list(item_count);
+};

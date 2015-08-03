@@ -49,12 +49,56 @@ type ENIP_Header = record {
 	opt: uint32;		     # Option flags
 } &byteorder=bigendian;
 
-type ENIP_PDU(is_orig: bool) = record {
+type ENIP_PDU(is_orig: bool) = case is_orig of {
+	true  -> request:  ENIP_Request;
+	false -> response: ENIP_Response;
+} &byteorder=bigendian;
+
+type ENIP_Request = record {
 	header: ENIP_Header;
-	data: 	case is_orig of {
-		true  -> request:  ENIP_Request(header);
-		false -> response: ENIP_Response(header);
+	data: case(header.cmd) of {
+		NOP 		   -> nop: 		 Nop;
+		LIST_SERVICES 	   -> listServices: 	 List_Services;
+		LIST_IDENTITY 	   -> listIdentity: 	 List_I;
+		LIST_INTERFACES    -> listInterfaces: 	 List_I;
+		REGISTER_SESSION   -> registerSession: 	 Register;
+		UNREGISTER_SESSION -> unregisterSession: Register;
+		SEND_RR_DATA 	   -> sendRRData: 	 RR_Unit;
+		SEND_UNIT_DATA 	   -> sendUnitData: 	 RR_Unit;
+
+		# All the rest
+		default		   -> unknown:		 bytestring &restofdata;
 	};
+} &byteorder=bigendian;
+
+type ENIP_Response = record {
+	header: ENIP_Header;
+	data: case(header.cmd) of {
+		LIST_SERVICES 	   -> listServices: 	List_Services;
+		LIST_IDENTITY 	   -> listIdentity: 	List_I;
+		LIST_INTERFACES    -> listInterfaces: 	List_I;
+		REGISTER_SESSION   -> registerSession: 	Register;
+		SEND_RR_DATA 	   -> sendRRData: 	RR_Unit;
+
+		# All the rest
+		default		   -> unknown:		bytestring &restofdata;
+	};
+} &byteorder=bigendian;
+
+type Data_Address = record {
+        id: uint16;
+	len: uint16;
+	data: bytestring &length=len;
+} &byteorder=bigendian;
+
+type Data_Item = record {
+	address: Data_Address;
+	data: Data_Address;
+} &byteorder=bigendian;
+
+type Common_Packet_Format = record {
+        count: uint16;
+	items: Data_Item[count];
 } &byteorder=bigendian;
 
 type Target_Item = record {
@@ -76,21 +120,21 @@ type Register = record {
 	options:  uint16 &check(options  == 0x0000);
 } &byteorder=bigendian;
 
-type Data_Address = record {
-        id: uint16;
-	len: uint16;
-	data: bytestring &length=len;
+type RR_Unit = record {
+        iface_handle: uint32 &check(iface_handle == 0x00000000);
+	timeout: uint16;
+	data: Common_Packet_Format;
 } &byteorder=bigendian;
 
-type Data_Item = record {
-	address: Data_Address;
-	data: Data_Address;
+type List_I = record {
+        item_count: uint16;
+	data: Target_Item[item_count];
 } &byteorder=bigendian;
 
-type Common_Packet_Format = record {
-        count: uint16;
-	items: Data_Item[count];
-} &byteorder=bigendian;
+type List_Services = record {
+        item_count: uint16;
+	data: Target_Item_Services[item_count];
+};
 
 # type UCMM = record {
 #       item_count: uint16;
@@ -104,31 +148,6 @@ type Common_Packet_Format = record {
 # CIP Identity item ?
 # Socket Addr (all fields are set in bigendian order) ?
 
-type ENIP_Request(header: ENIP_Header) = case header.cmd of {
-        NOP 		   -> nop: 		 Nop;
-	LIST_SERVICES 	   -> listServices: 	 List_Services_Request;
-	LIST_IDENTITY 	   -> listIdentity: 	 List_I_Request;
-	LIST_INTERFACES    -> listInterfaces: 	 List_I_Request;
-	REGISTER_SESSION   -> registerSession: 	 Register_Request;
-	UNREGISTER_SESSION -> unregisterSession: Unregister;
-	SEND_RR_DATA 	   -> sendRRData: 	 Send_RR_Data_Request;
-	SEND_UNIT_DATA 	   -> sendUnitData: 	 Send_Unit_Data_Request;
-
-	# All the rest
-	default		   -> unknown:		 bytestring &restofdata;
-} &byteorder=bigendian;
-
-type ENIP_Response(header: ENIP_Header) = case header.cmd of {
-	LIST_SERVICES 	   -> listServices: 	 List_Services_Response;
-	LIST_IDENTITY 	   -> listIdentity: 	 List_Identity_Response;
-	LIST_INTERFACES    -> listInterfaces: 	 List_Interfaces_Response;
-	REGISTER_SESSION   -> registerSession: 	 Register_Response;
-	SEND_RR_DATA 	   -> sendRRData: 	 Send_RR_Data_Response;
-
-	# All the rest
-	default		   -> unknown:		 bytestring &restofdata;
-} &byteorder=bigendian;
-
 type Nop = record {
         unused: bytestring &restofdata;
 };
@@ -139,28 +158,6 @@ type List_Services_Request = record {
 
 type List_I_Request = record {
         unused: bytestring &restofdata;
-};
-
-type Register_Request = record {
-        protocol: uint16 &check(protocol == 0x0100);
-	options:  uint16 &check(options  == 0x0000);
-};
-
-type Unregister = record {
-        protocol: uint16 &check(protocol == 0x0100);
-	options:  uint16 &check(options  == 0x0000);
-};
-
-type Send_RR_Data_Request = record {
-        iface_handle: uint32 &check(iface_handle == 0x00000000);
-	timeout: uint16;
-	data: Common_Packet_Format;
-};
-
-type Send_Unit_Data_Request = record {
-        iface_handle: uint32 &check(iface_handle == 0x00000000);
-	timeout: uint16;
-	data: Common_Packet_Format;
 };
 
 type List_Services_Response = record {
@@ -176,15 +173,4 @@ type List_Interfaces_Response = record {
 type List_Identity_Response = record {
         item_count: uint16;
 	data: Target_Item[item_count];
-};
-
-type Register_Response = record {
-        protocol: uint16 &check(protocol == 0x0100);
-	options:  uint16 &check(options  == 0x0000);
-};
-
-type Send_RR_Data_Response = record {
-        iface_handle: uint32 &check(iface_handle == 0x00000000);
-	timeout: uint16;
-	data: Common_Packet_Format;
 };
