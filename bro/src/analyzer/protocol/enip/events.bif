@@ -11,43 +11,17 @@ event enip_event%(c: connection%);
 ##
 ## c: The connection.
 ##
-## headers: The headers for the enip function.
+## header: The header.
 ##
 ## is_orig: True if the event is raised for the originator side.
-event enip_message%(c: connection, headers: RecordVal, is_orig: bool%);
+event enip_message%(c: connection, header: EnipHeaders, is_orig: bool%);
 
-## Generated for Enip messages with unused data.
-##
-## c: The connection.
-##
-## headers: The headers for the enip function.
-##
-## unused: The rest of the message.
-event enip_unused%(c: connection, headers: ENIP_Header, unused: Unused_data%);
+event enip_nop%(c: connection, header: EnipHeaders%);
 
-## Generated for Enip Register messages.
-##
-## c: The connection.
-##
-## headers: The headers for the enip function.
-##
-## register: The rest of the message containing the protocol version and options.
-event enip_register%(c: connection, headers: RecordVal, register_val: Val%);
+event enip_list_i_request%(c: connection, header: EnipHeaders%);
 
-## Generated for Enip Send messages.
-##
-## c: The connection
-##
-## headers: The headers for the enip function.
-##
-## rr_unit: Contains iface_handle, timeout and data in the Common Specific Data format
-event enip_rr_unit%(c: connection, headers: RecordVal, rr_unit: Val%);
+event enip_list_services_request%(c: connection, header: EnipHeaders%);
 
-## Generated for Enip Send messages.
-##
-## c: The connection
-##
-## headers: The headers for the enip function.
-##
-## csd: Contains data in the Common Specific Data format
-event enip_csd%(c: connection, headers: RecordVal, csd: Val%);
+event enip_register_request%(c: connection, header: EnipHeaders, protocol: count, options: count%);
+
+event enip_unregister%(c: connection, header: EnipHeaders%);
