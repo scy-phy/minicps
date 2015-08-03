@@ -86,18 +86,18 @@ Is a ControlDevice:
 
 ### Implementation ###
 
-Minicps will be implemented in pure Python, will be compatible with `pypy`
+Minicps will be implemented in pure Python 2.7.x, will be compatible with `pypy`
 and it will interface with the user through a CLI.
 
 Mininet framework provides multiple features to start our implementation.
 
 Mininet topologies can be provided in the form of text files and/or python
-scripts. The user will have several inputs options: `.xml` graph (`networkx`),
-`topology.py` 
+scripts. The user will have several inputs options like `gexf.xml` graph (`networkx`),
+`topology.py` and `topology.txt`.
 
 Mininet is based on Linux containers.
 Linux containers allow to assign an arbitrary number of processes to emulate
-a Device and the fact that is connected, e.g. container A will emulate a PLC
+a Device and the fact that it is connected, e.g. container A will emulate a PLC
 and may contain at least one process representing the PLC logic and another
 one emulating a PLC ENIP networking module.
 
@@ -109,10 +109,13 @@ Linux tools and protocol suite library (realistic), it supports multi-threaded
 and multiprocesses implementation and inter-process communications through
 system calls because the scheduler is directly the Linux kernel (low overhead).
 
-Mininet allows SDN development.
+Mininet allows SDN controller development, testing and deployment.
 
-The State of the CPS is emulated using shared storage units: files, sqlite,
-mysql, nosql and Devices and PhysicalProcess have shared access to it.
+The State of the CPS is emulated using shared storage units like files 
+or databases backend (sqlite, mysql, nosql).
+Devices and PhysicalProcess have shared access to it.
+Test various SQL backends: [sqlfiddle](http://sqlfiddle.com/)
+Test various NoSQL backend [TODO](aa)
 
 The PhysicalProcess is emulated using any Linux process able to model the
 relevant scenario e.g. GNU/Octave, Matlab script.
@@ -120,27 +123,41 @@ relevant scenario e.g. GNU/Octave, Matlab script.
 Due to the extensibility of our framework we envision the possibility to
 extend its functionality via plugins (add new industrial protocol supports,
 add a ncurses UI or a GUI) and its coverage through additional CPS
-network simulations other than SWaT (WADI, ecc)
+network simulations other than SWaT (WADI, etc)
+
+> TODO: dedicated scy-phy accounts to upload the package and manage the docs
+
+Minicps will be distributed using the following formats buildable using  `setup.py`
+
+* cross-platform `pip` 
+    * `twine` secure upload to PYPI
+* Debian/Ubuntu package
+* Arch Linux AUR package
+
+Minicps will be documented using `sphinx` and, once opensourced, the
+documentation will be hosted on `readthedocs.com`
+
+Minicps will be tested/profiled using `nose` and `coverage`
 
 ### Use cases ###
 
 **SWaT Interactive session example:**
 
-    minicps> CPS path:
+    CPS path:
     minicps> ~/swat
-    minicps> industrial protocol suite: [E]nip, [m]odbus
+    industrial protocol suite: [E]nip, [m]odbus
     minicps> e
-    minicps> storing units: [S]qlite, [f]ile, [m]ysql 
+    storing units: [S]qlite, [f]ile, [m]ysql 
     minicps> s
-    minicps> topology representation: [G]raph, [m]ininet, 
+    topology representation: [G]raph, [m]ininet, 
     minicps> g
-    minicps> graphs: [G]exf, g[m]l, [j]son
+    graphs: [G]exf, g[m]l, [j]son
     minicps> g
-    minicps> SDN support: [N]o or [y]es ?
+    SDN support: [N]o or [y]es ?
     minicps> y
-    minicps> SDN platform: [P]ox, [n]ox, [o]pendaylight
+    SDN platform: [P]ox, [n]ox, [o]pendaylight
     minicps> p
-    minicps> SDN controller path:
+    SDN controller path:
     minicps> ~/swat/pox/controller.py
 
 **Config file example:**
