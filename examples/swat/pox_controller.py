@@ -460,6 +460,7 @@ class AntiArpPoison(object):
         # self.arpcache_timer.start()
 
 
+    # TODO: use a more generic name 
     def _detect_arp_poison(self, event):
         """
         packet obj contains a type int attribute and

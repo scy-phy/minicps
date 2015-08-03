@@ -125,6 +125,20 @@ extend its functionality via plugins (add new industrial protocol supports,
 add a ncurses UI or a GUI) and its coverage through additional CPS
 network simulations other than SWaT (WADI, etc)
 
+> TODO: dedicated scy-phy accounts to upload the package and manage the docs
+
+Minicps will be distributed using the following formats buildable using  `setup.py`
+
+* cross-platform `pip` 
+    * `twine` secure upload to PYPI
+* Debian/Ubuntu package
+* Arch Linux AUR package
+
+Minicps will be documented using `sphinx` and, once opensourced, the
+documentation will be hosted on `readthedocs.com`
+
+Minicps will be tested/profiled using `nose` and `coverage`
+
 ### Use cases ###
 
 **SWaT Interactive session example:**
