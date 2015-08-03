@@ -25,8 +25,8 @@ def callback(time, flow, valve, pump, file):
     canvas = FigureCanvas(fig)
 
     # The pump has only two values 0 and 1
-    ax2.set_ylim([-0.5, 1.5])
-    ax3.set_ylim([-0.5, 1.5])
+    # ax2.set_ylim([-0.5, 1.5])
+    # ax3.set_ylim([-0.5, 1.5])
     ax3.set_xlabel('Time (s)')
     ax1.set_ylabel('Flow level (cm)')
     ax2.set_ylabel('Valve')
@@ -52,9 +52,9 @@ if __name__ == '__main__':
         - bla
     """
 
-    sleep(3)
+    sleep(4)
 
-    start_http_server(80)
+    # start_http_server(80)
     values = {}
     values['time'] = []
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
             key = 'plc%d' % i
             if not key in values:
                 values[key] = [[], [], []]
-            flow = read_cpppo(L1_PLCS_IP[key], 'HMI_LIT301-Pv', 'examples/swat/hmi_cpppo.cache')
+            flow = read_cpppo(L1_PLCS_IP[key], 'HMI_LIT101-Pv', 'examples/swat/hmi_cpppo.cache')
             (values[key])[0].append(flow)
             pump = read_cpppo(L1_PLCS_IP[key], 'HMI_P101-Status', 'examples/swat/hmi_cpppo.cache')
             values[key][1].append(pump)
