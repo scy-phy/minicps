@@ -55,7 +55,7 @@ class Tank:
         """
         destructor
         """
-        if(self.__process != None):
+        if(self.__process is not None):
             self.__process.join()
         logger.info('PP - Tank: %d,%d removed' % (self.__id, self.__subprocess))
 
