@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('SVG')
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
@@ -5,14 +8,14 @@ from time import time
 from time import sleep
 from subprocess import Popen
 from multiprocessing import Process
-from signal import SIGKILL
 from os import setsid
 from os import kill
+from os import killpg
+from signal import SIGTERM
 from constants import logger
 from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201, PLC_NUMBER, TIMER, TIMEOUT
 from constants import read_cpppo
 from constants import L1_PLCS_IP
-
 
 class HMI:
     HMI_id = 1
@@ -37,7 +40,7 @@ class HMI:
         self.__values[tag2] = []
         self.__values[tag3] = []
         self.__values['time'] = []
-        logger.info('HMI %d created' % self.__id)
+        logger.info('HMI %d %s %s %s created' % (self.__id, self.__tag1, self.__tag2, self.__tag3))
 
     def __del__(self):
         """
@@ -55,56 +58,57 @@ class HMI:
         """
         if(HMI.HMI_http is None):
             cmd = "python -m SimpleHTTPServer %d" % port
-            logger.info('HMI %d - HTTP server started' % self.__id)
             HMI.HMI_http = Popen(cmd, shell=True, preexec_fn=setsid)
+            logger.info('HMI %d - HTTP server started' % self.__id)
 
-    # def stop_http_server(self):
-    #     if(HMI.HMI_http is not None):
-    #         kill(HMI.HMI_http, SIGKILL)
-    #         logger.info('HMI %d - HTTP server stopped' % self.__id)
+    def stop_http_server(self):
+        if(HMI.HMI_http is not None):
+            killpg(HMI.HMI_http, SIGTERM)
+            logger.info('HMI %d - HTTP server stopped' % self.__id)
 
     def callback(self):
         # Three subplots sharing x axe
+        print 'lol1'
         fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-
-        # fig = Figure()
         canvas = FigureCanvas(fig)
-
+        print 'lol3'
         mini = min(self.__values[self.__tag1])
-        mini = float(mini)
+        print 'lol4'
         maxi = max(self.__values[self.__tag1])
-        maxi = float(maxi)
-        delta = 5*(maxi - mini)/100 # 5%
-        ax1.set_ylim([mini - delta, maxi + delta])
-
+        print 'lol5'
+        if(mini != maxi):
+            delta = 5*(maxi - mini)/100 # 5%
+            ax1.set_ylim([mini - delta, maxi + delta])
+        print 'lol6'
         mini = min(self.__values[self.__tag2])
-        mini = float(mini)
         maxi = max(self.__values[self.__tag2])
-        maxi = float(maxi)
-        delta = 5*(maxi - mini)/100 # 5%
-        ax2.set_ylim([mini - delta, maxi + delta])
+        if(mini != maxi):
+            delta = 5*(maxi - mini)/100 # 5%
+            ax2.set_ylim([mini - delta, maxi + delta])
 
         mini = min(self.__values[self.__tag3])
-        mini = float(mini)
         maxi = max(self.__values[self.__tag3])
-        maxi = float(maxi)
-        delta = 5*(maxi - mini)/100 # 5%
-        ax3.set_ylim([mini - delta, maxi + delta])
+        if(mini != maxi):
+            delta = 5*(maxi - mini)/100 # 5%
+            ax3.set_ylim([mini - delta, maxi + delta])
 
         ax3.set_xlabel('Time (s)')
         ax1.set_ylabel(self.__tag1)
         ax2.set_ylabel(self.__tag2)
         ax3.set_ylabel(self.__tag3)
-
+        print 'lol7'
         ax1.set_title('HMI %d' % self.__id)
         ax1.scatter(self.__values['time'], self.__values[self.__tag1], color='b')
         ax2.plot(self.__values['time'], self.__values[self.__tag2], color='g')
         ax3.plot(self.__values['time'], self.__values[self.__tag3], color='r')
+        print 'lol8'
         # Fine-tune figure; make subplots close to each other and hide x ticks for
         # all but bottom plot.
         fig.subplots_adjust(hspace=0)
-
+        print 'lol9'
         canvas.print_figure('examples/swat/hmi/%s' % self.__file)
+        print 'lol10'
+        logger.debug(self.__values)
 
     def action_wrapper(self):
         """
@@ -117,10 +121,18 @@ class HMI:
 
     def action(self):
         tag1 = read_cpppo(self.__ipaddr, self.__tag1, 'examples/swat/hmi_cpppo.cache')
+        logger.debug('HMI %d read %s' % (self.__id, tag1))
+        tag1 = float(tag1)
         self.__values[self.__tag1].append(tag1)
+
         tag2 = read_cpppo(self.__ipaddr, self.__tag2, 'examples/swat/hmi_cpppo.cache')
+        logger.debug('HMI %d read %s' % (self.__id, tag2))
+        tag2 = float(tag2)
         self.__values[self.__tag2].append(tag2)
+
         tag3 = read_cpppo(self.__ipaddr, self.__tag3, 'examples/swat/hmi_cpppo.cache')
+        logger.debug('HMI %d read %s' % (self.__id, tag3))
+        tag3 = float(tag3)
         self.__values[self.__tag3].append(tag3)
         self.__values['time'].append(time())
 
@@ -142,8 +154,8 @@ if __name__ == '__main__':
         - bla
         - bla
     """
-    hmi1 = HMI('HMI_LIT101-Pv', 'HMI_P101-Status', 'HMI_MV101-Status', L1_PLCS_IP['plc1'], 'plc1.png', 1, 15)
+    hmi1 = HMI('HMI_LIT101-Pv', 'HMI_P101-Status', 'HMI_MV101-Status', L1_PLCS_IP['plc1'], 'plc1.svg', TIMER, TIMEOUT - 10)
     hmi1.start_http_server(80)
-    sleep(4)
+    sleep(3)
     hmi1.start()
     hmi1.stop_http_server()
