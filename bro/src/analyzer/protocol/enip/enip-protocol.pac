@@ -33,6 +33,19 @@ enum err_codes {
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
+enum item_ID {
+	ADDRESS				= 0x0000,
+	LIST_IDENTITY_RESPONSE		= 0x000C,
+	CONNECTION_BASED		= 0x00A1,
+	CONNECTED_TRANSPORT_PACKET	= 0x00B1,
+	UNCONNECTED_MESSAGE		= 0x00B2,
+	LIST_SERVICES_RESPONSE		= 0x0100,
+	SOCKADDR_INFO_O_T		= 0x8000,
+	SOCKADDR_INFO_T_O		= 0x8001,
+	SEQUENCED_ADDRESS_ITEM		= 0x8002,
+	# Other values are Reserved for future usage or Reserved for legacy
+}
+
 ##############################
 #        RECORD TYPES        #
 ##############################
@@ -63,8 +76,8 @@ type ENIP_Request = record {
 		LIST_INTERFACES    -> listInterfaces: 	 List_I;
 		REGISTER_SESSION   -> registerSession: 	 Register;
 		UNREGISTER_SESSION -> unregisterSession: Register;
-		SEND_RR_DATA 	   -> sendRRData: 	 RR_Unit;
-		SEND_UNIT_DATA 	   -> sendUnitData: 	 RR_Unit;
+		SEND_RR_DATA 	   -> sendRRData: 	 RR_Unit(header);
+		SEND_UNIT_DATA 	   -> sendUnitData: 	 RR_Unit(header);
 
 		# All the rest
 		default		   -> unknown:		 bytestring &restofdata;
@@ -78,7 +91,7 @@ type ENIP_Response = record {
 		LIST_IDENTITY 	   -> listIdentity: 	List_I;
 		LIST_INTERFACES    -> listInterfaces: 	List_I;
 		REGISTER_SESSION   -> registerSession: 	Register;
-		SEND_RR_DATA 	   -> sendRRData: 	RR_Unit;
+		SEND_RR_DATA 	   -> sendRRData: 	RR_Unit(header);
 
 		# All the rest
 		default		   -> unknown:		bytestring &restofdata;
@@ -116,11 +129,11 @@ type Target_Item_Services = record {
 } &byteorder=bigendian;
 
 type Register = record {
-        protocol: uint16 &check(protocol == 0x0100);
-	options:  uint16 &check(options  == 0x0000);
+        protocol: uint16;
+	options:  uint16;
 } &byteorder=bigendian;
 
-type RR_Unit = record {
+type RR_Unit(header: ENIP_Header) = record {
         iface_handle: uint32 &check(iface_handle == 0x00000000);
 	timeout: uint16;
 	data: Common_Packet_Format;
@@ -136,17 +149,23 @@ type List_Services = record {
 	data: Target_Item_Services[item_count];
 };
 
-# type UCMM = record {
-#       item_count: uint16;
-# 	addr_type_ID: uint16;
-# 	addr_len: uint16;
-# 	data_type_ID: uint16;
-# 	data_len: uint16;
-# 	MR: uint8[data_len];
-# } &byteorder=bigendian;
+type UCMM = record {
+      item_count: uint16;
+	addr_type_ID: uint16;
+	addr_len: uint16;
+	data_type_ID: uint16;
+	data_len: uint16;
+	MR: uint8[data_len];
+} &byteorder=bigendian;
 
 # CIP Identity item ?
-# Socket Addr (all fields are set in bigendian order) ?
+
+type sockaddr = record {
+	sin_family: int16;
+	sin_port: uint16;
+	sin_addr: uint32;
+	sin_zero: uint8[8];
+};
 
 type Nop = record {
         unused: bytestring &restofdata;
