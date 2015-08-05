@@ -80,7 +80,7 @@ class Tank:
                 volume += (self.__timer * FIT_list[i]) / 3600.0
         if P_list is not None:
             for i in (0, len(P_list) - 1):
-                if int(P_list[i]) == 2:
+                if int(P_list[i]) == 1:
                     volume -= (self.__timer * P_XX) / 3600.0
 
         level = volume / (pi * power((self.__diameter / 2.0),2))
@@ -139,13 +139,13 @@ class Tank:
                 i = 0
                 for index in self.__FIT_out:
                     if output_valves[i] != 0:
-                        update_statedb(P_XX, index)
+                        update_statedb(str(P_XX), index)
                         logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
                                                                                     self.__subprocess,
                                                                                     index,
                                                                                     P_XX))
                     else:
-                        update_statedb(0.0, index)
+                        update_statedb(str(0.0), index)
                         logger.debug('PP - Tank: %d,%d %s -> 0.0 written into DB' % (self.__id,
                                                                                     self.__subprocess,
                                                                                     index))
@@ -157,7 +157,7 @@ class Tank:
                                                      current_level, output_valves,
                                                      valve_diameter)
             new_level *= 1000.0 # convert m to mm
-            update_statedb(new_level, self.__LIT)
+            update_statedb(str(new_level), self.__LIT)
             logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
                                                                         self.__subprocess,
                                                                         self.__LIT,

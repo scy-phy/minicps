@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # time.sleep(1)
 
     # look a Stridhar graph
-    logger.debug("Entering PLC3 Main loop")
+    logger.debug("Enter PLC3 main loop")
     start_time = time.time()
     while(time.time() - start_time < TIMEOUT):
         # cmd = read_single_statedb('AI_FIT_101_FLOW', '1')
