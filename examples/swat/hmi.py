@@ -68,18 +68,13 @@ class HMI:
 
     def callback(self):
         # Three subplots sharing x axe
-        print 'lol1'
         fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
         canvas = FigureCanvas(fig)
-        print 'lol3'
         mini = min(self.__values[self.__tag1])
-        print 'lol4'
         maxi = max(self.__values[self.__tag1])
-        print 'lol5'
         if(mini != maxi):
             delta = 5*(maxi - mini)/100 # 5%
             ax1.set_ylim([mini - delta, maxi + delta])
-        print 'lol6'
         mini = min(self.__values[self.__tag2])
         maxi = max(self.__values[self.__tag2])
         if(mini != maxi):
@@ -96,18 +91,14 @@ class HMI:
         ax1.set_ylabel(self.__tag1)
         ax2.set_ylabel(self.__tag2)
         ax3.set_ylabel(self.__tag3)
-        print 'lol7'
         ax1.set_title('HMI %d' % self.__id)
         ax1.scatter(self.__values['time'], self.__values[self.__tag1], color='b')
         ax2.plot(self.__values['time'], self.__values[self.__tag2], color='g')
         ax3.plot(self.__values['time'], self.__values[self.__tag3], color='r')
-        print 'lol8'
         # Fine-tune figure; make subplots close to each other and hide x ticks for
         # all but bottom plot.
         fig.subplots_adjust(hspace=0)
-        print 'lol9'
         canvas.print_figure('examples/swat/hmi/%s' % self.__file)
-        print 'lol10'
         logger.debug(self.__values)
 
     def action_wrapper(self):
@@ -121,17 +112,17 @@ class HMI:
 
     def action(self):
         tag1 = read_cpppo(self.__ipaddr, self.__tag1, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s' % (self.__id, tag1))
+        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag1, tag1))
         tag1 = float(tag1)
         self.__values[self.__tag1].append(tag1)
 
         tag2 = read_cpppo(self.__ipaddr, self.__tag2, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s' % (self.__id, tag2))
+        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag2, tag2))
         tag2 = float(tag2)
         self.__values[self.__tag2].append(tag2)
 
         tag3 = read_cpppo(self.__ipaddr, self.__tag3, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s' % (self.__id, tag3))
+        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag3, tag3))
         tag3 = float(tag3)
         self.__values[self.__tag3].append(tag3)
         self.__values['time'].append(time())

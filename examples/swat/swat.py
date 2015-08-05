@@ -141,6 +141,9 @@ def minicps_tutorial(net):
     plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
     hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
+
+    plc1_pid = plc1.cmd("python examples/swat/init_swat.py &")
+
     # os.system("python examples/swat/physical_process.py &")
     os.system("python examples/swat/physical_process.py")
 
