@@ -36,11 +36,11 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				if(st != 0x00000000){
-					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_IDENTITY or LIST_INTERFACES (%d)",
-											    st));
-					return false;
-				}
+				// if(st != 0x00000000){
+				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_IDENTITY or LIST_INTERFACES (%d)",
+				// 							    st));
+				// 	return false;
+				// }
 				for(unsigned int i = 0; i < SIZE; i++){
 					if(sc[i] != 0x00){
 						connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message sender context for LIST_IDENTITY or LIST_INTERFACES (%d)",
@@ -62,11 +62,11 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				if(st != 0x00000000){
-					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for REGISTER_SESSION (%d)",
-											    st));
-					return false;
-				}
+				// if(st != 0x00000000){
+				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for REGISTER_SESSION (%d)",
+				// 							    st));
+				// 	return false;
+				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for REGISTER_SESSION (%d)",
 											opt));
@@ -100,11 +100,11 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				if(st != 0x00000000){
-					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_SERVICES (%d)",
-											    st));
-					return false;
-				}
+				// if(st != 0x00000000){
+				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_SERVICES (%d)",
+				// 							    st));
+				// 	return false;
+				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for LIST_SERVICES (%d)",
 											opt));
@@ -114,11 +114,11 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
 			else if(cmd == SEND_RR_DATA || cmd == SEND_UNIT_DATA){
-				if(st != 0x00000000){
-					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
-											    st));
-					return false;
-				}
+				// if(st != 0x00000000){
+				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
+				// 							    st));
+				// 	return false;
+				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
 											opt));
@@ -226,7 +226,7 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP protocol in Target Item Services (%d)", protocol));
 				return false;
 			}
-			if((flags & RESERVED_MASK1 != 0) || (flags & RESERVED_MASK2 != 0) || (flags & RESERVED_MASK3 != 0)){
+			if(((flags & RESERVED_MASK1) != 0) || ((flags & RESERVED_MASK2) != 0) || ((flags & RESERVED_MASK3) != 0)){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP flags in Target Item Services (%d)", flags));
 				return false;
 			}

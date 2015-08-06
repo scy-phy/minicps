@@ -10,39 +10,39 @@
 
 enum cmd_codes {
         NOP                           = 0x0000,
-	LIST_SERVICES 	   	      = 0x0004,
-	LIST_IDENTITY 	   	      = 0x0063,
-	LIST_INTERFACES    	      = 0x0064, # Optional
-	REGISTER_SESSION   	      = 0x0065,
-	UNREGISTER_SESSION 	      = 0x0066,
-	SEND_RR_DATA	   	      = 0x006F,
-	SEND_UNIT_DATA 	   	      = 0x0070,
-	INDICATE_STATUS    	      = 0x0072, # Optional
-	CANCEL 		   	      = 0x0073, # Optional
+	LIST_SERVICES 	   	      = 0x0400,
+	LIST_IDENTITY 	   	      = 0x6300,
+	LIST_INTERFACES    	      = 0x6400, # Optional
+	REGISTER_SESSION   	      = 0x6500,
+	UNREGISTER_SESSION 	      = 0x6600,
+	SEND_RR_DATA	   	      = 0x6F00,
+	SEND_UNIT_DATA 	   	      = 0x7000,
+	INDICATE_STATUS    	      = 0x7200, # Optional
+	CANCEL 		   	      = 0x7300, # Optional
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
 enum err_codes {
      	SUCCESS 		      = 0x0000,
-	INVALID_UNSUPPORTED_CMD       = 0x0001,
-	INSUFFICIENT_MEMORY	      = 0x0002,
-	INCORRECT_DATA		      = 0x0003,
-	INVALID_SESSION_HANDLE	      = 0x0064,
-	INVALID_LENGTH		      = 0x0065,
-	UNSUPPORTED_PROTOCOL_REVISION = 0x0069,
+	INVALID_UNSUPPORTED_CMD       = 0x0100,
+	INSUFFICIENT_MEMORY	      = 0x0200,
+	INCORRECT_DATA		      = 0x0300,
+	INVALID_SESSION_HANDLE	      = 0x6400,
+	INVALID_LENGTH		      = 0x6500,
+	UNSUPPORTED_PROTOCOL_REVISION = 0x6900,
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
 enum item_ID {
 	ADDRESS				= 0x0000,
-	LIST_IDENTITY_RESPONSE		= 0x000C,
-	CONNECTION_BASED		= 0x00A1,
-	CONNECTED_TRANSPORT_PACKET	= 0x00B1,
-	UNCONNECTED_MESSAGE		= 0x00B2,
-	LIST_SERVICES_RESPONSE		= 0x0100,
-	SOCKADDR_INFO_O_T		= 0x8000,
-	SOCKADDR_INFO_T_O		= 0x8001,
-	SEQUENCED_ADDRESS_ITEM		= 0x8002,
+	LIST_IDENTITY_RESPONSE		= 0x0C00,
+	CONNECTION_BASED		= 0xA100,
+	CONNECTED_TRANSPORT_PACKET	= 0xB100,
+	UNCONNECTED_MESSAGE		= 0xB200,
+	LIST_SERVICES_RESPONSE		= 0x0001,
+	SOCKADDR_INFO_O_T		= 0x0080,
+	SOCKADDR_INFO_T_O		= 0x0180,
+	SEQUENCED_ADDRESS_ITEM		= 0x0280,
 	# Other values are Reserved for future usage or Reserved for legacy
 }
 
