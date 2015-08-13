@@ -101,17 +101,14 @@ type ENIP_Response = record {
 type Data_Address = record {
         id: uint16;
 	len: uint16;
-	data: bytestring &length=len;
-} &byteorder=bigendian;
-
-type Data_Item = record {
-	address: Data_Address;
-	data: Data_Address;
+	data: uint8[len]; #Bug here length problem
 } &byteorder=bigendian;
 
 type Common_Packet_Format = record {
-        count: uint16;
-	items: Data_Item[count];
+        count: uint16; #Must be >= 2
+	address: Data_Address;
+	data: Data_Address;
+	additional: Data_Address[count - 2];
 } &byteorder=bigendian;
 
 type Target_Item = record {

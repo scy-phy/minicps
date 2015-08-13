@@ -142,7 +142,7 @@ flow ENIP_Flow(is_orig: bool) {
 		return true;
 	%}
 
-	function enip_data_address(id: uint16, len: uint16, data: bytestring): bool%{
+	function enip_data_address(id: uint16, len: uint16, data: uint8[]): bool%{
 		if(::enip_data_address){
 			if(id != ADDRESS &&
 			id != LIST_IDENTITY_RESPONSE &&
@@ -177,10 +177,13 @@ flow ENIP_Flow(is_orig: bool) {
 				return false;
 			}
 
-			VectorVal* data_val = new VectorVal(internal_type("index_vec")->AsVectorType());
 
+		VectorVal* data_val = new VectorVal(internal_type("index_vec")->AsVectorType());
+
+		if(data){
 			for(unsigned int i = 0; i < len; ++i)
-				data_val->Assign(i, new Val(data[i], TYPE_COUNT));
+				data_val->Assign(i, new Val((*data)[i], TYPE_COUNT));
+		}
 
 			BifEvent::generate_enip_data_address(
 				connection()->bro_analyzer(),

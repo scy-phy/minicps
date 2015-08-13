@@ -1,4 +1,3 @@
-
 module Enip;
 
 export {
@@ -11,10 +10,11 @@ export {
        	     [0x6500] = "REGISTER_SESSION",
        	     [0x6600] = "UNREGISTER_SESSION",
        	     [0x6F00] = "SEND_RR_DATA",
-       	     [7000] = "SEND_UNIT_DATA",
-       	     [7200] = "INDICATE_STATUS",
-       	     [7300] = "CANCEL",
+       	     [7000]   = "SEND_UNIT_DATA",
+       	     [7200]   = "INDICATE_STATUS",
+       	     [7300]   = "CANCEL",
        } &default=function(i: count):string { return fmt("unknown-%d", i); } &redef;
+
        ## ENIP default errors
        const status {
        	     [0x0000] = "SUCCESS",
