@@ -36,11 +36,6 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				// if(st != 0x00000000){
-				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_IDENTITY or LIST_INTERFACES (%d)",
-				// 							    st));
-				// 	return false;
-				// }
 				for(unsigned int i = 0; i < SIZE; i++){
 					if(sc[i] != 0x00){
 						connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message sender context for LIST_IDENTITY or LIST_INTERFACES (%d)",
@@ -62,11 +57,6 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				// if(st != 0x00000000){
-				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for REGISTER_SESSION (%d)",
-				// 							    st));
-				// 	return false;
-				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for REGISTER_SESSION (%d)",
 											opt));
@@ -100,11 +90,6 @@ flow ENIP_Flow(is_orig: bool) {
 											    len));
 					return false;
 				}
-				// if(st != 0x00000000){
-				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for LIST_SERVICES (%d)",
-				// 							    st));
-				// 	return false;
-				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for LIST_SERVICES (%d)",
 											opt));
@@ -114,11 +99,6 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
 			else if(cmd == SEND_RR_DATA || cmd == SEND_UNIT_DATA){
-				// if(st != 0x00000000){
-				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message status for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
-				// 							    st));
-				// 	return false;
-				// }
 				if(opt != 0x00000000){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
 											opt));
@@ -220,10 +200,7 @@ flow ENIP_Flow(is_orig: bool) {
 		return true;
 	%}
 
-	function enip_target_item_services(type_code: uint16, len: uint16, protocol: uint16, flags: uint16): bool%{
-		//TODO name: uint8[16]
-		//The Name field shall allow up to a 16-byte, NULL-terminated ASCII string for descriptive
-		//purposes only. The 16-byte limit shall include the NULL character.
+	function enip_target_item_services(type_code: uint16, len: uint16, protocol: uint16, flags: uint16, name: uint8[]): bool%{
 		if(::enip_target_item_services){
 			if(protocol != 0x0100){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP protocol in Target Item Services (%d)", protocol));
@@ -233,15 +210,18 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP flags in Target Item Services (%d)", flags));
 				return false;
 			}
-			// VectorVal* name_val = new VectorVal(internal_type("index_vec")->AsVectorType());
 
-			// for(unsigned int i = 0; i < 16; ++i)
-			// 	name_val->Assign(i, new Val(name, TYPE_COUNT));
+			VectorVal* name_val = new VectorVal(internal_type("index_vec")->AsVectorType());
+
+			if(name){
+				for(unsigned int i = 0; i < NAME_SIZE; ++i)
+					name_val->Assign(i, new Val((*name)[i], TYPE_COUNT));
+			}
 
 			BifEvent::generate_enip_target_item_services(
 				connection()->bro_analyzer(),
 				connection()->bro_analyzer()->Conn(),
-				is_orig(), type_code, len, protocol, flags);
+				is_orig(), type_code, len, protocol, flags, name);
 		}
 
 		return true;

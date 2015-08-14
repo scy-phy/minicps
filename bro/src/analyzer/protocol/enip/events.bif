@@ -6,7 +6,7 @@ event enip_common_packet_format%(c: connection, is_orig: bool, item_count: count
 
 event enip_target_item%(c: connection, is_orig: bool, type_code: count, len: count%);
 
-event enip_target_item_services%(c: connection, is_orig: bool, type_code: count, len: count, protocol: count, flags: count%);
+event enip_target_item_services%(c: connection, is_orig: bool, type_code: count, len: count, protocol: count, flags: count, name: index_vec%);
 
 event enip_register%(c: connection, is_orig: bool, protocol: count, options: count%);
 
