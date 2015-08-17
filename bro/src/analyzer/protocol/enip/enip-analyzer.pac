@@ -5,14 +5,15 @@ connection ENIP_Conn(bro_analyzer: BroAnalyzer) {
 
 %header{
 	#define SIZE 8
+	#define NAME_SIZE 16
 	#define RESERVED_MASK1 0x1F00
 	#define RESERVED_MASK2 0xC000
 	#define RESERVED_MASK3 0x00FE
 %}
 
 flow ENIP_Flow(is_orig: bool) {
+	# flowunit ?
 	datagram = ENIP_PDU(is_orig) withcontext(connection, this);
-	# flowunit
 
 	function enip_header(cmd: uint16, len: uint16, sh: uint32, st: uint32, sc: bytestring, opt: uint32): bool%{
 		if(::enip_header){
@@ -108,15 +109,15 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
 
-			VectorVal* sclist = new VectorVal(internal_type("index_vec")->AsVectorType());
+			VectorVal* sc_val = new VectorVal(internal_type("index_vec")->AsVectorType());
 
 			for(unsigned int i = 0; i < SIZE; ++i)
-				sclist->Assign(i, new Val(sc[i], TYPE_COUNT));
+				sc_val->Assign(i, new Val(sc[i], TYPE_COUNT));
 
 			BifEvent::generate_enip_header(
 				connection()->bro_analyzer(),
 				connection()->bro_analyzer()->Conn(),
-				is_orig(), cmd, len, sh, st, sclist, opt);
+				is_orig(), cmd, len, sh, st, sc_val, opt);
 		}
 
 		return true;
@@ -156,7 +157,6 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item ID and length (%d,%d)", id, len));
 				return false;
 			}
-
 
 		VectorVal* data_val = new VectorVal(internal_type("index_vec")->AsVectorType());
 
@@ -221,7 +221,7 @@ flow ENIP_Flow(is_orig: bool) {
 			BifEvent::generate_enip_target_item_services(
 				connection()->bro_analyzer(),
 				connection()->bro_analyzer()->Conn(),
-				is_orig(), type_code, len, protocol, flags, name);
+				is_orig(), type_code, len, protocol, flags, name_val);
 		}
 
 		return true;
@@ -295,7 +295,7 @@ refine typeattr Target_Item += &let {
 };
 
 refine typeattr Target_Item_Services += &let {
-	enip_target_item_services: bool = $context.flow.enip_target_item_services(type_code, len, protocol, flags);
+	enip_target_item_services: bool = $context.flow.enip_target_item_services(type_code, len, protocol, flags, name);
 };
 
 refine typeattr Register += &let {

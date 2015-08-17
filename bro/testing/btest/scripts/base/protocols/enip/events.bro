@@ -1,3 +1,12 @@
+#
+# @TEST-EXEC: bro -r $TRACES/enip/2015-04-10_read_tags.pcapng %INPUT > output
+# @TEST-EXEC: btest-diff output
+# @TEST-EXEC: cat output | awk '{print $1}' | sort | uniq | wc -l > covered
+# @TEST-EXEC: cat ${DIST}/src/analyzer/protocol/enip/events.bif | grep "^event enip_" | wc -l > total
+# @TEST-EXEC: echo `cat covered` of `cat total` events triggered by trace > coverage
+# @TEST-EXEC: btest-diff coverage
+# @TEST-EXEC: btest-diff enip.log
+#
 event enip_header(c: connection, is_orig: bool, cmd: count, len: count, sh: count, st: count, sc: index_vec, opt: count){
       print "enip_header", is_orig, cmd, len, sh, st, sc, opt;
 }

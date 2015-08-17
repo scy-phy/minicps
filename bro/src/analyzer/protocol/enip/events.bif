@@ -1,15 +1,107 @@
+## Generated for all the ENIP headers.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## cmd: Command code (see enip-protocol for all codes).
+##
+## len: Datagram length (including header length).
+##
+## sh: Session Handle, the session number.
+##
+## st: Status (see enip-protocol for all status).
+##
+## sc: Sender context, used to match requests with their associated replies.
+##
+## opt: Options, no particular use for this field has not yet been specified.
+##
 event enip_header%(c: connection, is_orig: bool, cmd: count, len: count, sh: count, st: count, sc: index_vec, opt: count%);
 
+## Generated for a data or address item in ENIP datagrams.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## id: Type of item encapsulated.
+##
+## len: Length in bytes of the Data field.
+##
+## data: The encapsulated data packet.
+##
 event enip_data_address%(c: connection, is_orig: bool, id: count, len: count, data: index_vec%);
 
+## Generated for encapsulated packets, formatted in the Common Packet Format.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## item_count: Number of item to follow (at least 2).
+##
 event enip_common_packet_format%(c: connection, is_orig: bool, item_count: count%);
 
+## Generated for the items in reply to a List Identities or List Interfaces request.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## type_code: Item type code.
+##
+## len: Item length.
+##
 event enip_target_item%(c: connection, is_orig: bool, type_code: count, len: count%);
 
+## Generated for the items in reply to a List Services request.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## type_code: Item type code.
+##
+## len: Item length.
+##
+## protocol: Version of the encapsulated protocol.
+##
+## flags: Capability flags.
+##
+## name: Name of service.
+##
 event enip_target_item_services%(c: connection, is_orig: bool, type_code: count, len: count, protocol: count, flags: count, name: index_vec%);
 
+## Generated for the session registrations.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## protocol: Requested protocol.
+##
+## options: Options flags.
+##
 event enip_register%(c: connection, is_orig: bool, protocol: count, options: count%);
 
+## Generated for the transfert of encapsulated data.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## iface_handle: Identify the Communications Interface.
+##
+## time_out: Operation timeout.
+##
 event enip_rr_unit%(c: connection, is_orig: bool, iface_handle: count, time_out: count%);
 
+## Generated for the List replies.
+##
+## c: The connection the ENIP communication is part of.
+##
+## is_orig: True if this reflects originator-side activity.
+##
+## item_count: Number of items to follow.
+##
 event enip_list%(c: connection, is_orig: bool, item_count: count%);
