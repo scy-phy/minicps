@@ -26,6 +26,7 @@ done
 for varname in $dirs
 do
     rm -f $varname*~
+    mkdir -p $minicps$varname
     cpy=$minicps$varname..
     cp -r $varname $cpy
 done
