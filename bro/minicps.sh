@@ -1,14 +1,13 @@
 #!/bin/bash
-files="scripts/base/init-bare.bro
-scripts/base/init-default.bro
+files="scripts/base/init-default.bro
 src/analyzer/protocol/CMakeLists.txt
-src/types.bif
 README.md
 minicps.sh
 "
 
 dirs="
 scripts/base/protocols/enip/
+scripts/policy/protocols/enip/
 src/analyzer/protocol/enip/
 testing/btest/scripts/base/protocols/enip/
 testing/btest/Baseline/scripts.base.protocols.enip.*/

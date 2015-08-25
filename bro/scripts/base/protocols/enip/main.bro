@@ -39,7 +39,7 @@ redef record connection += {
 	enip: Info &optional;
 };
 
-const ports = { 44818/tcp, 44818/udp, 2222/udp, 2222/tcp };
+const ports = { 44818/tcp, 44818/udp, 2222/udp };
 redef likely_server_ports += { ports };
 
 event bro_init() &priority=5{

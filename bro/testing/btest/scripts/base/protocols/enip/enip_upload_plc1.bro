@@ -5,5 +5,4 @@
 # @TEST-EXEC: cat ${DIST}/src/analyzer/protocol/enip/events.bif | grep "^event enip_" | wc -l > total
 # @TEST-EXEC: echo `cat covered` of `cat total` events triggered by trace > coverage
 # @TEST-EXEC: btest-diff coverage
-# @TEST-EXEC: btest-diff enip.log
 #

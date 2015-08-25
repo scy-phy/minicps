@@ -3,22 +3,20 @@ This repository contains the necessary files in order to inspect Ethernet/IP
 packets with Bro.
 
 ## Installation ##
-Go to your Bro directory, then copy the files from the src/ and script/
+Go to your Bro directory, then copy the files from the src/ testing/ and script/
 directories into the same place, then compile Bro with:
     # ./configure && make && make install
 
 Then you can run Bro with any of your .pcap files containing some Ethernet/IP
 traffic with the following command:
-    $ bro -r <file.pcap>
+    $ bro -r <file.pcap> [<bro-script.bro>]
 And then take a look at the .log files and more precisely the enip.log file.
 
 ## Things to do ##
 -Add UDP keep-alive packets and non 44818 packets
 -Add some tests (write the <test>.bro in /testing/btest/scripts/base/protocols/enip)
 on precise .pcap captures (in /testing/btest/Traces/dnp3) and debug the protocol 
-analyser if necessary,
--Find attacks on the EtherNet/IP protocol and a way to detect them,
--Add these functionalities into this Bro protocol analyser.
+analyser if necessary.
 
 ## Detect attacks ##
 From http://reversemode.com/downloads/logix_report_basecamp.pdf

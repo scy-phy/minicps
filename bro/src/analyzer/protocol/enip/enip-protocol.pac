@@ -11,39 +11,39 @@
 
 enum cmd_codes {
         NOP                           = 0x0000,
-	LIST_SERVICES 	   	      = 0x0400,
-	LIST_IDENTITY 	   	      = 0x6300,
-	LIST_INTERFACES    	      = 0x6400, # Optional
-	REGISTER_SESSION   	      = 0x6500,
-	UNREGISTER_SESSION 	      = 0x6600,
-	SEND_RR_DATA	   	      = 0x6F00,
-	SEND_UNIT_DATA 	   	      = 0x7000,
-	INDICATE_STATUS    	      = 0x7200, # Optional
-	CANCEL 		   	      = 0x7300, # Optional
+	LIST_SERVICES 	   	      = 0x0004,
+	LIST_IDENTITY 	   	      = 0x0063,
+	LIST_INTERFACES    	      = 0x0064, # Optional
+	REGISTER_SESSION   	      = 0x0065,
+	UNREGISTER_SESSION 	      = 0x0066,
+	SEND_RR_DATA	   	      = 0x006F,
+	SEND_UNIT_DATA 	   	      = 0x0070,
+	INDICATE_STATUS    	      = 0x0072, # Optional
+	CANCEL 		   	      = 0x0073, # Optional
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
 enum err_codes {
      	SUCCESS 		      = 0x0000,
-	INVALID_UNSUPPORTED_CMD       = 0x0100,
-	INSUFFICIENT_MEMORY	      = 0x0200,
-	INCORRECT_DATA		      = 0x0300,
-	INVALID_SESSION_HANDLE	      = 0x6400,
-	INVALID_LENGTH		      = 0x6500,
-	UNSUPPORTED_PROTOCOL_REVISION = 0x6900,
+	INVALID_UNSUPPORTED_CMD       = 0x0001,
+	INSUFFICIENT_MEMORY	      = 0x0002,
+	INCORRECT_DATA		      = 0x0003,
+	INVALID_SESSION_HANDLE	      = 0x0064,
+	INVALID_LENGTH		      = 0x0065,
+	UNSUPPORTED_PROTOCOL_REVISION = 0x0069,
 	# Other values are Reserved for future usage or Reserved for legacy
 };
 
 enum item_ID {
 	ADDRESS				= 0x0000,
-	LIST_IDENTITY_RESPONSE		= 0x0C00,
-	CONNECTION_BASED		= 0xA100,
-	CONNECTED_TRANSPORT_PACKET	= 0xB100,
-	UNCONNECTED_MESSAGE		= 0xB200,
-	LIST_SERVICES_RESPONSE		= 0x0001,
-	SOCKADDR_INFO_O_T		= 0x0080,
-	SOCKADDR_INFO_T_O		= 0x0180,
-	SEQUENCED_ADDRESS_ITEM		= 0x0280,
+	LIST_IDENTITY_RESPONSE		= 0x000C,
+	CONNECTION_BASED		= 0x00A1,
+	CONNECTED_TRANSPORT_PACKET	= 0x00B1,
+	UNCONNECTED_MESSAGE		= 0x00B2,
+	LIST_SERVICES_RESPONSE		= 0x0100,
+	SOCKADDR_INFO_O_T		= 0x8000,
+	SOCKADDR_INFO_T_O		= 0x8001,
+	SEQUENCED_ADDRESS_ITEM		= 0x8002,
 	# Other values are Reserved for future usage or Reserved for legacy
 }
 
@@ -61,12 +61,16 @@ type ENIP_Header = record {
 	st:  uint32; 		     # Status
 	sc:  bytestring &length = 8; # Sender context
 	opt: uint32;		     # Option flags
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type ENIP_PDU(is_orig: bool) = case is_orig of {
 	true  -> request:  ENIP_Request;
 	false -> response: ENIP_Response;
-} &byteorder=bigendian;
+} &byteorder=littleendian;
+
+type ENIP_UDP = record {
+     data: Common_Packet_Format;
+} &byteorder=littleendian;
 
 type ENIP_Request = record {
 	header: ENIP_Header;
@@ -83,7 +87,7 @@ type ENIP_Request = record {
 		# All the rest
 		default		   -> unknown:		 bytestring &restofdata;
 	};
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type ENIP_Response = record {
 	header: ENIP_Header;
@@ -97,26 +101,26 @@ type ENIP_Response = record {
 		# All the rest
 		default		   -> unknown:		bytestring &restofdata;
 	};
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type Data_Address = record {
         id: uint16;
 	len: uint16;
 	data: uint8[len]; #Bug here length problem
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type Common_Packet_Format = record {
         count: uint16; #Must be >= 2
 	address: Data_Address;
 	data: Data_Address;
 	additional: Data_Address[count - 2];
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type Target_Item = record {
         type_code: uint16;
 	len: uint16;
 	data: Common_Packet_Format[len];
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type Target_Item_Services = record {
         type_code: uint16;
@@ -124,46 +128,46 @@ type Target_Item_Services = record {
 	protocol: uint16;
 	flags: uint16;
         name: uint8[16];
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type Register = record {
         protocol: uint16;
 	options:  uint16;
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type RR_Unit(header: ENIP_Header) = record {
-        iface_handle: uint32 &check(iface_handle == 0x00000000);
+        iface_handle: uint32;
 	timeout: uint16;
 	data: Common_Packet_Format;
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type List_I = record {
         item_count: uint16;
 	data: Target_Item[item_count];
-} &byteorder=bigendian;
+} &byteorder=littleendian;
 
 type List_Services = record {
         item_count: uint16;
 	data: Target_Item_Services[item_count];
 };
 
-type UCMM = record {
-      item_count: uint16;
-	addr_type_ID: uint16;
-	addr_len: uint16;
-	data_type_ID: uint16;
-	data_len: uint16;
-	MR: uint8[data_len];
-} &byteorder=bigendian;
+# type UCMM = record {
+#       item_count: uint16;
+# 	addr_type_ID: uint16;
+# 	addr_len: uint16;
+# 	data_type_ID: uint16;
+# 	data_len: uint16;
+# 	MR: uint8[data_len];
+# } &byteorder=littleendian;
 
 # Add the CIP Identity item ?
 
-type sockaddr = record {
-	sin_family: int16;
-	sin_port: uint16;
-	sin_addr: uint32;
-	sin_zero: uint8[8];
-};
+# type sockaddr = record {
+# 	sin_family: int16;
+# 	sin_port: uint16;
+# 	sin_addr: uint32;
+# 	sin_zero: uint8[8];
+# };
 
 type Nop = record {
         unused: bytestring &restofdata;

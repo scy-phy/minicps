@@ -6,6 +6,10 @@ connection ENIP_Conn(bro_analyzer: BroAnalyzer) {
 %header{
 	#define SIZE 8
 	#define NAME_SIZE 16
+	#define LEN_4 0x0004
+	#define LEN_8 0x0008
+	#define LEN_10 0x0010
+	#define COUNT_1 0x0001
 	#define RESERVED_MASK1 0x1F00
 	#define RESERVED_MASK2 0xC000
 	#define RESERVED_MASK3 0x00FE
@@ -53,7 +57,7 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
 			else if(cmd == REGISTER_SESSION){
-				if(len != 0x0400){
+				if(len != LEN_4){
 					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message length for REGISTER_SESSION (%d)",
 											    len));
 					return false;
@@ -100,11 +104,11 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
 			else if(cmd == SEND_RR_DATA || cmd == SEND_UNIT_DATA){
-				if(opt != 0x00000000){
-					connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
-											opt));
-					return false;
-				}
+				// if(opt != 0x00000000){
+				// 	connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP message options for SEND_RR_DATA or SEND_UNIT_DATA (%d)",
+				// 							opt));
+				// 	return false;
+				// }
 
 				connection()->bro_analyzer()->ProtocolConfirmation();
 			}
@@ -143,17 +147,17 @@ flow ENIP_Flow(is_orig: bool) {
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item ID and length (%d,%d)", id, len));
 				return false;
 			}
-			if(id == CONNECTION_BASED && len != 0x0400){
+			if(id == CONNECTION_BASED && len != LEN_4){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item ID and length (%d,%d)", id, len));
 				return false;
 
 			}
-			if(id == SEQUENCED_ADDRESS_ITEM && len != 0x0800){
+			if(id == SEQUENCED_ADDRESS_ITEM && len != LEN_8){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item ID and length (%d,%d)", id, len));
 				return false;
 			}
 			if((id == SOCKADDR_INFO_T_O || id == SOCKADDR_INFO_O_T)
-			&& len != 0x1000){
+			&& len != LEN_10){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item ID and length (%d,%d)", id, len));
 				return false;
 			}
@@ -176,7 +180,7 @@ flow ENIP_Flow(is_orig: bool) {
 
 	function enip_common_packet_format(count: uint16): bool%{
 		if(::enip_common_packet_format){
-			if(count == 0x0100 || count == 0x0000){ //count shall be at least 2
+			if(count == COUNT_1 || count == 0x0000){ //count shall be at least 2
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP item count in Common Packet Format (%d)", count));
 				return false;
 			}
@@ -202,7 +206,7 @@ flow ENIP_Flow(is_orig: bool) {
 
 	function enip_target_item_services(type_code: uint16, len: uint16, protocol: uint16, flags: uint16, name: uint8[]): bool%{
 		if(::enip_target_item_services){
-			if(protocol != 0x0100){
+			if(protocol != COUNT_1){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP protocol in Target Item Services (%d)", protocol));
 				return false;
 			}
@@ -229,7 +233,7 @@ flow ENIP_Flow(is_orig: bool) {
 
 	function enip_register(protocol: uint16, options: uint16): bool%{
 		if(::enip_register){
-			if(protocol != 0x0100){
+			if(protocol != COUNT_1){
 				connection()->bro_analyzer()->ProtocolViolation(fmt("invalid ENIP protocol in Register (%d)", protocol));
 				return false;
 			}
