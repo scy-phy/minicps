@@ -20,13 +20,13 @@ export {
 		command:	string	&log &optional;
 		## Length of the ENIP packet.
 		length:		count	&log &optional;
-		## LOL
+		## Session number, generated after a register session
 		session_handler: count &log &optional;
 		## Status of the command.
 		status:	string	&log &optional;
-		## LOL
+		## Context number
 		sender_context: index_vec &log &optional;
-		## LOL
+		## Options
 		options: count &log &optional;
 	};
 
@@ -57,8 +57,8 @@ event enip_header(c: connection, is_orig: bool, cmd: count, len: count, sh: coun
 	c$enip$length = len;
 	c$enip$session_handler = sh;
 	c$enip$status = status[st];
-	c$enip$sender_context = sc; # Useless, always 0
-	c$enip$options = opt;	    # Useless, always 0
+	c$enip$sender_context = sc;
+	c$enip$options = opt;
 
 	Log::write(LOG, c$enip);
 }
@@ -67,6 +67,5 @@ event connection_state_remove(c: connection) &priority=-5{
 	if(!c?$enip)
 		return;
 
-	Log::write(LOG, c$enip);
 	delete c$enip;
 }
