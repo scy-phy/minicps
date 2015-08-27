@@ -134,20 +134,28 @@ def minicps_tutorial(net):
 
     net.start()
 
-    plc1, plc2, plc3, hmi = net.get('plc1', 'plc2', 'plc3', 'hmi')
+    plc1, plc2, plc3, hmi, s3 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's3')
 
     # Init cpppo enip servers and run main loop
-    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+
+    # Monitoring on the switch
+    bro_cmd = "bro -C "
+    switch_ifaces =  s3.intfList()
+    for iface in switch_ifaces:
+        bro_cmd += "-i %s " % iface.name
+    bro_cmd += "&"
+    s3_pid = s3.cmd(bro_cmd)
+
+    plc1_pid1 = plc1.cmd("python examples/swat/plc1.py &")
     plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
     hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
 
-    plc1_pid = plc1.cmd("python examples/swat/init_swat.py &")
+    plc1_pid2 = plc1.cmd("python examples/swat/init_swat.py &")
 
     # os.system("python examples/swat/physical_process.py &")
     os.system("python examples/swat/physical_process.py")
 
-    
     CLI(net)
     # launch device simulation scripts
 
@@ -157,7 +165,7 @@ def minicps_tutorial(net):
 def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     """
     Launch the miniCPS SWaT simulation
-    
+
     :graph: networkx graph
     :mininet_config: function pointer to the mininet configuration
     :draw_mpl: flag to draw and save the graph using matplotlib
