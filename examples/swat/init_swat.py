@@ -1,6 +1,18 @@
 """
 SWaT DB initialization
+
+Minimal initialization
+
+Some ideas to improve this script
+-add a check_levels, to check if the levels are > 0 and < HH (and correct them)
+-add a check_valves, to check if the state is coherent (and correct it)
+-add a function to check to DB and correct its state if necessary
+
+-abstract this kind of init: set values, tags, and predicats to check as arguments
+-put the values, predicats ... in a conf file, and parse it ?
 """
+
+
 
 from constants import update_statedb
 from constants import logger
