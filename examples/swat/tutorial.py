@@ -119,7 +119,7 @@ def minicps_tutorial(net):
     hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
     os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
-
+    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 2> examples/swat/img.err &")
     CLI(net)
     # launch device simulation scripts
 

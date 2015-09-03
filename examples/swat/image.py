@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import Tkinter as tk
-from Pillow import Image, ImageTk
+from PIL import Image, ImageTk
 import time
 import sys
 
