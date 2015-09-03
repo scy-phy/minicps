@@ -50,6 +50,10 @@ class Tank:
         self.__timeout = timeout
         self.__process = None
         logger.info('PP - Tank: %d,%d created' % (self.__id, self.__subprocess))
+        if(self.__P is None):
+            logger.warn('PP - Tank: %d,%d : no output valves' % (self.__id,
+                                                                 self.__subprocess))
+
 
     def __del__(self):
         """
@@ -99,8 +103,6 @@ class Tank:
             output_valves = []
         else:
             output_valves = None
-            logger.warn('PP - Tank: %d,%d : no output valves' % (self.__id,
-                                                                 self.__subprocess))
 
         for index in self.__FIT_in:
             value = read_single_statedb(self.__subprocess, index)

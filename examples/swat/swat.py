@@ -52,7 +52,7 @@ def graph_level1(attacker=False):
     # graph = nx.DiGraph()
 
     graph.name = 'swat_level1'
-    
+
     # Init switches
     s3 = DumbSwitch('s3')
     graph.add_node('s3', attr_dict=s3.get_params())
