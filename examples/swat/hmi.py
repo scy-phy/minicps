@@ -21,6 +21,8 @@ from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201, PLC_NUMBER, TIMER
 from constants import read_cpppo
 from constants import L1_PLCS_IP
 
+# FIXME: Pierre if you want a generic class use a list of tags instead of 3
+# tags because you can potentially display any number of tags
 class HMI:
     """
     Class defining the Human-Machine Interface
@@ -37,7 +39,6 @@ class HMI:
     Class variables
     """
     HMI_id = 1
-    HMI_http = None
 
     def __init__(self, tag1, tag2, tag3, ipaddr, filename, timer, timeout):
         """
@@ -58,7 +59,8 @@ class HMI:
         self.__values[tag2] = []
         self.__values[tag3] = []
         self.__values['time'] = []
-        logger.info('HMI %d %s %s %s created' % (self.__id, self.__tag1, self.__tag2, self.__tag3))
+        self.__HMI_http = None
+        logger.info('Created HMI %d that will monitor %s %s %s tags' % (self.__id, self.__tag1, self.__tag2, self.__tag3))
 
     def __del__(self):
         """
@@ -66,25 +68,26 @@ class HMI:
         """
         if(self.__process is not None):
             self.__process.join()
-        if(HMI.HMI_http is not None):
-            kill(HMI.HMI_http, SIGKILL)
+        if(self.__HMI_http is not None):
+            kill(self.__HMI_http, SIGKILL)
         logger.info('HMI %d removed' % self.__id)
 
     def start_http_server(self, port):
         """
         Starts a simple http server on a choosen port
         """
-        if(HMI.HMI_http is None):
+        if(self.__HMI_http is None):
             cmd = "python -m SimpleHTTPServer %d" % port
-            HMI.HMI_http = Popen(cmd, shell=True, preexec_fn=setsid)
+            self.__HMI_http = Popen(cmd, shell=True, preexec_fn=setsid)
+            # FIXME: check if webserver is running before returning
             logger.info('HMI %d - HTTP server started' % self.__id)
 
     def stop_http_server(self):
         """
         Kills the HTTP server
         """
-        if(HMI.HMI_http is not None):
-            killpg(HMI.HMI_http, SIGTERM)
+        if(self.__HMI_http is not None):
+            killpg(self.__HMI_http, SIGTERM)
             logger.info('HMI %d - HTTP server stopped' % self.__id)
 
     def callback(self):
@@ -134,8 +137,11 @@ class HMI:
         """
         start_time = time()
         while(time() - start_time < self.__timeout):
-            self.action()
-            sleep(self.__timer)
+            try:
+                self.action()
+                sleep(self.__timer)
+            except Exception:
+                break
 
     def action(self):
         """
@@ -145,23 +151,30 @@ class HMI:
         -append the time value to another list
         -calls the callback function
         """
-        tag1 = read_cpppo(self.__ipaddr, self.__tag1, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag1, tag1))
-        tag1 = float(tag1)
-        self.__values[self.__tag1].append(tag1)
+        try: 
+            tag1 = read_cpppo(self.__ipaddr, self.__tag1, 'examples/swat/hmi_cpppo.cache')
+            logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag1, tag1))
+            tag1 = int(tag1)
+            self.__values[self.__tag1].append(tag1)
 
-        tag2 = read_cpppo(self.__ipaddr, self.__tag2, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag2, tag2))
-        tag2 = float(tag2)
-        self.__values[self.__tag2].append(tag2)
+            tag2 = read_cpppo(self.__ipaddr, self.__tag2, 'examples/swat/hmi_cpppo.cache')
+            logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag2, tag2))
+            tag2 = float(tag2)
+            self.__values[self.__tag2].append(tag2)
 
-        tag3 = read_cpppo(self.__ipaddr, self.__tag3, 'examples/swat/hmi_cpppo.cache')
-        logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag3, tag3))
-        tag3 = float(tag3)
-        self.__values[self.__tag3].append(tag3)
-        self.__values['time'].append(time())
+            tag3 = read_cpppo(self.__ipaddr, self.__tag3, 'examples/swat/hmi_cpppo.cache')
+            logger.debug('HMI %d read %s: %s' % (self.__id, self.__tag3, tag3))
+            tag3 = int(tag3)
+            self.__values[self.__tag3].append(tag3)
+            self.__values['time'].append(time())
 
-        self.callback()
+            self.callback()
+
+        except Exception, e:
+            emsg = repr(e)
+            logger.warning(emsg)
+            raise Exception
+
 
     def start(self):
         """
@@ -179,7 +192,7 @@ if __name__ == '__main__':
     -the Tank 1 output pump
     Then it starts the HMI HTTP server and start its action
     """
-    hmi1 = HMI( 'HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status', L1_PLCS_IP['plc1'], 'plc1.png', TIMER, TIMEOUT - 10)
+    hmi1 = HMI( 'HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status', L1_PLCS_IP['plc1'], 'plc1.png', TIMER, TIMEOUT)
     hmi1.start_http_server(80)
     sleep(3)
     hmi1.start()
