@@ -3,16 +3,8 @@ Build SWaT testbed with MiniCPS
 
 graph_name functions are used to build networkx graphs representing the
 topology you want to build.
-
-mininet_name functions are used to setup mininet configs
-eg: preload webservers, enip servers, attacks, ecc...
-
-launcher interacts with MiniCPS topologies module and optionally plot and/or
-save a graph representation in the examples/swat folder.
-
 """
 
-# TODO: check the log files, merge with swat controller
 
 import time
 import sys
@@ -24,6 +16,7 @@ from minicps.links import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
+# from constants import *  # those are SWaT specific constants
 from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
 from constants import OTHER_MACS, L3_PLANT_NETWORK
 
@@ -38,7 +31,6 @@ from mininet.log import setLogLevel
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from image import Img
 
 def nxgraph_level1(attacker=False):
     """
@@ -54,7 +46,7 @@ def nxgraph_level1(attacker=False):
     # graph = nx.DiGraph()
 
     graph.name = 'swat_level1'
-
+    
     # Init switches
     s3 = DumbSwitch('s3')
     graph.add_node('s3', attr_dict=s3.get_params())
@@ -62,6 +54,7 @@ def nxgraph_level1(attacker=False):
     # Create nodes and connect edges
     nodes = {}
     count = 0
+
     for i in range(1, 7):
         key = 'plc'+str(i)
         nodes[key] = PLC(key, L1_PLCS_IP[key], L1_NETMASK, PLCS_MAC[key])
@@ -102,30 +95,11 @@ def nxgraph_level1(attacker=False):
     return graph
 
 
-def mininet_std(net):
-    """Launch the miniCPS SWaT simulation"""
-
-    net.start()
-
-    CLI(net)
-    # launch device simulation scripts
-
-    net.stop()
-
-def mininet_workshop(net):
-    """
-    Settings used for the Think-in workshop
-
-    :net: TODO
-
-    """
-    pass
-
 def minicps_tutorial(net):
     """
-    Settings used for the Think-in workshop
+    Settings used for tutorial
 
-    :net: TODO
+    :net: Mininet instance reference
 
     """
     # init the db
@@ -137,72 +111,27 @@ def minicps_tutorial(net):
     plc1, plc2, plc3, hmi, s3 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's3')
 
     # Init cpppo enip servers and run main loop
-
-    # Monitoring on the switch
-    # bro_cmd = "bro -C "
-    # switch_ifaces =  s3.intfList()
-    # for iface in switch_ifaces:
-    #     bro_cmd += "-i %s " % iface.name
-    # bro_cmd += "&"
-    # s3_pid = s3.cmd(bro_cmd)
-
-    os.system("python examples/swat/init_swat.py 2> examples/swat/init.err")
+    os.system("python examples/swat/init_swat.py 2> examples/swat/init.err &")
 
     plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/plc1.err &")
     plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/plc2.err &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/plc3.err &")
     hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
-    # os.system("python examples/swat/physical_process.py &")
-    os.system("python examples/swat/physical_process.py &")
+    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
 
-    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 &")
     CLI(net)
     # launch device simulation scripts
 
     net.stop()
 
 
-def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
-    """
-    Launch the miniCPS SWaT simulation
-
-    :graph: networkx graph
-    :mininet_config: function pointer to the mininet configuration
-    :draw_mpl: flag to draw and save the graph using matplotlib
-    """
-
-    # TODO: use different color for plcs, switch and attacker
-    if draw_mpl:
-        nx.draw_networkx(graph)
-        plt.axis('off')
-        # plt.show()
-        plt.savefig("examples/swat/%s.pdf" % graph.name)
-
-    if write_gexf:
-        g_gexf = nx.write_gexf(graph, "examples/swat/l1_gexf.xml")
-        # g2 = nx.read_gexf("examples/swat/g_gexf.xml")
-
-    # for node in graph.nodes(data=True):
-    #     logger.debug( '%s attributes: %s' % (node[0], node[1]))
-
-    # for edge in graph.edges(data=True):
-    #     logger.debug( '%s<--->%s  attributes: %s' % (edge[0], edge[1], edge[2]))
-
-    # Build miniCPS topo
-    topo = TopoFromNxGraph(graph)
+if __name__ == '__main__':
+    swat_graph = nxgraph_level1(attacker=True)
+    topo = TopoFromNxGraph(swat_graph)
     controller = POXSwat
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
 
-    mininet_config(net)
+    minicps_tutorial(net)
 
-if __name__ == '__main__':
-    swat_graph = nxgraph_level1(attacker=True)
-    # laucher(swat_graph, mininet_std, draw_mpl=False)
-
-    # test nx -> gexf
-    nx.write_gexf(swat_graph, "examples/swat/l1_gexf.xml", prettyprint=True)
-    # test gexf -> nx
-    rgraph = nx.read_gexf("examples/swat/l1_gexf.xml", relabel=False)
-    laucher(rgraph, minicps_tutorial, draw_mpl=False)
 
