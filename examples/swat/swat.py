@@ -37,6 +37,7 @@ from mininet.log import setLogLevel
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from image import Img
 
 def graph_level1(attacker=False):
     """
@@ -146,16 +147,17 @@ def minicps_tutorial(net):
     # bro_cmd += "&"
     # s3_pid = s3.cmd(bro_cmd)
 
-    init_pid = plc1.cmd("python examples/swat/init_swat.py 2> examples/swat/init.err &")
+    init_pid = plc1.cmd("python examples/swat/init_swat.py &")
 
-    plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/plc1.err &")
-    plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/plc2.err &")
-    plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/plc3.err &")
-    hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
+    plc1_pid = plc1.cmd("python examples/swat/plc1.py &")
+    plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
+    plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
+    hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
 
     # os.system("python examples/swat/physical_process.py &")
-    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
+    os.system("python examples/swat/physical_process.py &")
 
+    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 1 &")
     CLI(net)
     # launch device simulation scripts
 
@@ -193,8 +195,6 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
 
     mininet_config(net)
-
-
 
 if __name__ == '__main__':
     swat_graph = graph_level1(attacker=True)
