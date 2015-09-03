@@ -53,6 +53,9 @@ class Tank:
         if(self.__P is None):
             logger.warn('PP - Tank: %d,%d : no output valves' % (self.__id,
                                                                  self.__subprocess))
+        if(self.__FIT_out is None):
+            logger.warn('PP - Tank: %d,%d has no output flows' % (self.__id,
+                                                                  self.__subprocess))
 
 
     def __del__(self):
@@ -152,9 +155,6 @@ class Tank:
                                                                                     self.__subprocess,
                                                                                     index))
                     i += 1
-            else:
-                logger.warn('PP - Tank: %d,%d has no output flows' % (self.__id,
-                                                                      self.__subprocess))
             new_level = self.compute_new_water_level(input_flows, input_valves,
                                                      current_level, output_valves,
                                                      valve_diameter)

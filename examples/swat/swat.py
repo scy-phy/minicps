@@ -157,7 +157,7 @@ def minicps_tutorial(net):
     # os.system("python examples/swat/physical_process.py &")
     os.system("python examples/swat/physical_process.py &")
 
-    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 1 &")
+    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 &")
     CLI(net)
     # launch device simulation scripts
 
