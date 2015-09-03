@@ -139,22 +139,22 @@ def minicps_tutorial(net):
     # Init cpppo enip servers and run main loop
 
     # Monitoring on the switch
-    bro_cmd = "bro -C "
-    switch_ifaces =  s3.intfList()
-    for iface in switch_ifaces:
-        bro_cmd += "-i %s " % iface.name
-    bro_cmd += "&"
-    s3_pid = s3.cmd(bro_cmd)
+    # bro_cmd = "bro -C "
+    # switch_ifaces =  s3.intfList()
+    # for iface in switch_ifaces:
+    #     bro_cmd += "-i %s " % iface.name
+    # bro_cmd += "&"
+    # s3_pid = s3.cmd(bro_cmd)
 
-    plc1_pid1 = plc1.cmd("python examples/swat/plc1.py &")
-    plc2_pid = plc2.cmd("python examples/swat/plc2.py &")
-    plc3_pid = plc3.cmd("python examples/swat/plc3.py &")
-    hmi_pid = hmi.cmd("python examples/swat/hmi.py &")
+    init_pid = plc1.cmd("python examples/swat/init_swat.py 2> examples/swat/init.err &")
 
-    plc1_pid2 = plc1.cmd("python examples/swat/init_swat.py &")
+    plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/plc1.err &")
+    plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/plc2.err &")
+    plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/plc3.err &")
+    hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
     # os.system("python examples/swat/physical_process.py &")
-    os.system("python examples/swat/physical_process.py")
+    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
 
     CLI(net)
     # launch device simulation scripts

@@ -789,6 +789,6 @@ GRAVITATION = 9.81 # m.s^-2
 VALVE_DIAMETER = 0.2 # m
 TANK_DIAMETER = 1.38 # m
 TIMER = 0.2 # s
-TIMEOUT = 60 # s
+TIMEOUT = 600 # s
 PLC_NUMBER = 2
 P_XX = 0.5 # m^3/h

@@ -3,7 +3,7 @@ HMI Class
 """
 
 import matplotlib
-matplotlib.use('SVG')
+matplotlib.use('Agg')
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -117,13 +117,16 @@ class HMI:
         ax2.set_ylabel(self.__tag2)
         ax3.set_ylabel(self.__tag3)
         ax1.set_title('HMI %d' % self.__id)
-        ax1.scatter(self.__values['time'], self.__values[self.__tag1], color='b')
-        ax2.plot(self.__values['time'], self.__values[self.__tag2], color='g')
+        ax1.plot(self.__values['time'], self.__values[self.__tag1], color='g')
+        ax2.scatter(self.__values['time'], self.__values[self.__tag2], color='b')
         ax3.plot(self.__values['time'], self.__values[self.__tag3], color='r')
         # Fine-tune figure; make subplots close to each other and hide x ticks for
         # all but bottom plot.
         canvas.print_figure('examples/swat/hmi/%s' % self.__file)
         logger.debug(self.__values)
+
+        plt.close(fig)
+
 
     def action_wrapper(self):
         """
@@ -176,8 +179,8 @@ if __name__ == '__main__':
     -the Tank 1 output pump
     Then it starts the HMI HTTP server and start its action
     """
-    hmi1 = HMI('HMI_LIT101-Pv', 'HMI_P101-Status', 'HMI_MV101-Status', L1_PLCS_IP['plc1'], 'plc1.svg', TIMER, TIMEOUT - 10)
+    hmi1 = HMI( 'HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status', L1_PLCS_IP['plc1'], 'plc1.png', TIMER, TIMEOUT - 10)
     hmi1.start_http_server(80)
     sleep(3)
     hmi1.start()
-    hmi1.stop_http_server()
+    # hmi1.stop_http_server()
