@@ -38,6 +38,7 @@ from mininet.log import setLogLevel
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from image import Img
 
 def nxgraph_level1(attacker=False):
     """
@@ -153,8 +154,9 @@ def minicps_tutorial(net):
     hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
     # os.system("python examples/swat/physical_process.py &")
-    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
+    os.system("python examples/swat/physical_process.py &")
 
+    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 1 &")
     CLI(net)
     # launch device simulation scripts
 
@@ -193,8 +195,6 @@ def laucher(graph, mininet_config, draw_mpl=False, write_gexf=False):
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
 
     mininet_config(net)
-
-
 
 if __name__ == '__main__':
     swat_graph = nxgraph_level1(attacker=True)

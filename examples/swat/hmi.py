@@ -3,7 +3,7 @@ HMI Class
 """
 
 import matplotlib
-matplotlib.use('SVG')
+matplotlib.use('Agg')
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     -the Tank 1 output pump
     Then it starts the HMI HTTP server and start its action
     """
-    hmi1 = HMI( ['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'], L1_PLCS_IP['plc1'], 'plc1.svg', TIMER, TIMEOUT)
+    hmi1 = HMI( ['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'], L1_PLCS_IP['plc1'], 'plc1.png', TIMER, TIMEOUT)
     hmi1.start_http_server(80)
     sleep(3)
     hmi1.start()
