@@ -27,8 +27,8 @@ if __name__ == '__main__':
     """
     Init cpppo enip server.
 
-    Execute an infinite routine loop
-        - bla
+    Execute an infinite routine loop:
+        - read RW tank level from the sensor
         - bla
     """
 

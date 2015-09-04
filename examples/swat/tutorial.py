@@ -1,5 +1,7 @@
 """
-Build SWaT testbed with MiniCPS
+Use MiniCPS to simulate the first SWaT subprocess.
+
+A state_db is used to represent the actual state of the system
 
 graph_name functions are used to build networkx graphs representing the
 topology you want to build.
@@ -16,7 +18,6 @@ from minicps.links import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
-# from constants import *  # those are SWaT specific constants
 from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
 from constants import OTHER_MACS, L3_PLANT_NETWORK
 
@@ -119,7 +120,7 @@ def minicps_tutorial(net):
     hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
     os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
-    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 2> examples/swat/img.err &")
+
     CLI(net)
     # launch device simulation scripts
 
