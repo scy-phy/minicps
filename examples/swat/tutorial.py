@@ -7,10 +7,10 @@ graph_name functions are used to build networkx graphs representing the
 topology you want to build.
 """
 
-
 import time
 import sys
 import os
+import argparse
 sys.path.append(os.getcwd())
 
 from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
@@ -20,6 +20,7 @@ from minicps import constants as c
 
 from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
 from constants import OTHER_MACS, L3_PLANT_NETWORK
+from constants import LIT_101
 
 # used to separate different log sessions
 logger.debug('----------'+time.asctime()+'----------')
@@ -47,7 +48,7 @@ def nxgraph_level1(attacker=False):
     # graph = nx.DiGraph()
 
     graph.name = 'swat_level1'
-    
+
     # Init switches
     s3 = DumbSwitch('s3')
     graph.add_node('s3', attr_dict=s3.get_params())
@@ -111,28 +112,48 @@ def minicps_tutorial(net):
 
     plc1, plc2, plc3, hmi, s3 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's3')
 
+    os.system("mkdir -p examples/swat/err")
     # Init cpppo enip servers and run main loop
-    os.system("python examples/swat/init_swat.py 2> examples/swat/init.err &")
+    os.system("python examples/swat/init_swat.py 2> examples/swat/err/init.err &")
 
-    plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/plc1.err &")
-    plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/plc2.err &")
-    plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/plc3.err &")
-    hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
+    # This part launches the device simulation scripts.
+    # This is where you can run your own device scripts, on the node of your
+    # choice. Here plc1_0 script is running on the node plc1, and displays its
+    # erros in plc1_0.err. This script only reads the state of the tank.
+    #
+    # You can try to comment plc1_0 line and uncomment plc1 line. This plc1
+    # script is designed to take decisions according to the water level, to open
+    # and close pumps.
+    plc1_pid = plc1.cmd("python examples/swat/plc1_0.py 2> examples/swat/err/plc1_0.err &")
+    # plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/err/plc1.err &")
 
-    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
+    plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/err/plc2.err &")
+    plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/err/plc3.err &")
+    hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/err/hmi.err &")
 
+    os.system("python examples/swat/physical_process.py 2> examples/swat/err/pp.err &")
+    # Displays an image to monitor the physical process activity
+    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 2> examples/swat/err/img.err &")
     CLI(net)
-    # launch device simulation scripts
 
     net.stop()
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Minicps tutorial.')
+    parser.add_argument('-l', '--levels', nargs=4, type=float, dest='levels',
+                        default=argparse.SUPPRESS, metavar=('LL', 'L', 'H', 'HH'),
+                        help='change the trigger level LL L H HH values.')
+    args = parser.parse_args()
+    if( len(args.levels) > 0 ):
+        LIT_101['LL'] = args.levels[0]
+        LIT_101['L'] = args.levels[1]
+        LIT_101['H'] = args.levels[2]
+        LIT_101['HH'] = args.levels[3]
+
     swat_graph = nxgraph_level1(attacker=True)
     topo = TopoFromNxGraph(swat_graph)
     controller = POXSwat
     net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
 
     minicps_tutorial(net)
-
-

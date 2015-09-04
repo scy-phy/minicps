@@ -1,12 +1,11 @@
 """
-plc1.py
+plc1_0.py
 
 plc init:
     cpppo enip server
 
 plc main loop:
-    sequential read/write from/to the state db and its internal cpppo enip
-    server.
+    does not have a behavior, only reads the water level
 
 """
 import time
@@ -21,13 +20,6 @@ from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
 from constants import TIMEOUT
 
 if __name__ == '__main__':
-    """
-    Init cpppo enip server.
-
-    Execute an infinite routine loop:
-        - read RW tank level from the sensor
-        - bla
-    """
 
     # init the ENIP server
     tags = []
@@ -42,7 +34,6 @@ if __name__ == '__main__':
 
         # Read and update HMI_tag
         lit101_str = read_single_statedb(1, 'AI_LIT_101_LEVEL')[3]
-
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
         val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
         logger.debug("PLC1 - read_cpppo HMI_LIT101-Pv: %s" % val)
@@ -57,27 +48,20 @@ if __name__ == '__main__':
         elif lit101 <= LIT_101['LL']:
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
-            # p101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_P_101_START')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
+            logger.info("PLC1 - p101 read HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
-            # mv101 = '2'  # OPEN
-            update_statedb('0', 1, 'DO_MV_101_CLOSE')
-            update_statedb('1', 1, 'DO_MV_101_OPEN')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+            logger.warning("PLC1 - lit101 under L: %.2f <= %.2f" % (
+                lit101, LIT_101['L']))
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 read HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
-            # mv101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_MV_101_CLOSE')
-            update_statedb('0', 1, 'DO_MV_101_OPEN')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
+            logger.warning("PLC1 - lit101 over H: %.2f <= %.2f" % (
+                lit101, LIT_101['H']))
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - mv101 close HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - mv101 read HMI_MV101-Status: %s" % val)
 
         # read from PLC2
         val = read_cpppo(L1_PLCS_IP['plc2'], 'HMI_FIT201-Pv', PLC1_CPPPO_CACHE)
@@ -90,18 +74,13 @@ if __name__ == '__main__':
         lit301 = float(val)
 
         if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
-            # p101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_P_101_START')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
+            logger.info("PLC1 - p101 read HMI_P101-Status: %s" % val)
 
         elif lit301 <= LIT_301['L']:
-            # p101 = '2'  # OPEN
-            update_statedb('2', 1, 'DO_P_101_START')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 read  HMI_MV101-Status: %s" % val)
+
 
         # Sleep
         time.sleep(T_PLC_R)
