@@ -94,10 +94,10 @@ class Tank:
 
         level = volume / (pi * power((self.__diameter / 2.0),2))
         if level <= 0.0:
-            logger.warn('PP - Tank: %d,%d empty' % (self.__id, self.__subprocess)
+            logger.warn('PP - Tank: %d,%d empty' % (self.__id, self.__subprocess))
             level = 0.0
         elif level >= self.__height:
-            logger.warn('PP - Tank: %d,%d overflowed' % (self.__id, self.__subprocess)
+            logger.warn('PP - Tank: %d,%d overflowed' % (self.__id, self.__subprocess))
             level = self.__height
         return level
 
