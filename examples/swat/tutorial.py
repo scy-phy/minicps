@@ -10,7 +10,6 @@ topology you want to build.
 import time
 import sys
 import os
-import argparse
 sys.path.append(os.getcwd())
 
 from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
@@ -140,17 +139,6 @@ def minicps_tutorial(net):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Minicps tutorial.')
-    parser.add_argument('-l', '--levels', nargs=4, type=float, dest='levels',
-                        default=argparse.SUPPRESS, metavar=('LL', 'L', 'H', 'HH'),
-                        help='change the trigger level LL L H HH values.')
-    args = parser.parse_args()
-    if( len(args.levels) > 0 ):
-        LIT_101['LL'] = args.levels[0]
-        LIT_101['L'] = args.levels[1]
-        LIT_101['H'] = args.levels[2]
-        LIT_101['HH'] = args.levels[3]
-
     swat_graph = nxgraph_level1(attacker=True)
     topo = TopoFromNxGraph(swat_graph)
     controller = POXSwat
