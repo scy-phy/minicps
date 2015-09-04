@@ -290,10 +290,10 @@ LIT_301 = {  # ultrafiltration tank
     'HH': 1200.0,
 }
 
+TANK_HEIGHT = 1600.0
+
 # m^3 / h
 FIT_201 = 0.0
-
-
 
 # THREADS
 def wait_for_event_timeout(event, timeout, ename):

@@ -7,6 +7,7 @@ from constants import VALVE_DIAMETER
 from constants import TIMER
 from constants import TIMEOUT
 from constants import P_XX
+from constants import TANK_HEIGHT
 from constants import read_single_statedb
 from constants import read_statedb
 from constants import update_statedb
@@ -34,7 +35,7 @@ class Tank:
     -timeout: period of activity (s)
     """
     def __init__(self, FIT_in, MV, LIT, P, FIT_out,
-                 subprocess, tank_number, diameter, timer, timeout):
+                 subprocess, tank_number, diameter, height, timer, timeout):
         """
         constructor
         """
@@ -46,6 +47,7 @@ class Tank:
         self.__subprocess = subprocess
         self.__id = tank_number
         self.__diameter = diameter
+        self.__height = height
         self.__timer = timer
         self.__timeout = timeout
         self.__process = None
@@ -91,6 +93,12 @@ class Tank:
                     volume -= (self.__timer * P_XX) / 3600.0
 
         level = volume / (pi * power((self.__diameter / 2.0),2))
+        if level <= 0.0:
+            logger.warn('PP - Tank: %d,%d empty' % (self.__id, self.__subprocess)
+            level = 0.0
+        elif level >= self.__height:
+            logger.warn('PP - Tank: %d,%d overflowed' % (self.__id, self.__subprocess)
+            level = self.__height
         return level
 
     def action(self, valve_diameter):
@@ -195,8 +203,9 @@ if __name__ == '__main__':
     """
     tank1 = Tank(['AI_FIT_101_FLOW'], ['DO_MV_101_OPEN'], 'AI_LIT_101_LEVEL',
                  ['DO_P_101_START'], ['AI_FIT_201_FLOW'], 1, 1, TANK_DIAMETER,
-                 TIMER, TIMEOUT)
+                 TANK_HEIGHT, TIMER, TIMEOUT)
     tank2 = Tank(['AI_FIT_201_FLOW'], ['DO_MV_201_OPEN'], 'AI_LIT_301_LEVEL',
-                 None, None, 2, 1, TANK_DIAMETER, TIMER, TIMEOUT)
+                 None, None, 2, 1, TANK_DIAMETER, TANK_HEIGHT, TIMER, TIMEOUT)
+
     tank1.start(VALVE_DIAMETER)
     tank2.start(VALVE_DIAMETER)
