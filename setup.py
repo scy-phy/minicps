@@ -24,6 +24,7 @@ config = {
         'pycomm',
         'networkx',
         'matplotlib',
+        'pillow',  # TODO: check
     ],
 
     'package': ['minicps'],
