@@ -21,7 +21,7 @@ Incoming graphs have to satisfy some constraints to build correctly:
     - TODO
 """
 
-from mininet.net import Mininet
+# from mininet.net import Mininet
 from mininet.topo import Topo
 
 from minicps import constants as c
@@ -89,7 +89,7 @@ class TopoFromNxGraph(Topo):
 #     An industrial firewall service router filter the traffic.
 #     """
 
-#     def build(self, n=c.L3_NODES):
+#     def build(self, n=8):
 #         """
 #         mininet doesn't like long host names
 #         eg: workstion abbreviated to workstn
@@ -129,7 +129,7 @@ class TopoFromNxGraph(Topo):
 #     as attacker
 #     """
 
-#     def build(self, n=c.L3_NODES):
+#     def build(self, n=8):
 #         """
 #         attacker is in the same plc subnet 192.168.1.x
 #         see constants module for attacker's IP
@@ -193,11 +193,10 @@ class TopoFromNxGraph(Topo):
 
 #     def build(self):
 #         """TODO: to be defined1. """
-
 #         pass
 
 
-# class L0DLR(DLR):
+# class L0DLR(Topo):
 
 #     """
 #     One for each sub-process (6 in total)
@@ -207,7 +206,6 @@ class TopoFromNxGraph(Topo):
 
 #     def build(self):
 #         """TODO: to be defined1. """
-
 #         pass
 
 
@@ -217,5 +215,4 @@ class TopoFromNxGraph(Topo):
 
 #     def build(self):
 #         """TODO: to be defined1. """
-
 #         pass
