@@ -13,7 +13,7 @@ test constants
 test topology
 ---------------------
 
-.. automodule:: tests.topology_tests
+.. automodule:: tests.topologies_tests
    :members:
    :undoc-members:
 

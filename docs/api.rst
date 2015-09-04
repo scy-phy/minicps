@@ -15,7 +15,7 @@ constants module
 topology module
 ---------------------
 
-.. automodule:: minicps.topology
+.. automodule:: minicps.topologies
    :members:
    :undoc-members:
 

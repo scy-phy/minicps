@@ -11,6 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
+   installations
+   swat-tutorial
    api
    tests
    misc
