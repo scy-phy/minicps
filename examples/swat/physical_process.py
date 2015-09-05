@@ -47,16 +47,16 @@ class Tank:
         self.__subprocess = subprocess
         self.__id = tank_number
         self.__diameter = diameter
-        self.__height = height
+        self.__height = height / 1000.0  # convert to m
         self.__timer = timer
         self.__timeout = timeout
         self.__process = None
         logger.info('PP - Tank: %d,%d created' % (self.__id, self.__subprocess))
         if(self.__P is None):
-            logger.warn('PP - Tank: %d,%d : no output valves' % (self.__id,
+            logger.warning('PP - Tank: %d,%d : no output valves' % (self.__id,
                                                                  self.__subprocess))
         if(self.__FIT_out is None):
-            logger.warn('PP - Tank: %d,%d has no output flows' % (self.__id,
+            logger.warning('PP - Tank: %d,%d has no output flows' % (self.__id,
                                                                   self.__subprocess))
 
 
@@ -94,10 +94,12 @@ class Tank:
 
         level = volume / (pi * power((self.__diameter / 2.0),2))
         if level <= 0.0:
-            logger.warn('PP - Tank: %d,%d empty' % (self.__id, self.__subprocess)
+            logger.error('PP - Tank: %d,%d empty' % (self.__id,
+                self.__subprocess))
             level = 0.0
         elif level >= self.__height:
-            logger.warn('PP - Tank: %d,%d overflowed' % (self.__id, self.__subprocess)
+            logger.error('PP - Tank: %d,%d overflowed' % (self.__id,
+                self.__subprocess))
             level = self.__height
         return level
 
@@ -120,7 +122,7 @@ class Tank:
             if value is not None:
                 input_flows.append(select_value(value))
             else:
-                logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
                                                                  self.__subprocess, index))
 
         for index in self.__MV:
@@ -128,7 +130,7 @@ class Tank:
             if value is not None:
                 input_valves.append(select_value(value))
             else:
-                logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
                                                                  self.__subprocess,
                                                                  index))
 
@@ -138,7 +140,7 @@ class Tank:
                 if value is not None:
                     output_valves.append(select_value(value))
                 else:
-                    logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                    logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
                                                                      self.__subprocess,
                                                                      index))
 
@@ -173,7 +175,7 @@ class Tank:
                                                                         self.__LIT,
                                                                         new_level))
         else:
-            logger.warn('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+            logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
                                                              self.__subprocess,
                                                              self.__LIT))
 
