@@ -17,12 +17,10 @@ from os import kill
 from os import killpg
 from signal import SIGTERM
 from constants import logger
-from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201, PLC_NUMBER, TIMER, TIMEOUT
+from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201, T_HMI_R, TIMEOUT
 from constants import read_cpppo
 from constants import L1_PLCS_IP
 
-# FIXME: Pierre if you want a generic class use a list of tags instead of 3
-# tags because you can potentially display any number of tags
 
 def set_delta(values, index, axis, size):
     mini = min(values[index])
@@ -31,32 +29,28 @@ def set_delta(values, index, axis, size):
         delta = size * (maxi - mini)
         axis.set_ylim([mini - delta, maxi + delta])
 
-class HMI:
+
+class HMI(object):
     """
     Class defining the Human-Machine Interface
     An HMI object has to query 3 tags from a PLC address, and log it into a .svg
     file. This .svg file is also available in a webserver started by the HMI.
-    tags: the ENIP tags to query
-    ipaddr: the IP address of thr PLC to query
-    filename: the name of the .svg file
-    timer: period in which the HMI has to query the tags (s)
-    timeout: period of activity (s)
     """
-
-    """
-    Class variables
-    """
-    HMI_id = 1
+    id = 1  # class variable
 
     def __init__(self, tags, ipaddr, filename, timer, timeout):
         """
-        constructor
+        :tags: the ENIP tags to query
+        :ipaddr: the IP address of thr PLC to query
+        :filename: the name of the .svg file
+        :timer: period in which the HMI has to query the tags (s)
+        :timeout: period of activity (s)
         """
         self.__tags = tags
         self.__ipaddr = ipaddr
-        self.__id = HMI.HMI_id
-        HMI.HMI_id += 1
-        self.__file = filename
+        self.__id = HMI.id
+        HMI.id += 1
+        self.__filename = filename
         self.__timer = timer
         self.__timeout = timeout
         self.__process = None
@@ -122,10 +116,9 @@ class HMI:
 
         # Fine-tune figure; make subplots close to each other and hide x ticks for
         # all but bottom plot.
-        canvas.print_figure('examples/swat/hmi/%s' % self.__file)
-        logger.debug(self.__values)
+        canvas.print_figure('examples/swat/hmi/%s' % self.__filename)
+        # logger.debug(self.__values)
         plt.close(fig)
-
 
     def action_wrapper(self):
         """
@@ -154,25 +147,33 @@ class HMI:
 
         self.callback()
 
-
     def start(self):
         """
         Runs the action() method
         """
-        self.__process = Process(target = self.action_wrapper)
+        self.__process = Process(target=self.action_wrapper)
         self.__process.start()
         logger.info('HMI %d started' % self.__id)
 
+
 if __name__ == '__main__':
     """
-    Main function, creating 1 HMI object, which queries:
-    -the Tank 1 water level
-    -the Tank 1 input Motor Valve
-    -the Tank 1 output pump
-    Then it starts the HMI HTTP server and start its action
+    Main function, creating an HMI object, which queries some tags from
+    the Raw water tank:
+        - water level
+        - input Motor Valve
+        - output pump
+
+    The values are displayed in real-time in a pop-up window and the same
+    image is served through a webserver that can be reached at 192.168.1.100
     """
-    hmi1 = HMI( ['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'], L1_PLCS_IP['plc1'], 'plc1.png', TIMER, TIMEOUT)
-    hmi1.start_http_server(80)
+
+    hmi = HMI(['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'],
+            L1_PLCS_IP['plc1'], 'plc1.png', T_HMI_R, TIMEOUT)
+
+    hmi.start_http_server(80)
     sleep(3)
-    hmi1.start()
-    hmi1.stop_http_server()
+
+    hmi.start()
+
+    hmi.stop_http_server()

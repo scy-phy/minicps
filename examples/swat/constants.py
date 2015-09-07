@@ -268,12 +268,19 @@ def read_cpppo(ip, tag_name, cpppo_cache):
 
 # PROCESS
 
-# periods in sec
+GRAVITATION = 9.81 # m.s^-2
+VALVE_DIAMETER = 0.2 # m
+TANK_DIAMETER = 1.38 # m
+TIMEOUT = 600 # s
+P_XX = 0.5 # m^3/h FIXME: what is this ?
+
+# periods in sec R/W = Read or Write
 T_PLC_R = 10E-3
 T_PLC_W = 10E-3
 
 T_PP_R = 2E-3
 T_PP_W = 2E-3
+T_HMI_R = 0.2 # s
 
 # mm
 LIT_101 = {  # raw water tank
@@ -294,6 +301,7 @@ TANK_HEIGHT = 1600.0
 
 # m^3 / h
 FIT_201 = 0.0
+
 
 # THREADS
 def wait_for_event_timeout(event, timeout, ename):
@@ -746,7 +754,7 @@ IPS_TO_MACS = {
 PLCS = len(PLCS_MAC)
 L1_NODES = 0 # TODO
 L2_NODES = 0 # TODO
-L3_NODES = PLCS/2 + 2  # 13/2 gives 6
+L3_NODES = PLCS/2 + 2  # 13/2 + 2 = 8
 
 
 CIP_VENDOR_IDS = {
@@ -785,10 +793,3 @@ CIP_SERIAL_NUMBERS = {
     'attacker': 'TODO',
 }
 
-GRAVITATION = 9.81 # m.s^-2
-VALVE_DIAMETER = 0.2 # m
-TANK_DIAMETER = 1.38 # m
-TIMER = 0.2 # s  FIXME: Pierre I'll call it SAMPLING_TIME
-TIMEOUT = 600 # s
-PLC_NUMBER = 2
-P_XX = 0.5 # m^3/h
