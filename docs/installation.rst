@@ -1,4 +1,4 @@
-.. installations_
+.. installation_
 
 *************
 Installation
@@ -14,3 +14,9 @@ Configure MiniCPS
 ===================
 
 Use text from README.md
+
+
+Test Installation
+==================
+
+TODO
