@@ -596,6 +596,22 @@ def select_value(record):
     # logger.debug(record)
     return float(record[3])
 
+def init_swat():
+    """
+    launch the swat simulation
+
+    * create the db if necessary
+    * init the db with constant values
+    * create the error directory if necessary (debug)
+
+    """
+    try:
+        os.system("python examples/swat/state_db.py")
+        os.system("mkdir -p examples/swat/err")
+        os.system("python examples/swat/init_swat.py 2> examples/swat/err/init.err")
+    except Exception:
+        sys.exit(1)
+
 # NETWORK
 L0_RING1 = {
     'plc': '192.168.0.10',
