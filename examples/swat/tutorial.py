@@ -107,8 +107,8 @@ def minicps_tutorial(net):
 
 
     # Displays an image to monitor the physical process activity
-    # That it will refresh 
-    os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 2> examples/swat/err/img.err &")
+    # That it will refresh every 200 ms
+    os.system("python examples/swat/ImageContainer.py examples/swat/hmi/plc1.png 200 2> examples/swat/err/ImageContainer.err &")
 
     CLI(net)
 
