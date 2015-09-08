@@ -3,7 +3,7 @@ HMI Class
 """
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # Agg backend to use matplotlib without X server
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -22,19 +22,20 @@ from constants import read_cpppo
 from constants import L1_PLCS_IP
 
 
-def set_delta(values, index, axis, size):
-    mini = min(values[index])
-    maxi = max(values[index])
-    if(mini != maxi):
-        delta = size * (maxi - mini)
-        axis.set_ylim([mini - delta, maxi + delta])
+def set_delta(y_min, y_max, subplot, size):
+    """
+    Compute y axis limits for a subplot
+    """
+    if(y_min != y_max):
+        delta = size * (y_max - y_min)
+        subplot.set_ylim([y_min - delta, y_max + delta])
 
 
 class HMI(object):
     """
     Class defining the Human-Machine Interface
-    An HMI object has to query 3 tags from a PLC address, and log it into a .svg
-    file. This .svg file is also available in a webserver started by the HMI.
+    An HMI object has to query a list of tags from a PLC ENIP server,
+    and log it into a .png file that will be served by a webserver.
     """
     id = 1  # class variable
 
@@ -42,7 +43,7 @@ class HMI(object):
         """
         :tags: the ENIP tags to query
         :ipaddr: the IP address of thr PLC to query
-        :filename: the name of the .svg file
+        :filename: the name of the .png file
         :timer: period in which the HMI has to query the tags (s)
         :timeout: period of activity (s)
         """
@@ -53,24 +54,29 @@ class HMI(object):
         self.__filename = filename
         self.__timer = timer
         self.__timeout = timeout
-        self.__process = None
-        self.__values = {}
-        for index in tags:
-            self.__values[index] = []
-        self.__values['time'] = []
-        self.__http = None
-        logger.info('Created HMI %d that will monitor [%s]' % (self.__id, ', '.join(map(str, self.__tags))))
+        self.__process = None  # save the HMI PID to kill it later
+
+        self.__values = {}  # dict of lists, keys are tagnames
+        for tag in tags:
+            self.__values[tag] = []
+        self.__values['time'] = []  # special list
+
+        self.__http = None  # save the HTTP server PID to kill it later
+        logger.debug('Created HMI %d that will monitor [%s]' % (self.__id, ', '.join(map(str, self.__tags))))
 
     def __del__(self):
         """
         destructor
         """
+        # kill the HMI (opened with Process)
         if(self.__process is not None):
             self.__process.join()
-        if(self.__http is not None):
-            kill(self.__http, SIGKILL)
-            self.__http = None
-        logger.info('HMI %d removed' % self.__id)
+
+    
+        # kill the HTTP server (opened with Popen)
+        self.stop_http_server()
+
+        logger.debug('Killed HMI and its webserver' % self.__id)
 
     def start_http_server(self, port):
         """
@@ -80,9 +86,10 @@ class HMI(object):
             cmd = "python -m SimpleHTTPServer %d" % port
             try:
                 self.__http = Popen(cmd, preexec_fn=setsid)
+                logger.info('HMI %d - HTTP server started' % self.__id)
+
             except OSError:
                 logger.warning('HMI %d - HTTP server cannot start' % self.__id)
-            logger.info('HMI %d - HTTP server started' % self.__id)
 
     def stop_http_server(self):
         """
@@ -95,29 +102,36 @@ class HMI(object):
 
     def callback(self):
         """
-        Callback method, writes the three subplots in the .svg file using the
+        Callback method, writes the three subplots in the .png file using the
         Matplotlib canvas backend.
         """
-        fig, axes = plt.subplots(len(self.__tags), sharex=True)
+
+        # create len(self.__tags_ subplots, sharing the x axis 
+        fig, subplots = plt.subplots(len(self.__tags), sharex=True)
+
+        # with canvans you can update the fig in real-time
         canvas = FigureCanvas(fig)
 
-        for i in range(0, len(axes)):
-            set_delta(self.__values, self.__tags[i], axes[i], 0.05)
+        for i in range(0, len(subplots)):
+            y_min = min(self.__values[self.__tags[i]])
+            y_max = max(self.__values[self.__tags[i]])
+            set_delta(y_min, y_max, subplots[i], 0.05)
 
-        axes[len(axes) - 1].set_xlabel('Time (s)')
+        # set time as a comming x axis
+        subplots[len(subplots) - 1].set_xlabel('Time (s)')
 
-        for i in range(0, len(axes)):
-            axes[i].set_ylabel(self.__tags[i])
+        for i in range(0, len(subplots)):
+            subplots[i].set_ylabel(self.__tags[i])
 
-        axes[0].set_title('HMI %d' % self.__id)
+        subplots[0].set_title('HMI %d' % self.__id)
 
-        for i in range(0, len(axes)):
-            axes[i].scatter(self.__values['time'], self.__values[self.__tags[i]], color='r')
+        for i in range(0, len(subplots)):
+            # scatter use points
+            subplots[i].scatter(self.__values['time'], self.__values[self.__tags[i]], color='r')
 
-        # Fine-tune figure; make subplots close to each other and hide x ticks for
-        # all but bottom plot.
+        # save file
         canvas.print_figure('examples/swat/hmi/%s' % self.__filename)
-        # logger.debug(self.__values)
+
         plt.close(fig)
 
     def action_wrapper(self):
@@ -126,12 +140,19 @@ class HMI(object):
         """
         start_time = time()
         while(time() - start_time < self.__timeout):
-            self.action()
-            sleep(self.__timer)
+
+            try:
+                self.action()
+                sleep(self.__timer)
+
+            except Exception, e:
+                print repr(e)
+                sys.exit(1)
+
 
     def action(self):
         """
-        Defines the action action of the HMI:
+        Defines the action of the HMI:
         -reads the tags using the cpppo helper function
         and add them to different lists
         -append the time value to another list
@@ -171,9 +192,9 @@ if __name__ == '__main__':
     hmi = HMI(['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'],
             L1_PLCS_IP['plc1'], 'plc1.png', T_HMI_R, TIMEOUT)
 
-    hmi.start_http_server(80)
     sleep(3)
 
     hmi.start()
+    hmi.start_http_server(80)
 
     hmi.stop_http_server()
