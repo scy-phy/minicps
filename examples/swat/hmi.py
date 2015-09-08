@@ -52,6 +52,7 @@ class HMI(object):
         HMI.id += 1
         self.__filename = filename
         self.__timer = timer
+        self.__start_time = 0
         self.__timeout = timeout
         self.__process = None
         self.__values = {}
@@ -98,6 +99,8 @@ class HMI(object):
         Callback method, writes the three subplots in the .svg file using the
         Matplotlib canvas backend.
         """
+        formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+
         fig, axes = plt.subplots(len(self.__tags), sharex=True)
         canvas = FigureCanvas(fig)
 
@@ -105,9 +108,11 @@ class HMI(object):
             set_delta(self.__values, self.__tags[i], axes[i], 0.05)
 
         axes[len(axes) - 1].set_xlabel('Time (s)')
+        axes[len(axes) - 1].xaxis.set_major_formatter(formatter)
 
         for i in range(0, len(axes)):
             axes[i].set_ylabel(self.__tags[i])
+            axes[i].yaxis.set_major_formatter(formatter)
 
         axes[0].set_title('HMI %d' % self.__id)
 
@@ -124,8 +129,8 @@ class HMI(object):
         """
         Wraps the action() method
         """
-        start_time = time()
-        while(time() - start_time < self.__timeout):
+        self.__start_time = time()
+        while(time() - self.__start_time < self.__timeout):
             self.action()
             sleep(self.__timer)
 
@@ -143,7 +148,7 @@ class HMI(object):
             tag = float(tag)
             self.__values[index].append(tag)
 
-        self.__values['time'].append(time())
+        self.__values['time'].append(time() - self.__start_time)
 
         self.callback()
 
