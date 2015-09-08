@@ -13,7 +13,7 @@ environment:
     $ cd; mkdir scy-phy; cd scy-phy
     $ git clone https://github.com/scy-phy/minicps
     $ cd; git clone http://github.com/noxrepo/pox
-    # apt-get install python-pip python-nose python-matplotlib python-networkx
+    # apt-get install python-pip python-nose python-matplotlib python-networkx python-pil python-pil.imagetk
     # pip install cpppo pycomm nose-cov
 
 To symlink minicps pox controller to pox/ext execute the following
