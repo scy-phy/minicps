@@ -1,12 +1,5 @@
 """
-plc1_0.py
-
-plc init:
-    cpppo enip server
-
-plc main loop:
-    does not have a behavior, only reads the water level
-
+SWaT plc1a subprocess 1 simulation
 """
 import time
 
@@ -20,6 +13,12 @@ from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
 from constants import TIMEOUT
 
 if __name__ == '__main__':
+    """
+    Init cpppo enip server.
+
+    Execute an infinite routine loop:
+        - read sensors values
+    """
 
     # init the ENIP server
     tags = []
@@ -30,6 +29,10 @@ if __name__ == '__main__':
     logger.debug("Enter PLC1 main loop")
 
     start_time = time.time()
+
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+
     while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag

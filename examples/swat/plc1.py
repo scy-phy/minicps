@@ -1,13 +1,5 @@
 """
-plc1.py
-
-plc init:
-    cpppo enip server
-
-plc main loop:
-    sequential read/write from/to the state db and its internal cpppo enip
-    server.
-
+SWaT plc1 subprocess 1 simulation
 """
 import time
 
@@ -25,19 +17,26 @@ if __name__ == '__main__':
     Init cpppo enip server.
 
     Execute an infinite routine loop:
-        - read RW tank level from the sensor
-        - bla
+        - read sensors value
+        - drive actuators according to the control strategy
+        - update its enip server
     """
 
     # init the ENIP server
     tags = []
     tags.extend(P1_PLC1_TAGS)
     init_cpppo_server(tags)
+    # init ENIP server tag values
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+
+    # wait for the other plcs
     time.sleep(3)
 
     logger.debug("Enter PLC1 main loop")
 
     start_time = time.time()
+
     while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag

@@ -105,7 +105,7 @@ def minicps_tutorial(net):
     # You can try to comment plc1_0 line and uncomment plc1 line. This plc1
     # script is designed to take decisions according to the water level, to open
     # and close pumps.
-    plc1_pid = plc1.cmd("python examples/swat/plc1_0.py 2> examples/swat/err/plc1_0.err &")
+    plc1a_pid = plc1.cmd("python examples/swat/plc1a.py 2> examples/swat/err/plc1_0.err &")
     # plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/err/plc1.err &")
 
     plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/err/plc2.err &")
@@ -117,6 +117,7 @@ def minicps_tutorial(net):
     os.system("python examples/swat/physical_process.py 2> examples/swat/err/pp.err &")
 
     # Displays an image to monitor the physical process activity
+    # That it will refresh 
     os.system("python examples/swat/image.py examples/swat/hmi/plc1.png 200 2> examples/swat/err/img.err &")
 
     CLI(net)
