@@ -25,7 +25,7 @@ from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c
 
 from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
-from constants import OTHER_MACS, L3_PLANT_NETWORK
+from constants import OTHER_MACS, L3_PLANT_NETWORK, init_swat
 
 # used to separate different log sessions
 logger.debug('----------'+time.asctime()+'----------')
@@ -123,18 +123,18 @@ def minicps_tutorial(net):
     """
     Settings used for the Think-in workshop
 
-    :net: TODO
+    :net: Mininet instance reference
 
     """
-    # init the db
-    os.system("python examples/swat/state_db.py")
-    logger.debug("DB ready")
+    
+    init_swat()
 
     net.start()
 
-    plc1, plc2, plc3, hmi, s3 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's3')
+    # Start the physical process
+    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
 
-    # Init cpppo enip servers and run main loop
+    plc1, plc2, plc3, hmi, s3 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's3')
 
     # Monitoring on the switch
     # bro_cmd = "bro -C "
@@ -144,18 +144,13 @@ def minicps_tutorial(net):
     # bro_cmd += "&"
     # s3_pid = s3.cmd(bro_cmd)
 
-    os.system("python examples/swat/init_swat.py 2> examples/swat/init.err")
-
+    # Init cpppo enip servers and run main loop
     plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/plc1.err &")
     plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/plc2.err &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/plc3.err &")
     hmi_pid = hmi.cmd("python examples/swat/hmi.py 2> examples/swat/hmi.err &")
 
-    # os.system("python examples/swat/physical_process.py &")
-    os.system("python examples/swat/physical_process.py 2> examples/swat/pp.err &")
-
     CLI(net)
-    # launch device simulation scripts
 
     net.stop()
 

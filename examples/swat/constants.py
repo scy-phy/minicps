@@ -272,14 +272,14 @@ GRAVITATION = 9.81 # m.s^-2
 VALVE_DIAMETER = 0.2 # m
 TANK_DIAMETER = 1.38 # m
 TIMEOUT = 600 # s
-P_XX = 0.5 # m^3/h FIXME: what is this ?
+PUMP_FLOWRATE = 0.5 # m^3/h
 
 # periods in sec R/W = Read or Write
-T_PLC_R = 10E-3
-T_PLC_W = 10E-3
+T_PLC_R = 10E-2
+T_PLC_W = 10E-2
 
-T_PP_R = 2E-3
-T_PP_W = 2E-3
+T_PP_R = 2E-2
+T_PP_W = 2E-2
 T_HMI_R = 0.2 # s
 
 # mm
@@ -297,7 +297,7 @@ LIT_301 = {  # ultrafiltration tank
     'HH': 1200.0,
 }
 
-TANK_HEIGHT = 1600.0
+TANK_HEIGHT = 1.600  # m
 
 # m^3 / h
 FIT_201 = 0.0
@@ -461,37 +461,37 @@ def init_db(db_path, datatypes):
             logger.warning('Error %s:' % e.args[0])
 
 
-# FIXME: set default PID and generalize the query
-def read_statedb(PID=None, NAME=None, SCOPE='TODO'):
-    """Read multiple tags
-    sqlite3 uses ? placeholder for parameters substitution
+# FIXME: see why there are two read_statedb functions
+# def read_statedb(PID=None, NAME=None, SCOPE='TODO'):
+#     """Read multiple tags
+#     sqlite3 uses ? placeholder for parameters substitution
 
-    :NAME: str
-    :PID: int
-    :SCOPE: not implemented yet
-    :returns: list of tuples
+#     :NAME: str
+#     :PID: int
+#     :SCOPE: not implemented yet
+#     :returns: list of tuples
 
-    """
-    with sqlite3.connect(STATE_DB_PATH) as conn:
-        try:
-            cursor = conn.cursor()
-            par_temp = [PID]
-            cmd = """
-            SELECT * FROM Tag
-            WHERE PID = ?
-            """
+#     """
+#     with sqlite3.connect(STATE_DB_PATH) as conn:
+#         try:
+#             cursor = conn.cursor()
+#             par_temp = [PID]
+#             cmd = """
+#             SELECT * FROM Tag
+#             WHERE PID = ?
+#             """
 
-            if NAME is not None:
-                cmd += 'AND NAME = ?'
-                par_temp.append(NAME)
+#             if NAME is not None:
+#                 cmd += 'AND NAME = ?'
+#                 par_temp.append(NAME)
 
-            par_sub = tuple(par_temp)
-            cursor.execute(cmd, par_sub)
+#             par_sub = tuple(par_temp)
+#             cursor.execute(cmd, par_sub)
 
-            records = cursor.fetchall()
-            return records
-        except sqlite3.Error, e:
-            logger.warning('Error %s:' % e.args[0])
+#             records = cursor.fetchall()
+#             return records
+#         except sqlite3.Error, e:
+#             logger.warning('Error %s:' % e.args[0])
 
 
 # FIXME: set default PID and generalize the query
@@ -539,8 +539,8 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
     """Update Tag table
     sqlite3 uses ? placeholder for parameters substitution
 
-    :NAME: str
     :PID: str
+    :NAME: str
     :SCOPE: not implemented yet
     :returns: list of tuples
 
@@ -595,6 +595,23 @@ def update_statedb(VALUE, NAME, PID=None, SCOPE='TODO'):
 def select_value(record):
     # logger.debug(record)
     return float(record[3])
+
+def init_swat():
+    """
+    launch the swat simulation
+
+    * create the db if necessary
+    * init the db with constant values
+    * create the error directory if necessary (debug)
+
+    """
+    try:
+        os.system("python examples/swat/state_db.py")
+        os.system("mkdir -p examples/swat/err")
+        os.system('rm -f example/swat/err/*')
+        os.system("python examples/swat/init_swat.py 2> examples/swat/err/init.err")
+    except Exception:
+        sys.exit(1)
 
 # NETWORK
 L0_RING1 = {

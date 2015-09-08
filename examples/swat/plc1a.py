@@ -1,12 +1,5 @@
 """
-plc1_0.py
-
-plc init:
-    cpppo enip server
-
-plc main loop:
-    does not have a behavior, only reads the water level
-
+SWaT plc1a subprocess 1 simulation
 """
 import time
 
@@ -20,20 +13,30 @@ from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
 from constants import TIMEOUT
 
 if __name__ == '__main__':
+    """
+    Init cpppo enip server.
+
+    Execute an infinite routine loop:
+        - read sensors values
+    """
 
     # init the ENIP server
     tags = []
     tags.extend(P1_PLC1_TAGS)
     init_cpppo_server(tags)
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+
     time.sleep(3)
 
-    logger.debug("Enter PLC1 main loop")
+    logger.debug("Enter PLC1a main loop")
 
     start_time = time.time()
+
     while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag
-        lit101_str = read_single_statedb(1, 'AI_LIT_101_LEVEL')[3]
+        lit101_str = read_single_statedb('1', 'AI_LIT_101_LEVEL')[3]
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
         val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
         logger.debug("PLC1 - read_cpppo HMI_LIT101-Pv: %s" % val)
@@ -79,7 +82,7 @@ if __name__ == '__main__':
 
         elif lit301 <= LIT_301['L']:
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 read  HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 read  HMI_P101-Status: %s" % val)
 
 
         # Sleep

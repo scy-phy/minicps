@@ -8,27 +8,26 @@ Prerequisites
 =============
 
 This tutorial assumes that the reader has a basic understanding of Python 2.X
-programming language, has familiarly with Mininet Command Line Interface and APIs and has a basic understanding of networking and network tools such as ``wireshark``, ``ifconfig`` and ``nmap``.
+programming language, has familiarly with ``bash``, Mininet Command Line Interface and
+its APIs and has a basic understanding of networking and network tools such
+as: ``wireshark``, ``ifconfig`` and ``nmap``.
 
-Look at the :doc:`misc` for more information.
+This tutorial will use the following convetions for command syntax:
 
-python 2.X
------------------------
+``$ command``
+   doesn't require superuser permissions
 
-For python 2.x start `here <https://docs.python.org/2/tutorial/index.html>`_.
+``# command``
+   requires superuser permissions
 
-mininet
------------------------
+``mininet> command``
+   is typed inside mininet CLI
 
-If you need to get familiar with Mininet take a look at Mininet
-`walkthrough <http://mininet.org/walkthrough/>`_ and Mininet
-`APIs <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet>`_.
+Look at the *Additional Resources* section of :doc:`misc` for more information.
 
-SWaT simulation
-===============
 
 System Overview
------------------
+=================
 
 This tutorial shows how to use MiniCPS to simulate a part of a real water
 Treatment testbed. The testbed is called *SWaT* that stands for *Secure Water
@@ -48,16 +47,11 @@ water level indicator (LIT101) able to measure the quantity of water inside
 the tank. A pump (P101) [#]_ is able to move the water to the next stage.
 
 The whole subprocess is controlled by a set of *PLCs (Programmable Logic Controllers)*
-``plc1`` reads 
+.. TODO: add more explanation from swat/workshop files
 
 .. [#] The real system uses two redundant pumps, one is working and the other
        is in stand-by mode.
 
-
-Implementation
-----------------
-
-TODO
 
 Explore
 =============
@@ -66,9 +60,9 @@ Subsection Title
 -----------------------
 
 Start the simulation:
-   * opening up a terminal
-   * navigating into you ``minicps`` directory 
-   * and typing:
+* opening up a terminal
+* navigating into you ``minicps`` directory 
+* and typing:
    
 .. code-block:: bash
 
