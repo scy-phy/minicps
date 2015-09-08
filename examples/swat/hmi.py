@@ -109,7 +109,7 @@ class HMI(object):
         """
         formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 
-        # create len(self.__tags_ subplots, sharing the x axis 
+        # create len(self.__tags) subplots, sharing the x axis
         fig, subplots = plt.subplots(len(self.__tags), sharex=True)
 
         # with canvans you can update the fig in real-time
@@ -118,7 +118,13 @@ class HMI(object):
         for i in range(0, len(subplots)):
             y_min = min(self.__values[self.__tags[i]])
             y_max = max(self.__values[self.__tags[i]])
-            set_delta(y_min, y_max, subplots[i], 0.05)
+            if(y_min != 0 and y_max != 1 and y_max != 2):
+                set_delta(y_min, y_max, subplots[i], 0.05)
+            else:
+                subplots[i].set_ylim([-1, 3])
+                # labels = [item.get_text() for item in ax.get_xticklabels()]
+                # labels[1] = 'Testing'
+                # subplots[i].set_xticklabels(labels)
 
         # set time as a comming x axis
         subplots[len(subplots) - 1].set_xlabel('Time (s)')
