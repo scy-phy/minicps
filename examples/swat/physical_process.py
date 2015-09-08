@@ -24,29 +24,30 @@ class Tank(object):
     """
     Class defining a tank in the physical process.
     """
-    def __init__(self, fit_in, mv, lit, pumps, fit_out,
+    def __init__(self, fits_in, mvs, lit, pumps, fits_out,
                  subprocess, tank_number, diameter, height, period, timeout):
         """
-        :fit_in: list of input flows tags
-        :mv: list of input of motorvalves tags controlling the fit_in
+        :fits_in: list of input flows tags
+        :mvs: list of input of motorvalves tags controlling the fits_in
         :lit: tank level tag
         :pumps: list of output pumps tags
-        :fit_out: list of output flows tags
+        :fits_out: list of output flows tags
         :subprocess: number of subprocess in which the tank belongs
         :tank_number: id of the tank in the subprocess
-        :diameter: tank diameter (m)
-        :period: period in which the tank has to actualize its values (s)
+        :diameter: in meters
+        :height: in meters
+        :period: in which the tank has to actualize its values (s)
         :timeout: period of activity (s)
         """
-        self.__fit_in = fit_in
-        self.__mv = mv
+        self.__fits_in = fits_in
+        self.__mvs = mvs
         self.__lit = lit
         self.__pumps = pumps
-        self.__fit_out = fit_out
+        self.__fits_out = fits_out
         self.__subprocess = subprocess
         self.__id = tank_number
         self.__diameter = diameter
-        self.__height = height / 1000.0  # convert to m
+        self.__height = height
         self.__period = period
         self.__timeout = timeout
         self.__process = None
@@ -56,7 +57,7 @@ class Tank(object):
         # if(self.__pumps is None):
         #     logger.warning('PP - Tank: %d,%d : no output valves' % (self.__id,
         #                                                          self.__subprocess))
-        # if(self.__fit_out is None):
+        # if(self.__fits_out is None):
         #     logger.warning('PP - Tank: %d,%d has no output flows' % (self.__id,
         #                                                           self.__subprocess))
 
@@ -68,11 +69,11 @@ class Tank(object):
             self.__process.join()
         logger.info('PP - Tank: %d,%d removed' % (self.__id, self.__subprocess))
 
-    def compute_new_water_level(self, fit_list, mv_list,
+    def compute_new_water_level(self, fits, mvs,
                                 current_level, pumps, valve_diameter):
         """
-        fit_list: list of input flow values (m^3/h)
-        mv_list: list of boolean which tell if the valve is open or not
+        fits: list of input flow values (m^3/h)
+        mvs: list of boolean which tell if the valve is open or not
         current_level: current water level (m)
         pumps: list of output valves which tells if they are open or not
         tank_diameter: (m)
@@ -83,10 +84,10 @@ class Tank(object):
         """
         level = current_level
         volume = level * pi * pow((self.__diameter / 2.0), 2)
-        for i in (0, len(fit_list) - 1):
-            if mv_list[i] != 0:
-                # fit_list[i] is supposed to be in m^3/h and period in seconds
-                volume += (self.__period * fit_list[i]) / 3600.0
+        for i in (0, len(fits) - 1):
+            if mvs[i] != 0:
+                # fits[i] is supposed to be in m^3/h and period in seconds
+                volume += (self.__period * fits[i]) / 3600.0
         if pumps is not None:
             for i in (0, len(pumps) - 1):
                 if int(pumps[i]) == 1:
@@ -120,7 +121,7 @@ class Tank(object):
         else:
             output_valves = None
 
-        for index in self.__fit_in:
+        for index in self.__fits_in:
             value = read_single_statedb(self.__subprocess, index)
             if value is not None:
                 input_flows.append(select_value(value))
@@ -128,7 +129,7 @@ class Tank(object):
                 logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
                                                                  self.__subprocess, index))
 
-        for index in self.__mv:
+        for index in self.__mvs:
             value = read_single_statedb(self.__subprocess, index)
             if value is not None:
                 input_valves.append(select_value(value))
@@ -153,9 +154,9 @@ class Tank(object):
             logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
                                                                  self.__subprocess,
                                                                  current_level))
-            if self.__fit_out is not None:
+            if self.__fits_out is not None:
                 i = 0
-                for index in self.__fit_out:
+                for index in self.__fits_out:
                     if output_valves[i] != 0:
                         update_statedb(str(P_XX), index)
                         logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
