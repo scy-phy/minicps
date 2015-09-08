@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
         elif lit301 <= LIT_301['L']:
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 read  HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 read  HMI_P101-Status: %s" % val)
 
 
         # Sleep

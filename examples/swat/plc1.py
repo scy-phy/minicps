@@ -100,7 +100,7 @@ if __name__ == '__main__':
             update_statedb('2', 1, 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
-            logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
+            logger.info("PLC1 - p101 open  HMI_P101-Status: %s" % val)
 
         # Sleep
         time.sleep(T_PLC_R)
