@@ -27,8 +27,8 @@ if __name__ == '__main__':
     tags.extend(P1_PLC1_TAGS)
     init_cpppo_server(tags)
     # init ENIP server tag values
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
 
     # wait for the other plcs
     time.sleep(3)
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag
-        lit101_str = read_single_statedb(1, 'AI_LIT_101_LEVEL')[3]
+        lit101_str = read_single_statedb('1', 'AI_LIT_101_LEVEL')[3]
 
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
         val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
@@ -57,23 +57,23 @@ if __name__ == '__main__':
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
             # p101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_P_101_START')
+            update_statedb('1', '1', 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
             # mv101 = '2'  # OPEN
-            update_statedb('0', 1, 'DO_MV_101_CLOSE')
-            update_statedb('1', 1, 'DO_MV_101_OPEN')
+            update_statedb('0', '1', 'DO_MV_101_CLOSE')
+            update_statedb('1', '1', 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 open  HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
             # mv101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_MV_101_CLOSE')
-            update_statedb('0', 1, 'DO_MV_101_OPEN')
+            update_statedb('1', '1', 'DO_MV_101_CLOSE')
+            update_statedb('0', '1', 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - mv101 close HMI_MV101-Status: %s" % val)
@@ -90,14 +90,14 @@ if __name__ == '__main__':
 
         if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
             # p101 = '1'  # CLOSE
-            update_statedb('1', 1, 'DO_P_101_START')
+            update_statedb('1', '1', 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 closed HMI_P101-Status: %s" % val)
 
         elif lit301 <= LIT_301['L']:
             # p101 = '2'  # OPEN
-            update_statedb('2', 1, 'DO_P_101_START')
+            update_statedb('2', '1', 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 open  HMI_P101-Status: %s" % val)

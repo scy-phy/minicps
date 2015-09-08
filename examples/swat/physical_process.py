@@ -19,6 +19,8 @@ from time import time
 from math import pow
 from math import pi
 
+import sys
+
         
 class Tank(object):
     """
@@ -27,6 +29,7 @@ class Tank(object):
     def __init__(self, fits_in, mvs, lit, pumps, fits_out,
                  subprocess, tank_number, diameter, height, period, timeout):
         """
+        # TODO: change to tuples where necessary
         :fits_in: list of input flows tags
         :mvs: list of input of motorvalves tags controlling the fits_in
         :lit: tank level tag
@@ -82,7 +85,8 @@ class Tank(object):
 
         returns: new water level (m)
         """
-        volume = level * pi * pow((self.__diameter / 2.0), 2)
+        radius = self.__diameter / 2.0
+        volume = level * pi * pow(radius , 2)
         for i in range(0, len(fits)):
             if mvs[i] == 1:
                 # convert fits[i] from m^3/h into m^3/s
@@ -93,7 +97,7 @@ class Tank(object):
                 if int(pumps[i]) == 1:
                     volume -= (self.__period * (PUMP_FLOWRATE / 3600.0))
 
-        new_level = volume / (pi * pow((self.__diameter / 2.0), 2))
+        new_level = volume / (pi * pow(radius, 2))
 
         if new_level <= 0.0:
             logger.error('PP - Tank: %d,%d empty' % (self.__id,
@@ -124,7 +128,7 @@ class Tank(object):
             output_valves = None
 
         for index in self.__fits_in:
-            value = read_single_statedb(self.__subprocess, index)
+            value = read_single_statedb(index[1], index[0])
             if value is not None:
                 input_flows.append(select_value(value))
             else:
@@ -132,7 +136,7 @@ class Tank(object):
                                                                  self.__subprocess, index))
 
         for index in self.__mvs:
-            value = read_single_statedb(self.__subprocess, index)
+            value = read_single_statedb(index[1], index[0])
             if value is not None:
                 input_valves.append(select_value(value))
             else:
@@ -141,7 +145,7 @@ class Tank(object):
                                                                  index))
         if self.__pumps is not None:
             for index in self.__pumps:
-                value = read_single_statedb(self.__subprocess, index)
+                value = read_single_statedb(index[1], index[0])
                 if value is not None:
                     output_valves.append(select_value(value))
                 else:
@@ -150,14 +154,14 @@ class Tank(object):
                                                                      index))
 
 
-        current_level = read_single_statedb(self.__subprocess, self.__lit)
+        current_level = read_single_statedb(self.__lit[1], self.__lit[0])
         if current_level is not None:
             # convert current level from mm to meter to pass the right value
             # to compute_new_water_level
             current_level = float(select_value(current_level)) / 1000.0
-            logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
-                                                                 self.__subprocess,
-                                                                 current_level))
+            # logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
+            #                                                      self.__subprocess,
+            #                                                      current_level))
             # if self.__fits_out is not None:
             #     i = 0
             #     for index in self.__fits_out:
@@ -178,7 +182,7 @@ class Tank(object):
             new_level = 1000.0 * self.compute_new_water_level(input_flows, input_valves,
                                                      current_level, output_valves,
                                                      valve_diameter)
-            update_statedb(str(new_level), self.__lit)
+            update_statedb(str(new_level), self.__lit[0])
             logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
                                                                         self.__subprocess,
                                                                         self.__lit,
@@ -221,11 +225,26 @@ if __name__ == '__main__':
     -runs them in parallel
     """
 
-    rw_tank = Tank(['AI_FIT_101_FLOW'], ['DO_MV_101_OPEN'], 'AI_LIT_101_LEVEL',
-                 ['DO_P_101_START'], ['AI_FIT_201_FLOW'], 1, 1, TANK_DIAMETER,
-                 TANK_HEIGHT, T_PP_R, TIMEOUT)
-    uf_tank = Tank(['AI_FIT_201_FLOW'], ['DO_MV_201_OPEN'], 'AI_LIT_301_LEVEL',
-                 None, None, 1, 3, TANK_DIAMETER, TANK_HEIGHT, T_PP_R, TIMEOUT)
+
+    rw_tank = Tank(
+                [('AI_FIT_101_FLOW', '1')],
+                [('DO_MV_101_OPEN', '1')],
+                ('AI_LIT_101_LEVEL', '1'),
+                [('DO_P_101_START', '1')],
+                [('AI_FIT_201_FLOW', '2')],
+                1, 1,
+                TANK_DIAMETER, TANK_HEIGHT,
+                T_PP_R, TIMEOUT)
+
+    uf_tank = Tank(
+                [('AI_FIT_201_FLOW', '2')],
+                [('DO_MV_201_OPEN', '2')],
+                ('AI_LIT_301_LEVEL', '3'),
+                None,
+                None,
+                1, 3,
+                TANK_DIAMETER, TANK_HEIGHT,
+                T_PP_R, TIMEOUT)
 
     rw_tank.start(VALVE_DIAMETER)
     uf_tank.start(VALVE_DIAMETER)

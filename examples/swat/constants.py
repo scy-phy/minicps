@@ -275,12 +275,12 @@ TIMEOUT = 600 # s
 PUMP_FLOWRATE = 0.5 # m^3/h
 
 # periods in sec R/W = Read or Write
-T_PLC_R = 10E-3
-T_PLC_W = 10E-3
+T_PLC_R = 10E-2
+T_PLC_W = 10E-2
 
-T_PP_R = 2E-3
-T_PP_W = 2E-3
-T_HMI_R = 0.1 # s
+T_PP_R = 2E-2
+T_PP_W = 2E-2
+T_HMI_R = 0.2 # s
 
 # mm
 LIT_101 = {  # raw water tank
@@ -539,8 +539,8 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
     """Update Tag table
     sqlite3 uses ? placeholder for parameters substitution
 
-    :NAME: str
     :PID: str
+    :NAME: str
     :SCOPE: not implemented yet
     :returns: list of tuples
 
@@ -608,6 +608,7 @@ def init_swat():
     try:
         os.system("python examples/swat/state_db.py")
         os.system("mkdir -p examples/swat/err")
+        os.system('rm -f example/swat/err/*')
         os.system("python examples/swat/init_swat.py 2> examples/swat/err/init.err")
     except Exception:
         sys.exit(1)

@@ -52,7 +52,7 @@ if __name__ == '__main__':
     while(time.time() - start_time < TIMEOUT):
         # cmd = read_single_statedb('AI_FIT_101_FLOW', '1')
 
-        fit201pv = read_single_statedb(2, 'AI_FIT_201_FLOW')[3]
+        fit201pv = read_single_statedb('2', 'AI_FIT_201_FLOW')[3]
 
         write_cpppo(L1_PLCS_IP['plc2'], 'HMI_FIT201-Pv', fit201pv)
         val = read_cpppo(L1_PLCS_IP['plc2'], 'HMI_FIT201-Pv', PLC2_CPPPO_CACHE)

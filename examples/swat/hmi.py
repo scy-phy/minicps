@@ -2,6 +2,7 @@
 HMI Class
 """
 
+import sys
 import matplotlib
 matplotlib.use('Agg')  # Agg backend to use matplotlib without X server
 

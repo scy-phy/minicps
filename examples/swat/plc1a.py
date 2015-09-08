@@ -24,19 +24,19 @@ if __name__ == '__main__':
     tags = []
     tags.extend(P1_PLC1_TAGS)
     init_cpppo_server(tags)
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+
     time.sleep(3)
 
-    logger.debug("Enter PLC1 main loop")
+    logger.debug("Enter PLC1a main loop")
 
     start_time = time.time()
-
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
 
     while(time.time() - start_time < TIMEOUT):
 
         # Read and update HMI_tag
-        lit101_str = read_single_statedb(1, 'AI_LIT_101_LEVEL')[3]
+        lit101_str = read_single_statedb('1', 'AI_LIT_101_LEVEL')[3]
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', lit101_str)
         val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_LIT101-Pv', PLC1_CPPPO_CACHE)
         logger.debug("PLC1 - read_cpppo HMI_LIT101-Pv: %s" % val)
