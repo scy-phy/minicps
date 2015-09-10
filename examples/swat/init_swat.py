@@ -24,9 +24,9 @@ if __name__ == '__main__':
 
     try:
         # update_statedb(1196, 'AI_LIT_101_LEVEL')
-        # update_statedb(796, 'AI_LIT_101_LEVEL')
+        update_statedb(786, 'AI_LIT_101_LEVEL')
         # update_statedb(496, 'AI_LIT_101_LEVEL')
-        update_statedb(246, 'AI_LIT_101_LEVEL')
+        # update_statedb(246, 'AI_LIT_101_LEVEL')
 
         update_statedb(810, 'AI_LIT_301_LEVEL')
         update_statedb(1, 'DO_P_101_START')

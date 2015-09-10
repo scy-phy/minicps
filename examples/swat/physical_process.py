@@ -81,7 +81,7 @@ class Tank(object):
         pumps: list of output valves which tells if they are open or not
         tank_diameter: (m)
         valve_diameter: (m)
-        period: physical process read/write 
+        period: physical process read/write (s)
 
         returns: new water level (m)
         """
@@ -159,6 +159,7 @@ class Tank(object):
             # convert current level from mm to meter to pass the right value
             # to compute_new_water_level
             current_level = float(select_value(current_level)) / 1000.0
+
             # logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
             #                                                      self.__subprocess,
             #                                                      current_level))
@@ -224,6 +225,7 @@ if __name__ == '__main__':
     -constructs all the subprocess tanks
     -runs them in parallel
     """
+    sleep(3)
 
 
     rw_tank = Tank(
@@ -245,6 +247,7 @@ if __name__ == '__main__':
                 1, 3,
                 TANK_DIAMETER, TANK_HEIGHT,
                 T_PP_R, TIMEOUT)
+
 
     rw_tank.start(VALVE_DIAMETER)
     uf_tank.start(VALVE_DIAMETER)
