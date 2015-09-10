@@ -249,7 +249,7 @@ def read_cpppo(ip, tag_name, cpppo_cache):
             tag_name,
             cpppo_cache)
     rc = os.system(cmd)
-    assert rc == 0, "read_cpppo"
+    # assert rc == 0, "read_cpppo"
 
     # TODO: support for vector tags
     with open(cpppo_cache, "r") as file_ptr:
@@ -269,28 +269,27 @@ def read_cpppo(ip, tag_name, cpppo_cache):
 # PROCESS
 
 GRAVITATION = 9.81 # m.s^-2
-VALVE_DIAMETER = 0.2 # m
 TANK_DIAMETER = 1.38 # m
 TIMEOUT = 600 # s
 PUMP_FLOWRATE = 0.5 # m^3/h
 
 # periods in sec R/W = Read or Write
-T_PLC_R = 10E-2
-T_PLC_W = 10E-2
+T_PLC_R = 1E-1
+T_PLC_W = 1E-1
 
-T_PP_R = 2E-2
-T_PP_W = 2E-2
-T_HMI_R = 0.2 # s
+T_PP_R = 2E-1
+T_PP_W = 2E-1
+T_HMI_R = 1 # s
 
-# mm
-LIT_101 = {  # raw water tank
+# Control logic thresholds
+LIT_101 = {  # raw water tank mm
     'LL': 250.0,
     'L': 500.0,
     'H': 800.0,
     'HH': 1200.0,
 }
 
-LIT_301 = {  # ultrafiltration tank
+LIT_301 = {  # ultrafiltration tank mm
     'LL': 250.0,
     'L': 800.0,
     'H': 1000.0,
@@ -383,19 +382,19 @@ DATATYPES = [
 
 
 def create_db(db_path, schema):
-    """TODO: Docstring for init.
+    """
+    create a sqlite db given a schema.
+
     :db_path: full or relative path to the file.db
     :schema: str containing the schema
-
     """
     with sqlite3.connect(db_path) as conn:
         conn.executescript(schema)
         logger.info('Created schema')
 
 def remove_db(db_path):
-    """TODO: Docstring for init.
-    :returns: TODO
-
+    """
+    remove sqlite db (that is a file).
     """
     logger.info('Removing %s' % db_path)
     try:
@@ -594,12 +593,10 @@ def update_statedb(VALUE, NAME, PID=None, SCOPE='TODO'):
 
 def select_value(record):
     # logger.debug(record)
-    return float(record[3])
+    return record[3]
 
 def init_swat():
     """
-    launch the swat simulation
-
     * create the db if necessary
     * init the db with constant values
     * create the error directory if necessary (debug)
@@ -609,7 +606,6 @@ def init_swat():
         os.system("python examples/swat/state_db.py")
         os.system("mkdir -p examples/swat/err")
         os.system('rm -f example/swat/err/*')
-        os.system("python examples/swat/init_swat.py 2> examples/swat/err/init.err")
     except Exception:
         sys.exit(1)
 
