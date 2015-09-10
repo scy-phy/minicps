@@ -50,6 +50,28 @@ if __name__ == '__main__':
         create_db(STATE_DB_PATH, SCHEMA)
         init_db(STATE_DB_PATH, DATATYPES)
 
+    # Init db values
+
+    # update_statedb(1196, 'AI_LIT_101_LEVEL')
+    update_statedb(786, 'AI_LIT_101_LEVEL')
+    # update_statedb(496, 'AI_LIT_101_LEVEL')
+    # update_statedb(246, 'AI_LIT_101_LEVEL')
+
+    update_statedb(810, 'AI_LIT_301_LEVEL')
+
+    update_statedb(1, 'DO_P_101_START')
+
+    update_statedb(1, 'DO_MV_101_OPEN')
+    update_statedb(0, 'DO_MV_101_CLOSE')
+
+    update_statedb(0.7, 'AI_FIT_101_FLOW')
+
+    update_statedb(0.5, 'AI_FIT_201_FLOW')
+
+    update_statedb(0, 'DO_MV_201_OPEN')
+    update_statedb(1, 'DO_MV_201_CLOSE')
+    logger.debug('DB - Initial values set')
+
     # DEBUG
     # records = read_statedb(1)
     # print records
