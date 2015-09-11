@@ -1,24 +1,29 @@
 """
 HMI Class
+
+Data objects coming from subprocess, os and signal modules are used to manage
+an http server subprocess that is launched and killed by hmi.py process.
 """
 
 import sys
+
 import matplotlib
 matplotlib.use('Agg')  # Agg backend to use matplotlib without X server
-
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
-from time import time
-from time import sleep
+
+from time import time, sleep
+
 from subprocess import Popen
-from multiprocessing import Process
-from os import setsid
-from os import kill
-from os import killpg
+from os import setsid, kill, killpg
 from signal import SIGTERM
+
+from multiprocessing import Process
+
 from constants import logger
-from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201, T_HMI_R, TIMEOUT
+from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
+from constants import T_HMI_R, TIMEOUT
 from constants import read_cpppo
 from constants import L1_PLCS_IP
 
@@ -38,7 +43,8 @@ class HMI(object):
     An HMI object has to query a list of tags from a PLC ENIP server,
     and log it into a .png file that will be served by a webserver.
     """
-    id = 1  # class variable
+
+    id = 0  # count the number of instances
 
     def __init__(self, tags, ipaddr, filename, timer, timeout):
         """
@@ -48,22 +54,28 @@ class HMI(object):
         :timer: period in which the HMI has to query the tags (s)
         :timeout: period of activity (s)
         """
+        HMI.id += 1
+        self.__id = HMI.id
+
         self.__tags = tags
         self.__ipaddr = ipaddr
-        self.__id = HMI.id
-        HMI.id += 1
         self.__filename = filename
         self.__timer = timer
-        self.__start_time = 0
         self.__timeout = timeout
+
+        self.__start_time = 0.0
         self.__process = None  # save the HMI PID to kill it later
 
-        self.__values = {}  # dict of lists, keys are tagnames
+        # dict of lists
+        self.__values = {}  
+        # ... one list for each tag
         for tag in tags:
             self.__values[tag] = []
-        self.__values['time'] = []  # special list
+        # ... plus a list to save timestamps
+        self.__values['time'] = []
 
         self.__http = None  # save the HTTP server PID to kill it later
+
         logger.debug('Created HMI %d that will monitor [%s]' % (self.__id, ', '.join(map(str, self.__tags))))
 
     def __del__(self):
@@ -74,24 +86,27 @@ class HMI(object):
         if(self.__process is not None):
             self.__process.join()
 
-
         # kill the HTTP server (opened with Popen)
         self.stop_http_server()
 
         logger.debug('Killed HMI and its webserver' % self.__id)
 
-    def start_http_server(self, port):
+    def start_http_server(self, port=80):
         """
         Starts a simple http server on a choosen port
+
+        :port: integer defaults to 80
         """
         if(self.__http is None):
             cmd = "python -m SimpleHTTPServer %d" % port
             try:
-                self.__http = Popen(cmd, preexec_fn=setsid)
+                self.__http = Popen(cmd, shell=True, preexec_fn=setsid)
                 logger.info('HMI %d - HTTP server started' % self.__id)
 
-            except OSError:
-                logger.warning('HMI %d - HTTP server cannot start' % self.__id)
+            except OSError, e:
+                emsg = repr(e)
+                logger.warning('HMI %d - HTTP server cannot start: %s' %
+                        (self.__id, emsg))
 
     def stop_http_server(self):
         """
@@ -102,7 +117,7 @@ class HMI(object):
             logger.info('HMI %d - HTTP server stopped' % self.__id)
             self.__http = None
 
-    def callback(self):
+    def mplot(self):
         """
         Callback method, writes the three subplots in the .png file using the
         Matplotlib canvas backend.
@@ -162,10 +177,10 @@ class HMI(object):
     def action(self):
         """
         Defines the action of the HMI:
-        -reads the tags using the cpppo helper function
-        and add them to different lists
-        -append the time value to another list
-        -calls the callback function
+
+        - reads the tags using the cpppo helper function and add them to different lists
+        - appends the time value to another list
+        - calls the mplot function
         """
         for index in self.__tags:
             tag = read_cpppo(self.__ipaddr, index, 'examples/swat/hmi_cpppo.cache')
@@ -175,7 +190,7 @@ class HMI(object):
 
         self.__values['time'].append(time() - self.__start_time)
 
-        self.callback()
+        self.mplot()
 
     def start(self):
         """
@@ -183,27 +198,18 @@ class HMI(object):
         """
         self.__process = Process(target=self.action_wrapper)
         self.__process.start()
-        logger.info('HMI %d started' % self.__id)
 
 
 if __name__ == '__main__':
     """
-    Main function, creating an HMI object, which queries some tags from
-    the Raw water tank:
-        - water level
-        - input Motor Valve
-        - output pump
-
     The values are displayed in real-time in a pop-up window and the same
-    image is served through a webserver that can be reached at 192.168.1.100
+    image is served through a webserver that can be reached at
+    HMI_IP:80
     """
-
     hmi = HMI(['HMI_MV101-Status', 'HMI_LIT101-Pv', 'HMI_P101-Status'],
             L1_PLCS_IP['plc1'], 'plc1.png', T_HMI_R, TIMEOUT)
-
     sleep(3)
 
     hmi.start()
     hmi.start_http_server(80)
-
     hmi.stop_http_server()
