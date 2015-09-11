@@ -40,7 +40,11 @@ def db_fun(arg1):
 
 if __name__ == '__main__':
     """
-    Manage swat state db.
+    Manage swat state db (create, init fields, init value and optionally
+    remove it).
+
+    FIT values are assumed constant (either 0 or a fixed value taken from the
+    SWaT spec).
     """
 
     # remove_db(STATE_DB_PATH)
@@ -64,9 +68,8 @@ if __name__ == '__main__':
     update_statedb('1', 'DO_MV_101_OPEN')
     update_statedb('0', 'DO_MV_101_CLOSE')
 
-    update_statedb('0.7', 'AI_FIT_101_FLOW')
-
-    update_statedb('0.5', 'AI_FIT_201_FLOW')
+    update_statedb('2.55', 'AI_FIT_101_FLOW')
+    update_statedb('2.45', 'AI_FIT_201_FLOW')
 
     update_statedb('1', 'DO_MV_201_OPEN')
     update_statedb('0', 'DO_MV_201_CLOSE')

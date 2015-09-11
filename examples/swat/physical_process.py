@@ -173,11 +173,13 @@ class Tank(object):
         if current_level is not None:
             # convert current level from mm to meter to pass the right value
             # to compute_new_water_level
-            current_level = float(select_value(current_level)) / 1000.0
-
+            current_level = float(select_value(current_level))
+            # log the value in mm to be consistent with the db
             logger.debug('PP - Tank: %d,%d current level: %f' % (self.__id,
                                                                  self.__subprocess,
                                                                  current_level))
+            current_level /= 1000.0
+
             if self.__fits_out is not None:
                 i = 0
                 for index in self.__fits_out:

@@ -271,7 +271,8 @@ def read_cpppo(ip, tag_name, cpppo_cache):
 GRAVITATION = 9.81 # m.s^-2
 TANK_DIAMETER = 1.38 # m
 TIMEOUT = 600 # s
-PUMP_FLOWRATE = 0.5 # m^3/h
+# PUMP_FLOWRATE = 0.5 # m^3/h
+PUMP_FLOWRATE = 2.2 # m^3/h spec say btw 2.2 and 2.4
 
 # periods in sec R/W = Read or Write
 T_PLC_R = 1E-1
