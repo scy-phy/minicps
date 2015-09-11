@@ -38,7 +38,7 @@ if __name__ == '__main__':
     # val = read_cpppo(L1_PLCS_IP['plc3'], 'AI_LIT_301_LEVEL', 'examples/swat/plc3_cpppo.cache')
     # logger.debug("read_cpppo: %s" % val)
 
-    logger.debug("Enter PLC3 main loop")
+    logger.info("PLC3 - enters main loop")
 
     start_time = time.time()
 
@@ -52,5 +52,5 @@ if __name__ == '__main__':
         logger.debug("PLC3 - read_cpppo HMI_LIT301-Pv: %s" % val)
 
         time.sleep(T_PLC_R)
-    logger.debug("Exit PLC3 Main loop")
+    logger.info("PLC3 - exits main loop")
 

@@ -73,4 +73,4 @@ if __name__ == '__main__':
     update_statedb('1', 'DO_MV_201_OPEN')
     update_statedb('0', 'DO_MV_201_CLOSE')
 
-    logger.debug('DB - Initial values set')
+    logger.info('DB - Initial values set')

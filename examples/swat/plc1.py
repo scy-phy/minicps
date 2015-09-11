@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # wait for the other plcs
     time.sleep(3)
 
-    logger.debug("Enter PLC1 main loop")
+    logger.info("PLC1 - enters main loop")
 
     start_time = time.time()
 
@@ -104,4 +104,4 @@ if __name__ == '__main__':
         # Sleep
         time.sleep(T_PLC_R)
 
-    logger.debug("Exit PLC1 Main loop")
+    logger.info("PLC1 - exits main loop")

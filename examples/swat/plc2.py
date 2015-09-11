@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # time.sleep(1)
 
     # look a Stridhar graph
-    logger.debug("Enter PLC2 main loop")
+    logger.info("PLC2 - enters main loop")
     start_time = time.time()
 
     write_cpppo(L1_PLCS_IP['plc2'], 'HMI_MV201-Status', '2')
@@ -58,5 +58,4 @@ if __name__ == '__main__':
         logger.debug("PLC2 - read_cpppo HMI_FIT201-Pv: %s" % val)
 
         time.sleep(T_PLC_R)
-    logger.debug("Exit PLC2 Main loop")
-
+    logger.info("PLC2 - exits main loop")

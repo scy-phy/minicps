@@ -48,25 +48,24 @@ class Tank(object):
         self.__timeout = timeout
         self.__process = None
 
-        logger.debug('PP - Tank: %d,%d created' % (self.__id, self.__subprocess))
-
     def __del__(self):
         """
         destructor
         """
         if(self.__process is not None):
             self.__process.join()
-        logger.info('PP - Tank: %d,%d removed' % (self.__id, self.__subprocess))
+        logger.info('PP - Tank%d0%d removed' % (self.__id, self.__subprocess))
 
     def compute_water_level(self, fits, mvs, level, pumps):
         """
         fits: list of input flow values (m^3/h)
         mvs: list of boolean which tell if the valve is open or not
-        level: current water level (m)
+        level: current water level (mm)
         pumps: list of output valves which tells if they are open or not
 
-        returns: new water level (m)
+        returns: new water level (mm)
         """
+        level /= 1000  # convert to m
         radius = self.__diameter / 2.0
         volume = level * pi * pow(radius , 2)
         for i in range(0, len(fits)):
@@ -79,18 +78,18 @@ class Tank(object):
                 if pumps[i] == '1':
                     volume -= (self.__period * (PUMP_FLOWRATE / 3600.0))
 
-        water_level = volume / (pi * pow(radius, 2))
+        new_level = volume / (pi * pow(radius, 2))
 
-        if water_level <= 0.0:
-            logger.error('PP - Tank: %d,%d empty' % (self.__id,
+        if new_level <= 0.0:
+            logger.error('PP - Tank%d0%d empty' % (self.__id,
                 self.__subprocess))
-            water_level = 0.0
-        elif water_level >= self.__height:
-            logger.error('PP - Tank: %d,%d overflowed' % (self.__id,
+            new_level = 0.0
+        elif new_level >= self.__height:
+            logger.error('PP - Tank%d0%d overflowed' % (self.__id,
                 self.__subprocess))
-            water_level = self.__height
+            new_level = self.__height
 
-        return water_level
+        return new_level * 1000.0
 
     def action(self):
         """
@@ -111,6 +110,10 @@ class Tank(object):
         else:
             output_valves = None
 
+        water_level = 0.0  # mm
+        new_water_level = 0.0  # mm
+        delta_water_level = 0.0  # mm
+
         i = 0
         while i < len(self.__fits_in):
 
@@ -122,7 +125,7 @@ class Tank(object):
                 fit_value = select_value(fit_record)
                 input_flows.append(float(fit_value))
             else:
-                logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                logger.warning('PP - tank%d0%d can\'t read %s' % (self.__id,
                                                                  self.__subprocess,
                                                                  fit_tuple[0]))
 
@@ -137,7 +140,7 @@ class Tank(object):
                     update_statedb(fit_value, fit_tuple[0])
 
             else:
-                logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                logger.warning('PP - tank%d0%d can\'t read %s' % (self.__id,
                                                                  self.__subprocess,
                                                                  mv_tuple[0]))
             i += 1
@@ -148,7 +151,7 @@ class Tank(object):
                 if p_record is not None:
                     output_valves.append(select_value(p_record))
                 else:
-                    logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+                    logger.warning('PP - tank%d0%d can\'t read %s' % (self.__id,
                                                                      self.__subprocess,
                                                                      p_tuple[0]))
 
@@ -156,40 +159,36 @@ class Tank(object):
         if water_level is not None:
             water_level = float(select_value(water_level))
             # log the value in mm to be consistent with the db
-            logger.debug('PP - Tank: %d,%d water level: %f' % (self.__id,
+            logger.debug('PP - tank%d0%d read_db %s: %f' % (self.__id,
                                                                  self.__subprocess,
+                                                                 self.__lit[0],
                                                                  water_level))
-            # convert the value in m
-            water_level /= 1000.0
 
             if self.__fits_out is not None:
                 i = 0
                 for fit_tuple in self.__fits_out:
                     if output_valves[i] != '0':
                         update_statedb(str(PUMP_FLOWRATE), fit_tuple[0])
-                        logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
-                                                                                    self.__subprocess,
-                                                                                    fit_tuple[0],
-                                                                                    PUMP_FLOWRATE))
+                        logger.debug('PP - tank%d0%d write_db %s: %f' % (self.__id, self.__subprocess,
+                                                                          fit_tuple[0], PUMP_FLOWRATE))
                     else:
                         update_statedb('0.00', fit_tuple[0])
-                        logger.debug('PP - Tank: %d,%d %s -> 0.0 written into DB' % (self.__id,
-                                                                                    self.__subprocess,
-                                                                                    fit_tuple[0]))
+                        logger.debug('PP - tank%d0%d write_db %s: 0.00' % (self.__id, self.__subprocess,
+                                                                          fit_tuple[0]))
                     i += 1
 
-            # new_level should be in mm
-            new_water_level = 1000.0 * self.compute_water_level(input_flows, input_valves,
+            new_water_level = self.compute_water_level(input_flows, input_valves,
                                                      water_level, output_valves)
             update_statedb(str(new_water_level), self.__lit[0])
-            logger.debug('PP - Tank: %d,%d %s -> %f written into DB' % (self.__id,
-                                                                        self.__subprocess,
-                                                                        self.__lit,
-                                                                        new_water_level))
+            delta_water_level = new_water_level - water_level
+            logger.debug('PP - tank%d0%d write_db %s: %f    delta: %f mm' % (self.__id, self.__subprocess,
+                                                              self.__lit[0],
+                                                              new_water_level,
+                                                              delta_water_level))
         else:
-            logger.warning('PP - Tank: %d,%d can\'t read %s' % (self.__id,
+            logger.warning('PP - tank%d0%d can\'t read_db %s' % (self.__id,
                                                              self.__subprocess,
-                                                             self.__lit))
+                                                             self.__lit[0]))
 
     def action_wrapper(self):
         """
@@ -213,7 +212,7 @@ class Tank(object):
         self.__process = Process(target=self.action_wrapper)
         self.__process.start()
 
-        logger.info('PP - Tank: %d,%d started' % (self.__id, self.__subprocess))
+        logger.info('PP - tank%d0%d active' % (self.__id, self.__subprocess))
 
 
 if __name__ == '__main__':

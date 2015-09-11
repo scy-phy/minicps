@@ -76,7 +76,7 @@ class HMI(object):
 
         self.__http = None  # save the HTTP server PID to kill it later
 
-        logger.debug('Created HMI %d that will monitor [%s]' % (self.__id, ', '.join(map(str, self.__tags))))
+        logger.info('HMI%d - monitors: %s' % (self.__id, ', '.join(map(str, self.__tags))))
 
     def __del__(self):
         """
@@ -89,7 +89,7 @@ class HMI(object):
         # kill the HTTP server (opened with Popen)
         self.stop_http_server()
 
-        logger.debug('Killed HMI and its webserver' % self.__id)
+        logger.debug('Killed HMI%d and its webserver' % self.__id)
 
     def start_http_server(self, port=80):
         """
@@ -101,11 +101,12 @@ class HMI(object):
             cmd = "python -m SimpleHTTPServer %d" % port
             try:
                 self.__http = Popen(cmd, shell=True, preexec_fn=setsid)
-                logger.info('HMI %d - HTTP server started' % self.__id)
+                logger.info('HMI%d - HTTP server started on port %d' %
+                        (self.__id, port))
 
             except OSError, e:
                 emsg = repr(e)
-                logger.warning('HMI %d - HTTP server cannot start: %s' %
+                logger.warning('HMI%d - HTTP server cannot start: %s' %
                         (self.__id, emsg))
 
     def stop_http_server(self):
@@ -114,7 +115,7 @@ class HMI(object):
         """
         if(self.__http is not None):
             killpg(getpgid(self.__http.pid), SIGTERM)
-            logger.info('HMI %d - HTTP server stopped' % self.__id)
+            logger.info('HMI%d - HTTP server stopped' % self.__id)
             self.__http = None
 
     def mplot(self):
@@ -184,7 +185,7 @@ class HMI(object):
         """
         for index in self.__tags:
             tag = read_cpppo(self.__ipaddr, index, 'examples/swat/hmi_cpppo.cache')
-            logger.debug('HMI %d read %s: %s' % (self.__id, index, tag))
+            logger.debug('HMI%d read %s: %s' % (self.__id, index, tag))
             tag = float(tag)
             self.__values[index].append(tag)
 
