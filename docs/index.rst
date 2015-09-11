@@ -11,12 +11,12 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
-   installation
+   userguide
    swat-tutorial
-   api
-   tests
    misc
-
+.. Proofread first and then include maybe group the two files into one
+   .. api
+   .. tests
 
 
 Indices and tables

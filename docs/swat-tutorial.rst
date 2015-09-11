@@ -23,7 +23,20 @@ This tutorial will use the following convetions for command syntax:
 ``mininet> command``
    is typed inside mininet CLI
 
-Look at the *Additional Resources* section of :doc:`misc` for more information.
+``<C-d>``
+   it means to press and hold ``Ctrl`` and then press ``d``.
+
+It is important that you run the commands from the minicps root folder, you
+can monitor your current working directory using:
+
+.. code-block:: console
+
+   pwd
+
+and you shuold see something like ``../minicps``.
+
+If you need more information, please look at the *Additional Resources*
+section of the :doc:`Misc <misc>` doc.
 
 
 System Overview
@@ -56,25 +69,42 @@ The whole subprocess is controlled by a set of *PLCs (Programmable Logic Control
 Explore
 =============
 
-Subsection Title
------------------------
+Dumb plc1
+----------
 
 Start the simulation:
+
 * opening up a terminal
 * navigating into you ``minicps`` directory 
-* and typing:
-   
-.. code-block:: bash
 
-   # python examples/swat/tutorial.py
+Then type:
+   
+.. code-block:: console
+
+   sudo python examples/swat/tutorial.py
 
 A window like the one below should pop up:
 
 .. add pic
 .. image:: images/tutorial.png
 
-In your terminal window you should see the following prompt:
+And in your terminal window you should see the ``mininet>`` prompt.
 
-.. code-block:: bash
+The image presents three subplots, the one at the bottom
 
-   mininet>
+Now try to change the to speed up the overflow process.
+
+Standard plc1
+----------
+
+blablabla
+
+Play by yourself
+------------------
+
+blablabla
+
+APIs
+======
+
+.. add autodoc generated 
