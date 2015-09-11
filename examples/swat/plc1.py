@@ -8,9 +8,8 @@ from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
 from constants import read_single_statedb, update_statedb
 from constants import write_cpppo, read_cpppo, init_cpppo_server
 from constants import L1_PLCS_IP
-from constants import T_PLC_R, T_PLC_W
+from constants import T_PLC_R, T_PLC_W, TIMEOUT
 from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
-from constants import TIMEOUT
 
 if __name__ == '__main__':
     """
@@ -28,7 +27,7 @@ if __name__ == '__main__':
     init_cpppo_server(tags)
     # init ENIP server tag values
     write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
 
     # wait for the other plcs
     time.sleep(3)

@@ -53,10 +53,19 @@ class ImageContainer(object):
 
 
 if __name__ == '__main__':
+    """
+    Require two args:
+    :filename: path to the image to contain
+    :refresh_period: in ms
+    """
     if len(sys.argv) == 3:
         filename = sys.argv[1]
         refresh_period = sys.argv[2]  # ms
 
-        time.sleep(8)
+        SLEEP = 8
+        time.sleep(SLEEP)
 
         image_container = ImageContainer(filename, refresh_period)
+    else:
+        print "Pass the path to the image and the refresh-period"
+        sys.exit(1)

@@ -116,8 +116,6 @@ def minicps_tutorial(net):
     net.stop()
 
 
-
-
 if __name__ == '__main__':
     swat_graph = nxgraph_sub1(attacker=False)
     topo = TopoFromNxGraph(swat_graph)

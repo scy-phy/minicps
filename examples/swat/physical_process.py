@@ -7,10 +7,10 @@ from multiprocessing import Process
 from time import sleep, time
 from math import pow, pi
 
+from constants import logger
+from constants import read_single_statedb, read_statedb, update_statedb, select_value
 from constants import TANK_DIAMETER, PUMP_FLOWRATE, TANK_HEIGHT
 from constants import T_PP_R, T_PP_W, TIMEOUT
-from constants import read_single_statedb, read_statedb, update_statedb, select_value
-from constants import logger
 
         
 class Tank(object):

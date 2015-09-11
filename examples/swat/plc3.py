@@ -11,8 +11,7 @@ from constants import P1_PLC3_TAGS
 from constants import read_single_statedb, update_statedb
 from constants import write_cpppo, read_cpppo, init_cpppo_server
 from constants import L1_PLCS_IP
-from constants import T_PLC_R, T_PLC_W
-from constants import TIMEOUT
+from constants import T_PLC_R, T_PLC_W, TIMEOUT
 from constants import PLC3_CPPPO_CACHE
 
 
