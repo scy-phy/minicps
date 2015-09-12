@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 from time import time, sleep
 
 from subprocess import Popen
-from os import setsid, kill, killpg
+from os import setsid, kill, killpg, getpgid
 from signal import SIGTERM
 
 from multiprocessing import Process
@@ -123,10 +123,17 @@ class HMI(object):
         Callback method, writes the three subplots in the .png file using the
         Matplotlib canvas backend.
         """
+        # reference to the eaxis formatter object
         formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 
         # create len(self.__tags) subplots, sharing the x axis
-        fig, subplots = plt.subplots(len(self.__tags), sharex=True)
+        fig, subplots = plt.subplots(
+                nrows=len(self.__tags),
+                ncols=1,
+                sharex=True,
+                sharey=False,
+                squeeze=False,
+                )
 
         # with canvans you can update the fig in real-time
         canvas = FigureCanvas(fig)
@@ -143,14 +150,16 @@ class HMI(object):
                 # subplots[i].set_xticklabels(labels)
 
         # set time as a comming x axis
-        subplots[len(subplots) - 1].set_xlabel('Time (s)')
-        subplots[len(subplots) - 1].xaxis.set_major_formatter(formatter)
+        subplots[len(subplots)-1].set_xlabel('Time')
+        subplots[len(subplots)-1].xaxis.set_major_formatter(formatter)
+        subplots[len(subplots)-1].set_xticklabels(subplots[len(subplots)-1].xaxis.get_majorticklabels(), rotation=45)
 
+        # set y axis for each subplots
         for i in range(0, len(subplots)):
             subplots[i].set_ylabel(self.__tags[i])
             subplots[i].yaxis.set_major_formatter(formatter)
 
-        subplots[0].set_title('HMI %d' % self.__id)
+        subplots[0].set_title('HMI%d' % self.__id)
 
         for i in range(0, len(subplots)):
             # scatter use points
