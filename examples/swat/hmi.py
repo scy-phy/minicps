@@ -124,48 +124,33 @@ class HMI(object):
         Matplotlib canvas backend.
         """
         # reference to the eaxis formatter object
-        formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+        # formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+
+        # number of subplots
+        n = len(self.__tags)
+
+        x = self.__values['time']
 
         # create len(self.__tags) subplots, sharing the x axis
-        fig, subplots = plt.subplots(
-                nrows=len(self.__tags),
-                ncols=1,
-                sharex=True,
-                sharey=False,
-                squeeze=False,
-                )
+        fig, subplots = plt.subplots(n, 1, sharex=True, sharey=False)
+
+        # set figure title
+        subplots[0].set_title('HMI%d Monitor' % self.__id)
+
+        # set common x axis
+        subplots[n-1].set_xticks(x)
+        for tick in subplots[n-1].get_xticklabels():
+                tick.set_rotation(90)
+        subplots[n-1].set_xlabel('Time')
+
+        # set y_label and plot data
+        for i in range(0, n):
+            subplots[i].set_ylabel(self.__tags[i])
+            y = self.__values[self.__tags[i]]
+            subplots[i].scatter(x, y, color='r')
 
         # with canvans you can update the fig in real-time
         canvas = FigureCanvas(fig)
-
-        for i in range(0, len(subplots)):
-            y_min = min(self.__values[self.__tags[i]])
-            y_max = max(self.__values[self.__tags[i]])
-            if(y_min != 0 and y_max != 1 and y_max != 2):
-                set_delta(y_min, y_max, subplots[i], 0.05)
-            else:
-                subplots[i].set_ylim([-1, 3])
-                # labels = [item.get_text() for item in ax.get_xticklabels()]
-                # labels[1] = 'Testing'
-                # subplots[i].set_xticklabels(labels)
-
-        # set time as a comming x axis
-        subplots[len(subplots)-1].set_xlabel('Time')
-        subplots[len(subplots)-1].xaxis.set_major_formatter(formatter)
-        subplots[len(subplots)-1].set_xticklabels(subplots[len(subplots)-1].xaxis.get_majorticklabels(), rotation=45)
-
-        # set y axis for each subplots
-        for i in range(0, len(subplots)):
-            subplots[i].set_ylabel(self.__tags[i])
-            subplots[i].yaxis.set_major_formatter(formatter)
-
-        subplots[0].set_title('HMI%d' % self.__id)
-
-        for i in range(0, len(subplots)):
-            # scatter use points
-            subplots[i].scatter(self.__values['time'], self.__values[self.__tags[i]], color='r')
-
-        # save file
         canvas.print_figure('examples/swat/hmi/%s' % self.__filename)
 
         plt.close(fig)
