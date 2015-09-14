@@ -1,8 +1,10 @@
-.. misc_
+.. _misc:
 
 ********************
 Misc
 ********************
+
+.. _add-res:
 
 Additional resources
 ======================
@@ -10,7 +12,18 @@ Additional resources
 Python 2.X
 -----------------------
 
-* Start `here <https://docs.python.org/2/tutorial/index.html>`_.
+* `Start here <https://docs.python.org/2/tutorial/index.html>`_.
+
+Python 2.X modules
+----------------------
+
+* `pip <https://pip.pypa.io/en/stable/>`_
+* `networkx <http://networkx.github.io/>`_
+* `matplotlib <http://matplotlib.org/>`_
+* `sqlite3 <https://docs.python.org/2/library/sqlite3.html>`_
+* `snakefood <http://furius.ca/snakefood/doc/snakefood-doc.html>`_
+* `sphinx <http://sphinx-doc.org/>`_
+* `sphinx rtd theme <https://github.com/snide/sphinx_rtd_theme>`_
 
 Mininet
 -----------------------
@@ -22,8 +35,8 @@ SDN/Openflow
 -------------
 
 * `The Open Networking Foundation (ONF) <https://www.opennetworking.org/>`_
-* ONF Github `repo <http://opennetworkingfoundation.github.io/libfluid/index.html>`_
-* SDN  `article series <http://thenewstack.io/defining-software-defined-networking-part-1/>`_ by thenewstack.
+* `ONF Github repo <http://opennetworkingfoundation.github.io/libfluid/index.html>`_
+* `SDN  Introductory article series <http://thenewstack.io/defining-software-defined-networking-part-1/>`_
 * `sdnhub <http://sdnhub.org/>`_
 * `OpenVSwitch (OVS) <http://openvswitch.org/>`_
 * `M. Casado list <http://yuba.stanford.edu/~casado/of-sw.html>`_
@@ -39,7 +52,7 @@ SDN platforms
 Network tools
 -------------
 
-* Wireshark OpenFlow's `dissector <https://wiki.wireshark.org/OpenFlow>`_
+* `Wireshark OpenFlow's dissector <https://wiki.wireshark.org/OpenFlow>`_
 * `nmap <https://nmap.org/>`_
 * `ettercap/etterfilter <https://ettercap.github.io/ettercap/>`_
 
@@ -47,24 +60,9 @@ HardwareCPS
 -------------
 
 * `datasheetarchive <http://www.datasheetarchive.com/>`_
-* `ControlLogix  <http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview>`_ products page (Allen-Bradley)
+* `ControlLogix products page (Allen-Bradley) <http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview>`_ 
 
 ENIP
 -------------
 
 * `cpppo <https://github.com/pjkundert/cpppo>`_
-
-
-Python 2.X modules
-----------------------
-
-* `networkx <http://networkx.github.io/>`_
-* `matplotlib <http://matplotlib.org/>`_
-* `sqlite3 <https://docs.python.org/2/library/sqlite3.html>`_
-* `snakefood <http://furius.ca/snakefood/doc/snakefood-doc.html>`_
-
-
-Implementation
-===============
-
-TODO

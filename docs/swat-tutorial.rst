@@ -1,4 +1,4 @@
-.. swat-tutorial_
+.. _swat-tutorial:
 
 *************
 SWaT Tutorial
@@ -14,11 +14,8 @@ as: ``wireshark``, ``ifconfig`` and ``nmap``.
 
 This tutorial will use the following convetions for command syntax:
 
-``$ command``
-   doesn't require superuser permissions
-
-``# command``
-   requires superuser permissions
+``command``
+   is typed inside a terminal (running ``bash``)
 
 ``mininet> command``
    is typed inside mininet CLI
@@ -35,8 +32,6 @@ can monitor your current working directory using:
 
 and you shuold see something like ``../minicps``.
 
-If you need more information, please look at the *Additional Resources*
-section of the :doc:`Misc <misc>` doc.
 
 
 System Overview
@@ -69,35 +64,52 @@ The whole subprocess is controlled by a set of *PLCs (Programmable Logic Control
 Explore
 =============
 
-Dumb plc1
-----------
+SWaT topology
+---------------
 
-Start the simulation:
-
-* opening up a terminal
-* navigating into you ``minicps`` directory 
-
-Then type:
+To start the simulation, open up a terminal, navigate into your ``minicp``
+directory and type:
    
 .. code-block:: console
 
-   sudo python examples/swat/tutorial.py
+   ./bin/swat-tutorial
 
-A window like the one below should pop up:
+Now you shuld see the ``mininet`` CLI:
 
-.. add pic
-.. image:: images/tutorial.png
+.. code-block:: console
 
-And in your terminal window you should see the ``mininet>`` prompt.
+   mininet> 
+
+Feel free to explore the network topology using ``mininet``'s built-in
+commands such as: ``nodes``, ``dump``, ``net``, ``links`` etc.
+
+At this time you shuold be able to answer questions such as:
+
+* What is the IP address of PLC1?
+* What is the network topology?
+* Are there webservers running?
+
+You can exit mininet typing:
+
+.. code-block:: console
+
+   <C-d>
+
+
+
+Dumb plc1
+----------
 
 The image presents three subplots, the one at the bottom
 
 Now try to change the to speed up the overflow process.
 
 Standard plc1
-----------
+-----------------
 
 blablabla
+
+Comment/uncomment secionts shuold start with ``##``
 
 Play by yourself
 ------------------
