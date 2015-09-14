@@ -67,7 +67,7 @@ Explore
 SWaT topology
 ---------------
 
-To start the simulation, open up a terminal, navigate into your ``minicp``
+To start the simulation, open up a terminal, navigate into your ``minicps``
 directory and type:
    
 .. code-block:: console
@@ -95,6 +95,11 @@ You can exit mininet typing:
 
    <C-d>
 
+You can clean the OS environment typing:
+
+.. code-block:: console
+
+   sudo mn -c
 
 
 Dumb plc1

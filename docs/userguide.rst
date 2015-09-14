@@ -124,6 +124,14 @@ Mininet VM comes with a ssh server starting at boot. Check it using:
 
 You should see a ``sshd -D`` running process.
 
+If you want to redirect X command to your host X-server ssh into mininet VM
+using the ``-Y`` option:
+
+.. code-block:: console
+
+    ssh -Y mininet@minnetvm
+
+
 Disable ipv6 traffic
 -----------------------
 
