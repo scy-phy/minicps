@@ -74,7 +74,7 @@ else:
     TARGET = '%s/examples/swat' % args.minicps
     for c in SWAT:
         command = 'ln -s %s/%s %s/%s' % (TARGET, c, LINK, c)
-        print "DEBUG:", command
+        # print "DEBUG:", command
         os.system(command)
 
         if args.verbose >= 2:
