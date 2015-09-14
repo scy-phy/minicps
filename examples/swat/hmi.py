@@ -23,7 +23,7 @@ from multiprocessing import Process
 
 from constants import logger
 from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
-from constants import T_HMI_R, TIMEOUT
+from constants import T_HMI_R, TIMEOUT, DISPLAYED_SAMPLES
 from constants import read_cpppo
 from constants import L1_PLCS_IP
 
@@ -123,13 +123,18 @@ class HMI(object):
         Callback method, writes the three subplots in the .png file using the
         Matplotlib canvas backend.
         """
+        
+
         # reference to the eaxis formatter object
         # formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 
         # number of subplots
         n = len(self.__tags)
 
-        x = self.__values['time']
+        if len(self.__values['time']) > DISPLAYED_SAMPLES:
+            x = self.__values['time'][-DISPLAYED_SAMPLES:]
+        else:
+            x = self.__values['time']
 
         # create len(self.__tags) subplots, sharing the x axis
         fig, subplots = plt.subplots(n, 1, sharex=True, sharey=False)
@@ -146,10 +151,14 @@ class HMI(object):
         # set y_label and plot data
         for i in range(0, n):
             subplots[i].set_ylabel(self.__tags[i])
-            y = self.__values[self.__tags[i]]
+            if len(self.__values[self.__tags[i]]) > DISPLAYED_SAMPLES:
+                y = self.__values[self.__tags[i]][-DISPLAYED_SAMPLES:]
+            else:
+                y = self.__values[self.__tags[i]]
+                
             subplots[i].scatter(x, y, color='r')
 
-        # with canvans you can update the fig in real-time
+        # convert a fig to a canvans
         canvas = FigureCanvas(fig)
         canvas.print_figure('examples/swat/hmi/%s' % self.__filename)
 
@@ -184,6 +193,8 @@ class HMI(object):
             self.__values[index].append(tag)
 
         self.__values['time'].append(time() - self.__start_time)
+        logger.debug("HMI%d - self.__values['time']: %f" % (self.__id,
+            self.__values['time'][-1]))
 
         self.mplot()
 
