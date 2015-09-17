@@ -57,7 +57,7 @@ if __name__ == '__main__':
     # Init db values
     # update_statedb(1198, 'AI_LIT_101_LEVEL')
     # update_statedb('798', 'AI_LIT_101_LEVEL')
-    update_statedb(498, 'AI_LIT_101_LEVEL')
+    update_statedb('498', 'AI_LIT_101_LEVEL')
     # update_statedb('248', 'AI_LIT_101_LEVEL')
 
     update_statedb('710', 'AI_LIT_301_LEVEL')
