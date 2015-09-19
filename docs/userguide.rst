@@ -113,7 +113,7 @@ General
 Every switch listens to ``6634`` debugging port.
 You can change it via ``OF_MISC`` dict in the ``minicps.constants``
 
-Ssh
+ssh
 ---
 
 Mininet VM comes with a ssh server starting at boot. Check it using:
@@ -166,11 +166,13 @@ Instruction taken from
 Generate sphinx doc
 -------------------
 
+To generate this documentation from the source we can use ``sphinx``.
+
 First install:
 
 .. code-block:: console
 
-    sudo apt-get install python-sphinx
+    sudo apt-get install python-sphinx libjs-mathjax
     sudo pip install sphinx_rtd_theme
 
 Then open ``docs/Makefile`` and check that ``SPHINXBUILD`` reference to
@@ -191,8 +193,8 @@ Then to navigate a static version through a browser (e.g. ``firefox``) type:
 
 .. _logging:
 
-Implementation
-===============
+Logging and Testing
+====================
 
 Logging
 ---------
