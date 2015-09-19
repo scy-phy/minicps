@@ -22,13 +22,12 @@ class Tank(object):
     def __init__(self, fits_in, mvs, lit, pumps, fits_out,
                  subprocess, tank_number, diameter, height, period, timeout):
         """
-        # TODO: change to tuples where necessary
         :fits_in: list of input flows tags
         :mvs: list of input of motorvalves tags controlling the fits_in
         :lit: tank level tag
         :pumps: list of output pumps tags
         :fits_out: list of output flows tags
-        :subprocess: number of subprocess in which the tank belongs
+        :subprocess: swat subprocess number
         :tank_number: id of the tank in the subprocess
         :diameter: in meters
         :height: in meters
@@ -49,9 +48,6 @@ class Tank(object):
         self.__process = None
 
     def __del__(self):
-        """
-        destructor
-        """
         if(self.__process is not None):
             self.__process.join()
         logger.info('PP - Tank%d0%d removed' % (self.__id, self.__subprocess))
@@ -65,7 +61,7 @@ class Tank(object):
 
         returns: new water level (mm)
         """
-        level /= 1000  # convert to m
+        level /= 1000.0  # convert to m
         radius = self.__diameter / 2.0
         volume = level * pi * pow(radius , 2)
         for i in range(0, len(fits)):

@@ -16,6 +16,7 @@ class ImageContainer(object):
         """
         self.__filename = filename
         self.__refresh_period = refresh_period
+
         self.__root = tk.Tk()
         self.__root.title(filename)
 

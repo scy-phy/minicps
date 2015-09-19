@@ -151,6 +151,7 @@ class HMI(object):
         # set y_label and plot data
         for i in range(0, n):
             subplots[i].set_ylabel(self.__tags[i])
+            subplots[i].grid('on')
             if len(self.__values[self.__tags[i]]) > DISPLAYED_SAMPLES:
                 y = self.__values[self.__tags[i]][-DISPLAYED_SAMPLES:]
             else:

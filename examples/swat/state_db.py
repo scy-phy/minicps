@@ -54,11 +54,12 @@ if __name__ == '__main__':
         create_db(STATE_DB_PATH, SCHEMA)
         init_db(STATE_DB_PATH, DATATYPES)
 
-    # Init db values
+    ## SET LIT101DB
     # update_statedb(1198, 'AI_LIT_101_LEVEL')
-    # update_statedb('798', 'AI_LIT_101_LEVEL')
-    update_statedb(498, 'AI_LIT_101_LEVEL')
+    update_statedb('798', 'AI_LIT_101_LEVEL')
+    # update_statedb(498, 'AI_LIT_101_LEVEL')
     # update_statedb('248', 'AI_LIT_101_LEVEL')
+    ## END SET LIT101DB
 
     update_statedb('710', 'AI_LIT_301_LEVEL')
 

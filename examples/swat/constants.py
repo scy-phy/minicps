@@ -266,8 +266,7 @@ def read_cpppo(ip, tag_name, cpppo_cache):
     return value
 
 
-# PROCESS
-
+## SET PROCESS
 GRAVITATION = 9.81 # m.s^-2
 TANK_DIAMETER = 1.38 # m
 TIMEOUT = 10000 # s
@@ -305,6 +304,7 @@ TANK_HEIGHT = 1.600  # m
 
 # m^3 / h
 FIT_201 = 0.0
+## END SET PROCESS
 
 
 # THREADS

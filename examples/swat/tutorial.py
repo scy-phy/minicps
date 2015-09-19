@@ -96,9 +96,10 @@ def minicps_tutorial(net):
     # Get references to nodes (each node is a Linux container)
     plc1, plc2, plc3, hmi, s1 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's1')
 
-    ## Comment out one of the two plc1x lines
+    ## SET PLC1
     # plc1a_pid = plc1.cmd("python examples/swat/plc1a.py 2> examples/swat/err/plc1a.err &")
     plc1_pid = plc1.cmd("python examples/swat/plc1.py 2> examples/swat/err/plc1.err &")
+    ## END SET PLC1
 
     plc2_pid = plc2.cmd("python examples/swat/plc2.py 2> examples/swat/err/plc2.err &")
     plc3_pid = plc3.cmd("python examples/swat/plc3.py 2> examples/swat/err/plc3.err &")
@@ -107,11 +108,11 @@ def minicps_tutorial(net):
     # Start the physical process
     s1.cmd("python examples/swat/physical_process.py 2> examples/swat/err/pp.err &")
 
-    ## Uncomment if you're running an xserver 
-    ## or redirecting command to host xserver (ssh -Y ...)
+    ## SET POPUP
     # Displays an image to monitor the physical process activity
     # That it will refresh every 200 ms
     os.system("python examples/swat/ImageContainer.py examples/swat/hmi/plc1.png 1200 2> examples/swat/err/ImageContainer.err &")
+    ## END SET POPUP
 
     CLI(net)
 
@@ -122,9 +123,11 @@ if __name__ == '__main__':
     swat_graph = nxgraph_sub1(attacker=False)
     topo = TopoFromNxGraph(swat_graph)
 
+    ## SET SDN CONTROLLER
     net = Mininet(topo=topo, link=TCLink, listenPort=6634)
-    ## comment above and uncomment below to enable POXSwat SDN controller
+    # comment above and uncomment below to enable POXSwat SDN controller
     # controller = POXSwat
     # net = Mininet(topo=topo, controller=controller, link=TCLink, listenPort=6634)
+    ## END SET SDN CONTROLLER
 
     minicps_tutorial(net)
