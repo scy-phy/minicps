@@ -21,19 +21,19 @@ Supply and Storage (P1):
    collect water from the source
 
 Pre-treatment (P2):
-   chemically pre-threat raw water
+   chemically pre-treat raw water
 
 Ultrafiltration and Backwash (P3):
    purify water and periodically clean the backwash filter
 
 De-Chlorination (P4):
-   remove Chlorine in excess
+   remove excess Chlorine
 
 Reverse Osmosis (P5):
-   purify water discarding concentrate (dirty) water
+   purify water, discard RO reject water
 
 Permeate Transfer, Cleaning and Back-wash (P6):
-   permeate (purified) water storage
+   storage of permeate (purified) water 
 
 
 Supply and Storage control
