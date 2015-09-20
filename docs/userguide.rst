@@ -28,10 +28,10 @@ The official Mininet VM comes without an X-server that is an *optional*
 requirements for MiniCPS (e.g.: it can be used to display a pop-up window
 containing an image).
 
-:ref:`install-minicps` section will present instructions to install ``minicps``
-on a machine that is running the **latest official mininet vm (Ubuntu)**. Please
+The :ref:`install-minicps` section provides instructions to install ``minicps``
+on a machine that is running the **latest official mininet VM (Ubuntu)**. Please
 refer to your distribution documentation if you need to install mininet and
-minicps on other distros.
+MiniCPS on other distros.
 
 .. _install-minicps:
 
@@ -101,7 +101,7 @@ Now you should be able to run:
 
     ./bin/swat-tutorial
 
-And see ``mininet>`` CLI.
+Which should start the command line with ``mininet>`` prompt. To directly continue with the tutorial, follow :ref:`swat-tutorial`.
 
 
 Configure MiniCPS
