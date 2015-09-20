@@ -4,16 +4,18 @@
 SWaT Tutorial
 *************
 
+This tutorial shows how to use MiniCPS to simulate a subprocess of a
+Water Treatment testbed. In particular, we demonstate basic controls through simulated PLCs, the network traffic, and simple physical layer simulation. We now provide a brief system overview, list the pre-requisites to run the tutorial, and then provide step-by-step instructions.
 
 
 System Overview
 =================
 
-This tutorial shows how to use MiniCPS to simulate a subprocess of a Water
-Treatment testbed. The testbed is called *SWaT* that stands for *Secure Water
-Treatment* and it is used by SUTD (Singapore University of Technology and
-Design) researcher and students in the context of Cyber-physical systems
-security. SWaT subprocess are the following:
+This tutorial is based on the *Secure Water
+Treatment* (or short *SWaT*) which is used by SUTD (Singapore
+University of Technology and Design) researcher and students in the
+context of Cyber-physical systems security. SWaT subprocess are the
+following:
 
 Supply and Storage (P1):
    collect water from the source
@@ -42,7 +44,7 @@ The simulation focuses on the first subprocess of the SWaT testbed.
 .. TODO: add Nils pic
 .. a image:: images/swat-p1.png
 
-As you can see from the figure In normal
+As you can see from the figure, during normal
 operating conditions the water flows into a Raw water tank (T101) passing through
 an open motorized valve *MV101*. A flow level sensor *FIT101* monitors the
 flow rate providing a measure in :math:`m^3/h`.
@@ -110,7 +112,7 @@ And you should see something like ``../minicps``.
 
 
 
-Explore
+First Steps and Exploration of SWaT
 =============
 
 
@@ -152,7 +154,7 @@ You can clean the OS environment typing:
    sudo mn -c
 
 
-Change initial values
+Changing initial values
 ----------------------
 
 Open ``examples/swat/state_db.py``,
@@ -193,7 +195,7 @@ uncomment the line containing ``..ImageContainer.py...`` :
    :start-after: ## SET POPUP
    :end-before: ## END SET POPUP
 
-Run again the simulation... A window like the one below should pop-up:
+Run the simulation again... A window like the one below should pop-up (if you have an X server on your system):
 
 .. TODO: add pop-up win pic
 .. a image:: images/swat-pop-up.png
@@ -210,7 +212,7 @@ HMI_MV101-Status and HMI_P101-Status are using the same encoding:
 HMI_LIT101-Pv shows a graph of the last fifteen samples of the water level
 from the tank in :math:`mm`.
 
-IF you let the time pass you'll notice that the flow will increase and the
+IF you let the time pass you will notice that the flow will increase and the
 MV101 and P101 status will remain the same. That is because by default the
 tutorial launches a *dumb* PLC1 script. You can check
 ``examples/swat/plc1a.py`` to gain more insights.
@@ -243,9 +245,9 @@ Now start the simulation. You should see the same pop-up window like in
 :ref:`dumb-plc1` but this time PLC1 will react according to the initial
 conditions and the system thresholds.
 
-If you've analyzed the services running on the mininet instance you've noticed
-a web server listening on ``192.160.1.100:80``. Try to browse that IP within
-mininet during the simulation.
+If you have analyzed the services running on the mininet instance you
+will have noticed a web server listening on ``192.160.1.100:80``. Try
+to browse that IP within mininet during the simulation.
 
 You can stop the simulation typing:
 
