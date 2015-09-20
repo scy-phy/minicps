@@ -11,7 +11,7 @@ Introduction
 MiniCPS is a lightweight simulator for accurate network traffic in an
 industrial control system, with basic support for physical layer interaction.
 
-If you need more information about a specific topic see :ref:`add-res`.
+This page summarizes the basic installation, configuration and testing of MiniCPS. We provide a tutorial for beginners here: :ref:`swat-tutorial`. If you need more information about a specific topic see :ref:`add-res`.
 
 
 Installation
@@ -20,13 +20,13 @@ Installation
 Requirements
 ------------
 
-`Install <http://mininet.org/download/>`_ Mininet and its dependencies.
+You need to start MiniCPS installation by `installing <http://mininet.org/download/>`_ Mininet and its dependencies.
 
 Notice that Mininet can be installed either inside a Virtual Machine (VM)
 or on your physical machine.
 The official Mininet VM comes without an X-server that is an *optional*
 requirements for MiniCPS (e.g.: it can be used to display a pop-up window
-containing an image).
+with sensor data visualization).
 
 The :ref:`install-minicps` section provides instructions to install ``minicps``
 on a machine that is running the **latest official mininet VM (Ubuntu)**. Please
@@ -163,10 +163,10 @@ Then reboot your machine and check it with ``ifconfig`` that no
 Instruction taken from
 `here <https://github.com/mininet/mininet/issues/454>`_
 
-Generate sphinx doc
+Documentation generation with Sphinx
 -------------------
 
-To generate this documentation from the source we can use ``sphinx``.
+To generate this documentation from the source we use the ``sphinx`` tool.
 
 First install:
 
@@ -201,7 +201,7 @@ Logging
 
 The relevant log files are stored in the ``logs`` dir.
 
-Each minicps module and its associated testing module is managed by a
+Each MiniCPS module and its associated testing module is managed by a
 dedicated ``logging`` object. You can tweak the number of backups file that are
 automatically rotating and their size, through the ``minicps.constants`` module.
 
