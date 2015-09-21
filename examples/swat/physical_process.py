@@ -9,10 +9,10 @@ from math import pow, pi
 
 from constants import logger
 from constants import read_single_statedb, read_statedb, update_statedb, select_value
-from constants import TANK_DIAMETER, PUMP_FLOWRATE, TANK_HEIGHT
+from constants import TANK_DIAMETER, PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT, TANK_HEIGHT
 from constants import T_PP_R, T_PP_W, TIMEOUT
 
-        
+
 class Tank(object):
     """
     Class defining a tank in the physical process.
@@ -72,7 +72,7 @@ class Tank(object):
         if pumps is not None:
             for i in range(0, len(pumps)):
                 if pumps[i] == '1':
-                    volume -= (self.__period * (PUMP_FLOWRATE / 3600.0))
+                    volume -= (self.__period * (PUMP_FLOWRATE_OUT / 3600.0))
 
         new_level = volume / (pi * pow(radius, 2))
 
@@ -133,7 +133,7 @@ class Tank(object):
                 if mv_value == '0':
                     update_statedb('0.00', fit_tuple[0])
                 else:
-                    update_statedb(fit_value, fit_tuple[0])
+                    update_statedb(str(PUMP_FLOWRATE_IN), fit_tuple[0])
 
             else:
                 logger.warning('PP - tank%d0%d can\'t read %s' % (self.__id,
@@ -164,9 +164,9 @@ class Tank(object):
                 i = 0
                 for fit_tuple in self.__fits_out:
                     if output_valves[i] != '0':
-                        update_statedb(str(PUMP_FLOWRATE), fit_tuple[0])
+                        update_statedb(str(PUMP_FLOWRATE_OUT), fit_tuple[0])
                         logger.debug('PP - tank%d0%d write_db %s: %f' % (self.__id, self.__subprocess,
-                                                                          fit_tuple[0], PUMP_FLOWRATE))
+                                                                          fit_tuple[0], PUMP_FLOWRATE_OUT))
                     else:
                         update_statedb('0.00', fit_tuple[0])
                         logger.debug('PP - tank%d0%d write_db %s: 0.00' % (self.__id, self.__subprocess,
