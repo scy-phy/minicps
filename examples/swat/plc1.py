@@ -55,14 +55,14 @@ if __name__ == '__main__':
         elif lit101 <= LIT_101['LL']:
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
-            # p101 = '1'  # CLOSE
+            # CLOSE p101
             update_statedb('0', 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.warning("PLC1 - close p101: HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
-            # mv101 = '2'  # OPEN
+            # OPEN mv101
             update_statedb('0', 'DO_MV_101_CLOSE')
             update_statedb('1', 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
@@ -70,7 +70,7 @@ if __name__ == '__main__':
             logger.info("PLC1 - lit101 under L -> open mv101: HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
-            # mv101 = '1'  # CLOSE
+            # CLOSE mv101
             update_statedb('1', 'DO_MV_101_CLOSE')
             update_statedb('0', 'DO_MV_101_OPEN')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
@@ -88,14 +88,14 @@ if __name__ == '__main__':
         lit301 = float(val)
 
         if fit201 <= FIT_201: #or lit301 >= LIT_301['H']:
-            # p101 = '1'  # CLOSE
+            # CLOSE p101
             update_statedb('0', 'DO_P_101_START')
             write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - fit201 under FIT_201 -> close p101: HMI_P101-Status: %s" % val)
 
         # elif lit301 <= LIT_301['L']:
-        #     # p101 = '2'  # OPEN
+        #     # OPEN p101
         #     update_statedb('1', 'DO_P_101_START')
         #     write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
         #     val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
