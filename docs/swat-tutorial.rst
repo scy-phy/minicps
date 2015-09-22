@@ -33,13 +33,13 @@ Reverse Osmosis (P5):
    purify water, discard RO reject water
 
 Permeate Transfer, Cleaning and Back-wash (P6):
-   storage of permeate (purified) water 
+   storage of permeate (purified) water
 
 
 Supply and Storage control
 ----------------------------
 
-The simulation focuses on the first subprocess of the SWaT testbed. 
+The simulation focuses on the first subprocess of the SWaT testbed.
 
 .. TODO: add Nils pic
 .. a image:: images/swat-p1.png
@@ -47,9 +47,9 @@ The simulation focuses on the first subprocess of the SWaT testbed.
 As you can see from the figure, during normal
 operating conditions the water flows into a Raw water tank (T101) passing through
 an open motorized valve *MV101*. A flow level sensor *FIT101* monitors the
-flow rate providing a measure in :math:`m^3/h`.
+flow rate providing a measure in m^3/h.
 The tank has a water level indicator *LIT101* providing a measure in
-:math:`mm`. A pump *P101* [#]_ is able to move the water to the next stage.
+mm. A pump *P101* [#]_ is able to move the water to the next stage.
 In our simulation we assume that the pump is either on or off and that its
 flow rate is **constant** and can instantly change value.
 

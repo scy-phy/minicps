@@ -27,7 +27,7 @@ if __name__ == '__main__':
     init_cpppo_server(tags)
     # init ENIP server tag values
     write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
 
     # wait for the other plcs
     time.sleep(3)
@@ -55,9 +55,9 @@ if __name__ == '__main__':
         elif lit101 <= LIT_101['LL']:
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
-            # p101 = '0'  # CLOSE
+            # p101 = '1'  # CLOSE
             update_statedb('0', 'DO_P_101_START')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '0')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.warning("PLC1 - close p101: HMI_P101-Status: %s" % val)
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         if fit201 <= FIT_201: #or lit301 >= LIT_301['H']:
             # p101 = '1'  # CLOSE
             update_statedb('0', 'DO_P_101_START')
-            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '0')
+            write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
             val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - fit201 under FIT_201 -> close p101: HMI_P101-Status: %s" % val)
 

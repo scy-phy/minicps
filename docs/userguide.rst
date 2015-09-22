@@ -49,7 +49,7 @@ Make sure that the distro is up to date (if necessary, restart the system):
 
 .. code-block:: console
 
-   sudo apt-get update; apt-get upgrade
+   sudo apt-get update; sudo apt-get upgrade
 
 Then clone ``minicps`` repository:
 
@@ -61,7 +61,7 @@ MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
 
 .. code-block:: console
 
-   sudo apt-get install python-pip python-matplotlib 
+   sudo apt-get install python-pip python-matplotlib
    sudo apt-get install python-networkx python-pil.imagetk
    sudo pip install nose nose-cov
 
@@ -76,7 +76,7 @@ For SDN support optionally install ``pox`` (``mininet`` already includes it):
 .. code-block:: console
 
     cd
-    git clone http://github.com/noxrepo/pox
+    git clone https://github.com/noxrepo/pox
 
 MiniCPS pox controller files are tracked in the ``minicps`` repo itself.
 To symlink them to pox's dedicated external controller folder ( ``pox/ext``)
@@ -99,6 +99,7 @@ Now you should be able to run:
 
 .. code-block:: console
 
+    cd ~/minicps
     ./bin/swat-tutorial
 
 Which should start the command line with ``mininet>`` prompt. To directly continue with the tutorial, follow :ref:`swat-tutorial`.
@@ -173,7 +174,7 @@ First install:
 .. code-block:: console
 
     sudo apt-get install python-sphinx libjs-mathjax
-    sudo pip install sphinx_rtd_theme
+    sudo pip install sphinx-rtd-theme
 
 Then open ``docs/Makefile`` and check that ``SPHINXBUILD`` reference to
 ``sphinx-build`` command. (e.g. Arch Linux users can use ``sphinx-build2``)
@@ -188,7 +189,7 @@ Then to build the doc in ``html`` format type:
 Then to navigate a static version through a browser (e.g. ``firefox``) type:
 
 .. code-block:: console
-    
+
     firefox _build/html/index.html
 
 .. _logging:
@@ -205,7 +206,7 @@ Each MiniCPS module and its associated testing module is managed by a
 dedicated ``logging`` object. You can tweak the number of backups file that are
 automatically rotating and their size, through the ``minicps.constants`` module.
 
-Each ``scripts/pox/component`` generate a separate ``POXComponent.log`` that 
+Each ``scripts/pox/component`` generate a separate ``POXComponent.log`` that
 will be overwritten each time you run a new ``mininet`` configuration.
 
 The swat tutorial produces a ``swat.log`` file. Each time you run a new swat
