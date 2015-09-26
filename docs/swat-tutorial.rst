@@ -41,8 +41,7 @@ Supply and Storage control
 
 The simulation focuses on the first subprocess of the SWaT testbed.
 
-.. TODO: add Nils pic
-.. a image:: images/swat-p1.png
+.. image:: images/swat-tutorial-subprocess.png
 
 As you can see from the figure, during normal
 operating conditions the water flows into a Raw water tank (T101) passing through
@@ -197,8 +196,7 @@ uncomment the line containing ``..ImageContainer.py...`` :
 
 Run the simulation again... A window like the one below should pop-up (if you have an X server on your system):
 
-.. TODO: add pop-up win pic
-.. a image:: images/swat-pop-up.png
+.. image:: images/swat-tutorial-popup.png
 
 The window contains three subplots: *HMI_MV101-Status*, *HMI_LIT101-Pv*
 and *HMI_P101-Status*
