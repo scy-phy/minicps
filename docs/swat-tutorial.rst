@@ -113,7 +113,7 @@ And you should see something like ``../minicps``.
 
 
 First Steps and Exploration of SWaT
-=============
+=====================================
 
 
 SWaT topology
@@ -155,7 +155,7 @@ You can clean the OS environment typing:
 
 
 Changing initial values
-----------------------
+-------------------------
 
 Open ``examples/swat/state_db.py``,
 to change LIT101 initial value select one line from the following:
