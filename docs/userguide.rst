@@ -49,7 +49,8 @@ Make sure that the distro is up to date (if necessary, restart the system):
 
 .. code-block:: console
 
-   sudo apt-get update; sudo apt-get upgrade
+   sudo apt-get update
+   sudo apt-get upgrade
 
 Then clone ``minicps`` repository:
 
