@@ -33,7 +33,11 @@ if __name__ == '__main__':
     else:
         write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
 
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+    mv101_str = read_single_statedb('1', 'DO_MV_101_OPEN')[3]
+    if mv101_str == '1':
+        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
+    else:
+        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '1')
 
     # wait for the other plcs
     time.sleep(3)
