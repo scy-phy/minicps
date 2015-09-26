@@ -1,5 +1,6 @@
-one line to give the program's name and a brief description
-Copyright (C) 2015 Bla Bla
+MiniCPS is a lightweight simulator for accurate network traffic in an
+industrial control system, with basic support for physical layer interaction.
+Copyright (C) 2015 scy-phy
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the "Software"),
@@ -18,14 +19,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-OTHER LICENSES CHECK
-
-    mininet:    free, custom
-    pycomm:     MIT
-    cppo:       GPL3 or other negotiable licenses
-
-reference: http://choosealicense.com/licenses/
-
-
