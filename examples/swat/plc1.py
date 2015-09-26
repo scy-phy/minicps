@@ -25,9 +25,15 @@ if __name__ == '__main__':
     tags = []
     tags.extend(P1_PLC1_TAGS)
     init_cpppo_server(tags)
-    # init ENIP server tag values
+
+    # init ENIP server tag values (taken from state_db)
+    p101_str = read_single_statedb('1', 'DO_P_101_START')[3]
+    if p101_str == '1':
+        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
+    else:
+        write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '1')
+
     write_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', '2')
-    write_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', '2')
 
     # wait for the other plcs
     time.sleep(3)
