@@ -5,7 +5,9 @@ except ImportError:
 
 
 config = {
-    'description': 'TODO',
+    'description': """MiniCPS is a lightweight simulator for accurate network
+    traffic in an industrial control system, with basic support for physical
+    layer interaction.""",
 
     'author': 'scy-phy',
 
@@ -18,13 +20,11 @@ config = {
     'version': '0.1.0',
 
     'install_requires': [
-        'nose',
-        'nose-cover3',
         'cpppo',
-        'pycomm',
         'networkx',
         'matplotlib',
-        'pillow',  # TODO: check
+        'nose',
+        'nose-cover3',
     ],
 
     'package': ['minicps'],
