@@ -120,7 +120,9 @@ def minicps_tutorial(net):
 
 
 if __name__ == '__main__':
+    ## SET ATTACKER
     swat_graph = nxgraph_sub1(attacker=False)
+    ## END ATTACKER
     topo = TopoFromNxGraph(swat_graph)
 
     ## SET SDN CONTROLLER
