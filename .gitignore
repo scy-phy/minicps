@@ -69,6 +69,8 @@ target/
 *.json
 *.cache
 *.gexf
+*.swo
+*.swp
 
 # Caps
 *.pcapng
