@@ -1,7 +1,7 @@
 """
 minicps constants.
 
-TEST_LOG_LEVEL affetcs all the tests. 
+TEST_LOG_LEVEL affetcs all the tests.
 output, info and debug are in increasing order of verbosity.
 
 There is a logger for each module/module_tests pair. Each pair
@@ -10,7 +10,8 @@ minicps/log/modname.log. Log format and filters are hardcoded,
 naming is implicit and you can set logs dimensions and number of
 rotations through this module.
 
-POX controller logs is stored into dedicated logs/POXControllerName.log file. Each time the log file is overwritten, unlike minicps module logging facility.
+POX controller logs is stored into dedicated logs/POXControllerName.log file.
+Each time the log file is overwritten, unlike minicps module logging facility.
 """
 
 import logging
@@ -22,13 +23,16 @@ from nose.tools import *
 import os
 
 # OPENFLOW
-POX_PATH='~/'
+POX_PATH = '~/'
 
 POX = {
-    './pox.py openflow.of_01 --port=6633 --address=127.0.0.1 log.level --DEBUG swat_controller',
+    './pox.py openflow.of_01 --port=6633 --address=127.0.0.1' +
+    'log.level --DEBUG swat_controller',
 }
 
-def _pox_opts(components, info_level, logfile_opts,
+
+def _pox_opts(
+        components, info_level, logfile_opts,
         log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
 
     """Generate a string with custom pox options.
@@ -40,25 +44,26 @@ def _pox_opts(components, info_level, logfile_opts,
 
     """
     info_level = info_level.upper()
-    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (components,
-            info_level, logfile_opts, log_format)
+    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (
+        components,
+        info_level, logfile_opts, log_format)
     # print 'DEBUG:', opts
 
     return pox_opts
-    
-# mirrors minicps constants
-OF10_MSG_TYPES= {
-    0:  'OFPT_HELLO',  # Symmetric 
-    1:  'OFPT_ERROR',  # Symmetric 
-    2:  'OFPT_ECHO_REQUEST',  # Symmetric 
-    3:  'OFPT_ECHO_REPLY',  # Symmetric 
-    4:  'OFPT_VENDOR',  # Symmetric 
 
-    5:  'OFPT_FEATURES_REQUEST',  # Controller -> Switch
-    6:  'OFPT_FEATURES_REPLY',  # Switch -> Controller
-    7:  'OFPT_GET_CONFIG_REQUEST',  # Controller -> Switch
-    8:  'OFPT_GET_CONFIG_REPLY',  # Switch -> Controller
-    9:  'OFPT_SET_CONFIG',  # Controller -> Switch
+# mirrors minicps constants
+OF10_MSG_TYPES = {
+    0: 'OFPT_HELLO',  # Symmetric
+    1: 'OFPT_ERROR',  # Symmetric
+    2: 'OFPT_ECHO_REQUEST',  # Symmetric
+    3: 'OFPT_ECHO_REPLY',  # Symmetric
+    4: 'OFPT_VENDOR',  # Symmetric
+
+    5: 'OFPT_FEATURES_REQUEST',  # Controller -> Switch
+    6: 'OFPT_FEATURES_REPLY',  # Switch -> Controller
+    7: 'OFPT_GET_CONFIG_REQUEST',  # Controller -> Switch
+    8: 'OFPT_GET_CONFIG_REPLY',  # Switch -> Controller
+    9: 'OFPT_SET_CONFIG',  # Controller -> Switch
 
     10: 'OFPT_PACKET_IN',  # Async, Switch -> Controller
     11: 'OFPT_FLOW_REMOVED',  # Async, Switch -> Controller
@@ -92,7 +97,7 @@ OF_MISC = {
 
 ENIP_MISC = {
     'tcp_port': 44818,
-    'udp_port':2222,
+    'udp_port': 2222,
 }
 
 
@@ -103,6 +108,7 @@ MININET_CMDS = {
     'clear': 'sudo mn -c',
     'linear-remote': 'sudo mn --topo=linear,4 --controller=remote',
 }
+
 
 def _arp_cache_rtts(net, h1, h2):
     """Naive learning check on the first two ping
@@ -136,6 +142,7 @@ def _arp_cache_rtts(net, h1, h2):
 
     return first_rtt, second_rtt
 
+
 def _mininet_functests(net):
     """Common mininet functional tests can be called inside
     each unittest. The function will be ignored by nose
@@ -152,7 +159,7 @@ def _mininet_functests(net):
     net.pingAll()
     logging.info("Testing TCP bandwidth btw first and last host")
     net.iperf()
-    
+
 L0_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
 L1_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
 L2_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
@@ -166,7 +173,7 @@ L3_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True
 # LOGGING AND TESTING
 
 # TEST_LOG_LEVEL='output'
-TEST_LOG_LEVEL='info'
+TEST_LOG_LEVEL = 'info'
 # TEST_LOG_LEVEL='debug'
 
 TEMP_DIR = './temp'
@@ -208,20 +215,21 @@ def _buildLogger(loggername, maxBytes, backupCount):
     logger.setLevel(logging.DEBUG)
 
     # log_path = _getlog_path()
-    # assert log_path != None, "No log path found" 
+    # assert log_path != None, "No log path found"
 
     fh = logging.handlers.RotatingFileHandler(
-            # log_path+loggername+'.log',
-            'logs/'+loggername+'.log',
-            maxBytes=maxBytes,
-            backupCount=backupCount)
+        # log_path+loggername+'.log',
+        'logs/' + loggername + '.log',
+        maxBytes=maxBytes,
+        backupCount=backupCount)
     fh.setLevel(logging.DEBUG)
 
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
     # no thread information
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
 
@@ -244,12 +252,15 @@ ASSERTION_ERRORS = {
 def setup_func(test_name):
     logger.info('Inside %s' % test_name)
 
+
 def teardown_func(test_name):
     logger.info('Leaving %s' % test_name)
+
 
 def teardown_func_clear(test_name):
     logger.info('Leaving %s' % test_name)
     os.system(MININET_CMDS['clear'])
+
 
 def with_named_setup(setup=None, teardown=None):
     def wrap(f):

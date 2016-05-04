@@ -8,7 +8,7 @@ By default Mininet runs Open vSwitch in OpenFlow mode,
 which requires an OpenFlow controller.
 
 
-POX
+Pox
 
 Minicps assumes that pox is cloned into your $HOME dir,
 for more information visit:
@@ -22,21 +22,22 @@ topologies that contains loops and multiple paths (eg: fat trees)
 but they work fine with spanning tree topologies.
 """
 
-from mininet.net import Mininet
-from mininet.node import Controller, Host, Node
-from mininet.topo import SingleSwitchTopo
+
+# from mininet.net import Mininet
+from mininet.node import Controller  # , Host, Node
+# from mininet.topo import SingleSwitchTopo
 
 from minicps import constants as c
 
-import os
-import sys
-
 from minicps.constants import _buildLogger, _pox_opts
-import logging
+
+# import os
+# import sys
+# import logging
 logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
 
-# NetworkX: use Edge and Vertex to avoid conflicts with mininet terminology
+# netwrokx: use Edge and Vertex to avoid conflicts with mininet terminology
 class Vertex(object):
 
     """
@@ -82,9 +83,9 @@ class Attacker(Vertex):
         """
         Mount a ettercap Man in the Middle passive ARP poisoning attack
 
-        :target_ip1: TODO
-        :target_ip2: TODO
-        :attacker_interface: TODO
+        :target_ip1: ip address of the first target
+        :target_ip2: ip address of the second target
+        :attacker_interface: attacker interface
 
         """
         pass
@@ -95,7 +96,7 @@ class DumbSwitch(Vertex):
 
     """
     is_switch bool is used to discriminate btw mininet switch requiring
-    addSwitch methoo and normal hosts requiring addHost method.
+    addSwitch method and normal hosts requiring addHost method.
     """
 
     def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
@@ -112,43 +113,57 @@ class DumbSwitch(Vertex):
 class HMI(Vertex):
 
     """HMI"""
-    #TODO: add logic
 
-        
+    # TODO: add logic
+
+
 class Workstn(Vertex):
 
     """Workstn"""
+
+    # TODO: add logic
 
 
 class Histn(Vertex):
 
     """Histn"""
-        
-        
+
+    # TODO: add logic
+
+
 class DumbRouter(Vertex):
 
     """Docstring for DumbRouter. """
+
+    # TODO: add logic
 
 
 class Firewall(Vertex):
 
     """Docstring for Firewall. """
 
+    # TODO: add logic
+
 
 class SCADA(Vertex):
 
     """Docstring for SCADA. """
+
+    # TODO: add logic
 
 
 class Historian(Vertex):
 
     """Docstring for Historian. """
 
+    # TODO: add logic
+
 
 class AccessPoint(Vertex):
 
     """Docstring for AccessPoint. """
 
+    # TODO: add logic
 
 
 # Mininet
@@ -160,7 +175,9 @@ class POXL2Pairs(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.l2_pairs', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(
+            'forwarding.l2_pairs', 'DEBUG', 'logs/' +
+            type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
@@ -177,7 +194,9 @@ class POXL2Learning(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('forwarding.l2_learning', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(
+            'forwarding.l2_learning', 'DEBUG', 'logs/' +
+            type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
@@ -190,13 +209,17 @@ class POXProva(Controller):
     """Use it to test components using POX_PATH."""
 
     def start(self):
-        POX_PATH='hub'  # pox/ext/ dir
+        POX_PATH = 'hub'  # pox/ext/ dir
 
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(POX_PATH, 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(
+            POX_PATH, 'DEBUG', 'logs/' +
+            type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
-        # self.cmd(self.pox, 'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
+        # self.cmd(
+        #     self.pox,
+        #     'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
 
     def stop(self):
         logger.info('Leaving %s' % type(self).__name__)
@@ -210,7 +233,9 @@ class POXSwat(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('swat_controller', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(
+            'swat_controller', 'DEBUG', 'logs/' +
+            type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
@@ -225,7 +250,9 @@ class POXAntiArpPoison(Controller):
     def start(self):
         logger.info('Inside %s' % type(self).__name__)
         self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts('antiarppoison', 'DEBUG', 'logs/'+type(self).__name__+'.log,w')
+        pox_opts = _pox_opts(
+            'antiarppoison', 'DEBUG', 'logs/' +
+            type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):

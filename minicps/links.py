@@ -6,11 +6,13 @@ particular link technology
 e.g. 802.3 Ethernet, 802.11 Wifi
 """
 
+
 class Edge(object):
 
     """Base Edge networkx -> mininet link object"""
 
-    def __init__(self, id, bw, delay, loss=0, max_queue_size=1000, use_htb=True):
+    def __init__(
+            self, id, bw, delay, loss=0, max_queue_size=1000, use_htb=True):
         """
         :name: edge unique id
         :bw: TODO
@@ -26,7 +28,7 @@ class Edge(object):
         self.loss = loss
         self.max_queue_size = max_queue_size
         self.use_htb = use_htb
-    
+
     def get_params(self):
         """Wrapper around __dict__"""
 

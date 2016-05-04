@@ -1,7 +1,7 @@
 """
 Constants tests
 
-TODO
+TODO: maybe remove
 """
 
 from nose.tools import *
@@ -29,7 +29,9 @@ setLogLevel(c.TEST_LOG_LEVEL)
 #     # raise SkipTest
 
 #     topo = L3EthStar()
-#     net = Mininet(topo=topo, link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+#     net = Mininet(
+#         topo=topo,
+#         link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
 #     net.start()
 
 #     # TODO: add log info
