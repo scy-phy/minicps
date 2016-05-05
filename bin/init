@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
 Script to perform pox init.
@@ -27,21 +28,18 @@ SWAT = [
 PARSER_DESC = 'perform minicps pox init'
 parser = argparse.ArgumentParser(description=PARSER_DESC)
 parser.add_argument(
-    "-v","--verbose",
+    "-v", "--verbose",
     help='print more info',
     action="count",
-    default=0
-    )
+    default=0)
 parser.add_argument(
     "-p", "--pox",
     help='pox dir (defaults to ~/pox)',
-    default='~/pox'
-    )
+    default='~/pox')
 parser.add_argument(
     "-m", "--minicps",
     help='minicps dir (defaults to ~/minicps)',
-    default='~/minicps'
-    )
+    default='~/minicps')
 
 args = parser.parse_args()
 print "pox path is: %s" % args.pox
@@ -53,7 +51,6 @@ if choice == 'n' or choice == 'no':
     print "Abort init.py"
 
 else:
-
     # POX scripts
     TARGET = '%s/scripts/pox' % args.minicps
     LINK = '%s/ext' % args.pox
