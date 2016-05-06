@@ -1,10 +1,13 @@
-.. userguide_
+.. USERGUIDE {{{1
+.. _userguide:
 
 **********
 User Guide
 **********
 
+.. INTRODUCTION {{{2
 
+============
 Introduction
 ============
 
@@ -16,8 +19,13 @@ MiniCPS. We provide a tutorial for beginners here: :ref:`swat-tutorial`. If
 you need more information about a specific topic see :ref:`add-res`.
 
 
+.. INSTALLATION {{{2
+
+============
 Installation
 ============
+
+.. REQUIREMENTS {{{3
 
 Requirements
 ------------
@@ -31,12 +39,13 @@ The official Mininet VM comes without an X-server that is an *optional*
 requirements for MiniCPS (e.g., it can be used to display a pop-up window
 with sensor data visualization).
 
-The :ref:`install-minicps` section provides instructions to install ``minicps``
+The `Install MiniCPS`_ section provides instructions to install ``minicps``
 on a machine that is running the **latest official mininet VM (Ubuntu)**. Please
 refer to your distribution documentation if you need to install Mininet on 
 other Linux distributions.
 
-.. _install-minicps:
+
+.. INSTALL MINICPS {{{3
 
 Install MiniCPS
 ---------------
@@ -67,6 +76,7 @@ MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
 
    sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
 
+.. INSTALL OPTIONAL {{{3
 .. _install-optional:
 
 Install optional dependencies
@@ -117,6 +127,9 @@ Notice that:
 * ``POX_PATH`` defaults to ``~/pox`` and ``MINICPS_PATH`` defaults to
   ``~/minicps``, indeed ``~/minicps/bin/init`` should work for you.
 
+
+.. TESTING INSTALLATION {{{3
+
 Testing installation
 ----------------------
 
@@ -131,14 +144,21 @@ Which should start the command line with ``mininet>`` prompt. To directly
 continue with the tutorial, look at :ref:`swat-tutorial`.
 
 
+.. CONFIGURE MINICPS {{{2
+
 Configure MiniCPS
 ==================
+
+.. GENERAL {{{3
 
 General
 -----------------
 
 Every switch listens to ``6634`` debugging port.
 You can change it via ``OF_MISC`` dict in the ``minicps.constants``
+
+
+.. SSH {{{3
 
 ssh
 ---
@@ -160,8 +180,10 @@ using the ``-Y`` option:
     ssh -Y mininet@minnetvm
 
 
-Disable ipv6 traffic
------------------------
+.. IPv6 {{{3
+
+IPv6
+----
 
 In order to reduce the network traffic you can **disable** the
 Linux ipv6 kernel module. (``mininet`` VM already disables it)
@@ -191,10 +213,13 @@ Then reboot your machine and check it with ``ifconfig`` that no
 Instruction taken from
 `here <https://github.com/mininet/mininet/issues/454>`_
 
-Offline Documentation generation
-------------------------------
 
-First install packages listed in :ref:`install-optional`
+.. OFFILNE DOCUMENTATION {{{3
+
+Offline Documentation
+---------------------
+
+First install packages listed in `Install optional dependencies`_.
 
 Then open ``docs/Makefile`` and check that ``SPHINXBUILD`` reference to
 ``sphinx-build`` command. (e.g., Arch Linux users can use ``sphinx-build2``)
@@ -212,10 +237,13 @@ Then to navigate a static version through a browser (e.g., ``firefox``) type:
 
     firefox _build/html/index.html
 
-.. _logging:
+
+.. LOGGING AND TESTING {{{2
 
 Logging and Testing
 ====================
+
+.. LOGGING {{{3
 
 Logging
 ---------
@@ -233,8 +261,11 @@ The swat tutorial produces a ``swat.log`` file. Each time you run a new swat
 simulation the logger will append messages to that file. Please control
 ``swat.log``'s size and manage it manually.  
 
-Nose Testing and Coverage
---------------------------
+
+.. TESTING {{{3
+
+Testing
+-------
 
 You can intentionally skip a particular test adding/uncommenting ``raise SkipTest``.
 You can see skipped test summary in the nosetests output.

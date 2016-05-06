@@ -1,32 +1,44 @@
-.. api_
+.. .. API {{{1
+.. .. _api:
 
-*************
-API
-*************
+.. *************
+.. API
+.. *************
 
-.. automodule:: minicps
-   :members:
-   :undoc-members:
+.. .. automodule:: minicps
+..    :members:
+..    :undoc-members:
 
-constants module
-=================
 
-.. automodule:: minicps.constants
-   :members:
-   :undoc-members:
+.. .. CONSTANTS {{{2
 
-topology module
-=================
+.. =========
+.. Constants
+.. =========
 
-.. automodule:: minicps.topologies
-   :members:
-   :undoc-members:
+.. .. automodule:: minicps.constants
+..    :members:
+..    :undoc-members:
 
-devices module
-===============
 
-.. automodule:: minicps.devices
-   :members:
-   :undoc-members:
+.. .. TOPOLOGY {{{2
 
+.. ==========
+.. Topologies
+.. ==========
+
+.. .. automodule:: minicps.topologies
+..    :members:
+..    :undoc-members:
+
+
+.. .. DEVICES {{{2
+
+.. =======
+.. Devices
+.. =======
+
+.. .. automodule:: minicps.devices
+..    :members:
+..    :undoc-members:
 

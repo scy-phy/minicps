@@ -1,35 +1,41 @@
+.. MISC {{{1
 .. _misc:
 
 ********************
 Misc
 ********************
 
+.. LINKS {{{2
 .. _add-res:
 
-Additional resources
+======================
+Links
 ======================
 
-Python 2.X
+.. PYTHON {{{3
+
+Python 2.X and modules
 -----------------------
 
-* `Start here <https://docs.python.org/2/tutorial/index.html>`_.
-
-Python 2.X modules
-----------------------
-
+* `python tutorial <https://docs.python.org/2/tutorial/index.html>`_.
 * `pip <https://pip.pypa.io/en/stable/>`_
 * `networkx <http://networkx.github.io/>`_
 * `matplotlib <http://matplotlib.org/>`_
 * `sqlite3 <https://docs.python.org/2/library/sqlite3.html>`_
-* `snakefood <http://furius.ca/snakefood/doc/snakefood-doc.html>`_
-* `sphinx <http://sphinx-doc.org/>`_
-* `sphinx rtd theme <https://github.com/snide/sphinx_rtd_theme>`_
+* `sphinx <http://sphinx-doc.org/>`_ and
+  `sphinx rtd theme <https://github.com/snide/sphinx_rtd_theme>`_
+
+
+.. MININET {{{3
 
 Mininet
 -----------------------
 
 * `walkthrough <http://mininet.org/walkthrough/>`_ 
 * `APIs <https://github.com/mininet/mininet/wiki/Introduction-to-Mininet>`_.
+
+
+.. SDN OPENFLOW {{{3
 
 SDN/Openflow
 -------------
@@ -41,12 +47,18 @@ SDN/Openflow
 * `OpenVSwitch (OVS) <http://openvswitch.org/>`_
 * `M. Casado list <http://yuba.stanford.edu/~casado/of-sw.html>`_
 
+
+.. SDN PLATFORM {{{3
+
 SDN platforms
 ---------------
 
 * `NOX(POX) <http://www.noxrepo.org/>`_
 * `POX wiki <https://openflow.stanford.edu/display/ONL/POX+Wiki>`_
 * `OpenDaylight <https://www.opendaylight.org/>`_
+
+
+.. NETWORK TOOLS {{{3
 
 Network tools
 -------------
@@ -55,19 +67,28 @@ Network tools
 * `nmap <https://nmap.org/>`_
 * `ettercap/etterfilter <https://ettercap.github.io/ettercap/>`_
 
-HardwareCPS
--------------
+
+.. CPS {{{3
+
+Cyber-Physical Systems (CPS)
+-----------------------------
 
 * `datasheetarchive <http://www.datasheetarchive.com/>`_
 * `ControlLogix products page (Allen-Bradley) <http://ab.rockwellautomation.com/programmable-controllers/controllogix#overview>`_ 
 
-ENIP
--------------
+
+.. ENIP {{{3
+
+Ethernet/IP (ENIP)
+------------------
 
 * `cpppo <https://github.com/pjkundert/cpppo>`_
+* `pycomm <https://github.com/ruscito/pycomm>`_
 
-Process
--------------
+.. PHYSICAL PROCESSES {{{3
+
+Physical Processes
+-------------------
 
 * `Ultrafiltration <https://en.wikipedia.org/wiki/Ultrafiltration>`_
 * `Reverse osmosis <https://en.wikipedia.org/wiki/Reverse_osmosis>`_

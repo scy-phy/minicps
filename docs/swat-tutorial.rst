@@ -1,13 +1,20 @@
+.. SWAT {{{1
 .. _swat-tutorial:
 
 *************
 SWaT Tutorial
 *************
 
-This tutorial shows how to use MiniCPS to simulate a subprocess of a
-Water Treatment testbed. In particular, we demonstate basic controls through simulated PLCs, the network traffic, and simple physical layer simulation. We now provide a brief system overview, list the pre-requisites to run the tutorial, and then provide step-by-step instructions.
+This tutorial shows how to use MiniCPS to simulate a subprocess of a  
+Water Treatment testbed. In particular, we demonstrate basic controls through
+simulated PLCs, the network traffic, and simple physical layer simulation. We
+now provide a brief system overview, list the pre-requisites to run the
+tutorial, and then provide step-by-step instructions.
 
 
+.. SYSTEM OVERVIEW {{{2
+
+=================
 System Overview
 =================
 
@@ -35,6 +42,8 @@ Reverse Osmosis (P5):
 Permeate Transfer, Cleaning and Back-wash (P6):
    storage of permeate (purified) water
 
+
+.. SUPPLY AND STORAGE {{{3
 
 Supply and Storage control
 ----------------------------
@@ -81,6 +90,9 @@ indeed our simulation separate the two cases using different functions.
        is in stand-by mode.
 
 
+.. PREREQUISITES {{{2
+
+=============
 Prerequisites
 =============
 
@@ -110,10 +122,14 @@ can monitor your current working directory using:
 And you should see something like ``../minicps``.
 
 
+.. SWAT EXPLOTATION {{{2
 
-First Steps and Exploration of SWaT
-=====================================
+=====================
+SWaT's Exploration
+=====================
 
+
+.. SWAT TOPOLOGY {{{3
 
 SWaT topology
 ---------------
@@ -153,6 +169,8 @@ You can clean the OS environment typing:
    sudo mn -c
 
 
+.. CHANGING INITIAL VALUES {{{3
+
 Changing initial values
 -------------------------
 
@@ -171,6 +189,8 @@ to change process values set:
    :end-before: ## END SET PROCESS
 
 
+.. LOGS AND ERRORS {{{3
+
 Logs and Errors
 ----------------------
 
@@ -182,7 +202,7 @@ contains a ``component.err`` file for each component that during the *last*
 simulation has written to ``stderr`` (e.g.: ``hmi.err``).
 
 
-.. _dumb-plc1:
+.. DUMB PLC1 {{{3
 
 Dumb plc1
 ----------
@@ -227,7 +247,8 @@ And optionally clean the OS environment typing:
 
    sudo mn -c
 
-.. _std-plc1:
+
+.. STD PLC1 {{{3
 
 Standard plc1
 -----------------
@@ -240,7 +261,7 @@ to call the standard plc1 script:
    :end-before: ## END SET PLC1
 
 Now start the simulation. You should see the same pop-up window like in
-:ref:`dumb-plc1` but this time PLC1 will react according to the initial
+`Dumb plc1`_ but this time PLC1 will react according to the initial
 conditions and the system thresholds.
 
 If you have analyzed the services running on the mininet instance you
@@ -253,11 +274,14 @@ You can stop the simulation typing:
 
    mininet> C-d
 
-and optionally clean the OS environment typing:
+And optionally clean the OS environment typing:
 
 .. code-block:: console
 
    sudo mn -c
+
+
+.. POXSWAT SDN CONTROLLER {{{3
 
 POXSwat SDN Controller
 --------------------------
