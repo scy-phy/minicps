@@ -81,4 +81,6 @@ target/
 # Etterfilter compiled filters
 *.ef
 
+
+Session.vim
 Session.vim
