@@ -16,7 +16,7 @@ industrial control system, with basic support for physical layer interaction.
 
 This page summarizes the basic installation, configuration and testing of
 MiniCPS. We provide a tutorial for beginners here: :ref:`swat-tutorial`. If
-you need more information about a specific topic see :ref:`add-res`.
+you need more information about a specific topic see :ref:`misc`.
 
 
 .. INSTALLATION {{{2
