@@ -22,61 +22,12 @@ Incoming graphs have to satisfy some constraints to build correctly:
 """
 
 # from mininet.net import Mininet
-from mininet.topo import Topo
 
 from minicps import constants as c
 
-from minicps.constants import _buildLogger
-import logging
-logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+from minicps.utils import build_logger
+logger = build_logger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
-import networkx as nx
-
-
-# https://networkx.github.io/documentation/latest/reference/readwrite.html
-# TODO: add more TopoFrom that convert to NxGraph and reuse this class
-#       rename topology into topologies
-class TopoFromNxGraph(Topo):
-
-    """
-    Construct a topology from an Undirected Simple Graph
-    Node (allows self loops but no parallel edges)
-    
-    Support: start, daisy chain, DLR
-    """
-
-    # TODO: add drawing capability
-    def build(self, graph):
-        """
-        Process net_graph and build a mininet topo.
-
-        :graph: network information embedded as parameters
-        """
-        class_name = type(self).__name__
-        logger.info('Inside %s' % class_name)
-
-        # Crate all minicps nodes and save them into a dict
-        hosts = {}
-        for node in graph.nodes(data=True):
-            name = node[0]
-            params = node[1]
-            # logger.debug(params)
-            if params.has_key('is_not_mininet_switch'):
-                # logger.debug('add switch: %s' % name)
-                hosts[name] = self.addSwitch(name)
-            else:
-                # logger.debug('add: %s' % name)
-                hosts[name] = self.addHost(name,
-                    ip=params['ip']+params['netmask'], mac=params['mac'])
-                # TODO: check '' ip, mac and netmask
-
-        for edge in graph.edges(data=True):
-            # logger.debug('edge: %s' % str(edge))
-            link_opts = edge[2]
-            # logger.debug('link_opts: %s' % link_opts)
-            self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)
-
-        logger.info('Leaving %s' % class_name)
 
 
         

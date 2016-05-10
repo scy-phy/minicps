@@ -1,5 +1,5 @@
 """
-MiniCPS networks module
+MiniCPS networks module.
 
 It contains data object used my Mininet to build the topology.
 
@@ -8,9 +8,10 @@ The module is using Vertex and Edge base class names to avoid conflicts with
 networkx module. The logic of each device will be specified by the client
 """
 
+from mininet.topo import Topo
+
 
 # graph abstraction classes
-
 class Vertex(object):
 
     """Base class used to model devices as vertices in a graph."""
@@ -174,3 +175,49 @@ class WiFiLink(Edge):
     """WiFi 802.11 link."""
 
     pass
+
+
+# TODO: add more TopoFrom that convert to NxGraph and reuse this class
+#       rename topology into topologies
+# https://networkx.github.io/documentation/latest/reference/readwrite.html
+class TopoFromNxGraph(Topo):
+
+    """
+    Construct a topology from an Undirected Simple Graph
+    Node (allows self loops but no parallel edges)
+
+    Support: start, daisy chain, DLR
+    """
+
+    # TODO: add drawing capability
+    def build(self, graph):
+        """
+        Process net_graph and build a mininet topo.
+
+        :graph: network information embedded as parameters
+        """
+        # class_name = type(self).__name__
+
+        # Crate all minicps nodes and save them into a dict
+        hosts = {}
+        for node in graph.nodes(data=True):
+            name = node[0]
+            params = node[1]
+            # logger.debug(params)
+            # if params.has_key('is_not_mininet_switch'):
+            if 'is_not_mininet_switch' in params:
+                # logger.debug('add switch: %s' % name)
+                hosts[name] = self.addSwitch(name)
+            else:
+                # logger.debug('add: %s' % name)
+                hosts[name] = self.addHost(
+                    name,
+                    ip=params['ip'] + params['netmask'],
+                    mac=params['mac'])
+                # TODO: check '' ip, mac and netmask
+
+        for edge in graph.edges(data=True):
+            # logger.debug('edge: %s' % str(edge))
+            link_opts = edge[2]
+            # logger.debug('link_opts: %s' % link_opts)
+            self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)

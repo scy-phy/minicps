@@ -4,9 +4,8 @@ Topologies tests
 """
 
 
-from minicps.topologies import TopoFromNxGraph
 from minicps.networks import PLC, HMI, DumbSwitch, Histn
-from minicps.networks import EthLink
+from minicps.networks import EthLink, TopoFromNxGraph
 from minicps.constants import _mininet_functests, setup_func, teardown_func, teardown_func_clear, with_named_setup
 from minicps.constants import TEST_LOG_LEVEL
 
