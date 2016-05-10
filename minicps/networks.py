@@ -5,7 +5,7 @@ It contains data object used my Mininet to build the topology.
 
 It contains data object used to specify topologies as graph files.
 The module is using Vertex and Edge base class names to avoid conflicts with
-networkx module.
+networkx module. The logic of each device will be specified by the client
 """
 
 
@@ -13,16 +13,15 @@ networkx module.
 
 class Vertex(object):
 
-    """Base class used to model devices as vertices in a graph"""
+    """Base class used to model devices as vertices in a graph."""
 
-    # TODO: finish doc
     def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
         """
 
         :label: node unique id used also as mininet hostname
-        :ip: ipv4
-        :mac: ethernet address
-        :netmask: CIDR notation eg: /24
+        :ip: IPv4 address
+        :mac: Ethernet address
+        :netmask: CIDR notation e.g., /24
         :cpu_alloc: floating point percentage of CPU allocation
 
         """
@@ -40,39 +39,37 @@ class Vertex(object):
 
 class PLC(Vertex):
 
-    """PLC"""
+    """Programmable Logic Controller (PLC)."""
 
-    # FIXME: delegate plc logic code to mininet?
+    pass
 
 
 class Attacker(Vertex):
 
-    """Attacker"""
+    """Attacker."""
 
     def ettercap_mitm_pap(self, target_ip1, target_ip2, attacker_interface):
         """
-        Mount a ettercap Man in the Middle passive ARP poisoning attack
+        Set parameters for a ARP poisoning Man-in-the-middle attack.
 
-        :target_ip1: ip address of the first target
-        :target_ip2: ip address of the second target
-        :attacker_interface: attacker interface
+        :target_ip1: IPv4 address of the first target
+        :target_ip2: IPv4 address of the second target
+        :attacker_interface: attacker's network interface
 
         """
+
         pass
-        # FIXME: delegate attack to mininet code?
 
 
 class DumbSwitch(Vertex):
 
-    """
-    is_switch bool is used to discriminate btw mininet switch requiring
-    addSwitch method and normal hosts requiring addHost method.
-    """
+    """Dumb switch alternative to mininet's switch."""
 
     def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
         Vertex.__init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0)
 
-        self.is_switch = True  # used to discriminate btw node types
+        # used to discriminate btw Mininet and MiniCPS switches
+        self.is_not_minient_switch = True
 
     def get_params(self):
         """Wrapper around __dict__"""
@@ -82,66 +79,67 @@ class DumbSwitch(Vertex):
 
 class HMI(Vertex):
 
-    """HMI"""
+    """Human Machine Interface (HMI)."""
 
-    # TODO: add logic
+    pass
 
 
 class Workstn(Vertex):
 
-    """Workstn"""
+    """Workstation."""
 
-    # TODO: add logic
+    pass
 
 
 class Histn(Vertex):
 
-    """Histn"""
+    """Historian,"""
 
-    # TODO: add logic
+    pass
 
 
 class DumbRouter(Vertex):
 
-    """Docstring for DumbRouter. """
+    """Dumb router."""
 
-    # TODO: add logic
+    pass
 
 
 class Firewall(Vertex):
 
-    """Docstring for Firewall. """
+    """Firewall."""
 
-    # TODO: add logic
+    pass
 
 
 class SCADA(Vertex):
 
     """Docstring for SCADA. """
 
-    # TODO: add logic
+    pass
 
 
 class Historian(Vertex):
 
-    """Docstring for Historian. """
+    """Historian server."""
 
-    # TODO: add logic
+    pass
 
 
 class AccessPoint(Vertex):
 
-    """Docstring for AccessPoint. """
+    """Access Point (AP)."""
 
-    # TODO: add logic
+    pass
 
 
 class Edge(object):
 
-    """Base class used to model links as edges in a graph"""
+    """Base class to model links as edges in a graph."""
 
+    # TODO: finish the doc
     def __init__(
-            self, label, bandwidth, delay, 
+            self, label, bandwidth, delay,
             loss=0, max_queue_size=1000, use_htb=True):
         """
         :label: edge unique label
@@ -166,11 +164,13 @@ class Edge(object):
 
 class EthLink(Edge):
 
-    """EthLink"""
+    """Ethernet link."""
+
     pass
 
 
-class WiFi(Edge):
+class WiFiLink(Edge):
 
-    """EthLink"""
+    """WiFi 802.11 link."""
+
     pass

@@ -61,7 +61,7 @@ class TopoFromNxGraph(Topo):
             name = node[0]
             params = node[1]
             # logger.debug(params)
-            if params.has_key('is_switch'):
+            if params.has_key('is_not_mininet_switch'):
                 # logger.debug('add switch: %s' % name)
                 hosts[name] = self.addSwitch(name)
             else:
