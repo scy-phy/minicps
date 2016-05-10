@@ -59,13 +59,13 @@ def nxgraph_sub1(attacker=False):
         key = 'plc'+str(i)
         nodes[key] = PLC(key, L1_PLCS_IP[key], L1_NETMASK, PLCS_MAC[key])
         graph.add_node(key, attr_dict=nodes[key].get_params())
-        link = EthLink(id=str(count), bandwidth=30, delay=0, loss=0)
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
         graph.add_edge(key, 's1', attr_dict=link.get_params())
         count += 1
     # hmi
     nodes['hmi'] = HMI('hmi', L2_HMI['hmi'], L1_NETMASK, OTHER_MACS['hmi'])
     graph.add_node('hmi', attr_dict=nodes['hmi'].get_params())
-    link = EthLink(id=str(count), bandwidth=30, delay=0, loss=0)
+    link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
     graph.add_edge('hmi', 's1', attr_dict=link.get_params())
     count += 1
     # optional attacker
@@ -73,7 +73,7 @@ def nxgraph_sub1(attacker=False):
         nodes['attacker'] = Attacker('attacker', L1_PLCS_IP['attacker'], L1_NETMASK,
         OTHER_MACS['attacker'])
         graph.add_node('attacker', attr_dict=nodes['attacker'].get_params())
-        link = EthLink(id=str(count), bandwidth=30, delay=0, loss=0)
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
         graph.add_edge('attacker', 's1', attr_dict=link.get_params())
 
     return graph

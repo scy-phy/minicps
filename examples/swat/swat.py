@@ -65,28 +65,28 @@ def nxgraph_level1(attacker=False):
         key = 'plc'+str(i)
         nodes[key] = PLC(key, L1_PLCS_IP[key], L1_NETMASK, PLCS_MAC[key])
         graph.add_node(key, attr_dict=nodes[key].get_params())
-        link = EthLink(id=str(count), bw=30, delay=0, loss=0)
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
         graph.add_edge(key, 's3', attr_dict=link.get_params())
         count += 1
     assert len(graph) == 7, "plc nodes error"
 
     nodes['hmi'] = HMI('hmi', L2_HMI['hmi'], L1_NETMASK, OTHER_MACS['hmi'])
     graph.add_node('hmi', attr_dict=nodes['hmi'].get_params())
-    link = EthLink(id=str(count), bw=30, delay=0, loss=0)
+    link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
     graph.add_edge('hmi', 's3', attr_dict=link.get_params())
     count += 1
 
     nodes['histn'] = Histn('histn', L3_PLANT_NETWORK['histn'], L1_NETMASK,
             OTHER_MACS['histn'])
     graph.add_node('histn', attr_dict=nodes['histn'].get_params())
-    link = EthLink(id=str(count), bw=30, delay=0, loss=0)
+    link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
     graph.add_edge('histn', 's3', attr_dict=link.get_params())
     count += 1
 
     nodes['workstn'] = Histn('workstn', L3_PLANT_NETWORK['workstn'], L1_NETMASK,
             OTHER_MACS['workstn'])
     graph.add_node('workstn', attr_dict=nodes['workstn'].get_params())
-    link = EthLink(id=str(count), bw=30, delay=0, loss=0)
+    link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
     graph.add_edge('workstn', 's3', attr_dict=link.get_params())
     count += 1
 
@@ -94,7 +94,7 @@ def nxgraph_level1(attacker=False):
         nodes['attacker'] = Attacker('attacker', L1_PLCS_IP['attacker'], L1_NETMASK,
         OTHER_MACS['attacker'])
         graph.add_node('attacker', attr_dict=nodes['attacker'].get_params())
-        link = EthLink(id=str(count), bw=30, delay=0, loss=0)
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
         graph.add_edge('attacker', 's3', attr_dict=link.get_params())
         assert len(graph) == 11, "attacker node error"
 

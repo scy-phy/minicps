@@ -13,10 +13,7 @@ networkx module.
 
 class Vertex(object):
 
-    """
-    Base networkx -> mininet host object
-
-    """
+    """Base class used to model devices as vertices in a graph"""
 
     # TODO: finish doc
     def __init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0):
@@ -137,22 +134,24 @@ class AccessPoint(Vertex):
     """Docstring for AccessPoint. """
 
     # TODO: add logic
+
+
 class Edge(object):
 
     """Base class used to model links as edges in a graph"""
 
     def __init__(
-            self, id, bandwidth, delay, 
+            self, label, bandwidth, delay, 
             loss=0, max_queue_size=1000, use_htb=True):
         """
-        :id: edge unique id
+        :label: edge unique label
         :bandwidth: TODO
         :delay: TODO
         :loss: TODO
         :max_queue_size: TODO
         :use_htb: TODO
         """
-        self.id = id
+        self.label = label
         self.bandwidth = bandwidth
         self.delay = delay
         self.loss = loss
