@@ -200,15 +200,15 @@ Open ``examples/swat/state_db.py``,
 to change LIT101 initial value select one line from the following:
 
 .. literalinclude:: ../examples/swat/state_db.py
-   :start-after: ## SET LIT101DB
-   :end-before: ## END SET LIT101DB
+   :start-after: # SPHINX_SWAT_TUTORIAL SET LIT101DB
+   :end-before:  # SPHINX_SWAT_TUTORIAL END SET LIT101DB
 
 Open ``examples/swat/constants.py``,
 to change process values set:
 
 .. literalinclude:: ../examples/swat/constants.py
-   :start-after: ## SET PROCESS
-   :end-before: ## END SET PROCESS
+   :start-after: # SPHINX_SWAT_TUTORIAL SET PROCESS
+   :end-before:  # SPHINX_SWAT_TUTORIAL END SET PROCESS
 
 
 .. LOGS AND ERRORS {{{3
@@ -233,8 +233,8 @@ Open ``examples/swat/tutorial.py``,
 uncomment the line containing ``..ImageContainer.py...`` :
 
 .. literalinclude:: ../examples/swat/tutorial.py
-   :start-after: ## SET POPUP
-   :end-before: ## END SET POPUP
+   :start-after: # SPHINX_SWAT_TUTORIAL SET POPUP
+   :end-before:  # SPHINX_SWAT_TUTORIAL END SET POPUP
 
 Run the simulation again... A window like the one below should pop-up (if you have an X server on your system):
 
@@ -279,8 +279,8 @@ Open ``examples/swat/tutorial.py`` and comment/uncomment the relevant lines
 to call the standard plc1 script:
 
 .. literalinclude:: ../examples/swat/tutorial.py
-   :start-after: ## SET PLC1
-   :end-before: ## END SET PLC1
+   :start-after: # SPHINX_SWAT_TUTORIAL SET PLC1
+   :end-before:  # SPHINX_SWAT_TUTORIAL END SET PLC1
 
 Now start the simulation. You should see the same pop-up window like in
 `Dumb plc1`_ but this time PLC1 will react according to the initial
@@ -311,8 +311,8 @@ POXSwat SDN Controller
 Open ``examples/swat/tutorial.py``, uncomment:
 
 .. literalinclude:: ../examples/swat/tutorial.py
-   :start-after: ## SET SDN CONTROLLER
-   :end-before: ## END SET SDN CONTROLLER
+   :start-after: # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
+   :end-before:  # SPHINX_SWAT_TUTORIAL END SET SDN CONTROLLER
 
 If you are familiar with SDN and the ``pox`` platform take a look at
 ``examples/swat/pox_controller.py``.
