@@ -19,7 +19,8 @@ import sys
 import os
 sys.path.append(os.getcwd())
 
-from minicps.devices import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
+from minicps.devices import POXSwat
+from minicps.networks import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
 from minicps.networks import EthLink
 from minicps.topologies import TopoFromNxGraph
 from minicps import constants as c

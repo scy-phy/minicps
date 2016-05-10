@@ -29,30 +29,31 @@ logger = logging.getLogger('minicps.devices')
 setLogLevel(c.TEST_LOG_LEVEL)
 
 
-@with_named_setup(setup_func, teardown_func)
-def test_ControlDevice():
-    """
-    Test concurrency
-    """
-    # raise SkipTest
+# review pierre
+# @with_named_setup(setup_func, teardown_func)
+# def test_ControlDevice():
+#     """
+#     Test concurrency
+#     """
+#     # raise SkipTest
 
-    fs1 = FlowSensor.start('temp/phy-layer/fs1', flow_level=1).proxy()
-    fs2 = FlowSensor.start('temp/phy-layer/fs2', flow_level=2).proxy()
-    mv = MotorizedValve.start('temp/phy-layer/mv2', True).proxy()
-    plc1_logic = PLCLogic1.start('temp/phy-layer/plc1_logic').proxy()
-    sub1 = SWATSub1.start('temp/phy-layer/sub1').proxy()
+#     fs1 = FlowSensor.start('temp/phy-layer/fs1', flow_level=1).proxy()
+#     fs2 = FlowSensor.start('temp/phy-layer/fs2', flow_level=2).proxy()
+#     mv = MotorizedValve.start('temp/phy-layer/mv2', True).proxy()
+#     plc1_logic = PLCLogic1.start('temp/phy-layer/plc1_logic').proxy()
+#     sub1 = SWATSub1.start('temp/phy-layer/sub1').proxy()
 
-    try:
-        future = fs1.append('wow')
-        answer = future.get()
-        print answer
+#     try:
+#         future = fs1.append('wow')
+#         answer = future.get()
+#         print answer
 
-    finally:
-        fs1.stop()
-        fs2.stop()
-        mv.stop()
-        plc1_logic.stop()
-        sub1.stop()
+#     finally:
+#         fs1.stop()
+#         fs2.stop()
+#         mv.stop()
+#         plc1_logic.stop()
+#         sub1.stop()
 
 
 @with_named_setup(setup_func, teardown_func)
