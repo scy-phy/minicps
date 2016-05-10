@@ -1,58 +1,66 @@
 """
-Mininet
+MiniCPS Software Defined Networking (SDN) module.
 
-Vertex is the base device class, its subclasses represent a particular network
-device.
+It contains OpenFlow data objects.
+
+It contains platform-specific SDN controller e.g., pox.
+Minicps assumes that pox is cloned into your $HOME dir.
+For more information visit:
+https://openflow.stanford.edu/display/ONL/POX+Wiki
 
 By default Mininet runs Open vSwitch in OpenFlow mode,
 which requires an OpenFlow controller.
-
-
-Pox
-
-Minicps assumes that pox is cloned into your $HOME dir,
-for more information visit:
-https://openflow.stanford.edu/display/ONL/POX+Wiki
-
 Controller subclasses are started and stopped automatically by Mininet.
 RemoteController must be started and stopped by the user.
-
 Controller that enables learning switches doesn't work natively on
 topologies that contains loops and multiple paths (eg: fat trees)
 but they work fine with spanning tree topologies.
+
 """
 
+from mininet.node import Controller
 
-# from mininet.net import Mininet
-from mininet.node import Controller  # , Host, Node
-# from mininet.topo import SingleSwitchTopo
+POX_PATH = '~/'
 
-from minicps import constants as c
-
-from minicps.constants import _buildLogger, _pox_opts
-
-# import os
-# import sys
-# import logging
-logger = _buildLogger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+POX = {
+    './pox.py openflow.of_01 --port=6633 --address=127.0.0.1' +
+    'log.level --DEBUG swat_controller',
+}
 
 
-# SDN
+def set_pox_opts(
+        components, info_level, logfile_opts,
+        log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
+
+    """Generate a string with custom pox options.
+
+    :components: dot notation paths (eg: forwarding.l2_learning web.webcore --port=8888)
+    :info_level: DEBUG, INFO, etc.
+    :logfile_opts: path and other options (eg: file.log,w to overwrite each time)
+    :returns: options string for ./pox.py command
+
+    """
+    info_level = info_level.upper()
+    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (
+        components,
+        info_level, logfile_opts, log_format)
+    # print 'DEBUG:', opts
+
+    return pox_opts
+
+
 class POXL2Pairs(Controller):
 
-    """Build a controller able to update switches
-    flow tables according to MAC learning."""
+    """MAC-learning controller."""
 
     def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(
+        self.pox = '%s/pox/pox.py' % (POX_PATH)
+        pox_opts = set_pox_opts(
             'forwarding.l2_pairs', 'DEBUG', 'logs/' +
             type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 
@@ -63,15 +71,13 @@ class POXL2Learning(Controller):
     (not only MAC-based flow matching)."""
 
     def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(
+        self.pox = '%s/pox/pox.py' % (POX_PATH)
+        pox_opts = set_pox_opts(
             'forwarding.l2_learning', 'DEBUG', 'logs/' +
             type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 
@@ -82,9 +88,8 @@ class POXProva(Controller):
     def start(self):
         POX_PATH = 'hub'  # pox/ext/ dir
 
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(
+        self.pox = '%s/pox/pox.py' % (POX_PATH)
+        pox_opts = set_pox_opts(
             POX_PATH, 'DEBUG', 'logs/' +
             type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
@@ -93,7 +98,6 @@ class POXProva(Controller):
         #     'forwarding.prova log.level --DEBUG log --file=./logs/pox.log &')
 
     def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 
@@ -102,15 +106,13 @@ class POXSwat(Controller):
     """Build a controller based on temp/antiarppoison.py"""
 
     def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(
+        self.pox = '%s/pox/pox.py' % (POX_PATH)
+        pox_opts = set_pox_opts(
             'swat_controller', 'DEBUG', 'logs/' +
             type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)
 
 
@@ -119,13 +121,11 @@ class POXAntiArpPoison(Controller):
     """Build a controller based on temp/antiarppoison.py"""
 
     def start(self):
-        logger.info('Inside %s' % type(self).__name__)
-        self.pox = '%s/pox/pox.py' % (c.POX_PATH)
-        pox_opts = _pox_opts(
+        self.pox = '%s/pox/pox.py' % (POX_PATH)
+        pox_opts = set_pox_opts(
             'antiarppoison', 'DEBUG', 'logs/' +
             type(self).__name__ + '.log,w')
         self.cmd(self.pox, pox_opts)
 
     def stop(self):
-        logger.info('Leaving %s' % type(self).__name__)
         self.cmd('kill %' + self.pox)

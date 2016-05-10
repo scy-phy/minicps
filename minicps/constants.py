@@ -22,34 +22,8 @@ from nose.tools import *
 
 import os
 
-# OPENFLOW
-POX_PATH = '~/'
-
-POX = {
-    './pox.py openflow.of_01 --port=6633 --address=127.0.0.1' +
-    'log.level --DEBUG swat_controller',
-}
 
 
-def _pox_opts(
-        components, info_level, logfile_opts,
-        log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'):
-
-    """Generate a string with custom pox options.
-
-    :components: dot notation paths (eg: forwarding.l2_learning web.webcore --port=8888)
-    :info_level: DEBUG, INFO, ecc...
-    :logfile_opts: path and other options (eg: file.log,w to overwrite each time)
-    :returns: options string for ./pox.py command
-
-    """
-    info_level = info_level.upper()
-    pox_opts = '%s log.level --%s log --file=%s --format="%s" &' % (
-        components,
-        info_level, logfile_opts, log_format)
-    # print 'DEBUG:', opts
-
-    return pox_opts
 
 # mirrors minicps constants
 OF10_MSG_TYPES = {
