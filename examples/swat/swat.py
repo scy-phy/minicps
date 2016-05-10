@@ -1,14 +1,14 @@
 """
 Build SWaT testbed with MiniCPS
 
-graph_name functions are used to build networkx graphs representing the
+Graph_name functions are used to build networkx graphs representing the
 topology you want to build.
 
-mininet_name functions are used to setup mininet configs
+Mininet_name functions are used to setup mininet configs
 eg: preload webservers, enip servers, attacks, ecc...
 
-launcher interacts with MiniCPS topologies module and optionally plot and/or
-save a graph representation in the examples/swat folder.
+Launcher interacts with MiniCPS topologies module and optionally plot and/or
+have a graph representation in the examples/swat folder.
 
 """
 
