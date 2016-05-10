@@ -23,6 +23,8 @@ Python 2.X and modules
 * `sqlite3 <https://docs.python.org/2/library/sqlite3.html>`_
 * `sphinx <http://sphinx-doc.org/>`_ and
   `sphinx rtd theme <https://github.com/snide/sphinx_rtd_theme>`_
+* `restructured text
+  <http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_
 
 
 .. MININET {{{3
