@@ -11,7 +11,7 @@ networkx module. The logic of each device will be specified by the client
 from mininet.topo import Topo
 
 
-# graph abstraction classes
+# graph abstraction classes {{{1
 class Vertex(object):
 
     """Base class used to model devices as vertices in a graph."""
@@ -177,6 +177,7 @@ class WiFiLink(Edge):
     pass
 
 
+# topology from graphs {{{1
 # TODO: add more TopoFrom that convert to NxGraph and reuse this class
 #       rename topology into topologies
 # https://networkx.github.io/documentation/latest/reference/readwrite.html

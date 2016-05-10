@@ -1,5 +1,5 @@
 
-arp_check(event):
+Arp_check(event):
 	if !(ARP_OK):
 		tag the packets to be sent to the controller
 		sign the packet in some way
@@ -10,7 +10,7 @@ arp_check(event):
 	else:
 		send the packet to the controller
 		
-arp_handler:
+Arp_handler:
 	if (packet tagged arp spoofed):
 		if (signature_ok):
 			countermeasure()
@@ -21,7 +21,7 @@ arp_handler:
 ARP_OK check:
 	
 
-countermeasures:
+Countermeasures:
 	close the connection with the percieved MAC attacker
 	forward packet to a well known port (IDS listening on it)
 	scan the attacker host for malaware (from the controller)
@@ -29,13 +29,13 @@ countermeasures:
 	
 	
 		
-pros:
+Pros:
 	prevent cumulative ARP poisoning from the same node (no DoS)
 	single time delay for every new attaccker node
 	
-more:
+More:
 	active vs passive ARP poisoning mgmt
 	not all OpenFlow switches support TLS for OF auth
 
-other OpenFlow attacks:
+Other OpenFlow attacks:
 	who is the controller attacks: DNS spoofing, controller DoS

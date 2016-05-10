@@ -20,6 +20,7 @@ but they work fine with spanning tree topologies.
 
 from mininet.node import Controller
 
+# pox {{{1
 POX_PATH = '~/'
 
 POX = {
@@ -129,3 +130,13 @@ class POXAntiArpPoison(Controller):
 
     def stop(self):
         self.cmd('kill %' + self.pox)
+
+
+# openflow {{{1
+OF_MISC = {
+    'user_switch': 'user',
+    'kernel_switch': 'ovsk',
+    'controller_port': 6633,
+    'switch_debug_port': 6634,
+    'flood_port': 65531,
+}

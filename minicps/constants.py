@@ -1,7 +1,9 @@
 """
 minicps constants.
 
-TEST_LOG_LEVEL affetcs all the tests.
+TODO export docstrings
+
+TEST_LOG_LEVEL affects all the tests,
 output, info and debug are in increasing order of verbosity.
 
 There is a logger for each module/module_tests pair. Each pair
@@ -19,8 +21,8 @@ import logging.handlers
 from mininet.util import dumpNodeConnections
 
 
-
 # mirrors minicps constants
+# TODO: check mirror
 OF10_MSG_TYPES = {
     0: 'OFPT_HELLO',  # Symmetric
     1: 'OFPT_ERROR',  # Symmetric
@@ -53,16 +55,8 @@ OF10_MSG_TYPES = {
 }
 
 
-OF_MISC = {
-    'user_switch': 'user',
-    'kernel_switch': 'ovsk',
-    'controller_port': 6633,
-    'switch_debug_port': 6634,
-    'flood_port': 65531,
-}
-
-
-## ENIP
+# ENIP
+# TODO: put into protocols
 
 ENIP_MISC = {
     'tcp_port': 44818,
@@ -70,8 +64,7 @@ ENIP_MISC = {
 }
 
 
-
-## MININET
+# MININET
 
 MININET_CMDS = {
     'clear': 'sudo mn -c',
@@ -79,8 +72,7 @@ MININET_CMDS = {
 }
 
 
-
-
+# TODO: put into utils
 def _mininet_functests(net):
     """Common mininet functional tests can be called inside
     each unittest. The function will be ignored by nose
@@ -98,8 +90,16 @@ def _mininet_functests(net):
     logging.info("Testing TCP bandwidth btw first and last host")
     net.iperf()
 
-L0_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L1_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L2_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-L3_LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-
+# TODO: put somewhere
+L0_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L1_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L2_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L3_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)

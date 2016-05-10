@@ -1,5 +1,5 @@
 """
-Sdn_tests.
+sdn_tests.
 """
 
 from mininet.net import Mininet
@@ -10,6 +10,7 @@ from mininet.cli import CLI
 from nose.plugins.skip import SkipTest  # Skip
 
 from minicps import constants as c
+from minicps.sdn import OF_MISC
 from minicps.utils import _arp_cache_rtts, setup_func, teardown_func
 from minicps.utils import teardown_func_clear, with_named_setup
 from minicps.networks import POXL2Pairs
@@ -28,7 +29,7 @@ def test_POXL2Pairs():
     net = Mininet(
         topo=topo,
         controller=controller,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.start()
 
     CLI(net)
@@ -47,12 +48,12 @@ def test_RemoteController():
     net = Mininet(
         topo=topo,
         controller=None,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.addController(
         'c0',
         controller=RemoteController,
         ip='127.0.0.1',
-        port=c.OF_MISC['controller_port'])
+        port=OF_MISC['controller_port'])
     net.start()
 
     CLI(net)
@@ -69,7 +70,7 @@ def test_POXSwatController():
     net = Mininet(
         topo=topo,
         controller=POXSwatController,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.start()
 
     CLI(net)
@@ -87,7 +88,7 @@ def test_POXAntiArpPoison():
     net = Mininet(
         topo=topo,
         controller=controller,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -118,7 +119,7 @@ def test_POXL2PairsRtt():
     net = Mininet(
         topo=topo,
         controller=controller,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -148,7 +149,7 @@ def test_POXL2LearningRtt():
     net = Mininet(
         topo=topo,
         controller=controller,
-        link=TCLink, listenPort=c.OF_MISC['switch_debug_port'])
+        link=TCLink, listenPort=OF_MISC['switch_debug_port'])
     net.start()
     time.sleep(1)  # allow mininet to init processes
 
@@ -174,7 +175,7 @@ def test_Workshop():
     topo = L3EthStarAttack()
     net = Mininet(
         topo=topo, link=TCLink,
-        listenPort=c.OF_MISC['switch_debug_port'])
+        listenPort=OF_MISC['switch_debug_port'])
     net.start()
 
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
