@@ -1,26 +1,17 @@
 """
-Functional test
-"""
+minicps_tests.
 
-from nose.tools import *
+Contains functional tests
+"""
 
 from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.util import dumpNodeConnections
-from mininet.log import setLogLevel
 from mininet.link import TCLink
 
 
-def setup():
-    print 'SETUP!'
-
-
-def teardown():
-    print 'TEAR DOWN!'
-
-
 def test_basic():
-    """ Pingall a linear topology. """
+    """Dump and pingall a linear topology."""
 
     net = Mininet(topo=LinearTopo(n=5),
                   link=TCLink)
