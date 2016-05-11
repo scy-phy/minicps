@@ -23,6 +23,7 @@ logger = logging.getLogger('minicps.constants')
 setLogLevel(c.TEST_LOG_LEVEL)
 
 
+# TODO: maybe move to swat/tests
 # @with_named_setup(setup_func, teardown_func)
 # def test_L3EthStarMapping():
 #     """Test L3 Ring MACs and IPs"""

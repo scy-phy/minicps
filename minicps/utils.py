@@ -18,6 +18,7 @@ It contains all the others data objects.
 """
 
 import logging
+import logging.handlers
 import os
 
 from mininet.util import dumpNodeConnections
@@ -111,15 +112,14 @@ def mininet_functests(net):
 
 
 def setup_func(test_name):
-    logger.info('Inside %s' % test_name)
+    pass
 
 
 def teardown_func(test_name):
-    logger.info('Leaving %s' % test_name)
+    pass
 
 
 def teardown_func_clear(test_name):
-    logger.info('Leaving %s' % test_name)
     os.system(MININET_CMDS['clear'])
 
 
