@@ -1,16 +1,29 @@
 """
-Utils.py.
+utils.py.
 
 It contains logging data objects.
+There is a logger for each module/module_tests pair. Each pair
+reference to the same object instance and save log into
+minicps/log/modname.log. Log format and filters are hardcoded,
+naming is implicit and you can set logs dimensions and number of
+rotations through this module.
+POX controller logs is stored into dedicated logs/POXControllerName.log file.
+Each time the log file is overwritten, unlike minicps module logging facility.
 
 It contains testing data objects.
+TEST_LOG_LEVEL affects all the tests,
+output, info and debug are in increasing order of verbosity.
 
 It contains all the others data objects.
 """
 
 import logging
+import os
 
-# logging
+from mininet.util import dumpNodeConnections
+from nose import with_setup
+
+# logging {{{1
 
 # TEST_LOG_LEVEL='output'
 TEST_LOG_LEVEL = 'info'
@@ -71,7 +84,32 @@ ASSERTION_ERRORS = {
 }
 
 
-# testing
+# testing {{{1
+
+MININET_CMDS = {
+    'clear': 'sudo mn -c',
+    'linear-remote': 'sudo mn --topo=linear,4 --controller=remote',
+}
+
+
+def mininet_functests(net):
+    """Common mininet functional tests can be called inside
+    each unittest. The function will be ignored by nose
+    during automatic test collection because its name is
+    not part of nose convention.
+    Remember to manually stop the network after this call.
+
+    :net: Mininet object
+    """
+
+    logging.info("Dumping host connections")
+    dumpNodeConnections(net.hosts)
+    logging.info("Testing network connectivity")
+    net.pingAll()
+    logging.info("Testing TCP bandwidth btw first and last host")
+    net.iperf()
+
+
 def setup_func(test_name):
     logger.info('Inside %s' % test_name)
 
@@ -88,12 +126,12 @@ def teardown_func_clear(test_name):
 def with_named_setup(setup=None, teardown=None):
     def wrap(f):
         return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None, 
+            lambda: setup(f.__name__) if (setup is not None) else None,
             lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
     return wrap
 
 
-# others
+# others {{{1
 def _arp_cache_rtts(net, h1, h2):
     """Naive learning check on the first two ping
     ICMP packets RTT.

@@ -4,6 +4,8 @@ MiniCPS Software Defined Networking (SDN) module.
 It contains OpenFlow data objects.
 
 It contains platform-specific SDN controller e.g., pox.
+POX prefixed ClassNames indicate controller coded into script/pox dir
+and symlinked to ~/pox/pox/forwarding dir.
 Minicps assumes that pox is cloned into your $HOME dir.
 For more information visit:
 https://openflow.stanford.edu/display/ONL/POX+Wiki
@@ -132,11 +134,42 @@ class POXAntiArpPoison(Controller):
         self.cmd('kill %' + self.pox)
 
 
-# openflow {{{1
+# Openflow {{{1
 OF_MISC = {
     'user_switch': 'user',
     'kernel_switch': 'ovsk',
     'controller_port': 6633,
     'switch_debug_port': 6634,
     'flood_port': 65531,
+}
+
+OF10_MSG_TYPES = {
+    0: 'OFPT_HELLO',  # Symmetric
+    1: 'OFPT_ERROR',  # Symmetric
+    2: 'OFPT_ECHO_REQUEST',  # Symmetric
+    3: 'OFPT_ECHO_REPLY',  # Symmetric
+    4: 'OFPT_VENDOR',  # Symmetric
+
+    5: 'OFPT_FEATURES_REQUEST',  # Controller -> Switch
+    6: 'OFPT_FEATURES_REPLY',  # Switch -> Controller
+    7: 'OFPT_GET_CONFIG_REQUEST',  # Controller -> Switch
+    8: 'OFPT_GET_CONFIG_REPLY',  # Switch -> Controller
+    9: 'OFPT_SET_CONFIG',  # Controller -> Switch
+
+    10: 'OFPT_PACKET_IN',  # Async, Switch -> Controller
+    11: 'OFPT_FLOW_REMOVED',  # Async, Switch -> Controller
+    12: 'OFPT_PORT_STATUS',  # Async,  Switch -> Controller
+
+    13: 'OFPT_PACKET_OUT',  # Controller -> Switch
+    14: 'OFPT_FLOW_MOD',  # Controller -> Switch
+    15: 'OFPT_PORT_MOD',  # Controller -> Switch
+
+    16: 'OFPT_STATS_REQUEST',  # Controller -> Switch
+    17: 'OFPT_STATS_REPLY',  # Switch -> Controller
+
+    18: 'OFPT_BARRIER_REQUEST',  # Controller -> Switch
+    19: 'OFPT_BARRIER_REPLY',  # Switch -> Controller
+
+    20: 'OFPT_QUEUE_GET_CONFIG_REQUEST',  # Controller -> Switch
+    21: 'OFPT_QUEUE_GET_CONFIG_REPLY',  # Switch -> Controller
 }
