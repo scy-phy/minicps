@@ -8,7 +8,7 @@ from mininet.topo import LinearTopo
 from mininet.net import Mininet
 from mininet.util import dumpNodeConnections
 from mininet.link import TCLink
-from mininet.cli import CLI
+# from mininet.cli import CLI
 
 
 def test_basic():
@@ -24,6 +24,6 @@ def test_basic():
     print "Testing network connectivity"
     net.pingAll()
 
-    CLI(net)
+    # CLI(net)
 
     net.stop()
