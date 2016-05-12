@@ -72,7 +72,7 @@ class DumbSwitch(Vertex):
         Vertex.__init__(self, label, ip='', netmask='', mac='', cpu_alloc=0.0)
 
         # used to discriminate btw Mininet and MiniCPS switches
-        self.is_not_minient_switch = True
+        self.is_not_mininet_switch = True
 
     def get_params(self):
         """Wrapper around __dict__"""
@@ -185,8 +185,7 @@ class WiFiLink(Edge):
 # https://networkx.github.io/documentation/latest/reference/readwrite.html
 def build_nx_graph():
 
-    """
-    Create a networkx graph.
+    """Create a networkx graph.
 
     The graph contains two PLCs connected to a switch
     """
@@ -216,36 +215,24 @@ def build_nx_graph():
     return graph
 
 
-class TopoFromNxGraph(Topo):
+class MininetTopoFromNxGraph(Topo):
 
-    """
-    Construct a topology from an Undirected Simple Graph
-    Node (allows self loops but no parallel edges)
+    """Construct a mininet topology from a nx graph."""
 
-    Support: start, daisy chain, DLR
-    """
-
-    # TODO: add drawing capability
     def build(self, graph):
-        """
-        Process net_graph and build a mininet topo.
+        """Process net_graph and build a mininet topo.
 
         :graph: network information embedded as parameters
         """
-        # class_name = type(self).__name__
 
-        # Crate all minicps nodes and save them into a dict
         hosts = {}
         for node in graph.nodes(data=True):
             name = node[0]
             params = node[1]
-            # logger.debug(params)
-            # if 'is_not_mininet_switch' in params:
-            if params.has_key('is_not_mininet_switch'):
-                # logger.debug('add switch: %s' % name)
+
+            if 'is_not_mininet_switch' in params:
                 hosts[name] = self.addSwitch(name)
             else:
-                # logger.debug('add: %s' % name)
                 hosts[name] = self.addHost(
                     name,
                     ip=params['ip'] + params['netmask'],
@@ -253,7 +240,5 @@ class TopoFromNxGraph(Topo):
                 # TODO: check '' ip, mac and netmask
 
         for edge in graph.edges(data=True):
-            # logger.debug('edge: %s' % str(edge))
             link_opts = edge[2]
-            # logger.debug('link_opts: %s' % link_opts)
             self.addLink(hosts[edge[0]], hosts[edge[1]], **link_opts)
