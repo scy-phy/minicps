@@ -5,9 +5,13 @@ from constants import logger
 from constants import create_db, remove_db, init_db
 from constants import STATE_DB_PATH, SCHEMA, DATATYPES
 
+# TODO: use high level functions
+
 # used to debug
 from constants import read_statedb, read_single_statedb, update_statedb
 
+
+# TODO: move to state.py
 class Aggregate(object):
     """Docstring for Aggregate. """
 
