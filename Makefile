@@ -1,8 +1,12 @@
 # regex testMatch: (?:^|[b_.-])[Tt]est)
 # --exe: include also executable files
 # -s: don't capture std output
+
+# TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
+# http://web.mit.edu/gnu/doc/html/make_7.html
 TESTER = nosetests
-TESTER_OPTS = -w tests -s
+TESTER_OPTS = -w tests -s -v --noexe
+
 
 test:
 	sudo $(TESTER) $(TESTER_OPTS)
