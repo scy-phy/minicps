@@ -1,20 +1,25 @@
+# MiniCPS makefile
+
+# test {{{1
+
 # regex testMatch: (?:^|[b_.-])[Tt]est)
 # --exe: include also executable files
 # -s: don't capture std output
+# nosetests -s tests/devices_tests.py:fun_name
 
-# test {{{1
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
 TESTER = nosetests
 TESTER_OPTS = -w tests -s -v --noexe
 TESTER_OPTS_COV = -w tests -s -v --noexe --with-cov --cov-report annotate
 
-
 test:
 	sudo $(TESTER) $(TESTER_OPTS)
 
 # https://pypi.python.org/pypi/nose-cov/1.6
 # FIXME: test cov
+# report: term, term-missing, html, xml, annotate
+# --cov set the covered FS
 # test-cov:
 # 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
 
