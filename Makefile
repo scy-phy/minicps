@@ -1,7 +1,8 @@
 # regex testMatch: (?:^|[b_.-])[Tt]est)
 # --exe: include also executable files
+# -s: don't capture std output
 TESTER = nosetests
-TESTER_OPTS = -w tests
+TESTER_OPTS = -w tests -s
 
 test:
 	sudo $(TESTER) $(TESTER_OPTS)
