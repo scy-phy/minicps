@@ -1,6 +1,7 @@
 import os
 import sqlite3
 
+# TODO: delete constants and use other names
 from constants import logger
 from constants import create_db, remove_db, init_db
 from constants import STATE_DB_PATH, SCHEMA, DATATYPES

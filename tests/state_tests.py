@@ -2,9 +2,24 @@
 state_tests.py
 """
 
-from minicps.state import create_sqlite_db
+import os
+
+from minicps.state import _create_sqlite_db
 
 
 def test_create_sqlite_db():
 
-    pass
+    schema = """
+            create table test (
+                SCOPE             text not null,
+                NAME              text not null,
+                DATATYPE          text not null,
+                VALUE             text,
+                PID               integer not null,
+                PRIMARY KEY (SCOPE, NAME, PID)
+            );
+            """
+
+    os.remove("/tmp/database.sqlite")
+    db_name = '/tmp/database.sqlite'
+    _create_sqlite_db(db_name, schema)

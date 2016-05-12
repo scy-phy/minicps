@@ -380,29 +380,6 @@ DATATYPES = [
 ]
 
 
-def create_db(db_path, schema):
-    """
-    create a sqlite db given a schema.
-
-    :db_path: full or relative path to the file.db
-    :schema: str containing the schema
-    """
-    with sqlite3.connect(db_path) as conn:
-        conn.executescript(schema)
-        logger.info('Created schema')
-
-
-def remove_db(db_path):
-    """
-    remove sqlite db (that is a file).
-    """
-    logger.info('Removing %s' % db_path)
-    try:
-        os.remove(db_path)
-    except Exception, err:
-        logger.warning(err)
-
-
 def init_db(db_path, datatypes):
     """
     Init a DB from RSLogix 5000 exported csv file
