@@ -29,7 +29,7 @@ import os
 import os.path
 
 
-# PLC TAGS
+# PLC TAGS {{{1
 
 # UDT Bases
 class FIT_UDT(object):
@@ -82,21 +82,21 @@ class MV_UDT(object):
     """MV_UDT"""
 
     def __init__(self):
-        self.Cmd = [ '' for i in range(0,16) ]
-        self.Status = [ '' for i in range(0,16) ]
+        self.Cmd = ['' for i in range(0, 16)]
+        self.Status = ['' for i in range(0, 16)]
         self.Reset = '0'
         self.Auto = '0'
         self.FTO = '0'
         self.FTC = '0'
-        self.Avl= '0'
+        self.Avl = '0'
 
 
 class PMP_UDT(object):
     """PMP_UDT"""
 
     def __init__(self):
-        self.Cmd = [ '' for i in range(0,16) ]
-        self.Status = [ '' for i in range(0,16) ]
+        self.Cmd = ['' for i in range(0, 16)]
+        self.Status = ['' for i in range(0, 16)]
         self.RunMin = '0.0'
         self.Total_RunMin = '0.0'
         self.RunHr = '0.0'
@@ -105,23 +105,16 @@ class PMP_UDT(object):
         self.Auto = '0'
         self.Fault = '0'
         self.Avi = '0'
-        self.Permissive = [ '' for i in range(0,32) ]
-        self.Shutdown = [ '' for i in range(0,32) ]
-        self.SD = [ '' for i in range(0,32) ]
+        self.Permissive = ['' for i in range(0, 32)]
+        self.Shutdown = ['' for i in range(0, 32)]
+        self.SD = ['' for i in range(0, 32)]
         self.Reset = '0'
         self.Reset_RunHr = '0'
         self.FTR = '0'
         self.FTS = '0'
 
 
-# UDT Aliases
-
-    """Docstring for HMI_FIT101. """
-    def __init__(self):
-        """TODO: to be defined1. """
-
-
-# CPPPO
+# CPPPO {{{1
 
 PLC1_CPPPO_CACHE = "examples/swat/plc1_cpppo.cache"
 PLC2_CPPPO_CACHE = "examples/swat/plc2_cpppo.cache"
@@ -161,6 +154,7 @@ P1_PLC3_TAGS = [
     ('HMI_LIT301-Pv', 'REAL'),
 ]
 
+
 def db2cpppo(record):
     """
     Convert from sqlite3 db record to cpppo tag string
@@ -186,7 +180,7 @@ def db2cpppo(record):
         if DATATYPE == 'BOOL':
             DATATYPE = 'INT'
 
-        cppo_str = NAME+'='+DATATYPE
+        cppo_str = NAME + '=' + DATATYPE
         logger.debug("db2cpppo: %s -> %s" % (record, cppo_str))
 
     return cppo_str
@@ -199,9 +193,9 @@ def init_cpppo_server(tags):
 
     """
 
-    cpppo_tags = tags[0][0]+'='+tags[0][1]
+    cpppo_tags = tags[0][0] + '=' + tags[0][1]
     for tag in tags[1:]:
-        cpppo_tags += ' '+tag[0]+'='+tag[1]
+        cpppo_tags += ' ' + tag[0] + '=' + tag[1]
 
     # DEBUG TAGS
     # cpppo_tags += ' P1=INT'
@@ -215,6 +209,7 @@ def init_cpppo_server(tags):
     rc = os.system(cmd)
     assert rc == 0, "init_cpppo_server"
 
+
 def write_cpppo(ip, tag_name, val):
     """Write cpppo
 
@@ -225,10 +220,11 @@ def write_cpppo(ip, tag_name, val):
     """
 
     # TODO: write multiple values
-    expr = tag_name+'='+val
+    expr = tag_name + '=' + val
     cmd = "python -m cpppo.server.enip.client --print -a %s %s" % (ip, expr)
     rc = os.system(cmd)
     assert rc == 0, "write_cpppo"
+
 
 def read_cpppo(ip, tag_name, cpppo_cache):
     """Read from a cpppo enip server store value in a temp cache and remove
@@ -245,9 +241,9 @@ def read_cpppo(ip, tag_name, cpppo_cache):
     # TODO: read multiple values
     # TODO: append with >>
     cmd = "python -m cpppo.server.enip.client --print -a %s %s > %s" % (
-            ip,
-            tag_name,
-            cpppo_cache)
+        ip,
+        tag_name,
+        cpppo_cache)
     rc = os.system(cmd)
     # assert rc == 0, "read_cpppo"
 
@@ -267,11 +263,11 @@ def read_cpppo(ip, tag_name, cpppo_cache):
 
 
 # SPHINX_SWAT_TUTORIAL SET PROCESS
-GRAVITATION = 9.81 # m.s^-2
-TANK_DIAMETER = 1.38 # m
-TIMEOUT = 10000 # s
-PUMP_FLOWRATE_IN = 2.55 # m^3/h spec say btw 2.2 and 2.4
-PUMP_FLOWRATE_OUT = 2.45 # m^3/h spec say btw 2.2 and 2.4
+GRAVITATION = 9.81             # m.s^-2
+TANK_DIAMETER = 1.38           # m
+TIMEOUT = 10000                # s
+PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
+PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
 
 # periods in msec
 # R/W = Read or Write
@@ -328,24 +324,22 @@ def wait_for_event_timeout(event, timeout, ename):
             return
         else:
             emsg = "%s not set after %s sec" % (
-                    ename, str(timeout))
+                ename, str(timeout))
             raise Exception(emsg)
 
 
-
-# LOGGING
+# LOGGING {{{1
 logging.basicConfig(
-        filename = os.path.join(
-            os.path.dirname(__file__),
-            os.path.pardir, os.path.pardir, 'logs', 'swat.log'),
-        level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
+    filename=os.path.join(
+        os.path.dirname(__file__),
+        os.path.pardir, os.path.pardir, 'logs', 'swat.log'),
+    level=logging.DEBUG,
+    # format='%(asctime)s (%(threadName)s) %(levelname)s: %(message)s')
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('swat')
 
 
-
-# DB
+# DB {{{1
 STATE_DB_PATH = os.path.join(os.path.dirname(__file__), 'state.db')
 
 # currently no PLC dbs
@@ -369,20 +363,20 @@ SCHEMA = """
             PRIMARY KEY (SCOPE, NAME, PID)
         );
         """ % TABLE
-        # VALUE             text default '',
+# VALUE             text default '',
 
 # state_db specific filters, functions and aggregators
 # TODO: add UDT
 DATATYPES = [
-        'INT',
-        'DINT',
-        'BOOL',
-        'REAL',
+    'INT',
+    'DINT',
+    'BOOL',
+    'REAL',
 
-        'FIT_UDT',
-        'AIN_UDT',  # eg: LIT
-        'MV_UDT',
-        'PMP_UDT',
+    'FIT_UDT',
+    'AIN_UDT',  # eg: LIT
+    'MV_UDT',
+    'PMP_UDT',
 ]
 
 
@@ -397,6 +391,7 @@ def create_db(db_path, schema):
         conn.executescript(schema)
         logger.info('Created schema')
 
+
 def remove_db(db_path):
     """
     remove sqlite db (that is a file).
@@ -406,6 +401,7 @@ def remove_db(db_path):
         os.remove(db_path)
     except Exception, err:
         logger.warning(err)
+
 
 def init_db(db_path, datatypes):
     """
@@ -436,7 +432,8 @@ def init_db(db_path, datatypes):
             logger.info('Init tables')
 
             for i in range(1, 7):
-                plc_filename = os.path.join(os.path.dirname(__file__), "real-tags", "P%d-Tags.CSV" % i)
+                plc_filename = os.path.join(
+                    os.path.dirname(__file__), "real-tags", "P%d-Tags.CSV" % i)
                 with open(plc_filename, "rt") as f:
 
                     text = f.read()
@@ -566,6 +563,7 @@ def read_single_statedb(PID, NAME, SCOPE='TODO'):
         except sqlite3.Error, e:
             logger.warning('Error %s:' % e.args[0])
 
+
 def update_statedb(VALUE, NAME, PID=None, SCOPE='TODO'):
     """Update Tag table
 
@@ -596,9 +594,11 @@ def update_statedb(VALUE, NAME, PID=None, SCOPE='TODO'):
         except sqlite3.Error, e:
             logger.warning('Error %s:' % e.args[0])
 
+
 def select_value(record):
     # logger.debug(record)
     return record[3]
+
 
 def init_swat():
     """
@@ -675,12 +675,12 @@ L0_RING7 = {
 }
 
 L1_PLCS_IP = {
-    'plc1':  '192.168.1.10',
-    'plc2':  '192.168.1.20',
-    'plc3':  '192.168.1.30',
-    'plc4':  '192.168.1.40',
-    'plc5':  '192.168.1.50',
-    'plc6':  '192.168.1.60',
+    'plc1': '192.168.1.10',
+    'plc2': '192.168.1.20',
+    'plc3': '192.168.1.30',
+    'plc4': '192.168.1.40',
+    'plc5': '192.168.1.50',
+    'plc6': '192.168.1.60',
     'plc1r': '192.168.1.11',
     'plc2r': '192.168.1.21',
     'plc3r': '192.168.1.31',
@@ -688,7 +688,7 @@ L1_PLCS_IP = {
     'plc5r': '192.168.1.51',
     'plc6r': '192.168.1.61',
     # used as central hub
-    'plc7':  '192.168.1.70',
+    'plc7': '192.168.1.70',
     'attacker': '192.168.1.77',
 }
 
@@ -710,12 +710,12 @@ L2_HMI = {
 
 CONDUITS = {
     'firewall': '192.168.1.102',
-    'pcn_ap':   '192.168.1.103',  # plant control network
-    'dmz_ap':   '192.168.1.104',
+    'pcn_ap': '192.168.1.103',  # plant control network
+    'dmz_ap': '192.168.1.104',
 }
 
 L3_PLANT_NETWORK = {
-    'histn':   '192.168.1.200',
+    'histn': '192.168.1.200',
     'workstn': '192.168.1.201',
 }
 
@@ -725,63 +725,63 @@ L2_NETMASK = ''
 L3_NETMASK = '/24'
 
 PLCS_MAC = {
-    'plc1':  '00:1D:9C:C7:B0:70',
-    'plc2':  '00:1D:9C:C8:BC:46',
-    'plc3':  '00:1D:9C:C8:BD:F2',
-    'plc4':  '00:1D:9C:C7:FA:2C',
-    'plc5':  '00:1D:9C:C8:BC:2F',
-    'plc6':  '00:1D:9C:C7:FA:2D',
+    'plc1': '00:1D:9C:C7:B0:70',
+    'plc2': '00:1D:9C:C8:BC:46',
+    'plc3': '00:1D:9C:C8:BD:F2',
+    'plc4': '00:1D:9C:C7:FA:2C',
+    'plc5': '00:1D:9C:C8:BC:2F',
+    'plc6': '00:1D:9C:C7:FA:2D',
     'plc1r': '00:1D:9C:C8:BD:E7',
     'plc2r': '00:1D:9C:C8:BD:0D',
     'plc3r': '00:1D:9C:C7:F8:3B',
     'plc4r': '00:1D:9C:C8:BC:31',
     'plc5r': '00:1D:9C:C8:F4:B9',
     'plc6r': '00:1D:9C:C8:F5:DB',
-    'plc7':  'TODO',
+    'plc7': 'TODO',
 }
 
 
 OTHER_MACS = {
-    'histn':   'B8:2A:72:D7:B0:EC',
+    'histn': 'B8:2A:72:D7:B0:EC',
     'workstn': '98:90:96:98:CC:49',
-    'hmi':     '00:1D:9C:C6:72:E8',
+    'hmi': '00:1D:9C:C6:72:E8',
     'attacker': 'AA:AA:AA:AA:AA:AA',  # easy to recognize in the capture
 }
 
 IPS_TO_MACS = {
-        # plcs
-        '192.168.1.10':  '00:1D:9C:C7:B0:70',
-        '192.168.1.20':  '00:1D:9C:C8:BC:46',
-        '192.168.1.30':  '00:1D:9C:C8:BD:F2',
-        '192.168.1.40':  '00:1D:9C:C7:FA:2C',
-        '192.168.1.50':  '00:1D:9C:C8:BC:2F',
-        '192.168.1.60':  '00:1D:9C:C7:FA:2D',
-        '192.168.1.11':  '00:1D:9C:C8:BD:E7',
-        '192.168.1.21':  '00:1D:9C:C8:BD:0D',
-        '192.168.1.31':  '00:1D:9C:C7:F8:3B',
-        '192.168.1.41':  '00:1D:9C:C8:BC:31',
-        '192.168.1.51':  '00:1D:9C:C8:F4:B9',
-        '192.168.1.61':  '00:1D:9C:C8:F5:DB',
-        # hist and workstn
-        '192.168.1.200': 'B8:2A:72:D7:B0:EC',
-        '192.168.1.201': '98:90:96:98:CC:49',
-        # hmi
-        '192.168.1.100': '00:1D:9C:C6:72:E8',
+    # plcs
+    '192.168.1.10': '00:1D:9C:C7:B0:70',
+    '192.168.1.20': '00:1D:9C:C8:BC:46',
+    '192.168.1.30': '00:1D:9C:C8:BD:F2',
+    '192.168.1.40': '00:1D:9C:C7:FA:2C',
+    '192.168.1.50': '00:1D:9C:C8:BC:2F',
+    '192.168.1.60': '00:1D:9C:C7:FA:2D',
+    '192.168.1.11': '00:1D:9C:C8:BD:E7',
+    '192.168.1.21': '00:1D:9C:C8:BD:0D',
+    '192.168.1.31': '00:1D:9C:C7:F8:3B',
+    '192.168.1.41': '00:1D:9C:C8:BC:31',
+    '192.168.1.51': '00:1D:9C:C8:F4:B9',
+    '192.168.1.61': '00:1D:9C:C8:F5:DB',
+    # hist and workstn
+    '192.168.1.200': 'B8:2A:72:D7:B0:EC',
+    '192.168.1.201': '98:90:96:98:CC:49',
+    # hmi
+    '192.168.1.100': '00:1D:9C:C6:72:E8',
 }
 
 PLCS = len(PLCS_MAC)
-L1_NODES = 0 # TODO
-L2_NODES = 0 # TODO
-L3_NODES = PLCS/2 + 2  # 13/2 + 2 = 8
+L1_NODES = 0  # TODO
+L2_NODES = 0  # TODO
+L3_NODES = PLCS / 2 + 2  # 13/2 + 2 = 8
 
 
 CIP_VENDOR_IDS = {
-    'plc1':  'TODO',
-    'plc2':  'TODO',
-    'plc3':  'TODO',
-    'plc4':  'TODO',
-    'plc5':  'TODO',
-    'plc6':  'TODO',
+    'plc1': 'TODO',
+    'plc2': 'TODO',
+    'plc3': 'TODO',
+    'plc4': 'TODO',
+    'plc5': 'TODO',
+    'plc6': 'TODO',
     'plc1r': 'TODO',
     'plc2r': 'TODO',
     'plc3r': 'TODO',
@@ -789,17 +789,17 @@ CIP_VENDOR_IDS = {
     'plc5r': 'TODO',
     'plc6r': 'TODO',
     # used as central hub
-    'plc7':  'TODO',
+    'plc7': 'TODO',
     'attacker': 'TODO',
 }
 
 CIP_SERIAL_NUMBERS = {
-    'plc1':  'TODO',
-    'plc2':  'TODO',
-    'plc3':  'TODO',
-    'plc4':  'TODO',
-    'plc5':  'TODO',
-    'plc6':  'TODO',
+    'plc1': 'TODO',
+    'plc2': 'TODO',
+    'plc3': 'TODO',
+    'plc4': 'TODO',
+    'plc5': 'TODO',
+    'plc6': 'TODO',
     'plc1r': 'TODO',
     'plc2r': 'TODO',
     'plc3r': 'TODO',
@@ -807,7 +807,6 @@ CIP_SERIAL_NUMBERS = {
     'plc5r': 'TODO',
     'plc6r': 'TODO',
     # used as central hub
-    'plc7':  'TODO',
+    'plc7': 'TODO',
     'attacker': 'TODO',
 }
-
