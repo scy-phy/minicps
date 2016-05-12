@@ -10,7 +10,7 @@ from constants import logger
 from constants import P1_PLC2_TAGS
 from constants import read_single_statedb, update_statedb
 from constants import write_cpppo, read_cpppo, init_cpppo_server
-from constants import L1_PLCS_IP
+from utils import L1_PLCS_IP
 from constants import T_PLC_R, T_PLC_W, TIMEOUT
 from constants import PLC2_CPPPO_CACHE
 

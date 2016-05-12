@@ -18,8 +18,7 @@ from minicps.sdn import POXSwat
 from minicps.networks import PLC, HMI, DumbSwitch, Attacker
 from minicps.networks import EthLink, TopoFromNxGraph
 
-from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
-from constants import OTHER_MACS
+from utils import L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI, OTHER_MACS
 from constants import init_swat
 
 

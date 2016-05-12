@@ -3,7 +3,7 @@ import sqlite3
 
 # TODO: delete constants and use other names
 from constants import logger
-from constants import create_db, remove_db, init_db
+from constants import init_db
 from constants import STATE_DB_PATH, SCHEMA, DATATYPES
 
 # TODO: use high level functions

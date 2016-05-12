@@ -25,7 +25,7 @@ from constants import logger
 from constants import P1_PLC1_TAGS, LIT_101, LIT_301, FIT_201
 from constants import T_HMI_R, TIMEOUT, DISPLAYED_SAMPLES
 from constants import read_cpppo
-from constants import L1_PLCS_IP
+from utils import L1_PLCS_IP
 
 
 def set_delta(y_min, y_max, subplot, size):

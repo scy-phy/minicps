@@ -24,8 +24,9 @@ from minicps.networks import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POX
 from minicps.networks import EthLink, TopoFromNxGraph
 from minicps import constants as c
 
-from constants import logger, L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
-from constants import OTHER_MACS, L3_PLANT_NETWORK, init_swat
+from constants import logger, init_swat
+from utils import L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI
+from utils import OTHER_MACS, L3_PLANT_NETWORK
 
 # used to separate different log sessions
 logger.debug('----------'+time.asctime()+'----------')
