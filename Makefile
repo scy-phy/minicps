@@ -38,6 +38,9 @@ test-protocols:
 test-utils:
 	sudo $(TESTER) $(TESTER_OPTS) utils_tests.py
 
+test-state:
+	sudo $(TESTER) $(TESTER_OPTS) state_tests.py
+
 
 # clean {{{1
 clean: clean-cover
