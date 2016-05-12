@@ -33,30 +33,35 @@ TEST_LOG_LEVEL = 'info'
 TEMP_DIR = './temp'
 
 
-def build_logger(loggername, maxBytes, backupCount):
-    """Build a logger obj named loggername that generates
-    loggername.log[.n] rotating log files with every level
-    (log, file, console) hardcoded to DEBUG.
-    The format is hardcoded as well.
+# https://docs.python.org/2/howto/logging.html
+def build_debug_logger(
+        logger_name,
+        bytes_per_file=10000,
+        rotating_files=3,
+        log_format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        log_dir='/tmp/',
+        suffix='.log'):
+    """Build a custom Python debug logger file.
 
-    :loggername: name of the logger instance
-    :maxBytes: maximum bytes per rotating log file
-    :backupCount: maximum number of rotating files
+    :logger_name: name of the logger instance
+    :bytes_per_file: defaults to 10KB
+    :rotating_files: defaults to 3
+    :log_format: defaults to time, name, level, message
+    :log_dir: defaults to /tmp
+    :suffix: defaults to .log
     :returns: logger instance
-
     """
 
-    logger = logging.getLogger(loggername)
+    logger = logging.getLogger(logger_name)
     logger.setLevel(logging.DEBUG)
 
     # log_path = _getlog_path()
     # assert log_path != None, "No log path found"
 
     fh = logging.handlers.RotatingFileHandler(
-        # log_path+loggername+'.log',
-        'logs/' + loggername + '.log',
-        maxBytes=maxBytes,
-        backupCount=backupCount)
+        log_dir + logger_name + suffix,
+        maxBytes=bytes_per_file,
+        backupCount=rotating_files)
     fh.setLevel(logging.DEBUG)
 
     ch = logging.StreamHandler()
@@ -64,7 +69,7 @@ def build_logger(loggername, maxBytes, backupCount):
 
     # no thread information
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        log_format)
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
 
@@ -76,7 +81,7 @@ def build_logger(loggername, maxBytes, backupCount):
 
 LOG_BYTES = 20000
 LOG_ROTATIONS = 5
-logger = build_logger(__name__, LOG_BYTES, LOG_ROTATIONS)
+logger = build_debug_logger(__name__, LOG_BYTES, LOG_ROTATIONS)
 
 ASSERTION_ERRORS = {
     'ip_mismatch': 'IP mismatch',

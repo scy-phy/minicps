@@ -25,8 +25,8 @@ Incoming graphs have to satisfy some constraints to build correctly:
 
 from minicps import constants as c
 
-from minicps.utils import build_logger
-logger = build_logger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
+from minicps.utils import build_debug_logger
+logger = build_debug_logger(__name__, c.LOG_BYTES, c.LOG_ROTATIONS)
 
 
 
