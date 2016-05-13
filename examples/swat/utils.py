@@ -12,6 +12,7 @@ from minicps.networks import PLC, HMI, DumbSwitch, Attacker
 from minicps.networks import EthLink, MininetTopoFromNxGraph
 
 
+# TODO: os.system is deprecated use better commands
 def init_swat():
     """ Init swat simulation environment.
 
@@ -30,11 +31,9 @@ def init_swat():
 
 
 def nxgraph_sub1(attacker=False):
-    """
-    Build plc1-3, s1, hmi SWaT network graph
+    """Build plc1-3, s1, hmi SWaT network graph
 
     :attacker: add an additional Attacker device to the graph
-
     :returns: networkx graph
     """
 

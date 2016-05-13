@@ -13,6 +13,7 @@ have a graph representation in the examples/swat folder.
 """
 
 # TODO: check the log files, merge with swat controller
+# TODO: remove function importable from utils
 
 import time
 import sys
