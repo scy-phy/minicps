@@ -30,7 +30,7 @@ from nose import with_setup
 TEST_LOG_LEVEL = 'info'
 # TEST_LOG_LEVEL='debug'
 
-TEMP_DIR = './temp'
+TEMP_DIR = '/tmp'
 
 
 # https://docs.python.org/2/howto/logging.html

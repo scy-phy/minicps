@@ -14,8 +14,6 @@ from mininet.cli import CLI
 from mininet.node import RemoteController
 
 
-# FIXME: move to swat-specific test folder
-# @with_named_setup(setup_func, teardown_func)
 def test_L3EthStarBuild():
     """Test L3EthStar build process with custom L3_LINKOPTS"""
 
