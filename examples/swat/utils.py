@@ -10,6 +10,20 @@ L2_NODES = 0  # TODO
 L3_NODES = 8
 
 # NETWORK {{{1
+
+L0_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L1_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L2_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+L3_LINKOPTS = dict(
+    bw=10, delay='5ms', loss=1,
+    max_queue_size=1000, use_htb=True)
+
 L0_RING1 = {
     'plc': '192.168.0.10',
     'plcr': '192.168.0.11',
