@@ -1,6 +1,8 @@
 """
 swat utils.
 
+Swat constant values.
+
 Network addresses, Common Industrial Protocol (CIP) and devices
 """
 
@@ -9,7 +11,7 @@ import sys
 import networkx as nx
 
 from minicps.networks import PLC, HMI, DumbSwitch, Attacker
-from minicps.networks import EthLink, MininetTopoFromNxGraph
+from minicps.networks import EthLink
 
 
 # TODO: os.system is deprecated use better commands

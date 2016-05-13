@@ -83,12 +83,6 @@ LOG_BYTES = 20000
 LOG_ROTATIONS = 5
 logger = build_debug_logger(__name__, LOG_BYTES, LOG_ROTATIONS)
 
-ASSERTION_ERRORS = {
-    'ip_mismatch': 'IP mismatch',
-    'mac_mismatch': 'MAC mismatch',
-    'no_learning': 'No learning',
-}
-
 
 # testing {{{1
 
