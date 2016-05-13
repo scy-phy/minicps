@@ -8,18 +8,19 @@ topology you want to build.
 """
 
 import time
-import sys
 import os
-
-# add minicps to the execution path
+import sys
 sys.path.append(os.getcwd())
 
-from minicps.sdn import POXSwat
-from minicps.networks import PLC, HMI, DumbSwitch, Attacker
-from minicps.networks import EthLink, TopoFromNxGraph
+# TODO: find a nicer way
+# add minicps to the execution path
 
-from utils import L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI, OTHER_MACS
-from constants import init_swat
+# from minicps.sdn import POXSwat
+from minicps.networks import PLC, HMI, DumbSwitch, Attacker
+from minicps.networks import EthLink, MininetTopoFromNxGraph
+
+from examples.swat.utils import L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI, OTHER_MACS
+from examples.swat.constants import init_swat
 
 
 from mininet.cli import CLI
@@ -27,13 +28,10 @@ from mininet.net import Mininet
 from mininet.link import TCLink
 
 import networkx as nx
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
-# used to separate different log sessions
-logger.debug('----------' + time.asctime() + '----------')
-
-
+# TODO: move to utils
 def nxgraph_sub1(attacker=False):
     """
     Build plc1-3, s1, hmi SWaT network graph
@@ -98,7 +96,8 @@ def minicps_tutorial(net):
     plc1, plc2, plc3, hmi, s1 = net.get('plc1', 'plc2', 'plc3', 'hmi', 's1')
 
     # SPHINX_SWAT_TUTORIAL SET PLC1
-    # plc1.cmd("python examples/swat/plc1a.py 2> examples/swat/err/plc1a.err &")
+    # plc1.cmd(
+    #     "python examples/swat/plc1a.py 2> examples/swat/err/plc1a.err &")
     plc1.cmd("python examples/swat/plc1.py 2> examples/swat/err/plc1.err &")
     # SPHINX_SWAT_TUTORIAL END SET PLC1
 
@@ -129,7 +128,7 @@ if __name__ == '__main__':
     swat_graph = nxgraph_sub1(attacker=False)
     # SPHINX_SWAT_TUTORIAL END ATTACKER
 
-    topo = TopoFromNxGraph(swat_graph)
+    topo = MininetTopoFromNxGraph(swat_graph)
 
     # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
     net = Mininet(topo=topo, link=TCLink, listenPort=6634)

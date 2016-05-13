@@ -1,17 +1,32 @@
 # MiniCPS makefile
 
-# test {{{1
+# VARIABLES {{{1
+MININET = sudo mn
 
-# regex testMatch: (?:^|[b_.-])[Tt]est)
-# --exe: include also executable files
-# -s: don't capture std output
-# nosetests -s tests/devices_tests.py:fun_name
+PYTHON = python
+PYTHON_OPTS = 
 
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
 TESTER = nosetests
 TESTER_OPTS = -w tests -s -v --noexe
 TESTER_OPTS_COV = -w tests -s -v --noexe --with-cov --cov-report annotate
+
+# SWAT {{{1
+
+swat-tutorial:
+	sudo $(PYTHON) examples/swat/tutorial/run.py
+
+swat-tests:
+	sudo $(TESTER) $(TESTER_OPTS) examples/swat/tests
+
+# MINICPS TESTS {{{1
+
+# regex testMatch: (?:^|[b_.-])[Tt]est)
+# --exe: include also executable files
+# -s: don't capture std output
+# nosetests -s tests/devices_tests.py:fun_name
+
 
 test:
 	sudo $(TESTER) $(TESTER_OPTS)

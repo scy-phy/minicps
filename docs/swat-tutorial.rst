@@ -229,10 +229,10 @@ simulation has written to ``stderr`` (e.g.: ``hmi.err``).
 Dumb plc1
 ----------
 
-Open ``examples/swat/tutorial.py``,
+Open ``examples/swat/tutorial/run.py``,
 uncomment the line containing ``..ImageContainer.py...`` :
 
-.. literalinclude:: ../examples/swat/tutorial.py
+.. literalinclude:: ../examples/swat/tutorial/run.py
    :start-after: # SPHINX_SWAT_TUTORIAL SET POPUP
    :end-before:  # SPHINX_SWAT_TUTORIAL END SET POPUP
 
@@ -275,10 +275,10 @@ And optionally clean the OS environment typing:
 Standard plc1
 -----------------
 
-Open ``examples/swat/tutorial.py`` and comment/uncomment the relevant lines
+Open ``examples/swat/tutorial/run.py`` and comment/uncomment the relevant lines
 to call the standard plc1 script:
 
-.. literalinclude:: ../examples/swat/tutorial.py
+.. literalinclude:: ../examples/swat/tutorial/run.py
    :start-after: # SPHINX_SWAT_TUTORIAL SET PLC1
    :end-before:  # SPHINX_SWAT_TUTORIAL END SET PLC1
 
@@ -308,9 +308,9 @@ And optionally clean the OS environment typing:
 POXSwat SDN Controller
 --------------------------
 
-Open ``examples/swat/tutorial.py``, uncomment:
+Open ``examples/swat/tutorial/run.py``, uncomment:
 
-.. literalinclude:: ../examples/swat/tutorial.py
+.. literalinclude:: ../examples/swat/tutorial/run.py
    :start-after: # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
    :end-before:  # SPHINX_SWAT_TUTORIAL END SET SDN CONTROLLER
 

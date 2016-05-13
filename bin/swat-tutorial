@@ -1,2 +1,3 @@
 #!/bin/bash
-sudo python examples/swat/tutorial.py
+
+make swat-tutorial
