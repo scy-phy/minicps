@@ -4,6 +4,77 @@ swat utils.
 Network addresses, Common Industrial Protocol (CIP) and devices
 """
 
+import os
+import sys
+import networkx as nx
+
+from minicps.networks import PLC, HMI, DumbSwitch, Attacker
+from minicps.networks import EthLink, MininetTopoFromNxGraph
+
+
+def init_swat():
+    """ Init swat simulation environment.
+
+    Create the db if necessary
+    init the db with constant values
+
+    Create the error directory if necessary (debug)
+
+    """
+    try:
+        os.system("python examples/swat/state_db.py")
+        os.system("mkdir -p examples/swat/err")
+        os.system('rm -f example/swat/err/*')
+    except Exception:
+        sys.exit(1)
+
+
+def nxgraph_sub1(attacker=False):
+    """
+    Build plc1-3, s1, hmi SWaT network graph
+
+    :attacker: add an additional Attacker device to the graph
+
+    :returns: networkx graph
+    """
+
+    graph = nx.Graph()
+
+    graph.name = 'swat_level1'
+
+    # Init switch
+    s1 = DumbSwitch('s1')
+    graph.add_node('s1', attr_dict=s1.get_params())
+
+    # Create nodes and connect edges
+    nodes = {}
+    count = 0
+    # plcs
+    for i in range(1, 4):
+        key = 'plc' + str(i)
+        nodes[key] = PLC(key, L1_PLCS_IP[key], L1_NETMASK, PLCS_MAC[key])
+        graph.add_node(key, attr_dict=nodes[key].get_params())
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
+        graph.add_edge(key, 's1', attr_dict=link.get_params())
+        count += 1
+    # hmi
+    nodes['hmi'] = HMI('hmi', L2_HMI['hmi'], L1_NETMASK, OTHER_MACS['hmi'])
+    graph.add_node('hmi', attr_dict=nodes['hmi'].get_params())
+    link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
+    graph.add_edge('hmi', 's1', attr_dict=link.get_params())
+    count += 1
+    # optional attacker
+    if attacker:
+        nodes['attacker'] = Attacker(
+            'attacker', L1_PLCS_IP['attacker'], L1_NETMASK,
+            OTHER_MACS['attacker'])
+        graph.add_node('attacker', attr_dict=nodes['attacker'].get_params())
+        link = EthLink(label=str(count), bandwidth=30, delay=0, loss=0)
+        graph.add_edge('attacker', 's1', attr_dict=link.get_params())
+
+    return graph
+
+
 PLCS = 13
 L1_NODES = 0  # TODO
 L2_NODES = 0  # TODO

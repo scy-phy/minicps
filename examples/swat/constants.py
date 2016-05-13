@@ -579,16 +579,3 @@ def select_value(record):
     return record[3]
 
 
-def init_swat():
-    """
-    * create the db if necessary
-    * init the db with constant values
-    * create the error directory if necessary (debug)
-
-    """
-    try:
-        os.system("python examples/swat/state_db.py")
-        os.system("mkdir -p examples/swat/err")
-        os.system('rm -f example/swat/err/*')
-    except Exception:
-        sys.exit(1)
