@@ -19,13 +19,15 @@ def test_L3EthStar():
     """Test L3 Ring MACs and IPs"""
     # raise SkipTest
 
-    topo = L3EthStar()
+    topo = L3EthStar(add_attacker=True)
     net = Mininet(
         topo=topo,
         link=TCLink,
         listenPort=OF_MISC['switch_debug_port'])
 
     net.start()
+
+    net.pingAll()
 
     n = L3_NODES
     for h in range(n - 2):

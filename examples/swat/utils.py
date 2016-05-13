@@ -83,6 +83,7 @@ L3_NODES = 8
 
 # NETWORK {{{1
 
+# SwaT network layers performance
 L0_LINKOPTS = dict(
     bw=10, delay='5ms', loss=1,
     max_queue_size=1000, use_htb=True)
