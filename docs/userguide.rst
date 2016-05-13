@@ -119,7 +119,7 @@ execute the following:
 
 .. code-block:: console
 
-   ~/minicps/bin/init [-p POX_PATH -m MINICPS_PATH -vv]
+   ~/minicps/bin/pox-init.py [-p POX_PATH -m MINICPS_PATH -vv]
 
 Notice that: 
 

@@ -3,7 +3,7 @@
 """
 Script to perform pox init.
 
-pox dir defaults to ~/pox
+Pox dir defaults to ~/pox
 minicps dir defaults to ~/minicps
 
 Use POX_COMPONENTS list to add new symlinks.
