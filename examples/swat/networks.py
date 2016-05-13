@@ -1,6 +1,13 @@
 """
 swat networks module
 
+DMZ AP, L3, L2 L1  wireless star networks and L0 wireless DLR
+cannot be simulated because miniet lacks wireless (IEEE 802.11)
+simulation support.
+
+Topology syntax follow the new simplified Mininet 2.2 API.
+eg: build() insted of __init__() constructor.
+
 Mininet does not like long hostname,
 e.g., workstation is truncated to workstn
 """
@@ -81,7 +88,6 @@ class L2EthStar(Topo):
 
     def build(self):
         """TODO: to be defined1. """
-        switch = self.addSwitch('s2')
         pass
 
 

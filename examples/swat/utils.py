@@ -4,6 +4,9 @@ swat utils.
 Swat constant values.
 
 Network addresses, Common Industrial Protocol (CIP) and devices
+
+Switch naming convention: s2 indicates SWaT L2 network, not to
+be confused with link layer.
 """
 
 import os

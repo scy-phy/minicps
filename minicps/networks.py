@@ -6,6 +6,10 @@ It contains data object used my Mininet to build the topology.
 It contains data object used to specify topologies as graph files.
 The module is using Vertex and Edge base class names to avoid conflicts with
 networkx module. The logic of each device will be specified by the client
+
+Incoming graphs have to satisfy some constraints to build correctly:
+Attributes must be passed as dict using add_edge(name, params=dict) and
+add_node(name, params=dict)
 """
 
 import networkx
