@@ -1,9 +1,9 @@
-#!/usr/bin/python
-
 import Tkinter as tk
-from PIL import Image, ImageTk
 import time
 import sys
+
+from PIL import Image, ImageTk
+
 
 class ImageContainer(object):
     """
@@ -47,7 +47,7 @@ class ImageContainer(object):
         """
         try:
             self.__image = ImageTk.PhotoImage(Image.open(self.__filename))
-            self.__label.config(image = self.__image)
+            self.__label.config(image=self.__image)
             self.__label.after(self.__refresh_period, self.update_image)
         except:
             self.__label.after(self.__refresh_period, self.update_image)
