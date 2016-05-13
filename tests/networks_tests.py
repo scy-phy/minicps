@@ -26,8 +26,6 @@ def test_build_nx_graph():
     print 'Graph edges:', list(graph.edges())
 
 
-# @with_named_setup(setup_func, teardown_func)
-# @SkipTest
 def test_MininetTopoFromNxGraph():
 
     """Create a Networkx graph and build a mininet topology object."""
@@ -39,6 +37,7 @@ def test_MininetTopoFromNxGraph():
 
     net = Mininet(topo=topo, link=TCLink, listenPort=6634)
     net.start()
+    print
     net.pingAll()
 
     # CLI(net)

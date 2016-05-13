@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # can be used for single read and write cmds
-# --print to generate output
+# --print to print to stdout
 # -l $1 error.log path
 # -a $2 ip address of the server
 # $3

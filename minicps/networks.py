@@ -12,7 +12,7 @@ Attributes must be passed as dict using add_edge(name, params=dict) and
 add_node(name, params=dict)
 """
 
-import networkx
+import networkx as nx
 
 from mininet.topo import Topo
 
@@ -194,8 +194,7 @@ def build_nx_graph():
     The graph contains two PLCs connected to a switch
     """
 
-    graph = networkx.Graph()
-    graph.name = 'test'
+    graph = nx.Graph(name='test')
 
     links = 0
 

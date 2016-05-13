@@ -1,6 +1,7 @@
 """
 swat networks tests
 """
+
 from nose.tools import ok_
 from nose.plugins.skip import SkipTest
 # from nose.plugins.skip import Skip, SkipTest
@@ -54,19 +55,22 @@ def test_L3EthStar():
     net.stop()
 
 
+# TODO: check
 def test_L3EthStarEnip():
     """Test L3EthStar ENIP client/server communications.
 
     plc1 is used as a cpppo server listening to port
-    44818
+    44818.
 
     workstn is used as a cpppo client sending couples of
     write/read requests every second.
+
+    Output is hardcoded to /tmp directory.
     """
 
-    open(TEMP_DIR + '/cppposerver.err', 'w').close()
-    open(TEMP_DIR + '/cpppoclient.out', 'w').close()
-    open(TEMP_DIR + '/cpppoclient.err', 'w').close()
+    open(TEMP_DIR + '/cpppo-server.err', 'w').close()
+    open(TEMP_DIR + '/cpppo-client.out', 'w').close()
+    open(TEMP_DIR + '/cpppo-client.err', 'w').close()
 
     topo = L3EthStar()
 
@@ -86,6 +90,7 @@ def test_L3EthStarEnip():
     net.stop()
 
 
+# TODO: check
 @SkipTest
 def test_L3EthStarArpMitm():
     """plc1 ARP poisoning MITM attack using ettercap,
@@ -121,6 +126,7 @@ def test_L3EthStarArpMitm():
     net.stop()
 
 
+# TODO: check
 @SkipTest
 def test_L3EthStarAttackArpEnip():
     """
@@ -196,6 +202,7 @@ def test_L3EthStarAttackArpEnip():
     net.stop()
 
 
+# TODO: check
 @SkipTest
 def test_L3EthStarAttackDoubleAp():
     """
@@ -272,6 +279,7 @@ def test_L3EthStarAttackDoubleAp():
     net.stop()
 
 
+# TODO: check
 @SkipTest
 def test_Workshop():
     """
