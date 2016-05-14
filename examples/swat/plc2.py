@@ -2,8 +2,6 @@
 """
 SWaT plc2 subprocess 1 simulation
 """
-import sqlite3
-import os
 import time
 
 from constants import logger
@@ -33,16 +31,18 @@ if __name__ == '__main__':
 
     # wait for the other plcs
     time.sleep(2)
-    
+
     # write_cpppo(L1_PLCS_IP['plc2'], 'DO_MV_201_CLOSE', '2')
 
-    # val = read_cpppo(L1_PLCS_IP['plc2'], 'DO_MV_201_CLOSE', 'examples/swat/plc2_cpppo.cache')
+    val = read_cpppo(
+        L1_PLCS_IP['plc2'], 'DO_MV_201_CLOSE',
+        'examples/swat/plc2_cpppo.cache')
     # logger.debug("read_cpppo: %s" % val)
 
     # synch with plc2, plc3
     # time.sleep(1)
 
-    # look a Stridhar graph
+    # TODO: look a Stridhar graph
     logger.info("PLC2 - enters main loop")
     start_time = time.time()
 
