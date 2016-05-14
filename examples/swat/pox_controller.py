@@ -1,23 +1,31 @@
 """
-swat_controller
+swat_controller.
 
-log path is logs/ and it is chosen in the minicps.devices POXSwat class.
+Log path is logs/ and it is chosen in the minicps.devices POXSwat class.
 
-based on http://www.irongeek.com/i.php?page=security/security-and-software-defined-networking-sdn-openflow
+Based on:
+http://www.irongeek.com/i.php?page=security/security-and-software-defined-networking-sdn-openflow
 
 ARP poisoning resistant: passive, active, internal node, external node
 
-the controller statically maps all switches with the ideal configuration (proactive) saving time in the init
-process,
+The controller statically maps all switches with the ideal configuration
+(proactive) saving time in the init process,
 
-the component is event-driven and detection and mitigation code runs with higher priority than normal code.
-it will be easy to develop new detection and mitigation modules and swap them into the component.
+The component is event-driven and detection and mitigation code runs
+with higher priority than normal code.
 
-normal task mgmt is based on l2_learning provided component.
+It will be easy to develop new detection and mitigation modules and swap
+them into the component.
 
-eg: if attacker detected then tell the switch to send all packet from that switch to a dedicated IDS port
-eg2: if attacker detected then exclude the node from the network
-eg3: reverse MITM attack using the attacker as a target and a hidden node as is target
+Normal task mgmt is based on l2_learning provided component.
+
+Eg: if attacker detected then tell the switch to send all packet from that
+switch to a dedicated IDS port
+
+Eg 2: if attacker detected then exclude the node from the network
+
+Eg 3: reverse MITM attack using the attacker as a target and a hidden
+node as is target
 """
 
 from pox.core import core
@@ -31,18 +39,17 @@ from pox.lib.revent import Event, EventMixin, EventHalt
 from pprint import pformat
 import time
 
-# TODO: from constatns import logger
 log = core.getLogger()
 
-# TODO S:
-       # check periodically the consistency of the static mapping quering the switches.
-       # add nicira self-learning capability to auto-proove consistency of the mapping
-       # blacklist arp spoofer
-       # add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
-       # and send flow modification on connection up and remove flows on connection down
-       # add timers to control DoS
-       # use class methods where necessary
-       # use send_arp_reply to answer arp request that the controller already know
+# TODOs:
+# Check periodically the consistency of the static mapping quering the switches
+# Add nicira self-learning capability to auto-proove consistency of the mapping
+# Blacklist arp spoofer
+# Add switch-based init mac_to_port mapping? AntiArpPoison store a mac_to_port map
+# and send flow modification on connection up and remove flows on connection down
+# Add timers to control DoS
+# Use class methods where necessary
+# Use send_arp_reply to answer arp request that the controller already know
 
 
 # class ArpPoison(Event):
@@ -60,23 +67,21 @@ log = core.getLogger()
 
 class AntiArpPoison(object):
 
-    """
-    Class able to detect datapath ArpPoisoning
+    """Class able to detect datapath ArpPoisoning.
 
-    one-time/switch ConnectionUp event is handled by _init_static function
+    One-time/switch ConnectionUp event is handled by _init_static function
     outside this class.
     """
 
     def __init__(self, connection):
-        """
-        blocking handlers: self._detect_arp_poison blocks PacketIn handling.
+        """Blocking handlers: self._detect_arp_poison blocks PacketIn handling.
 
         ConnectionUp handler are called only once per datapath and it is
         raised only by core.openflow.
 
         ip_to_mac and mac_to_port are used for dynamic (reactive) mapping.
 
-        synch timers are only initted and NOT started automatically.
+        synch timers are only initialized and NOT started automatically.
         """
 
         self.connection = connection  # convenient reference
@@ -84,20 +89,24 @@ class AntiArpPoison(object):
         self.ip_to_mac = {}
         self.mac_to_port = {}
 
-        # connection_log = pformat(event.connection._eventMixin_events, indent=4)
-        # log.debug("connection obj can raise those events: %s" % connection_log)
-
         # Asynch handlers
-        core.openflow.addListenerByName("ConnectionUp", self._static_mapping, priority=2, once=True)
-        core.openflow.addListenerByName("ConnectionUp", self._handle_ConnectionUp, priority=0, once=True)
+        core.openflow.addListenerByName(
+            "ConnectionUp", self._static_mapping, priority=2, once=True)
+        core.openflow.addListenerByName(
+            "ConnectionUp", self._handle_ConnectionUp, priority=0, once=True)
 
-        self.connection.addListenerByName("PacketIn", self._detect_arp_poison, priority=1, once=False)
-        self.connection.addListenerByName("PacketIn", self._handle_PacketIn, priority=0, once=False)
+        self.connection.addListenerByName(
+            "PacketIn", self._detect_arp_poison, priority=1, once=False)
+        self.connection.addListenerByName(
+            "PacketIn", self._handle_PacketIn, priority=0, once=False)
 
-        # self.connection.addListenerByName("ArpPoison", self._handle_ArpPoison, priority=1, once=False)
+        # self.connection.addListenerByName(
+        #     "ArpPoison", self._handle_ArpPoison, priority=1, once=False)
 
-        self.connection.addListenerByName("AggregateFlowStatsReceived", self._handle_AggregateFlowStatsReceived,
-                priority=1, once=False)
+        self.connection.addListenerByName(
+            "AggregateFlowStatsReceived",
+            self._handle_AggregateFlowStatsReceived,
+            priority=1, once=False)
 
         # Synch handlers
         self.arpcache_timer = Timer(
@@ -105,22 +114,19 @@ class AntiArpPoison(object):
             self._handle_arpcache_restore,  # handler able to cancel the timer
             absoluteTime=False,
             recurring=True,
-            started=False,  # do NOT start automatically, start it during ConnectionUp
+            started=False,  # start it during ConnectionUp
             selfStoppable=False,  # timer can be cancelled by the handler
             args=['arpcache_timer'])
 
-
-# HELPER METHODS
+    # HELPERS {{{1
     def drop(self, event, duration):
-        """
-        Drop a packet after duration 
-        """
+        """Drop a packet after duration."""
 
         if duration is not None:
             if not isinstance(duration, tuple):  # idle_timeout, hard_timeout
                 duration = (duration, duration)
             msg = of.ofp_flow_mod()
-            msg.match = of.ofp_match.from_packet(packet)
+            msg.match = of.ofp_match.from_packet(packet)  # FIXME: check packet
             msg.idle_timeout = duration[0]
             msg.hard_timeout = duration[1]
             msg.buffer_id = event.ofp.buffer_id
@@ -130,13 +136,11 @@ class AntiArpPoison(object):
             msg = of.ofp_packet_out()
             msg.buffer_id = event.ofp.buffer_id
             msg.in_port = event.port
-            self,connection.send(msg)
-
+            self.connection.send(msg)
 
     def flood(self, event):
-        """
-        Flood a packet 
-        """
+        """Flood a packet."""
+
         flood_port = self.flood_port
         packet = event.parsed
 
@@ -150,16 +154,16 @@ class AntiArpPoison(object):
 
         self.connection.send(msg)
 
-
+    # TODO: don't know how to build and send a msg
     def request_stats(self, stat=2):
-        """
-        TODO: don't know how to build and send msg
+        """Request statistics from a datapath.
 
         Send an ofp_stats_request from the controller
 
         :stat_type: see of.OFPST_XXXXX int constants
         defaults to OFPST_AGGREGATE
         """
+
         pass
         # msg = of.ofp_stats_request()
         # log.debug("request stat: %s %d" % (type(stat), state))
@@ -168,14 +172,16 @@ class AntiArpPoison(object):
         # msg.type(stat_type)
         # self.connection.send(msg)
 
-
-    def send_arp_reply(self, ipsrc, macsrc,
+    def send_arp_reply(
+            self, ipsrc, macsrc,
             ipdst, macdst, port):
+        """Send a custom ARP response.
+
+        TODO: doc parameters
         """
-        Send a custom arp_reply to port number
-        directly from the controller.
-        """
-        log.debug("%d: recieve arp_reply from controller" % (self.connection.dpid))
+
+        log.debug(
+            "%d: receive arp_reply from controller" % (self.connection.dpid))
 
         assert(type(ipsrc) == str)
         assert(type(macsrc) == str)
@@ -205,54 +211,47 @@ class AntiArpPoison(object):
         msg.actions.append(action)
         self.connection.send(msg)
 
-
     def get_src_addresses(self, packet):
-        """
-        :returns: ipsrc and macsrc as str
-        """
+        """Get IP and MAC source addresses strings."""
+
         arp = packet.find('arp')
         if arp is not None:
-            ipsrc=str(arp.protosrc)
-            macsrc=str(arp.hwsrc)
+            ipsrc = str(arp.protosrc)
+            macsrc = str(arp.hwsrc)
 
         else:
             ip = packet.find('ipv4')
             if ip is not None:
-                ipsrc=str(ip.srcip)
-                macsrc=str(packet.src)
+                ipsrc = str(ip.srcip)
+                macsrc = str(packet.src)
 
         # log.debug("ipsrc: %s" % (ipsrc))
         # log.debug("macsrc: %s" % (macsrc))
 
         return ipsrc, macsrc
 
-
+    # TODO: manage 00:00:00:00:00:00 MAC
     def get_dst_addresses(self, packet):
-        """
-        :returns: ipsrc and macsrc as str
+        """Get IP and MAC destination addresses stings."""
 
-        TODO: manage 00:00:00:00:00:00 MAC
-        """
         arp = packet.find('arp')
         if arp is not None:
-            ipdst=str(arp.protodst)
-            macdst=str(arp.hwdst)
+            ipdst = str(arp.protodst)
+            macdst = str(arp.hwdst)
 
         else:
             ip = packet.find('ipv4')
             if ip is not None:
-                ipdst=str(ip.dstip)
-                macdst=str(packet.dst)
+                ipdst = str(ip.dstip)
+                macdst = str(packet.dst)
 
         # log.debug("ipsrc: %s" % (ipsrc))
         # log.debug("macsrc: %s" % (macsrc))
 
         return ipdst, macdst
 
-
     def ap_detect_arp_request(self, event, packet):
-        """
-        Try to detect ap from an arp_request package
+        """Try to detect ap from an arp_request package.
 
         Usually the attacker send some arp_request to
         its target. Notice that internal arp spoofing
@@ -261,25 +260,26 @@ class AntiArpPoison(object):
         :event: TODO
         :packet: TODO
         :returns: TODO
-
         """
+
         sender_ip = str(packet.payload.protosrc)
         sender_mac = str(packet.payload.hwsrc)
 
         dst_ip = str(packet.payload.protodst)
         dst_mac = str(packet.payload.hwdst)
-    
-        if sender_mac not in self.ip_to_mac.values() or sender_ip not in self.ip_to_mac:
-            log.warning("%d: new device with %s IP and %s MAC ask info about %s IP" % (
-                event.dpid, sender_ip, sender_mac, dst_ip))
+
+        if (sender_mac not in self.ip_to_mac.values() or
+                sender_ip not in self.ip_to_mac):
+
+            log.warning(
+                "%d: new device with %s IP and %s MAC ask info about %s IP" % (
+                    event.dpid, sender_ip, sender_mac, dst_ip))
             return True
 
         return False
 
-
     def ap_detect_arp_reply(self, event, packet):
-        """
-        Try to detect ap from an arp_reply package
+        """Try to detect ap from an arp_reply package.
 
         Usually the attacker send periodically misleading arp
         reply to target hosts.
@@ -289,6 +289,7 @@ class AntiArpPoison(object):
         :returns: flag
 
         """
+
         sender_ip = str(packet.payload.protosrc)
         sender_mac = str(packet.payload.hwsrc)
 
@@ -304,46 +305,52 @@ class AntiArpPoison(object):
                         if value == sender_mac:
                             attacker_ip = key
                             break
-                    log.warning("%d internal ap detected: %s MAC with %s IP tries to impersonate %s IP with %s MAC" % (
-                        event.dpid, sender_mac, attacker_ip, sender_ip, self.static_ip_to_mac[sender_ip]))
+                    log.warning(
+                        "%d internal ap detected: %s MAC with %s IP "
+                        "tries to impersonate %s IP with %s MAC" % (
+                            event.dpid, sender_mac, attacker_ip,
+                            sender_ip, self.static_ip_to_mac[sender_ip]))
                     return True
 
                 # External attack
                 else:
-                    log.warning("%d external ap detected: %s MAC tries to impersonate %s IP with %s MAC" % (
-                        event.dpid, sender_mac, sender_ip, self.static_ip_to_mac[sender_ip]))
+                    log.warning(
+                        "%d external ap detected: %s MAC tries to "
+                        "impersonate %s IP with %s MAC" % (
+                            event.dpid, sender_mac, sender_ip,
+                            self.static_ip_to_mac[sender_ip]))
                     return True
 
         return False
 
-
+    # TODO: implement
     def redirect_to_ips(self, event):
+        """Redirect attacker traffic to IPS.
+
+        Update all other switches
         """
-        redirect attacker traffic to IPS
-        update all other switches
-        """
+
         pass
 
-
+    # TODO: implement
     def ban_host(self, event, duration):
-        """
-        send a flow_mod that ban a host
-        from the network
-        """
+        """Ban an host from the network."""
+
         pass
 
-
-# SYNCH HANDLERS
+    # SYNCH HANDLERS {{{1
     def _handle_arpcache_restore(self, *args):
-        """
-        send packet_out arp_reply to all
+        """Remap datapaths ARP caches.
+
+        Send packet_out arp_reply to all
         hosts to remap their arp caches
 
-        eg: if plc1 pinged plc3 and plc3 pinged plc2
+        Eg: if plc1 pinged plc3 and plc3 pinged plc2
             then plc1 will now how to ping plc2
 
         :*args: list passed at timer init.
         """
+
         log.info("%d: _handle_arpcache_restore" % self.connection.dpid)
 
         ip_to_mac_list = self.ip_to_mac.items()
@@ -372,12 +379,12 @@ class AntiArpPoison(object):
                         rec_mac,
                         int(port))
 
-                    # log.debug("%d: %s IP has this % MAC => %s IP %s MAC on port %s" % (
-                    #     self.connection.dpid,
-                    #     sender_ip, sender_mac,
-                    #     rec_ip, rec_mac,
-                    #     port))
-
+                    # log.debug(
+                    #     "%d: %s IP has % MAC => %s IP %s MAC on port %s" % (
+                    #         self.connection.dpid,
+                    #         sender_ip, sender_mac,
+                    #         rec_ip, rec_mac,
+                    #         port))
 
         # TODO: save port mapping for each host then send on that port
         # all the locations of the other hosts
@@ -403,14 +410,15 @@ class AntiArpPoison(object):
         #     tuples_list[0][1],
         #     2)
 
-# ASYNCH HANDLERS
+    # ASYNCH HANDLERS {{{1
+    # TODO: send flow_mod related to static mapping (proactive)
     def _static_mapping(self, event):
-        """
-        special handler for PacketIn
-        add static mapping attributes to AntiArpPoison class
+        """PacketIn special handler.
+
+        Add static mapping attributes to AntiArpPoison class
         init switch flooding and IPS ports
-        TODO: send flow_mod related to static mapping (proactive) 
         """
+
         log.info("%d: _static_mapping" % self.connection.dpid)
 
         # TODO: use static_mac_to_port to premap switches
@@ -429,8 +437,10 @@ class AntiArpPoison(object):
         # aap_log = pformat(self.__dict__, indent=4)
         # log.debug("self.__dict__: %s" % aap_log)
 
-        # self.connection.send( of.ofp_flow_mod ( action=of.ofp_action_output(port=2),
-        #                                         match = of.ofp_match( dl_dst = 'ff:ff:ff:ff:ff:ff')))
+        # self.connection.send(
+        #     of.ofp_flow_mod(
+        #         action=of.ofp_action_output(port=2),
+        #         match=of.ofp_match(dl_dst='ff:ff:ff:ff:ff:ff')))
 
         # for mac, port in self.mac_to_port.items():
         #     # log.debug("key: %s value: %s" % (mac, port))
@@ -439,39 +449,40 @@ class AntiArpPoison(object):
         #     msg.hard_timeout = of.OFP_FLOW_PERMANENT
         #     # msg.match.dl_type = 0x800  # match only IP packets
         #     msg.match.dl_dst = mac
-        #     action = of.ofp_action_output(port=port)  # then forward packet to port
+        #     action = of.ofp_action_output(port=port)
+        #     # thenforward pkt to port
         #     msg.actions.append(action)
         #     self.connection.send(msg)
         #     time.sleep(2)
 
-
     def _handle_ConnectionUp(self, event):
-        """
-        send flowmods to statically init the switch with
+        """Statically init switch's flow tables.
+
+        Send flowmods to statically init the switch with
         permanent flows.
 
-        mapping is naive port 1 is used to send pkt to plc1
-        ecc ...
+        Mapping is naive port 1 is used to send pkt to plc1.
         """
+
         log.info("%d: _handle_ConnectionUp" % self.connection.dpid)
 
         # start timer only once
         # log.debug("%d: starting synch timers." % self.connection.dpid)
         # self.arpcache_timer.start()
 
-
-    # TODO: use a more generic name 
+    # TODO: use a more generic name
     def _detect_arp_poison(self, event):
-        """
-        packet obj contains a type int attribute and
-        a series of CONST_TYPE attacched to identify it
+        """Detect arp poisoning.
 
-        return EventHalt blocks successive lower priority
+        Packet obj contains a type int attribute and
+        a series of CONST_TYPE attacched to identify it.
+
+        Return EventHalt blocks successive lower priority
         handlers.
 
-        look inside ap_detect_arp_request and ap_detect_arp_reply 
+        Look inside ap_detect_arp_request and ap_detect_arp_reply
         to manage separately the two cases.
-        """	
+        """
 
         packet = event.parsed
         if not packet.parsed:
@@ -496,11 +507,12 @@ class AntiArpPoison(object):
         # elif isinstance(packet.next, ipv4):
         #     pass
 
-
     def ap_handle_arp_request(self, event, packet):
+        """Handle ARP poisoning attempt.
+
+        Detected from ARP request packets.
         """
-        Handle ARP poisoning attempt detected from ARP request packets.
-        """
+
         log.debug("%d: ap_handle_arp_request" % self.connection.dpid)
 
         msg = of.ofp_packet_out()
@@ -515,18 +527,17 @@ class AntiArpPoison(object):
         log.warning("%d: arp request packet mirrored on port %d" % (
             event.dpid, self.ips_port))
 
-
     def ap_handle_arp_reply(self, event, packet):
-        """
-        Handle ARP poisoning attempt detected from ARP reply packets.
+        """Handle ARP poisoning attempt detected from ARP reply packets.
 
         Install a permanent flow on the current datapath that will
         drop packet coming from current in_port only from the current MAC
         (and optionally current IP).
 
-        an empty actions list tells the switch to drop packets that match
+        An empty actions list tells the switch to drop packets that match
         this rule.
         """
+
         log.debug("%d: ap_handle_arp_reply" % self.connection.dpid)
 
         in_port = event.port
@@ -535,7 +546,7 @@ class AntiArpPoison(object):
 
         msg = of.ofp_flow_mod()
         msg.match.in_port = in_port
-        
+
         msg.match.dl_src = EthAddr(sender_mac)
         # msg.match.nw_src = IPAddr(sender_ip)
         # msg.match.dl_type = 0x800 # match only IP traffic
@@ -547,24 +558,24 @@ class AntiArpPoison(object):
         # msg.actions.append(action)
 
         event.connection.send(msg)
-        log.warning("%d: datapath will drop every packet coming from port: %d" % (
-            event.dpid, event.port))
-
+        log.warning(
+            "%d: datapath will drop every packet coming from port: %d" % (
+                event.dpid, event.port))
 
     def _handle_PacketIn(self, event):
-        """
-        Std PacketIn handling
+        """Standard PacketIn handling.
 
         With flow_mod everything that is unspecified will
-        be wildcarded (match everything)
-        Use CIDR notation to match subnets (partial IP fileds)
+        be wildcarded (match everything).
+
+        Use CIDR notation to match subnets (partial IP fileds).
 
         flow_mod matching rules are created using information
-        from the packet_in payload
+        from the packet_in payload.
 
         """
-        # log.info("%d: _handle_PacketIn" % self.connection.dpid)
 
+        # log.info("%d: _handle_PacketIn" % self.connection.dpid)
 
         packet = event.parsed
         if not packet.parsed:
@@ -579,7 +590,9 @@ class AntiArpPoison(object):
 
         if ipsrc not in self.ip_to_mac:
             self.ip_to_mac[ipsrc] = macsrc
-            log.info("%d: new %s->%s pair out on port %d" % (event.dpid, ipsrc, macsrc, event.port))
+            log.info(
+                "%d: new %s->%s pair out on port %d" % (
+                    event.dpid, ipsrc, macsrc, event.port))
 
         # ????
         if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
@@ -587,22 +600,28 @@ class AntiArpPoison(object):
 
         # Multicast
         elif packet.dst.is_multicast or macdst == '00:00:00:00:00:00':
-            # log.debug("%d: flood %s -> %s" % (event.dpid, packet.src, packet.dst))
+            # log.debug(
+            #     "%d: flood %s -> %s" % (
+            #         event.dpid, packet.src, packet.dst))
             self.flood(event)
 
         # Unknown destination apart from ARP request default
         elif macdst not in self.mac_to_port:
-            # log.debug("%d: port from %s unknown -- flooding" % (event.dpid, macdst))
+            # log.debug(
+            #     "%d: port from %s unknown -- flooding" % (
+            #         event.dpid, macdst))
             self.flood(event)
 
         # Flow_mod
         else:
             port = self.mac_to_port[macdst]
 
-            # don't want to forward one the same port from which the switch recieve the packet
+            # don't want to forward on the same port
+            # from which the switch receive the packet
             if port == event.port:
-                log.warning("Same port for packet from %s -> %s on %s.%s.  Drop."
-                        % (packet.src, packet.dst, dpid_to_str(event.dpid), port))
+                log.warning(
+                    "Same port for packet from %s -> %s on %s.%s.  Drop." % (
+                        packet.src, packet.dst, dpid_to_str(event.dpid), port))
                 self.drop(event, 0)
             # add flow
             else:
@@ -612,50 +631,48 @@ class AntiArpPoison(object):
 
                 msg.match = of.ofp_match.from_packet(packet, event.port)
                 msg.idle_timeout = 5  # sec
-                msg.hardTimeout = 10 # sec
+                msg.hardTimeout = 10  # sec
                 action = of.ofp_action_output(port=port)
                 msg.actions.append(action)
                 msg.data = event.ofp  # use the same payload
                 self.connection.send(msg)
 
-
+    # TODO: implement
     def _handle_FlowRemoved(self, event):
-        """
-        TODO
-        """
+        """Handle FlowRemoved events."""
+
         log.debug("%d: _handle_FlowRemoved" % self.connection.dpid)
 
-
+    # TODO: implement
     def _handle_AggregateFlowStatsReceived(self, event):
-        """
-        Print event.stats list content.
-        """
-        log.debug("%d: _handle_AggregateFlowStatsReceived" % self.connection.dpid)
-        
+        """Print event.stats list content."""
+
+        log.debug(
+            "%d: _handle_AggregateFlowStatsReceived" % self.connection.dpid)
+
         for stat in event.stats:
             log.info("stat: %s" % stat)
 
-
+    # TODO: implement
     def _handle_ConnectionDown(self, event):
-        """
-        TODO: remove all flow from the switch
-        """
+        """Handle ConnectionDown events."""
+
         log.debug("%d: _handle_ConnectionDown" % self.connection.dpid)
+        pass
 
 
+# HELPER functions {{{1
+# TODO: move to utils or reuse already defined dicts
 def swat_ip_map_1():
-    """
-    six plcs and hmi.
-    
-    """
+    """Six plcs and hmi."""
 
     ip_to_mac = {
-        '192.168.1.10':  '00:1d:9c:c7:b0:70',
-        '192.168.1.20':  '00:1d:9c:c8:bc:46',
-        '192.168.1.30':  '00:1d:9c:c8:bd:f2',
-        '192.168.1.40':  '00:1d:9c:c7:fa:2c',
-        '192.168.1.50':  '00:1d:9c:c8:bc:2f',
-        '192.168.1.60':  '00:1d:9c:c7:fa:2d',
+        '192.168.1.10': '00:1d:9c:c7:b0:70',
+        '192.168.1.20': '00:1d:9c:c8:bc:46',
+        '192.168.1.30': '00:1d:9c:c8:bd:f2',
+        '192.168.1.40': '00:1d:9c:c7:fa:2c',
+        '192.168.1.50': '00:1d:9c:c8:bc:2f',
+        '192.168.1.60': '00:1d:9c:c7:fa:2d',
         '192.168.1.100': '00:1d:9c:c6:72:e8',
     }
 
@@ -663,10 +680,9 @@ def swat_ip_map_1():
 
 
 def swat_port_map_1():
-    """
-    six plcs and hmi
+    """Six plcs and hmi.
 
-    pox uses underscore MAC representation
+    Pox uses underscore MAC representation
     """
 
     mac_to_port = {
@@ -683,16 +699,14 @@ def swat_port_map_1():
 
 
 def _init_datapath(event):
-    """
-    special handler to init one AntiArpPoison obj
-    for each new datapath.
-    """
+    """Init one AntiArpPoison obj for each new datapath."""
 
     AntiArpPoison(event.connection)
 
 
 def launch(par=False):
-    """
+    """Launch SDN controller.
+
     _init_static_mapping listens to each ConnectionUp event.
 
     core.openflow raise ConnectionUp for each new datapath.
@@ -702,7 +716,6 @@ def launch(par=False):
 
     connection obj manage messages from the controller to
     the switch because it allows to send of messages.
-    
     """
 
     # nexus_log = pformat(core.openflow._eventMixin_events, indent=4)
