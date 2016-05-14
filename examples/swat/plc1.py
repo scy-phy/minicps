@@ -1,6 +1,7 @@
 """
-SWaT plc1 subprocess 1 simulation
+SWaT plc1 subprocess 1 simulation.
 """
+
 import time
 
 from constants import logger
@@ -12,8 +13,7 @@ from constants import T_PLC_R, T_PLC_W, TIMEOUT
 from constants import PLC1_CPPPO_CACHE
 
 if __name__ == '__main__':
-    """
-    Init cpppo enip server.
+    """Init cpppo enip server.
 
     Execute an infinite routine loop:
         - read sensors value
