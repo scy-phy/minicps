@@ -6,14 +6,12 @@ from PIL import Image, ImageTk
 
 
 class ImageContainer(object):
-    """
-    TODO
-    """
 
     def __init__(self, filename, refresh_period):
         """
         :refresh_period: in msec
         """
+
         self.__filename = filename
         self.__refresh_period = refresh_period
 
@@ -45,6 +43,7 @@ class ImageContainer(object):
         """
         It recall itself after self.__refresh_period
         """
+
         try:
             self.__image = ImageTk.PhotoImage(Image.open(self.__filename))
             self.__label.config(image=self.__image)
@@ -54,11 +53,12 @@ class ImageContainer(object):
 
 
 if __name__ == '__main__':
-    """
-    Require two args:
+    """Require two args:
+
     :filename: path to the image to contain
     :refresh_period: in ms
     """
+
     if len(sys.argv) == 3:
         filename = sys.argv[1]
         refresh_period = sys.argv[2]  # ms
