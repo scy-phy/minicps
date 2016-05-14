@@ -9,7 +9,7 @@ from constants import read_single_statedb, update_statedb
 from constants import write_cpppo, read_cpppo, init_cpppo_server
 from utils import L1_PLCS_IP
 from constants import T_PLC_R, T_PLC_W
-from constants import LIT_101, LIT_301, FIT_201, PLC1_CPPPO_CACHE
+from constants import PLC1_CPPPO_CACHE
 from constants import TIMEOUT
 
 if __name__ == '__main__':
@@ -51,19 +51,22 @@ if __name__ == '__main__':
         elif lit101 <= LIT_101['LL']:
             logger.warning("PLC1 - lit101 under LL: %.2f <= %.2f" % (
                 lit101, LIT_101['LL']))
-            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            val = read_cpppo(
+                L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 read HMI_P101-Status: %s" % val)
 
         elif lit101 <= LIT_101['L']:
             logger.warning("PLC1 - lit101 under L: %.2f <= %.2f" % (
                 lit101, LIT_101['L']))
-            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
+            val = read_cpppo(
+                L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 read HMI_MV101-Status: %s" % val)
 
         elif lit101 >= LIT_101['H']:
             logger.warning("PLC1 - lit101 over H: %.2f <= %.2f" % (
                 lit101, LIT_101['H']))
-            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
+            val = read_cpppo(
+                L1_PLCS_IP['plc1'], 'HMI_MV101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - mv101 read HMI_MV101-Status: %s" % val)
 
         # read from PLC2
@@ -77,13 +80,14 @@ if __name__ == '__main__':
         lit301 = float(val)
 
         if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
-            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            val = read_cpppo(
+                L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 read HMI_P101-Status: %s" % val)
 
         elif lit301 <= LIT_301['L']:
-            val = read_cpppo(L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
+            val = read_cpppo(
+                L1_PLCS_IP['plc1'], 'HMI_P101-Status', PLC1_CPPPO_CACHE)
             logger.info("PLC1 - p101 read  HMI_P101-Status: %s" % val)
-
 
         # Sleep
         time.sleep(T_PLC_R)
