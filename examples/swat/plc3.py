@@ -1,9 +1,7 @@
+"""
+SWaT plc3 subprocess 1 simulation.
+"""
 
-"""
-SWaT plc3 subprocess 1 simulation
-"""
-import sqlite3
-import os
 import time
 
 from constants import logger
@@ -33,9 +31,11 @@ if __name__ == '__main__':
 
     # wait for the other plcs
     time.sleep(1)
-    
+
     # write_cpppo(L1_PLCS_IP['plc3'], 'AI_LIT_301_LEVEL', '3')
-    # val = read_cpppo(L1_PLCS_IP['plc3'], 'AI_LIT_301_LEVEL', 'examples/swat/plc3_cpppo.cache')
+    # val = read_cpppo(
+    #     L1_PLCS_IP['plc3'], 'AI_LIT_301_LEVEL',
+    #     'examples/swat/plc3_cpppo.cache')
     # logger.debug("read_cpppo: %s" % val)
 
     logger.info("PLC3 - enters main loop")
@@ -53,4 +53,3 @@ if __name__ == '__main__':
 
         time.sleep(T_PLC_R)
     logger.info("PLC3 - exits main loop")
-
