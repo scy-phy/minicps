@@ -7,20 +7,20 @@ import sqlite3
 # import pymongo
 
 
-# TODO: use State and StateSqlite classes ?
 class State(object):
 
     """Base class."""
 
-    def __init__(self):
-        """TODO: to be defined1."""
+    def __init__(self, path, extension):
+        """TODO: to be defined."""
 
-        pass
+        self._path = path
+        self._extension = extension
 
     def _create(self):
         """Create a state instance.
 
-        eg: create a MySQL db.
+        Eg: create a MySQL db.
 
         """
         pass
@@ -28,7 +28,7 @@ class State(object):
     def _init(self):
         """Initialize a state instance.
 
-        eg: init MySQL db tables.
+        Eg: init MySQL db tables.
 
         """
         pass
@@ -36,7 +36,7 @@ class State(object):
     def _delete(self):
         """Create a state instance.
 
-        eg: remove a MySQL db.
+        Eg: remove a MySQL db.
 
         """
         pass

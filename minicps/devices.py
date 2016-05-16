@@ -4,6 +4,7 @@ devices.py
 
 import time
 
+from os.path import splitext
 from minicps.state import SQLiteState
 
 
@@ -17,7 +18,7 @@ class Device(object):
 
         :name: name
         :protocol: used for network emulation
-        :state: used to simulate the state
+        :state: path the the state with extensions
         :disk: persistent memory
         :memory: main memory
         """
@@ -30,12 +31,37 @@ class Device(object):
 
         # TODO: good idea to attach to another function?
         # TDOD: what happend with self?
-        if self.state == 'sqlite':
-            self._state = SQLiteState()
-        else:
-            print 'ERROR: %s backend not supported.'
 
+        # TODO: add protocol bindings
+
+        self._init_state()
+        self._init_protocol()
         self._start()
+
+    def _init_state(self):
+        """Bind device to the physical layer API."""
+
+        path, extension = splitext(self.state)
+        print 'DEBUG: ', path, extension
+
+        if not extension:
+            print 'ERROR: provide a path with extension'
+
+        if not path:
+            print 'ERROR: provide a path'
+
+        if extension == '.sqlite':
+            self._state = SQLiteState(path, extension)
+        else:
+            print 'ERROR: %s backend not supported.' % self.state
+
+    def _init_protocol(self):
+        """Bind device to network API."""
+
+        # TODO: implement
+        pass
+
+        print "_start: please override me"
 
     def _start(self):
         """Start a device."""

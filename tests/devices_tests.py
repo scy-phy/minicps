@@ -10,7 +10,7 @@ def test_Device():
     print
     device = Device(
         name='device',
-        state='sqlite',
+        state='temp/state_test_db.sqlite',
         protocol='enip',
         memory={
             'TAG1': '1',
@@ -38,7 +38,7 @@ def test_PLC():
     print
     plc = PLC(
         name='plc',
-        state='sqlite',
+        state='temp/state_test_db.sqlite',
         protocol='enip',
         memory={
             'TAG1': '1',
