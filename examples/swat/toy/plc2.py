@@ -15,6 +15,7 @@ PLC2_TAG_DICT = {
 }
 
 PLC1_ADDR = '10.0.0.1'
+DB_PATH = 'examples/swat/toy/db.sqlite'
 
 
 class ToyPLC2(PLC):
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     # notice that memory init is different form disk init
     plc2 = ToyPLC2(
         name='plc2',
-        state='sqlite',
+        state=DB_PATH,
         protocol='enip',
         memory=PLC2_TAG_DICT,
         disk=PLC2_TAG_DICT)
