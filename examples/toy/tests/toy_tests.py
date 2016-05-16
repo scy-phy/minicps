@@ -2,9 +2,9 @@
 swat toy tests
 """
 
-from examples.swat.toy.plc1 import ToyPLC1
+from examples.toy.plc1 import ToyPLC1
 
-DB_PATH = 'examples/swat/toy/db.sqlite'
+DB_PATH = 'examples/toy/db.sqlite'
 
 PLC1_ADDR = '10.0.0.1'
 PLC2_ADDR = '10.0.0.2'

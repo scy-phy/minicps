@@ -12,6 +12,11 @@ TESTER = sudo nosetests
 TESTER_OPTS = -s -v --exe
 TESTER_OPTS_COV = $(TESTER_OPTS) --with-cov --cov-report annotate
 
+# TOY {{{1
+
+test-toy:
+	$(TESTER) $(TESTER_OPTS) examples/toy/tests/toy_tests.py
+
 # SWAT {{{1
 
 swat-tutorial:
@@ -20,8 +25,6 @@ swat-tutorial:
 test-swat:
 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
 
-test-swat-toy:
-	$(TESTER) $(TESTER_OPTS) examples/swat/tests/toy_tests.py
 
 # MINICPS TESTS {{{1
 

@@ -19,7 +19,7 @@ PLC1_TAG_DICT = {
 }
 
 PLC2_ADDR = '10.0.0.2'
-DB_PATH = 'examples/swat/toy/db.sqlite'
+DB_PATH = 'examples/toy/db.sqlite'
 
 
 class ToyPLC1(PLC):

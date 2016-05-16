@@ -91,3 +91,5 @@ class SQLiteState(State):
 # redis {{{1
 
 # mongodb {{{1
+
+# spreasheet/csv {{{1
