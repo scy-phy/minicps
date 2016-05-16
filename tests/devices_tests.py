@@ -29,6 +29,9 @@ def test_Device():
     print 'Device memory: ', device.memory
     print 'Device disk: ', device.disk
 
+    device.set()
+    device.get()
+
 
 def test_PLC():
 

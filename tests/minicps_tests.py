@@ -11,8 +11,8 @@ from mininet.link import TCLink
 # from mininet.cli import CLI
 
 
-def test_basic():
-    """Dump and pingall a linear topology."""
+def test_MininetLinearTopo():
+    """Dump and pingall a mininet linear topology."""
 
     net = Mininet(topo=LinearTopo(n=5),
                   link=TCLink)

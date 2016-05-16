@@ -4,18 +4,20 @@ devices.py
 
 import time
 
+from minicps.state import SQLiteState
+
 
 class Device(object):
 
-    """Base class"""
+    """Base class."""
 
     # TODO: state good name?
     def __init__(self, name, protocol, state, disk={}, memory={}):
         """PLC1 initialization steps:
 
         :name: name
-        :protocol: database backend
-        :state: database backend
+        :protocol: used for network emulation
+        :state: used to simulate the state
         :disk: persistent memory
         :memory: main memory
         """
@@ -27,6 +29,15 @@ class Device(object):
         self.disk = disk
 
         self.start()
+
+        # TODO: good idea to attach to another function?
+        # TDOD: what happend with self?
+        if state == 'sqlite':
+            sqlite_state = SQLiteState()
+            self.set = sqlite_state.set
+            self.get = sqlite_state.get
+        else:
+            print 'ERROR: %s backend not supported.'
 
     def start(self):
         """Start a device."""

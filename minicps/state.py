@@ -7,41 +7,86 @@ import sqlite3
 # import pymongo
 
 
-# public {{{1
-# TODO: decide name
-def set(arg1):
-    """Set a value.
+# TODO: use State and StateSqlite classes ?
+class State(object):
 
-    :arg1: TODO
-    :returns: TODO
+    """Base class."""
 
-    """
-    pass
+    def __init__(self):
+        """TODO: to be defined1."""
 
+        pass
 
-def get(arg1):
-    """Get a value.
+    def _create_state(self):
+        """Create a state instance.
 
-    :arg1: TODO
-    :returns: TODO
+        eg: create a MySQL db.
 
-    """
-    pass
+        """
+        pass
+
+    def _init_state(self):
+        """Initialize a state instance.
+
+        eg: init MySQL db tables.
+
+        """
+        pass
+
+    def _delete_state(self):
+        """Create a state instance.
+
+        eg: remove a MySQL db.
+
+        """
+        pass
+
+    def get(self):
+        """Get (read) a state value."""
+
+        print "get: please override"
+
+    def set(self):
+        """Set (write) a state value."""
+
+        print "set: please override"
 
 
 # sqlite {{{1
-# TODO check :memory: opt to save db in main memory"
-def _create_sqlite_db(db_name, schema):
-    """Create a sqlite db given a schema.
+class SQLiteState(State):
 
-    Remove old file first if you want to reuse a path
+    """SQLite state manager."""
 
-    :db_name: full or relative paths are supported
-    :schema: str containing the schema
-    """
+    # TODO check :memory: opt to save db in main memory"
+    def _create_state(self, db_name, schema):
+        """Create a sqlite db given a schema.
 
-    with sqlite3.connect(db_name) as conn:
-        conn.executescript(schema)
+        Remove old file first if you want to reuse a path
+
+        :db_name: full or relative paths are supported
+        :schema: str containing the schema
+        """
+
+        with sqlite3.connect(db_name) as conn:
+            conn.executescript(schema)
+
+    def set(self):
+        """Write a SQL record into a sqlite database.
+
+        :arg1: TODO
+        :returns: TODO
+        """
+
+        print "set_sqlite: TODO"
+
+    def get(self):
+        """Read a SQL record from a sqlite database.
+
+        :arg1: TODO
+        :returns: TODO
+        """
+
+        print "get_sqlite: TODO"
 
 # redis {{{1
 
