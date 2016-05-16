@@ -56,6 +56,9 @@ test-utils:
 test-state:
 	$(TESTER) $(TESTER_OPTS) tests/state_tests.py
 
+test-devices:
+	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py
+
 
 # clean {{{1
 clean: clean-cover
