@@ -35,27 +35,27 @@ class Device(object):
         else:
             print 'ERROR: %s backend not supported.'
 
-        self.start()
+        self._start()
 
-    def start(self):
+    def _start(self):
         """Start a device."""
 
-        print "start: please override me"
+        print "_start: please override me"
 
-    def stop(self):
+    def _stop(self):
         """Start a device."""
 
-        print "stop: please override me"
+        print "_stop: please override me"
 
     def set(self, what, value):
         """Get a value."""
 
-        self._state.set(what, value)
+        self._state._set(what, value)
 
     def get(self, value):
         """Get a value."""
 
-        self._state.get(value)
+        self._state._get(value)
 
 
 class PLC(Device):
@@ -68,13 +68,13 @@ class PLC(Device):
     main loop.
     """
 
-    def start(self):
+    def _start(self):
 
         self.pre_loop()
         self.main_loop()
 
     # TODO
-    def stop(self):
+    def _stop(self):
 
         pass
 

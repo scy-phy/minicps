@@ -17,7 +17,7 @@ class State(object):
 
         pass
 
-    def _create_state(self):
+    def _create(self):
         """Create a state instance.
 
         eg: create a MySQL db.
@@ -25,7 +25,7 @@ class State(object):
         """
         pass
 
-    def _init_state(self):
+    def _init(self):
         """Initialize a state instance.
 
         eg: init MySQL db tables.
@@ -33,7 +33,7 @@ class State(object):
         """
         pass
 
-    def _delete_state(self):
+    def _delete(self):
         """Create a state instance.
 
         eg: remove a MySQL db.
@@ -58,10 +58,10 @@ class SQLiteState(State):
     """SQLite state manager."""
 
     # TODO check :memory: opt to save db in main memory"
-    def _create_state(self, db_name, schema):
+    def _create(self, db_name, schema):
         """Create a sqlite db given a schema.
 
-        Remove old file first if you want to reuse a path
+        OVERWRITES db_name path by default.
 
         :db_name: full or relative paths are supported
         :schema: str containing the schema
@@ -70,21 +70,21 @@ class SQLiteState(State):
         with sqlite3.connect(db_name) as conn:
             conn.executescript(schema)
 
-    def set(self, what, value):
-        """Write a SQL record into a sqlite database.
+    def _init(self, db_name, init_cmd):
+        """Initialize a sqlite database given commands.
 
-        :arg1: TODO
-        :returns: TODO
+        :db_name: full or relative paths are supported
+        :init_cmd: initialization commands
         """
+
+        with sqlite3.connect(db_name) as conn:
+            conn.executescript(init_cmd)
+
+    def _set(self, what, value):
 
         print "set_sqlite: TODO"
 
-    def get(self, value):
-        """Read a SQL record from a sqlite database.
-
-        :arg1: TODO
-        :returns: TODO
-        """
+    def _get(self, value):
 
         print "get_sqlite: TODO"
 

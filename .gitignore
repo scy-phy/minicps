@@ -84,3 +84,6 @@ target/
 
 # Etterfilter compiled filters
 *.ef
+
+# State
+*.sqlite
