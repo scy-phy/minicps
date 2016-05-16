@@ -41,15 +41,15 @@ class State(object):
         """
         pass
 
-    def get(self):
-        """Get (read) a state value."""
-
-        print "get: please override"
-
-    def set(self):
+    def set(self, what, value):
         """Set (write) a state value."""
 
         print "set: please override"
+
+    def get(self, value):
+        """Get (read) a state value."""
+
+        print "get: please override"
 
 
 # sqlite {{{1
@@ -70,7 +70,7 @@ class SQLiteState(State):
         with sqlite3.connect(db_name) as conn:
             conn.executescript(schema)
 
-    def set(self):
+    def set(self, what, value):
         """Write a SQL record into a sqlite database.
 
         :arg1: TODO
@@ -79,7 +79,7 @@ class SQLiteState(State):
 
         print "set_sqlite: TODO"
 
-    def get(self):
+    def get(self, value):
         """Read a SQL record from a sqlite database.
 
         :arg1: TODO

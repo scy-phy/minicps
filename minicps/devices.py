@@ -28,16 +28,14 @@ class Device(object):
         self.memory = memory
         self.disk = disk
 
-        self.start()
-
         # TODO: good idea to attach to another function?
         # TDOD: what happend with self?
-        if state == 'sqlite':
-            sqlite_state = SQLiteState()
-            self.set = sqlite_state.set
-            self.get = sqlite_state.get
+        if self.state == 'sqlite':
+            self._state = SQLiteState()
         else:
             print 'ERROR: %s backend not supported.'
+
+        self.start()
 
     def start(self):
         """Start a device."""
@@ -48,6 +46,16 @@ class Device(object):
         """Start a device."""
 
         print "stop: please override me"
+
+    def set(self, what, value):
+        """Get a value."""
+
+        self._state.set(what, value)
+
+    def get(self, value):
+        """Get a value."""
+
+        self._state.get(value)
 
 
 class PLC(Device):

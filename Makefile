@@ -17,8 +17,11 @@ TESTER_OPTS_COV = $(TESTER_OPTS) --with-cov --cov-report annotate
 swat-tutorial:
 	$(PYTHON) examples/swat/tutorial/run.py
 
-swat-tests:
+test-swat:
 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
+
+test-swat-toy:
+	$(TESTER) $(TESTER_OPTS) examples/swat/tests/toy_tests.py
 
 # MINICPS TESTS {{{1
 

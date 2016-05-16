@@ -29,14 +29,14 @@ def test_Device():
     print 'Device memory: ', device.memory
     print 'Device disk: ', device.disk
 
-    device.set()
-    device.get()
+    device.set('TAG1', '2')
+    device.get('TAG2')
 
 
 def test_PLC():
 
     print
-    device = PLC(
+    plc = PLC(
         name='plc',
         state='sqlite',
         protocol='enip',
@@ -50,3 +50,6 @@ def test_PLC():
             'TAG4': '4',
             'TAG5': '5',
         })
+
+    plc.set('TAG1', '2')
+    plc.get('TAG2')
