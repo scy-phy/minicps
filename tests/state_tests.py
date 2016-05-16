@@ -26,6 +26,7 @@ def test_SQLiteState():
     SCHEMA_INIT = """
         INSERT INTO state_test VALUES ('SENSOR1', 'int', '0', 1);
         INSERT INTO state_test VALUES ('SENSOR2', 'float', '0.0', 1);
+        INSERT INTO state_test VALUES ('SENSOR3', 'int', '0.0', 1);
         INSERT INTO state_test VALUES ('SENSOR3', 'int', '0.0', 2);
         INSERT INTO state_test VALUES ('ACTUATOR1', 'int', '1', 1);
         INSERT INTO state_test VALUES ('ACTUATOR2', 'int', '0', 1);
