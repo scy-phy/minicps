@@ -14,6 +14,7 @@ def test_SQLiteState():
     PATH = "temp/state_test_db.sqlite"
 
     # sqlite use text instead of VARCHAR
+    # TODO: datatype field is necessary?
     SCHEMA = """
     CREATE TABLE state_test (
         name              TEXT NOT NULL,
