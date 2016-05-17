@@ -42,7 +42,8 @@ class Device(object):
         """Bind device to the physical layer API."""
 
         subpath, extension = splitext(self.state['path'])
-        print 'DEBUG: ', subpath, extension
+        print 'DEBUG subpath: ', subpath
+        print 'DEBUG extension: ', extension
 
         if not extension:
             print 'ERROR: provide a path with extension'
@@ -55,6 +56,7 @@ class Device(object):
 
         if extension == '.sqlite':
             # TODO: add parametric value filed
+            print 'DEBUG state: ', self.state
             self._state = SQLiteState(self.state)
         elif extension == '.redis':
             # TODO: add parametric key serialization
@@ -68,7 +70,7 @@ class Device(object):
         # TODO: implement
         pass
 
-        print "_start: please override me"
+        print "_init_protocol: please override me"
 
     def _start(self):
         """Start a device."""
@@ -88,7 +90,8 @@ class Device(object):
     def get(self, what):
         """Get a value."""
 
-        self._state._get(what)
+        # print 'DEBUG device.get what: ', what
+        return self._state._get(what)
 
 
 class PLC(Device):

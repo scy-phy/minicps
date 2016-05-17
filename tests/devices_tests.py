@@ -2,11 +2,15 @@
 devices tests
 """
 
+import time
+
 from minicps.devices import Device, PLC
 
 from nose.tools import eq_
+from nose.plugins.skip import SkipTest
 
 
+@SkipTest
 def test_Device():
 
     print
@@ -48,7 +52,8 @@ def test_PLC():
             :sleep: sleep n sec after it
             """
 
-            print self.get(('SENSOR3', 1))[0]
+            eq_(self.get(('SENSOR3', 1)), '1')
+            eq_(self.get(('SENSOR3', 2)), '2')
             time.sleep(sleep)
 
     print

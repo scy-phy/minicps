@@ -178,7 +178,7 @@ class SQLiteState(State):
                 cursor = conn.cursor()
                 cursor.execute(self._get_query, what)
                 record = cursor.fetchone()
-                return record
+                return record[0]
 
             except sqlite3.Error, e:
                 print('ERROR: %s: ' % e.args[0])

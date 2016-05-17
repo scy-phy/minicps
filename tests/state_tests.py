@@ -48,5 +48,5 @@ def test_SQLiteState():
     # state._init(PATH, SCHEMA_INIT)
     # state._delete()
 
-    eq_(state._get(('SENSOR3', 1))[0], '1')
-    eq_(state._get(('SENSOR3', 2))[0], '2')
+    eq_(state._get(('SENSOR3', 1)), '1')
+    eq_(state._get(('SENSOR3', 2)), '2')
