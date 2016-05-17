@@ -27,3 +27,9 @@ def test_MininetLinearTopo():
     # CLI(net)
 
     net.stop()
+
+
+# TODO
+def test_MiniCPS():
+
+    pass
