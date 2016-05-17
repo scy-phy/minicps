@@ -2,6 +2,9 @@
 mcps.py
 
 Main module for functional classes.
+
+MiniCPS augments Mininet capabilities in the context of Cyber-Physical
+Systems.
 """
 
 from mininet.cli import CLI
