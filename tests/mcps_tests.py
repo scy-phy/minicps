@@ -1,5 +1,5 @@
 """
-minicps_tests.
+mcps_tests.
 
 Contains functional tests.
 """

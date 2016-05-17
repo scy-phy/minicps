@@ -44,8 +44,8 @@ test:
 # test-cov:
 # 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
 
-test-minicps:
-	$(TESTER) $(TESTER_OPTS) tests/minicps_tests.py
+test-mcps:
+	$(TESTER) $(TESTER_OPTS) tests/mcps_tests.py
 
 test-networks:
 	$(TESTER) $(TESTER_OPTS) tests/networks_tests.py

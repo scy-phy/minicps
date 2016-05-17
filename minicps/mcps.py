@@ -1,5 +1,7 @@
 """
-minicps.py
+mcps.py
+
+Main module for functional classes.
 """
 
 
