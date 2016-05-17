@@ -13,7 +13,10 @@ PLC2_TAG_DICT = {
     'SENSOR3' '0',  # interlock with PLC1
 }
 
+PLC1_MAC = '00:00:00:00:00:01'
 PLC1_ADDR = '10.0.0.1'
+
 PLC2_ADDR = '10.0.0.2'
+PLC2_MAC = '00:00:00:00:00:02'
 
 DB_PATH = 'examples/toy/db.sqlite'
