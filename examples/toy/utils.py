@@ -19,4 +19,15 @@ PLC1_ADDR = '10.0.0.1'
 PLC2_ADDR = '10.0.0.2'
 PLC2_MAC = '00:00:00:00:00:02'
 
+# state info
 DB_PATH = 'examples/toy/db.sqlite'
+DB_NAME = 'toy_table'
+SCHEMA = """
+CREATE TABLE toy_table (
+    name              TEXT NOT NULL,
+    datatype          TEXT NOT NULL,
+    value             TEXT,
+    pid               INTEGER NOT NULL,
+    PRIMARY KEY (name, pid)
+);
+"""

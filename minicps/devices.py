@@ -5,20 +5,20 @@ devices.py
 import time
 
 from os.path import splitext
-from minicps.state import SQLiteState
+from minicps.state import SQLiteState, RedisState
 
 
 class Device(object):
 
     """Base class."""
 
-    # TODO: state good name?
+    # TODO: state dict convention (eg: multiple table support?)
     def __init__(self, name, protocol, state, disk={}, memory={}):
         """PLC1 initialization steps:
 
         :name: name
         :protocol: used for network emulation
-        :state: path the the state with extensions
+        :state: dict containing 'path' and 'name'
         :disk: persistent memory
         :memory: main memory
         """
@@ -41,17 +41,24 @@ class Device(object):
     def _init_state(self):
         """Bind device to the physical layer API."""
 
-        path, extension = splitext(self.state)
-        print 'DEBUG: ', path, extension
+        subpath, extension = splitext(self.state['path'])
+        print 'DEBUG: ', subpath, extension
 
         if not extension:
             print 'ERROR: provide a path with extension'
 
-        if not path:
-            print 'ERROR: provide a path'
+        if not self.state['path']:
+            print 'ERROR: provide a state path'
+
+        if not self.state['name']:
+            print 'ERROR: provide a state name'
 
         if extension == '.sqlite':
-            self._state = SQLiteState(path, extension)
+            # TODO: add parametric value filed
+            self._state = SQLiteState(self.state)
+        elif extension == '.redis':
+            # TODO: add parametric key serialization
+            self._state = RedisState(self.state)
         else:
             print 'ERROR: %s backend not supported.' % self.state
 

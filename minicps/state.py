@@ -11,11 +11,14 @@ class State(object):
 
     """Base class."""
 
-    def __init__(self, path, extension):
-        """TODO: to be defined."""
+    def __init__(self, state):
+        """Init a State object.
 
-        self._path = path
-        self._extension = extension
+        :state: dict passed from Device obj
+        """
+
+        # TODO: public or private?
+        self.state = state
 
     def _create(self):
         """Create a state instance.
@@ -41,21 +44,84 @@ class State(object):
         """
         pass
 
-    def set(self, what, value):
-        """Set (write) a state value."""
+    def _set(self, what, value):
+        """Set (write) a state value.
+
+        :what: tuple with field identifiers
+        :value: value
+        """
 
         print "set: please override"
 
-    def get(self, value):
-        """Get (read) a state value."""
+    def _get(self, what):
+        """Get (read) a state value.
+
+        :what: (Immutable) tuple with field identifiers
+        """
 
         print "get: please override"
 
 
 # sqlite {{{1
+# TODO: extend prepared statement to every SQL backend
 class SQLiteState(State):
 
-    """SQLite state manager."""
+    """SQLite state manager.
+
+    IT uses prepared statemetns to speed-up queries executions and protect
+    against SQL injection attacks.
+
+    Client has to use ordered primary key fields to use get and set.
+    """
+
+    def __init__(self, state):
+
+        super(SQLiteState, self).__init__(state)
+
+        self._name = self.state['name']
+        self._path = self.state['path']
+
+        self._init_what()
+
+    def _init_what(self):
+        # https://sqlite.org/pragma.html#pragma_table_info
+        query = "PRAGMA table_info(%s)" % self._name
+        # print "DEBUG query: ", query
+
+        with sqlite3.connect(self._path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(query)
+                table_info = cursor.fetchall()
+                # print "DEBUG table_info: ", table_info
+
+                # last tuple element
+                pks = []
+                for field in table_info:
+                    if field[-1] > 0:
+                        # print 'DEBUG pk field: ', field
+                        pks.append(field)
+
+                if not pks:
+                    print "ERROR: please provide at least 1 primary key"
+                else:
+                    # sort by pk order
+                    pks.sort(key=lambda x: x[5])
+                    print 'DEBUG sorted pks: ', pks
+
+                    what_list = []
+                    for pk in pks:
+                        what_list.append(pk[1])
+                    print 'DEBUG what list: ', what_list
+
+                    self._what = tuple(what_list)
+                    print 'DEBUG self._what: ', self._what
+                    del what_list, pks
+
+            except sqlite3.Error, e:
+                print('ERROR: %s: ' % e.args[0])
+
+        del query
 
     # TODO check :memory: opt to save db in main memory"
     def _create(self, db_name, schema):
@@ -82,13 +148,30 @@ class SQLiteState(State):
 
     def _set(self, what, value):
 
-        print "set_sqlite: TODO"
+        if what != self._what:
+            print "ERROR: search tuple different from %s" % self._what
 
-    def _get(self, value):
+    def _get(self, what):
 
-        print "get_sqlite: TODO"
+        if what != self._what:
+            print "ERROR: search tuple different from %s" % self._what
+        # with sqlite3.connect(self._path) as conn:
+        #     try:
+        #         cursor = conn.cursor()
+        #         cursor.execute(self._get_query, what)
+        #         record = cursor.fetchone()
+        #         return record
+
+        #     except sqlite3.Error, e:
+        #         print('ERROR: %s: ' % e.args[0])
+
 
 # redis {{{1
+class RedisState(State):
+
+    """Redis state manager."""
+
+    pass
 
 # mongodb {{{1
 
