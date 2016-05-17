@@ -52,6 +52,8 @@ def test_PLC():
             :sleep: sleep n sec after it
             """
 
+            eq_(self.set(('SENSOR1', 1), '10'), '10')
+            eq_(self.get(('SENSOR1', 1)), '10')
             eq_(self.get(('SENSOR3', 1)), '1')
             eq_(self.get(('SENSOR3', 2)), '2')
             time.sleep(sleep)

@@ -70,25 +70,31 @@ class Device(object):
         # TODO: implement
         pass
 
-        print "_init_protocol: please override me"
+        print "TODO _init_protocol: please override me"
 
     def _start(self):
         """Start a device."""
 
-        print "_start: please override me"
+        print "TODO _start: please override me"
 
     def _stop(self):
         """Start a device."""
 
-        print "_stop: please override me"
+        print "TODO _stop: please override me"
 
     def set(self, what, value):
-        """Get a value."""
+        """Set a value.
 
-        self._state._set(what, value)
+        :returns: setted value
+        """
+
+        return self._state._set(what, value)
 
     def get(self, what):
-        """Get a value."""
+        """Get a value.
+
+        :returns: get value
+        """
 
         # print 'DEBUG device.get what: ', what
         return self._state._get(what)
@@ -120,7 +126,7 @@ class PLC(Device):
         :sleep: sleep n sec after it
         """
 
-        print "pre_loop: please override me"
+        print "TODO pre_loop: please override me"
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
@@ -132,7 +138,7 @@ class PLC(Device):
         sec = 0
         while(sec < 1):
 
-            print "main_loop: please override me"
+            print "TODO main_loop: please override me"
             time.sleep(sleep)
 
             sec += 1
