@@ -1,5 +1,5 @@
 """
-plc2.py
+toy plc2.py
 """
 
 import time
@@ -9,13 +9,7 @@ import time
 # TODO: self.get is different from write to PLC memory ?
 
 from minicps.devices import PLC
-
-PLC2_TAG_DICT = {
-    'SENSOR3' '0',  # interlock with PLC1
-}
-
-PLC1_ADDR = '10.0.0.1'
-DB_PATH = 'examples/toy/db.sqlite'
+from examples.toy.utils import PLC2_TAG_DICT, PLC1_ADDR, DB_PATH
 
 
 class ToyPLC2(PLC):
