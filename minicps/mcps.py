@@ -10,17 +10,10 @@ Systems.
 from mininet.cli import CLI
 
 
-# MiniCPS has:
-#     a _pid dict
-#     a sdn_controller (what about external?)
-
-# Mininet TCLink used by default to shape
-# TODO: Mininet listenPort
 class MiniCPS(object):
 
     """Main container used to run the simulation."""
 
-    # TODO: group mininet stuff using an obj
     def __init__(self, name, net):
         """MiniCPS initialization steps:
 
@@ -28,8 +21,7 @@ class MiniCPS(object):
             - the topology
             - the link shaping
             - the CPU allocation
-            - the SDN controller
-            - etc
+            - the [remote] SDN controller
 
         :name: CPS name
         :net: Mininet object
