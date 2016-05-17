@@ -84,6 +84,7 @@ class SQLiteState(State):
 
         self._init_what()
         self._init_get_query()
+        self._init_set_query()
 
     def _init_what(self):
         """Save a ordered tuple of pk field names in self._what."""
@@ -140,6 +141,22 @@ class SQLiteState(State):
         print 'DEBUG get_query:', get_query
         self._get_query = get_query
 
+    def _init_set_query(self):
+        """Use prepared statements."""
+
+        set_query = 'UPDATE %s SET %s = ? WHERE %s = ?' % (
+            self._name,
+            self._value,
+            self._what[0])
+
+        # for composite pk
+        for pk in self._what[1:]:
+            set_query += ' AND %s = ?' % (
+                pk)
+
+        print 'DEBUG set_query:', set_query
+        self._set_query = set_query
+
     # TODO check :memory: opt to save db in main memory"
     def _create(self, db_name, schema):
         """Create a sqlite db given a schema.
@@ -164,14 +181,31 @@ class SQLiteState(State):
             conn.executescript(init_cmd)
 
     def _set(self, what, value):
+        """Returns setted value.
 
-        if what != self._what:
-            print "ERROR: search tuple different from %s" % self._what
+        Pass a new tuple consisting of
+        (value, what[0], what[1], ...)
+        """
+        what_list = [value]
+
+        for pk in what:
+            what_list.append(pk)
+
+        what = tuple(what_list)
+        print 'DEBUG what: ', what
+
+        with sqlite3.connect(self._path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(self._set_query, what)
+                conn.commit()
+                return value
+
+            except sqlite3.Error, e:
+                print('_set ERROR: %s: ' % e.args[0])
 
     def _get(self, what):
-
-        # if what != self._what:
-        #     print "ERROR: search tuple different from %s" % self._what
+        """Returns the first element of the result tuple."""
 
         with sqlite3.connect(self._path) as conn:
             try:
@@ -181,7 +215,7 @@ class SQLiteState(State):
                 return record[0]
 
             except sqlite3.Error, e:
-                print('ERROR: %s: ' % e.args[0])
+                print('_get ERROR: %s: ' % e.args[0])
 
 
 # redis {{{1

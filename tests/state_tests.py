@@ -50,3 +50,6 @@ def test_SQLiteState():
 
     eq_(state._get(('SENSOR3', 1)), '1')
     eq_(state._get(('SENSOR3', 2)), '2')
+
+    eq_(state._set(('SENSOR1', 1), '10'), '10')
+    eq_(state._get(('SENSOR1', 1)), '10')
