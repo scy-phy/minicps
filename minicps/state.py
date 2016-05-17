@@ -80,10 +80,14 @@ class SQLiteState(State):
 
         self._name = self.state['name']
         self._path = self.state['path']
+        self._value = 'value'  # TODO: client can override value field
 
         self._init_what()
+        self._init_get_query()
 
     def _init_what(self):
+        """Save a ordered tuple of pk field names in self._what."""
+
         # https://sqlite.org/pragma.html#pragma_table_info
         query = "PRAGMA table_info(%s)" % self._name
         # print "DEBUG query: ", query
@@ -116,12 +120,25 @@ class SQLiteState(State):
 
                     self._what = tuple(what_list)
                     print 'DEBUG self._what: ', self._what
-                    del what_list, pks
 
             except sqlite3.Error, e:
                 print('ERROR: %s: ' % e.args[0])
 
-        del query
+    def _init_get_query(self):
+        """Use prepared statement."""
+
+        get_query = 'SELECT %s FROM %s WHERE %s = ?' % (
+            self._value,
+            self._name,
+            self._what[0])
+
+        # for composite pk
+        for pk in self._what[1:]:
+            get_query += ' AND %s = ?' % (
+                pk)
+
+        print 'DEBUG get_query:', get_query
+        self._get_query = get_query
 
     # TODO check :memory: opt to save db in main memory"
     def _create(self, db_name, schema):
@@ -153,17 +170,18 @@ class SQLiteState(State):
 
     def _get(self, what):
 
-        if what != self._what:
-            print "ERROR: search tuple different from %s" % self._what
-        # with sqlite3.connect(self._path) as conn:
-        #     try:
-        #         cursor = conn.cursor()
-        #         cursor.execute(self._get_query, what)
-        #         record = cursor.fetchone()
-        #         return record
+        # if what != self._what:
+        #     print "ERROR: search tuple different from %s" % self._what
 
-        #     except sqlite3.Error, e:
-        #         print('ERROR: %s: ' % e.args[0])
+        with sqlite3.connect(self._path) as conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute(self._get_query, what)
+                record = cursor.fetchone()
+                return record
+
+            except sqlite3.Error, e:
+                print('ERROR: %s: ' % e.args[0])
 
 
 # redis {{{1

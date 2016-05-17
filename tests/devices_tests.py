@@ -4,6 +4,8 @@ devices tests
 
 from minicps.devices import Device, PLC
 
+from nose.tools import eq_
+
 
 def test_Device():
 
@@ -38,8 +40,19 @@ def test_Device():
 
 def test_PLC():
 
+    class TestPLC(PLC):
+
+        def pre_loop(self, sleep=0.5):
+            """PLC boot process.
+
+            :sleep: sleep n sec after it
+            """
+
+            print self.get(('SENSOR3', 1))[0]
+            time.sleep(sleep)
+
     print
-    plc = PLC(
+    plc = TestPLC(
         name='plc',
         state={
             'path': 'temp/state_test_db.sqlite',
@@ -57,5 +70,5 @@ def test_PLC():
             'TAG5': '5',
         })
 
-    # plc.set('TAG1', '2')
-    # plc.get('TAG2')
+    # eq_(plc.get(('SENSOR3', 1))[0], '1')
+    # eq_(plc.get(('SENSOR3', 2))[0], '2')

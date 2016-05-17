@@ -85,10 +85,10 @@ class Device(object):
 
         self._state._set(what, value)
 
-    def get(self, value):
+    def get(self, what):
         """Get a value."""
 
-        self._state._get(value)
+        self._state._get(what)
 
 
 class PLC(Device):
