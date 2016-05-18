@@ -23,14 +23,13 @@ class Device(object):
         :memory: main memory
         """
 
+        self._validate_inputs(name, state)
+
         self.name = name
         self.state = state
         self.protocol = protocol
         self.memory = memory
         self.disk = disk
-
-        # TODO: good idea to attach to another function?
-        # TDOD: what happend with self?
 
         # TODO: add protocol bindings
 
@@ -38,10 +37,35 @@ class Device(object):
         self._init_protocol()
         self._start()
 
+    def _validate_inputs(self, name, state):
+
+        # name
+        if type(name) is not str:
+            raise TypeError('Parameter must be a string.')
+        elif not name:
+            raise ValueError('String cannot be empty.')
+
+        # state
+        if type(state) is not dict:
+            raise TypeError('Parameter must be a string.')
+        else:
+            state_keys = state.keys()
+            if (not state_keys) or (len(state_keys) != 2):
+                raise KeyError('Dict must contain 2 keys.')
+            else:
+                for key in state_keys:
+                    if (key != 'path') and (key != 'name'):
+                        raise KeyError('%s is an invalid key.' % key)
+            state_values = state.values()
+            for val in state_values:
+                if type(val) is not str:
+                    raise TypeError('Value must be a string.')
+
     def _init_state(self):
         """Bind device to the physical layer API."""
 
         subpath, extension = splitext(self.state['path'])
+
         print 'DEBUG subpath: ', subpath
         print 'DEBUG extension: ', extension
 

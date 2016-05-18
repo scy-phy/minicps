@@ -3,11 +3,19 @@ devices tests
 """
 
 import time
+import sys
 
 from minicps.devices import Device, PLC
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
+
+NAME = 'devices_tests'
+STATE = {
+    'path': 'temp/state_test_db.sqlite',
+    'name': 'state_test'
+}
+PROTOCOL = 'enip'
 
 
 @SkipTest
@@ -42,6 +50,86 @@ def test_Device():
     # device.get('TAG2')
 
 
+class TestDevicePublicAPI():
+
+    def test_validate_name(self):
+        """name should be a non-empty string."""
+
+        print
+        try:
+            device = Device(
+                name=1,
+                state=STATE,
+                protocol=PROTOCOL)
+        except TypeError as error:
+            print 'TEST name is an int: ', error
+
+        try:
+            device = Device(
+                name='',
+                state=STATE,
+                protocol=PROTOCOL)
+        except ValueError as error:
+            print 'TEST name is empty string: ', error
+
+    def test_validate_state(self):
+        """state should be a dict.
+
+        state = {
+            'name': 'state_name',
+            'path': '/tmp/state.ext'
+
+        """
+
+        print
+        try:
+            device = Device(
+                name=NAME,
+                state='state',
+                protocol=PROTOCOL)
+        except TypeError as error:
+            print 'TEST state is a string: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={},
+                protocol=PROTOCOL)
+        except KeyError as error:
+            print 'TEST state is an empty dict: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={
+                    'name': 'table_name', 'path': '/path.db',
+                    'wrong': 'key-val'},
+                protocol=PROTOCOL)
+        except KeyError as error:
+            print 'TEST state has more than 2 keys: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={
+                    'path': '/bla',
+                    'bla': 'table_name'},
+                protocol=PROTOCOL)
+        except KeyError as error:
+            print 'TEST: state has a wrong key: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={
+                    'path': 0,
+                    'name': 'table_name'},
+                protocol=PROTOCOL)
+        except TypeError as error:
+            print 'TEST: state has a key referencing an int: ', error
+
+
+@SkipTest
 def test_PLC():
 
     class TestPLC(PLC):
