@@ -9,7 +9,7 @@ import time
 # TODO: self.get is different from write to PLC memory ?
 
 from minicps.devices import PLC
-from examples.toy.utils import PLC2_TAG_DICT, PLC1_ADDR, DB_PATH
+from examples.toy.utils import PLC2_TAG_DICT, PLC1_ADDR, PATH, NAME
 
 
 class ToyPLC2(PLC):
@@ -37,14 +37,18 @@ class ToyPLC2(PLC):
 
 if __name__ == "__main__":
 
+    STATE = {
+        'name': NAME,
+        'path': PATH
+    }
     # notice that memory init is different form disk init
     plc2 = ToyPLC2(
         name='plc2',
-        state=DB_PATH,
+        state=STATE,
         protocol='enip',
         memory=PLC2_TAG_DICT,
         disk=PLC2_TAG_DICT)
 
-    plc2.boot(sleep=0.5)
+    plc2.pre_loop(sleep=0.5)
 
-    plc2.mainloop(sleep=0.5)
+    plc2.main_loop(sleep=0.5)

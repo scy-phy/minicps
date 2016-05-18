@@ -2,19 +2,30 @@
 toy_tests.py
 """
 
+from minicps.state import SQLiteState
 from examples.toy.plc1 import ToyPLC1
-from examples.toy.utils import DB_PATH, PLC1_ADDR, PLC2_ADDR
+# from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
 from examples.toy.utils import PLC1_TAG_DICT, PLC2_TAG_DICT
+from examples.toy.utils import PATH, NAME, SCHEMA, SCHEMA_INIT
+
+STATE = {
+    'name': NAME,
+    'path': PATH
+}
 
 
-def test_ToyPLC1():
+class TestToy():
 
-    plc1 = ToyPLC1(
-        name='plc1',
-        state=DB_PATH,
-        protocol='enip',
-        memory=PLC1_TAG_DICT,
-        disk=PLC1_TAG_DICT)
+    def test_ToyPLC1(self):
 
-    plc1.set('SENSOR1' '2')
-    plc1.get('SENSOR2')
+        SQLiteState._create(PATH, SCHEMA)
+        SQLiteState._init(PATH, SCHEMA_INIT)
+
+        plc1 = ToyPLC1(
+            name='plc1',
+            state=STATE,
+            protocol='enip',
+            memory=PLC1_TAG_DICT,
+            disk=PLC1_TAG_DICT)
+
+        SQLiteState._delete(PATH)
