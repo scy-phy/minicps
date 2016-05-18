@@ -112,7 +112,10 @@ class Device(object):
         :returns: setted value
         """
 
-        return self._state._set(what, value)
+        if type(what) is not tuple:
+            raise TypeError('Parameter must be a tuple.')
+        else:
+            return self._state._set(what, value)
 
     def get(self, what):
         """Get a value.
@@ -120,8 +123,10 @@ class Device(object):
         :returns: get value
         """
 
-        # print 'DEBUG device.get what: ', what
-        return self._state._get(what)
+        if type(what) is not tuple:
+            raise TypeError('Parameter must be a tuple.')
+        else:
+            return self._state._get(what)
 
 
 class PLC(Device):

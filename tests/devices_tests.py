@@ -146,7 +146,34 @@ class TestDevice():
             state=STATE,
             protocol=PROTOCOL)
 
+    def test_get(self):
+        """get accepts a tuple."""
 
+        device = Device(
+            name=NAME,
+            state=STATE,
+            protocol=PROTOCOL)
+
+        try:
+            device.get(2.22)
+        except TypeError as error:
+            print 'TEST: get what is a float: ', error
+
+    def test_set(self):
+        """set accepts a tuple and a generic value."""
+
+        device = Device(
+            name=NAME,
+            state=STATE,
+            protocol=PROTOCOL)
+
+        try:
+            device.set(2, 5)
+        except TypeError as error:
+            print 'TEST: set what is an integer: ', error
+
+
+@SkipTest
 class TestPLC():
 
     def test_set_get(self, sleep=0.5):
