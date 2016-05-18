@@ -50,7 +50,7 @@ def test_Device():
     # device.get('TAG2')
 
 
-class TestDevicePublicAPI():
+class TestDevice():
 
     def test_validate_name(self):
         """name should be a non-empty string."""
@@ -127,6 +127,44 @@ class TestDevicePublicAPI():
                 protocol=PROTOCOL)
         except TypeError as error:
             print 'TEST: state has a key referencing an int: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={
+                    'path': '/not/supported.ext',
+                    'name': 'table_name'},
+                protocol=PROTOCOL)
+        except ValueError as error:
+            print 'TEST: state has an unsupported path extension: ', error
+
+        try:
+            device = Device(
+                name=NAME,
+                state={
+                    'path': '/not/supported.ext',
+                    'name': 4},
+                protocol=PROTOCOL)
+        except TypeError as error:
+            print 'TEST: state has an integer name: ', error
+
+    def test_validate_disk(self):
+        """disk should be a dict."""
+
+        pass
+
+    def test_validate_memory(self):
+        """memory should be a dict."""
+
+        pass
+
+    def test_validate_init(self):
+        """validate Device __init__."""
+
+        device = Device(
+            name=NAME,
+            state=STATE,
+            protocol=PROTOCOL)
 
 
 @SkipTest

@@ -23,7 +23,7 @@ class Device(object):
         :memory: main memory
         """
 
-        self._validate_inputs(name, state)
+        self._validate_inputs(name, protocol, state, disk, memory)
 
         self.name = name
         self.state = state
@@ -37,17 +37,17 @@ class Device(object):
         self._init_protocol()
         self._start()
 
-    def _validate_inputs(self, name, state):
+    def _validate_inputs(self, name, protocol, state, disk, memory):
 
-        # name
+        # name string
         if type(name) is not str:
-            raise TypeError('Parameter must be a string.')
+            raise TypeError('Name must be a string.')
         elif not name:
-            raise ValueError('String cannot be empty.')
+            raise ValueError('Name string cannot be empty.')
 
-        # state
+        # state dict
         if type(state) is not dict:
-            raise TypeError('Parameter must be a string.')
+            raise TypeError('State must be a dict.')
         else:
             state_keys = state.keys()
             if (not state_keys) or (len(state_keys) != 2):
@@ -60,23 +60,23 @@ class Device(object):
             for val in state_values:
                 if type(val) is not str:
                     raise TypeError('Value must be a string.')
+            # state['path']
+            subpath, extension = splitext(state['path'])
+            print 'DEBUG subpath: ', subpath
+            print 'DEBUG extension: ', extension
+            if (extension != '.redis') and (extension != '.sqlite'):
+                raise ValueError('%s extension not supported.' % extension)
+            # state['name']
+            if type(state['name']) is not str:
+                raise TypeError('State name must be a string.')
+
+        # protocol
+        # TODO
 
     def _init_state(self):
         """Bind device to the physical layer API."""
 
         subpath, extension = splitext(self.state['path'])
-
-        print 'DEBUG subpath: ', subpath
-        print 'DEBUG extension: ', extension
-
-        if not extension:
-            print 'ERROR: provide a path with extension'
-
-        if not self.state['path']:
-            print 'ERROR: provide a state path'
-
-        if not self.state['name']:
-            print 'ERROR: provide a state name'
 
         if extension == '.sqlite':
             # TODO: add parametric value filed
