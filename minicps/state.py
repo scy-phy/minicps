@@ -81,10 +81,15 @@ class SQLiteState(State):
         self._name = self._state['name']
         self._path = self._state['path']
         self._value = 'value'  # TODO: add it to the device state dict
+        self._what = ()
 
         self._init_what()
-        self._init_get_query()
-        self._init_set_query()
+
+        if not self._what:
+            raise ValueError('Primary key not found.')
+        else:
+            self._init_get_query()
+            self._init_set_query()
 
     # TODO check :memory: opt to save db in main memory"
     @classmethod

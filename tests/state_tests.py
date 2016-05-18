@@ -9,6 +9,7 @@ import os
 from minicps.state import SQLiteState
 
 from nose.tools import eq_
+from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
 PATH = "temp/state_test_db.sqlite"
@@ -38,13 +39,14 @@ SCHEMA_INIT = """
 """
 
 
+@SkipTest
 def test_SQLiteStateClassMethods():
 
     try:
         os.remove(PATH)
 
-    except OSError as e:
-        print 'TEST %s do NOT exists in the filesystem.'
+    except OSError as error:
+        print 'TEST %s do NOT exists: ', error
 
     finally:
         SQLiteState._create(PATH, SCHEMA)
@@ -52,15 +54,45 @@ def test_SQLiteStateClassMethods():
         SQLiteState._delete(PATH)
 
 
-# class TestSQLiteState():
+class TestSQLiteState():
 
-    # def test_SQLiteState(self):
+    def test_NoPk(self):
+        """MiniCPS needs at least 1 primary key."""
 
-    #     state = SQLiteState(STATE)
+        print
 
-    #     print
-    #     eq_(state._get(('SENSOR3', 1)), '1')
-    #     eq_(state._get(('SENSOR3', 2)), '2')
+        PATH = "temp/no_pk.sqlite"
+        NAME = 'no_pk'
+        STATE = {
+            'name': NAME,
+            'path': PATH
+        }
 
-    #     eq_(state._set(('SENSOR1', 1), '10'), '10')
-    #     eq_(state._get(('SENSOR1', 1)), '10')
+        SCHEMA = """
+        CREATE TABLE %s (
+            name              TEXT NOT NULL,
+            datatype          TEXT NOT NULL
+        );
+        """ % NAME
+
+        SQLiteState._create(PATH, SCHEMA)
+
+        try:
+            state = SQLiteState(STATE)
+
+        except ValueError as error:
+            print 'TEST schema with no pk: ', error
+
+        SQLiteState._delete(PATH)
+
+    @SkipTest
+    def test_TwoPk(self):
+
+        print
+        state = SQLiteState(STATE)
+
+        eq_(state._get(('SENSOR3', 1)), '1')
+        eq_(state._get(('SENSOR3', 2)), '2')
+
+        eq_(state._set(('SENSOR1', 1), '10'), '10')
+        eq_(state._get(('SENSOR1', 1)), '10')
