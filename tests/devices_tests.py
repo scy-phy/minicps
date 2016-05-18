@@ -17,37 +17,17 @@ STATE = {
 }
 PROTOCOL = 'enip'
 
+MEMORY = {
+    'TAG1': '1',
+    'TAG2': '2',
+}
 
-@SkipTest
-def test_Device():
-
-    print
-    device = Device(
-        name='device',
-        state={
-            'path': 'temp/state_test_db.sqlite',
-            'name': 'state_test'
-        },
-        protocol='enip',
-        memory={
-            'TAG1': '1',
-            'TAG2': '2',
-        },
-        disk={
-            'TAG1': '1',
-            'TAG2': '2',
-            'TAG4': '4',
-            'TAG5': '5',
-        })
-
-    print 'Device name: ', device.name
-    print 'Device state: ', device.state
-    print 'Device protocol: ', device.protocol
-    print 'Device memory: ', device.memory
-    print 'Device disk: ', device.disk
-
-    # device.set('TAG1', '2')
-    # device.get('TAG2')
+DISK = {
+    'TAG1': '1',
+    'TAG2': '2',
+    'TAG4': '4',
+    'TAG5': '5',
+}
 
 
 class TestDevice():
@@ -167,41 +147,23 @@ class TestDevice():
             protocol=PROTOCOL)
 
 
-@SkipTest
-def test_PLC():
+class TestPLC():
 
-    class TestPLC(PLC):
+    def test_set_get(self, sleep=0.5):
 
-        def pre_loop(self, sleep=0.5):
-            """PLC boot process.
+        print
 
-            :sleep: sleep n sec after it
-            """
+        class ToyPLC(PLC):
 
-            eq_(self.set(('SENSOR1', 1), '10'), '10')
-            eq_(self.get(('SENSOR1', 1)), '10')
-            eq_(self.get(('SENSOR3', 1)), '1')
-            eq_(self.get(('SENSOR3', 2)), '2')
-            time.sleep(sleep)
+            def pre_loop(self):
 
-    print
-    plc = TestPLC(
-        name='plc',
-        state={
-            'path': 'temp/state_test_db.sqlite',
-            'name': 'state_test'
-        },
-        protocol='enip',
-        memory={
-            'TAG1': '1',
-            'TAG2': '2',
-        },
-        disk={
-            'TAG1': '1',
-            'TAG2': '2',
-            'TAG4': '4',
-            'TAG5': '5',
-        })
+                eq_(self.set(('SENSOR1', 1), '10'), '10')
+                eq_(self.get(('SENSOR1', 1)), '10')
+                eq_(self.get(('SENSOR3', 1)), '1')
+                eq_(self.get(('SENSOR3', 2)), '2')
+                time.sleep(sleep)
 
-    # eq_(plc.get(('SENSOR3', 1))[0], '1')
-    # eq_(plc.get(('SENSOR3', 2))[0], '2')
+        device = ToyPLC(
+            name=NAME,
+            state=STATE,
+            protocol=PROTOCOL)

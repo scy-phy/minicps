@@ -62,8 +62,8 @@ class Device(object):
                     raise TypeError('Value must be a string.')
             # state['path']
             subpath, extension = splitext(state['path'])
-            print 'DEBUG subpath: ', subpath
-            print 'DEBUG extension: ', extension
+            # print 'DEBUG subpath: ', subpath
+            # print 'DEBUG extension: ', extension
             if (extension != '.redis') and (extension != '.sqlite'):
                 raise ValueError('%s extension not supported.' % extension)
             # state['name']
