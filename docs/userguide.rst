@@ -76,35 +76,15 @@ MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
 
    sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
 
-.. INSTALL OPTIONAL {{{3
-.. _install-optional:
-
-Install optional dependencies
---------------------------------
-
-
-For *testing* support install dependencies using:
-
-.. code-block:: console
-
-   sudo apt-get install python-pip python-nose python-coverage
-   sudo pip install nose-cov
-
-To generate the *documentation* from the source we use the ``sphinx`` tool.
-Please type:
-
-.. code-block:: console
-
-    sudo apt-get install python-sphinx libjs-mathjax
-    sudo pip install sphinx-rtd-theme
-
 For *Ethernet/IP* support install ``cpppo``
 
 .. code-block:: console
 
    sudo pip install cpppo
 
-For SDN controller development there are many options,
+.. TODO: add modbustcp, maybe reorganize the deps
+
+For *SDN controller development* there are many options,
 ``pox`` is a good starting point and Mininet's VM already includes it. If you
 want to manually install it type:
 
@@ -126,6 +106,28 @@ Notice that:
 * You can increase the verbosity level using either ``v`` or  ``-vv``
 * ``POX_PATH`` defaults to ``~/pox`` and ``MINICPS_PATH`` defaults to
   ``~/minicps``, indeed ``~/minicps/bin/init`` should work for you.
+
+.. INSTALL OPTIONAL {{{3
+.. _install-optional:
+
+Install optional dependencies
+--------------------------------
+
+For *testing* support install dependencies using:
+
+.. code-block:: console
+
+   sudo apt-get install python-pip python-nose python-coverage
+   sudo pip install nose-cov
+
+To generate the *documentation* from the source we use the ``sphinx`` tool.
+Please type:
+
+.. code-block:: console
+
+    sudo apt-get install python-sphinx libjs-mathjax
+    sudo pip install sphinx-rtd-theme
+
 
 
 .. TESTING INSTALLATION {{{3

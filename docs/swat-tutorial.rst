@@ -199,7 +199,7 @@ Changing initial values
 Open ``examples/swat/state_db.py``,
 to change LIT101 initial value select one line from the following:
 
-.. literalinclude:: ../examples/swat/state_db.py
+.. literalinclude:: ../examples/swat/sub1/state_db.py
    :start-after: # SPHINX_SWAT_TUTORIAL SET LIT101DB
    :end-before:  # SPHINX_SWAT_TUTORIAL END SET LIT101DB
 
