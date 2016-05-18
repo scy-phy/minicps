@@ -2,6 +2,7 @@
 state.py
 """
 
+import os
 import sqlite3
 # import redis
 # import pymongo
@@ -14,11 +15,10 @@ class State(object):
     def __init__(self, state):
         """Init a State object.
 
-        :state: dict passed from Device obj
+        :state: validated dict passed from Device obj
         """
 
-        # TODO: public or private?
-        self.state = state
+        self._state = state
 
     def _create(self):
         """Create a state instance.
@@ -78,13 +78,51 @@ class SQLiteState(State):
 
         super(SQLiteState, self).__init__(state)
 
-        self._name = self.state['name']
-        self._path = self.state['path']
-        self._value = 'value'  # TODO: client can override value field
+        self._name = self._state['name']
+        self._path = self._state['path']
+        self._value = 'value'  # TODO: add it to the device state dict
 
         self._init_what()
         self._init_get_query()
         self._init_set_query()
+
+    # TODO check :memory: opt to save db in main memory"
+    @classmethod
+    def _create(cls, db_name, schema):
+        """Create a sqlite db given a schema.
+
+        OVERWRITES db_name path by default.
+
+        :db_name: full or relative paths are supported
+        :schema: str containing the schema
+        """
+
+        with sqlite3.connect(db_name) as conn:
+            conn.executescript(schema)
+
+    @classmethod
+    def _init(cls, db_name, init_cmd):
+        """Initialize a sqlite database given commands.
+
+        :db_name: full or relative paths are supported
+        :init_cmd: initialization commands
+        """
+
+        with sqlite3.connect(db_name) as conn:
+            conn.executescript(init_cmd)
+
+    @classmethod
+    def _delete(cls, db_name):
+        """Delete a sqlite database given commands.
+
+        :db_name: full or relative paths are supported
+        """
+
+        try:
+            os.remove(db_name)
+
+        except OSError as e:
+            print 'DEBUG %s do NOT exists in the filesystem.'
 
     def _init_what(self):
         """Save a ordered tuple of pk field names in self._what."""
@@ -156,29 +194,6 @@ class SQLiteState(State):
 
         print 'DEBUG set_query:', set_query
         self._set_query = set_query
-
-    # TODO check :memory: opt to save db in main memory"
-    def _create(self, db_name, schema):
-        """Create a sqlite db given a schema.
-
-        OVERWRITES db_name path by default.
-
-        :db_name: full or relative paths are supported
-        :schema: str containing the schema
-        """
-
-        with sqlite3.connect(db_name) as conn:
-            conn.executescript(schema)
-
-    def _init(self, db_name, init_cmd):
-        """Initialize a sqlite database given commands.
-
-        :db_name: full or relative paths are supported
-        :init_cmd: initialization commands
-        """
-
-        with sqlite3.connect(db_name) as conn:
-            conn.executescript(init_cmd)
 
     def _set(self, what, value):
         """Returns setted value.

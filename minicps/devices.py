@@ -80,7 +80,7 @@ class Device(object):
 
         if extension == '.sqlite':
             # TODO: add parametric value filed
-            print 'DEBUG state: ', self.state
+            # print 'DEBUG state: ', self.state
             self._state = SQLiteState(self.state)
         elif extension == '.redis':
             # TODO: add parametric key serialization
