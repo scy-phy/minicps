@@ -64,6 +64,7 @@ class State(object):
 
 # sqlite {{{1
 # TODO: extend prepared statement to every SQL backend
+# TODO: single table or multiple tables to separate datatypes
 class SQLiteState(State):
 
     """SQLite state manager.
