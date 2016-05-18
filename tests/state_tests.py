@@ -12,31 +12,6 @@ from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
-PATH = "temp/state_test_db.sqlite"
-NAME = 'state_test'
-STATE = {
-    'name': NAME,
-    'path': PATH
-}
-
-SCHEMA = """
-CREATE TABLE %s (
-    name              TEXT NOT NULL,
-    datatype          TEXT NOT NULL,
-    value             TEXT,
-    pid               INTEGER NOT NULL,
-    PRIMARY KEY (name, pid)
-);
-""" % NAME
-
-SCHEMA_INIT = """
-    INSERT INTO state_test VALUES ('SENSOR1',   'int', '0', 1);
-    INSERT INTO state_test VALUES ('SENSOR2',   'float', '0.0', 1);
-    INSERT INTO state_test VALUES ('SENSOR3',   'int', '1', 1);
-    INSERT INTO state_test VALUES ('SENSOR3',   'int', '2', 2);
-    INSERT INTO state_test VALUES ('ACTUATOR1', 'int', '1', 1);
-    INSERT INTO state_test VALUES ('ACTUATOR2', 'int', '0', 1);
-"""
 
 
 @SkipTest
@@ -83,12 +58,73 @@ class TestSQLiteState():
         except ValueError as error:
             print 'TEST schema with no pk: ', error
 
-        SQLiteState._delete(PATH)
+        finally:
+            SQLiteState._delete(PATH)
 
-    @SkipTest
-    def test_TwoPk(self):
+    def test_OnePk(self):
 
         print
+
+        PATH = "temp/one_pk.sqlite"
+        NAME = 'one_pk'
+        STATE = {
+            'name': NAME,
+            'path': PATH
+        }
+
+        SCHEMA = """
+        CREATE TABLE %s (
+            name              TEXT NOT NULL,
+            datatype          TEXT NOT NULL,
+            value             INT,
+            PRIMARY KEY (name)
+        );
+        """ % NAME
+
+        SCHEMA_INIT = """
+            INSERT INTO %s VALUES ('SENSOR1',   'int', 1);
+            INSERT INTO %s VALUES ('SENSOR2',   'float', 22.2);
+            INSERT INTO %s VALUES ('ACTUATOR2', 'int', 2);
+        """ % (NAME, NAME, NAME)
+
+        SQLiteState._create(PATH, SCHEMA)
+        SQLiteState._init(PATH, SCHEMA_INIT)
+
+        state = SQLiteState(STATE)
+
+        eq_(state._get(('SENSOR1',)), 1)
+        eq_(state._set(('SENSOR1',), 5), 5)
+        eq_(state._get(('SENSOR1',)), 5)
+
+        SQLiteState._delete(PATH)
+
+    def test_TwoPk(self):
+
+        PATH = "temp/state_test_db.sqlite"
+        NAME = 'state_test'
+        STATE = {
+            'name': NAME,
+            'path': PATH
+        }
+
+        SCHEMA = """
+        CREATE TABLE %s (
+            name              TEXT NOT NULL,
+            datatype          TEXT NOT NULL,
+            value             TEXT,
+            pid               INTEGER NOT NULL,
+            PRIMARY KEY (name, pid)
+        );
+        """ % NAME
+
+        SCHEMA_INIT = """
+            INSERT INTO state_test VALUES ('SENSOR1',   'int', '0', 1);
+            INSERT INTO state_test VALUES ('SENSOR2',   'float', '0.0', 1);
+            INSERT INTO state_test VALUES ('SENSOR3',   'int', '1', 1);
+            INSERT INTO state_test VALUES ('SENSOR3',   'int', '2', 2);
+            INSERT INTO state_test VALUES ('ACTUATOR1', 'int', '1', 1);
+            INSERT INTO state_test VALUES ('ACTUATOR2', 'int', '0', 1);
+        """
         state = SQLiteState(STATE)
 
         eq_(state._get(('SENSOR3', 1)), '1')

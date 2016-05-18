@@ -212,7 +212,7 @@ class SQLiteState(State):
             what_list.append(pk)
 
         what = tuple(what_list)
-        print 'DEBUG what: ', what
+        print 'DEBUG set what: ', what
 
         with sqlite3.connect(self._path) as conn:
             try:
