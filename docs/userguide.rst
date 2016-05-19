@@ -76,13 +76,14 @@ MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
 
    sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
 
+.. TODO: remove sudo and add pip -U?
 For *Ethernet/IP* support install ``cpppo``
 
 .. code-block:: console
 
    sudo pip install cpppo
 
-.. TODO: add modbustcp, maybe reorganize the deps
+.. TODO: add modbus maybe reorganize the deps
 
 For *SDN controller development* there are many options,
 ``pox`` is a good starting point and Mininet's VM already includes it. If you
