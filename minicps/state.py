@@ -20,7 +20,8 @@ class State(object):
 
         self._state = state
 
-    def _create(self):
+    @classmethod
+    def _create(cls):
         """Create a state instance.
 
         Eg: create a MySQL db.
@@ -28,7 +29,8 @@ class State(object):
         """
         pass
 
-    def _init(self):
+    @classmethod
+    def _init(cls):
         """Initialize a state instance.
 
         Eg: init MySQL db tables.
@@ -36,7 +38,8 @@ class State(object):
         """
         pass
 
-    def _delete(self):
+    @classmethod
+    def _delete(cls):
         """Create a state instance.
 
         Eg: remove a MySQL db.
