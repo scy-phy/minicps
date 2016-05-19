@@ -20,6 +20,8 @@ from nose import with_setup
 
 # logging {{{1
 # https://docs.python.org/2/howto/logging.html
+
+# TODO: add a parametric logging level
 def build_debug_logger(
         name,
         bytes_per_file=10000,
@@ -65,17 +67,20 @@ def build_debug_logger(
     return logger
 
 
-# build a global logger
 TEMP_DIR = '/tmp'
 
 LOG_DIR = 'logs/'
 LOG_BYTES = 20000
 LOG_ROTATIONS = 5
+
+# MiniCPS global logger
 mcps_logger = build_debug_logger(
-    __name__,
-    LOG_BYTES,
-    LOG_ROTATIONS,
-    ldir=LOG_DIR)
+    name=__name__,
+    bytes_per_file=LOG_BYTES,
+    rotating_files=LOG_ROTATIONS,
+    lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    ldir=LOG_DIR,
+    suffix='')
 
 
 # testing {{{1

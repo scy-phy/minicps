@@ -2,6 +2,17 @@
 toy utils.py
 """
 
+from minicps.utils import build_debug_logger
+
+toy_logger = build_debug_logger(
+    name=__name__,
+    bytes_per_file=10000,
+    rotating_files=2,
+    lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    ldir='examples/toy/logs',
+    suffix='')
+
+
 PLC1_TAG_DICT = {
     'SENSOR1': '0',
     'SENSOR2': '0.0',

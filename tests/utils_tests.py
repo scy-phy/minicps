@@ -9,19 +9,19 @@ print
 
 def test_global_logger():
 
-    mcps_logger.debug("debug message")
-    mcps_logger.info("info message")
-    mcps_logger.warning("warning message")
-    mcps_logger.error("error message")
-    mcps_logger.critical("critical message")
+    mcps_logger.debug("TEST: debug message")
+    mcps_logger.info("TEST: info message")
+    mcps_logger.warning("TEST: warning message")
+    mcps_logger.error("TEST: error message")
+    mcps_logger.critical("TEST: critical message")
 
 
 def test_build_debug_logger():
 
     logger = build_debug_logger('test', 10, 10)
 
-    logger.debug("debug message")
-    logger.info("info message")
-    logger.warning("warning message")
-    logger.error("error message")
-    logger.critical("critical message")
+    logger.debug("TEST: debug message")
+    logger.info("TEST: info message")
+    logger.warning("TEST: warning message")
+    logger.error("TEST: error message")
+    logger.critical("TEST: critical message")
