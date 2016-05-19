@@ -31,12 +31,11 @@ class Device(object):
         self.memory = memory
         self.disk = disk
 
-        # TODO: add protocol bindings
-
         self._init_state()
         self._init_protocol()
         self._start()
 
+    # TODO: validate protocol dict
     def _validate_inputs(self, name, protocol, state, disk, memory):
 
         # name string
