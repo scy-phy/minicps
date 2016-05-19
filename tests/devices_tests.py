@@ -15,7 +15,11 @@ STATE = {
     'path': 'temp/state_test_db.sqlite',
     'name': 'state_test'
 }
-PROTOCOL = 'enip'
+PROTOCOL = {
+    'name': 'enip',
+    'mode': 1,
+    'port': 4444,
+}
 
 MEMORY = {
     'TAG1': '1',
@@ -128,6 +132,11 @@ class TestDevice():
         except TypeError as error:
             print 'TEST: state has an integer name: ', error
 
+    # TODO: finish to set the API
+    def test_validate_protocol(self):
+
+        pass
+
     def test_validate_disk(self):
         """disk should be a dict."""
 
@@ -138,15 +147,7 @@ class TestDevice():
 
         pass
 
-    def test_validate_init(self):
-        """validate Device __init__."""
-
-        device = Device(
-            name=NAME,
-            state=STATE,
-            protocol=PROTOCOL)
-
-    def test_get(self):
+    def test_validate_get(self):
         """get accepts a tuple."""
 
         device = Device(
@@ -159,7 +160,7 @@ class TestDevice():
         except TypeError as error:
             print 'TEST: get what is a float: ', error
 
-    def test_set(self):
+    def test_validate_set(self):
         """set accepts a tuple and a generic value."""
 
         device = Device(
@@ -172,11 +173,28 @@ class TestDevice():
         except TypeError as error:
             print 'TEST: set what is an integer: ', error
 
+    # TODO: finish to set the API
+    def test_validate_send(self):
 
-@SkipTest
+        pass
+
+    # TODO: finish to set the API
+    def test_validate_recieve(self):
+
+        pass
+
+    def test_init(self):
+        """validate Device __init__."""
+
+        device = Device(
+            name=NAME,
+            state=STATE,
+            protocol=PROTOCOL)
+
+
 class TestPLC():
 
-    def test_set_get(self, sleep=0.5):
+    def test_set_get(self, sleep=0.3):
 
         print
 

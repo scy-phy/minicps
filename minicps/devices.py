@@ -6,6 +6,7 @@ import time
 
 from os.path import splitext
 from minicps.state import SQLiteState, RedisState
+from minicps.protocols import EnipProtocol
 
 
 class Device(object):
@@ -90,10 +91,12 @@ class Device(object):
     def _init_protocol(self):
         """Bind device to network API."""
 
-        # TODO: implement
-        pass
+        name = self.protocol['name']
 
-        print "TODO _init_protocol: please override me"
+        if name == 'enip':
+            self._protocol = EnipProtocol(self.protocol)
+        else:
+            print 'ERROR: %s protocol not supported.' % self.protocol
 
     def _start(self):
         """Start a device."""
