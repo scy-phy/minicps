@@ -4,10 +4,11 @@ protocols.py.
 Ethernet/IP (ENIP) is partially supported using cpppo module
 https://github.com/pjkundert/cpppo
 
-Modbus/TCP.
+Modbus/TCP is supported using pymodbus module.
 """
 
-import cpppo
+# import cpppo
+# import pymodbus
 
 # ENIP {{{1
 ENIP_MISC = {
@@ -19,7 +20,11 @@ ENIP_MISC = {
 # PROTOCOLS {{{1
 class Protocol(object):
 
-    """Base class."""
+    """Base class.
+
+    Ideally different objects can be attached to the same Device class
+    to support multi-protocol CPS.
+    """
 
     # TODO: what if the server supports multiple protocols with different ports
     def __init__(self, protocol):
