@@ -9,7 +9,7 @@ toy_logger = build_debug_logger(
     bytes_per_file=10000,
     rotating_files=2,
     lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    ldir='examples/toy/logs',
+    ldir='examples/toy/logs/',
     suffix='')
 
 

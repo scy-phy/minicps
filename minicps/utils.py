@@ -23,7 +23,7 @@ from nose import with_setup
 
 # TODO: add a parametric logging level
 def build_debug_logger(
-        name,
+        name='log_name',
         bytes_per_file=10000,
         rotating_files=3,
         lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -34,9 +34,10 @@ def build_debug_logger(
     :name: name of the logger instance
     :bytes_per_file: defaults to 10KB
     :rotating_files: defaults to 3
-    :format: defaults to time, name, level, message
+    :lformat: defaults to time, name, level, message
     :ldir: defaults to /tmp
     :suffix: defaults to .log
+
     :returns: logger instance
     """
 

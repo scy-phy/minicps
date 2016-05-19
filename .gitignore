@@ -88,6 +88,8 @@ target/
 # MiniCPS
 
 /logs
+examples/toy/logs
+examples/swat/logs
 
 # State
 *.sqlite

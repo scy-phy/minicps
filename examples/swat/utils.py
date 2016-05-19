@@ -15,7 +15,15 @@ import networkx as nx
 
 from minicps.networks import PLC, HMI, DumbSwitch, Attacker
 from minicps.networks import EthLink
+from minicps.utils import build_debug_logger
 
+swat_logger = build_debug_logger(
+    name=__name__,
+    bytes_per_file=20000,
+    rotating_files=4,
+    lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    ldir='examples/swat/logs/',
+    suffix='')
 
 # TODO: os.system is deprecated use better commands
 def init_swat():
