@@ -19,7 +19,7 @@ from minicps.devices import POXSwatController
 
 import logging
 logger = logging.getLogger('minicps.topology')
-setLogLevel(c.TEST_LOG_LEVEL)
+# setLogLevel(TODO)
 
 def L3EthStarTraffic(controller=POXSwatController, nb_messages=5, tag_range=10, min=0, max=8, auto_mode=True):
     """

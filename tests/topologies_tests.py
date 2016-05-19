@@ -24,7 +24,6 @@ def test_L3EthStarBuild():
     net.start()
 
     CLI(net)
-    # _mininet_functests(net)
 
     net.stop()
 

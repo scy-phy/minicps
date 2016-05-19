@@ -30,7 +30,6 @@ def test_L3EthStar():
         listenPort=OF_MISC['switch_debug_port'])
 
     net.start()
-    # _mininet_functests(net)
 
     net.pingAll()
 

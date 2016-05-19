@@ -25,7 +25,7 @@ from minicps.devices import POXSwatController
 
 import logging
 logger = logging.getLogger('minicps.topology')
-setLogLevel(c.TEST_LOG_LEVEL)
+# setLogLevel(TODO)
 
 LINKOPTS = dict(bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
 

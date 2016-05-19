@@ -19,7 +19,7 @@ from minicps.devices import POXSwatController
 
 import logging
 logger = logging.getLogger('minicps.topology')
-setLogLevel(c.TEST_LOG_LEVEL)
+# setLogLevel(TODO)
 
 def L3EthStarMonitoring(controller=POXSwatController, timeout=120, timer=1):
     """

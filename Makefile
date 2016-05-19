@@ -70,7 +70,7 @@ test-devices:
 
 
 # clean {{{1
-clean: clean-cover
+clean: clean-cover, clan-pyc, clean-logs
 
 clean-cover:
 	rm -f minicps/*,cover
@@ -79,3 +79,6 @@ clean-cover:
 clean-pyc:
 	rm -f minicps/*.pyc
 	rm -f tests/*.pyc
+
+clean-logs:
+	rm -f logs/*.log

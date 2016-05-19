@@ -85,5 +85,9 @@ target/
 # Etterfilter compiled filters
 *.ef
 
+# MiniCPS
+
+/logs
+
 # State
 *.sqlite
