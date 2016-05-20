@@ -7,7 +7,7 @@ cd
 echo "Install required dependencies"
 sudo apt-get install python-networkx python-matplotlib python-pip python-pil.imagetk
 sudo apt-get install python-pymodbus
-sudo pip install cpppo
+sudo pip install cpppo web.py
 
 echo "Install optional dependencies"
 sudo apt-get install python-nose python-sphinx python-coverage libjs-mathjax
