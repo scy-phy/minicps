@@ -6,6 +6,8 @@ import time
 import sys
 
 from minicps.devices import Device, PLC
+from minicps.state import SQLiteState
+from minicps.utils import PATH, SCHEMA, SCHEMA_INIT
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
@@ -150,6 +152,9 @@ class TestDevice():
     def test_validate_get(self):
         """get accepts a tuple."""
 
+        SQLiteState._create(PATH, SCHEMA)
+        SQLiteState._init(PATH, SCHEMA_INIT)
+
         device = Device(
             name=NAME,
             state=STATE,
@@ -159,6 +164,8 @@ class TestDevice():
             device.get(2.22)
         except TypeError as error:
             print 'TEST: get what is a float: ', error
+        finally:
+            SQLiteState._delete(PATH)
 
     def test_validate_set(self):
         """set accepts a tuple and a generic value."""

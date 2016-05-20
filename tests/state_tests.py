@@ -13,8 +13,29 @@ from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
 
+PATH = "temp/state_tests.sqlite"
+NAME = 'state_tests'
+STATE = {
+    'name': NAME,
+    'path': PATH
+}
 
-@SkipTest
+SCHEMA = """
+CREATE TABLE state_tests (
+    name              TEXT NOT NULL,
+    datatype          TEXT NOT NULL,
+    value             INT,
+    PRIMARY KEY (name)
+);
+"""
+
+SCHEMA_INIT = """
+    INSERT INTO state_tests VALUES ('SENSOR1',   'int', 1);
+    INSERT INTO state_tests VALUES ('SENSOR2',   'float', 22.2);
+    INSERT INTO state_tests VALUES ('ACTUATOR2', 'int', 2);
+"""
+
+
 def test_SQLiteStateClassMethods():
 
     try:
@@ -82,10 +103,10 @@ class TestSQLiteState():
         """ % NAME
 
         SCHEMA_INIT = """
-            INSERT INTO %s VALUES ('SENSOR1',   'int', 1);
-            INSERT INTO %s VALUES ('SENSOR2',   'float', 22.2);
-            INSERT INTO %s VALUES ('ACTUATOR2', 'int', 2);
-        """ % (NAME, NAME, NAME)
+            INSERT INTO one_pk VALUES ('SENSOR1',   'int', 1);
+            INSERT INTO one_pk VALUES ('SENSOR2',   'float', 22.2);
+            INSERT INTO one_pk VALUES ('ACTUATOR2', 'int', 2);
+        """
 
         SQLiteState._create(PATH, SCHEMA)
         SQLiteState._init(PATH, SCHEMA_INIT)
