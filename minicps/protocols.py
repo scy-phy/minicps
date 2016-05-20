@@ -10,11 +10,6 @@ Modbus/TCP is supported using pymodbus module.
 # import cpppo
 # import pymodbus
 
-# ENIP {{{1
-ENIP_MISC = {
-    'tcp_port': 44818,
-    'udp_port': 2222,
-}
 
 
 # PROTOCOLS {{{1
@@ -101,14 +96,28 @@ class EnipProtocol(Protocol):
         - SSTRING (simple string)
     """
 
+    TCP_PORT = 44818
+    UDP_PORT = 2222
+
     def __init__(self, protocol):
 
         super(EnipProtocol, self).__init__(protocol)
 
-        # TODO: maybe add some enip specific stuff
-        if protocol['mode'] == 0:
-            pass  # do not start a server
-        elif protocol['mode'] == 1:
-            print 'TODO: decide mode 1'
-        elif protocol['mode'] == 2:
-            print 'TODO: decide mode 2'
+        if self._mode == 0:
+            print 'DEBUG: do NOT start a enip server.'
+        elif self._mode == 1:
+            if self._port != EnipProtocol.TCP_PORT:
+                print 'WARNING: not using std enip %d TCP port' % \
+                    EnipProtocol.TCP_PORT
+        elif self._mode == 2:
+            if self._port != EnipProtocol.UDP_PORT:
+                print 'WARNING: not using std enip %d UDP port' % \
+                    EnipProtocol.UDP_PORT
+
+    def _init_tcp_server(self):
+
+        pass
+
+    def _init_udp_server(self):
+
+        pass

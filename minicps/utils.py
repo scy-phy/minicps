@@ -12,6 +12,7 @@ It contains all the others data objects.
 
 import logging
 import logging.handlers
+import time
 import os
 
 from mininet.util import dumpNodeConnections
@@ -83,6 +84,29 @@ mcps_logger = build_debug_logger(
     ldir=LOG_DIR,
     suffix='')
 
+
+# multi-process {{{1
+
+# http://stackoverflow.com/questions/1359383/python-run-a-process-and-kill-it-if-it-doesnt-end-within-one-hour
+def wait_timeout(proc, seconds):
+
+    """Wait for a process to finish, or raise exception after timeout
+
+    :proc: subprocess.Popen instance
+    :seconds: before raising the exception
+    """
+
+    start = time.time()
+    end = start + seconds
+    interval = min(seconds / 1000.0, .25)
+
+    while True:
+        result = proc.poll()
+        if result is not None:
+            return result
+        if time.time() >= end:
+            raise RuntimeError("Process timed out")
+        time.sleep(interval)
 
 # testing {{{1
 

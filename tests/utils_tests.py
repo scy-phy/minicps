@@ -2,9 +2,8 @@
 utils_tests.py
 """
 
-from minicps.utils import build_debug_logger, mcps_logger
-
-print
+import subprocess
+from minicps.utils import build_debug_logger, mcps_logger, wait_timeout
 
 
 def test_global_logger():
@@ -25,3 +24,14 @@ def test_build_debug_logger():
     logger.warning("TEST: warning message")
     logger.error("TEST: error message")
     logger.critical("TEST: critical message")
+
+
+def test_wait_timeout():
+
+    cmd_list = ['/bin/bash', '/bin/sleep', '5']
+    sub = subprocess.Popen(cmd_list, shell=False)
+
+    try:
+        wait_timeout(sub, 1)
+    except RuntimeError as error:
+        print 'subprocess killed after 1 sec: ', error
