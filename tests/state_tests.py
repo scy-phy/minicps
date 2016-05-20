@@ -24,15 +24,15 @@ SCHEMA = """
 CREATE TABLE state_tests (
     name              TEXT NOT NULL,
     datatype          TEXT NOT NULL,
-    value             INT,
+    value             TEXT,
     PRIMARY KEY (name)
 );
 """
 
 SCHEMA_INIT = """
-    INSERT INTO state_tests VALUES ('SENSOR1',   'int', 1);
-    INSERT INTO state_tests VALUES ('SENSOR2',   'float', 22.2);
-    INSERT INTO state_tests VALUES ('ACTUATOR2', 'int', 2);
+    INSERT INTO state_tests VALUES ('SENSOR1',   'int', '1');
+    INSERT INTO state_tests VALUES ('SENSOR2',   'float', '22.2');
+    INSERT INTO state_tests VALUES ('ACTUATOR2', 'int', '2');
 """
 
 
@@ -121,8 +121,8 @@ class TestSQLiteState():
 
     def test_TwoPk(self):
 
-        PATH = "temp/state_test_db.sqlite"
-        NAME = 'state_test'
+        PATH = "temp/two_pks.sqlite"
+        NAME = 'two_pks'
         STATE = {
             'name': NAME,
             'path': PATH
@@ -139,13 +139,17 @@ class TestSQLiteState():
         """ % NAME
 
         SCHEMA_INIT = """
-            INSERT INTO state_test VALUES ('SENSOR1',   'int', '0', 1);
-            INSERT INTO state_test VALUES ('SENSOR2',   'float', '0.0', 1);
-            INSERT INTO state_test VALUES ('SENSOR3',   'int', '1', 1);
-            INSERT INTO state_test VALUES ('SENSOR3',   'int', '2', 2);
-            INSERT INTO state_test VALUES ('ACTUATOR1', 'int', '1', 1);
-            INSERT INTO state_test VALUES ('ACTUATOR2', 'int', '0', 1);
+            INSERT INTO two_pks VALUES ('SENSOR1',   'int', '0', 1);
+            INSERT INTO two_pks VALUES ('SENSOR2',   'float', '0.0', 1);
+            INSERT INTO two_pks VALUES ('SENSOR3',   'int', '1', 1);
+            INSERT INTO two_pks VALUES ('SENSOR3',   'int', '2', 2);
+            INSERT INTO two_pks VALUES ('ACTUATOR1', 'int', '1', 1);
+            INSERT INTO two_pks VALUES ('ACTUATOR2', 'int', '0', 1);
         """
+
+        SQLiteState._create(PATH, SCHEMA)
+        SQLiteState._init(PATH, SCHEMA_INIT)
+
         state = SQLiteState(STATE)
 
         eq_(state._get(('SENSOR3', 1)), '1')
@@ -153,3 +157,5 @@ class TestSQLiteState():
 
         eq_(state._set(('SENSOR1', 1), '10'), '10')
         eq_(state._get(('SENSOR1', 1)), '10')
+
+        SQLiteState._delete(PATH)
