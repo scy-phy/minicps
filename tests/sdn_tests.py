@@ -12,10 +12,8 @@ from mininet.cli import CLI
 
 from nose.plugins.skip import SkipTest  # Skip
 
-from minicps import constants as c
 from minicps.sdn import OF_MISC, POXL2Pairs
-from minicps.utils import _arp_cache_rtts, setup_func, teardown_func
-from minicps.utils import teardown_func_clear, with_named_setup
+from minicps.utils import _arp_cache_rtts
 from minicps.networks import L3EthStar  # TODO from topology
 
 
