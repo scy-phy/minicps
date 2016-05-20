@@ -6,6 +6,7 @@ cd
 
 echo "Install required dependencies"
 sudo apt-get install python-networkx python-matplotlib python-pip python-pil.imagetk
+sudo apt-get install python-pymodbus
 sudo pip install cpppo
 
 echo "Install optional dependencies"
