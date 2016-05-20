@@ -16,10 +16,10 @@ echo "Install additional tools"
 sudo apt-get install zenmap wireshark elinks ettercap-graphical 
 sudo apt-get install tmux ack-grep tree curl firefox
 
-echo "Cloning repos"
-git clone https://github.com/mininet/mininet.git
-git clone https://github.com/noxrepo/pox.git
-git clone git@github.com:scy-phy/minicps.git
+# echo "Cloning repos"
+# git clone https://github.com/mininet/mininet.git
+# git clone https://github.com/noxrepo/pox.git
+# git clone git@github.com:scy-phy/minicps.git
 
 echo "Init pox"
 python minicps/bin/pox_init.py
