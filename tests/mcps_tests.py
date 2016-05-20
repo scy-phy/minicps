@@ -111,7 +111,8 @@ def test_MiniCPSTCLinkCPULimitedHost():
         net=net)
 
 
-def test_MiniCPS():
+@SkipTest
+def test_MiniCPSCustomController():
 
     print
     topo = SingleSwitchTopo(n=4)

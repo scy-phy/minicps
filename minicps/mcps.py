@@ -10,6 +10,7 @@ Systems.
 from mininet.cli import CLI
 
 
+# TODO: maybe return some pid
 class MiniCPS(object):
 
     """Main container used to run the simulation."""
