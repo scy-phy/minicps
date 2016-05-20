@@ -2,6 +2,8 @@
 sdn_tests.
 """
 
+import time
+
 # TODO: move to swat
 from mininet.net import Mininet
 from mininet.node import RemoteController  # CPULimitedHost
@@ -12,7 +14,7 @@ from nose.plugins.skip import SkipTest  # Skip
 
 from minicps import constants as c
 from minicps.sdn import OF_MISC, POXL2Pairs
-from minicps.utils import _arp_cache_rtts, setup_func, teardown_func,
+from minicps.utils import _arp_cache_rtts, setup_func, teardown_func
 from minicps.utils import teardown_func_clear, with_named_setup
 from minicps.networks import L3EthStar  # TODO from topology
 
@@ -125,7 +127,6 @@ def test_POXL2PairsRtt():
             first_rtt, second_rtt,
             c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
-    logger.debug('deltas: %s' % deltas.__str__())
 
     # CLI(net)
 
@@ -154,7 +155,6 @@ def test_POXL2LearningRtt():
             first_rtt, second_rtt,
             c.ASSERTION_ERRORS['no_learning'])
         deltas.append(first_rtt - second_rtt)
-    logger.debug('deltas: %s' % deltas.__str__())
 
     # CLI(net)
 
@@ -174,7 +174,6 @@ def test_Workshop():
     plc1, attacker, hmi = net.get('plc1', 'attacker', 'hmi')
     plc2, plc3, plc4 = net.get('plc2', 'plc3', 'plc4')
 
-    logger.info("pre-arp poisoning phase (eg open wireshark)")
     CLI(net)
 
     # PASSIVE remote ARP poisoning
@@ -186,7 +185,6 @@ def test_Workshop():
         target_ip2,
         attacker_interface)
     attacker.cmd(attacker_cmd)
-    logger.info("attacker arp poisoned hmi and plc1")
 
     target_ip1 = plc3.IP()
     target_ip2 = plc4.IP()
@@ -196,7 +194,6 @@ def test_Workshop():
         target_ip2,
         attacker_interface)
     plc2.cmd(attacker_cmd)
-    logger.info("plc2 arp poisoned plc3 and plc4")
 
     CLI(net)
 
