@@ -3,6 +3,10 @@ Topologies tests
 
 """
 
+# TODO: move to swat
+
+from nose.plugins.skip import SkipTest
+
 from examples.swat.networks import L3EthStar
 
 from minicps.sdn import OF_MISC
@@ -14,6 +18,7 @@ from mininet.cli import CLI
 from mininet.node import RemoteController
 
 
+@SkipTest
 def test_L3EthStarBuild():
     """Test L3EthStar build process with custom L3_LINKOPTS"""
 
@@ -28,6 +33,7 @@ def test_L3EthStarBuild():
     net.stop()
 
 
+@SkipTest
 def test_L3EthStarEnip():
     """Test L3EthStar ENIP client/server communications
     plc1 is used as a cpppo simulated controller listening
@@ -58,6 +64,7 @@ def test_L3EthStarEnip():
     net.stop()
 
 
+@SkipTest
 def test_L3EthStarArpMitm():
     """plc1 ARP poisoning MITM attack using ettercap,
     You can pass IP target to the dedicated script.
@@ -92,6 +99,7 @@ def test_L3EthStarArpMitm():
     net.stop()
 
 
+@SkipTest
 def test_L3EthStarAttackArpEnip():
     """
     attacker ARP poison plc1 and hmi using ettercap.
@@ -166,6 +174,7 @@ def test_L3EthStarAttackArpEnip():
     net.stop()
 
 
+@SkipTest
 def test_L3EthStarAttackDoubleAp():
     """
     plc2 ARP poison plc3 and plc4 (passive internal)
@@ -241,6 +250,7 @@ def test_L3EthStarAttackDoubleAp():
     net.stop()
 
 
+@SkipTest
 def test_Workshop():
     """
     workshop

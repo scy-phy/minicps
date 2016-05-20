@@ -55,6 +55,7 @@ def test_L3EthStar():
 
 
 # TODO: check
+@SkipTest
 def test_L3EthStarEnip():
     """Test L3EthStar ENIP client/server communications.
 
