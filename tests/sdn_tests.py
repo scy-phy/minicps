@@ -2,6 +2,7 @@
 sdn_tests.
 """
 
+# TODO: move to swat
 from mininet.net import Mininet
 from mininet.node import RemoteController  # CPULimitedHost
 from mininet.link import TCLink
@@ -10,19 +11,17 @@ from mininet.cli import CLI
 from nose.plugins.skip import SkipTest  # Skip
 
 from minicps import constants as c
-from minicps.sdn import OF_MISC
+from minicps.sdn import OF_MISC, POXL2Pairs
 from minicps.utils import _arp_cache_rtts, setup_func, teardown_func,
 from minicps.utils import teardown_func_clear, with_named_setup
-from minicps.networks import POXL2Pairs
 from minicps.networks import L3EthStar  # TODO from topology
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_POXL2Pairs():
     """Test build-in forwarding.l2_pairs controller
     that adds flow entries using only MAC info.
     """
-    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
@@ -37,12 +36,11 @@ def test_POXL2Pairs():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func_clear)
+@SkipTest
 def test_RemoteController():
     """Test L3EthStar with a remote controller
     eg: pox controller
     """
-    raise SkipTest
 
     topo = L3EthStarAttack()
     net = Mininet(
@@ -61,10 +59,9 @@ def test_RemoteController():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_POXSwatController():
     """See /logs folder for controller info"""
-    raise SkipTest
 
     topo = L3EthStar()
     net = Mininet(
@@ -78,10 +75,9 @@ def test_POXSwatController():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_POXAntiArpPoison():
     """TODO Test AntiArpPoison controller."""
-    raise SkipTest
 
     topo = L3EthStar()
     controller = POXAntiArpPoison
@@ -107,12 +103,11 @@ def test_POXAntiArpPoison():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_POXL2PairsRtt():
     """Test build-in forwarding.l2_pairs controller RTT
     that adds flow entries using only MAC info.
     """
-    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Pairs
@@ -137,12 +132,11 @@ def test_POXL2PairsRtt():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_POXL2LearningRtt():
     """Test build-in forwarding.l2_learning controller RTT
     that adds flow entries using only MAC info.
     """
-    raise SkipTest
 
     topo = L3EthStar()
     controller = POXL2Learning
@@ -167,10 +161,9 @@ def test_POXL2LearningRtt():
     net.stop()
 
 
-@with_named_setup(setup_func, teardown_func)
+@SkipTest
 def test_Workshop():
     """Ideal link double MITM"""
-    raise SkipTest
 
     topo = L3EthStarAttack()
     net = Mininet(
