@@ -67,7 +67,6 @@ class POXBridge(Controller):
 
 @SkipTest
 def test_MininetLinearTopo():
-    """Dump and pingall a mininet linear topology."""
 
     net = Mininet(topo=LinearTopo(n=5),
                   link=TCLink)

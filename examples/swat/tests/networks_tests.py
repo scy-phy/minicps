@@ -21,7 +21,6 @@ from mininet.node import RemoteController
 
 @SkipTest
 def test_L3EthStar():
-    """Test L3 Ring MACs and IPs"""
 
     topo = L3EthStar(add_attacker=True)
     net = Mininet(
@@ -55,18 +54,11 @@ def test_L3EthStar():
 
 
 # TODO: check
+# plc1 is used as a cpppo server listening to port 44818.
+# workstn is used as a cpppo client sending couples of
+# write/read requests every second.
 @SkipTest
 def test_L3EthStarEnip():
-    """Test L3EthStar ENIP client/server communications.
-
-    plc1 is used as a cpppo server listening to port
-    44818.
-
-    workstn is used as a cpppo client sending couples of
-    write/read requests every second.
-
-    Output is hardcoded to /tmp directory.
-    """
 
     open(TEMP_DIR + '/cpppo-server.err', 'w').close()
     open(TEMP_DIR + '/cpppo-client.out', 'w').close()
@@ -91,11 +83,10 @@ def test_L3EthStarEnip():
 
 
 # TODO: check
+# plc1 ARP poisoning MITM attack using ettercap,
+# You can pass IP target to the dedicated script.
 @SkipTest
 def test_L3EthStarArpMitm():
-    """plc1 ARP poisoning MITM attack using ettercap,
-    You can pass IP target to the dedicated script.
-    """
 
     open(TEMP_DIR + '/l3/plc1arppoisoning.out', 'w').close()
 
@@ -127,18 +118,11 @@ def test_L3EthStarArpMitm():
 
 
 # TODO: check
+# It uses remote controller
+# attacker ARP poison plc1 and hmi using ettercap.
+# passive and active ARP spoofing
 @SkipTest
 def test_L3EthStarAttackArpEnip():
-    """
-    attacker ARP poison plc1 and hmi using ettercap.
-    passive and active ARP spoofing
-
-    cpppo is used to simulate enip client/server
-
-    remote controller (eg: pox)
-    can be used to mitigate ARP poisoning.
-
-    """
 
     topo = L3EthStar(add_attacker=True)
 
@@ -205,16 +189,6 @@ def test_L3EthStarAttackArpEnip():
 # TODO: check
 @SkipTest
 def test_L3EthStarAttackDoubleAp():
-    """
-    plc2 ARP poison plc3 and plc4 (passive internal)
-    swat external attacker ARP poison plc1 and hmi (passive external)
-
-    cpppo is used to simulate enip client/server
-
-    remote controller (eg: pox)
-    can be used to mitigate ARP poisoning.
-
-    """
 
     topo = L3EthStar(add_attacker=True)
 
@@ -282,11 +256,6 @@ def test_L3EthStarAttackDoubleAp():
 # TODO: check
 @SkipTest
 def test_Workshop():
-    """
-    workshop
-
-    """
-    # raise SkipTest
 
     topo = L3EthStar(add_attacker=True)
 

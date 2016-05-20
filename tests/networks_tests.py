@@ -28,8 +28,6 @@ def test_build_nx_graph():
 
 def test_MininetTopoFromNxGraph():
 
-    """Create a Networkx graph and build a mininet topology object."""
-
     graph = build_nx_graph()
 
     # Build a test graph
