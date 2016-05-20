@@ -39,16 +39,14 @@ class TestDevice():
     }
 
     def test_validate_name(self):
-        """name should be a non-empty string."""
 
-        print
         try:
             device = Device(
                 name=1,
                 state=TestDevice.STATE,
                 protocol=TestDevice.PROTOCOL)
         except TypeError as error:
-            print 'TEST name is an int: ', error
+            print 'name is an int: ', error
 
         try:
             device = Device(
@@ -56,25 +54,17 @@ class TestDevice():
                 state=TestDevice.STATE,
                 protocol=TestDevice.PROTOCOL)
         except ValueError as error:
-            print 'TEST name is empty string: ', error
+            print 'name is empty string: ', error
 
     def test_validate_state(self):
-        """state should be a dict.
 
-        state = {
-            'name': 'state_name',
-            'path': '/tmp/state.ext'
-
-        """
-
-        print
         try:
             device = Device(
                 name=TestDevice.NAME,
                 state='state',
                 protocol=TestDevice.PROTOCOL)
         except TypeError as error:
-            print 'TEST state is a string: ', error
+            print 'state is string: ', error
 
         try:
             device = Device(
@@ -82,7 +72,7 @@ class TestDevice():
                 state={},
                 protocol=TestDevice.PROTOCOL)
         except KeyError as error:
-            print 'TEST state is an empty dict: ', error
+            print 'state is an empty dict: ', error
 
         try:
             device = Device(
@@ -92,7 +82,7 @@ class TestDevice():
                     'wrong': 'key-val'},
                 protocol=TestDevice.PROTOCOL)
         except KeyError as error:
-            print 'TEST state has more than 2 keys: ', error
+            print 'state has more than 2 keys: ', error
 
         try:
             device = Device(
@@ -102,7 +92,7 @@ class TestDevice():
                     'bla': 'table_name'},
                 protocol=TestDevice.PROTOCOL)
         except KeyError as error:
-            print 'TEST: state has a wrong key: ', error
+            print 'state has a wrong key: ', error
 
         try:
             device = Device(
@@ -112,7 +102,7 @@ class TestDevice():
                     'name': 'table_name'},
                 protocol=TestDevice.PROTOCOL)
         except TypeError as error:
-            print 'TEST: state has a key referencing an int: ', error
+            print 'state has a key referencing an int: ', error
 
         try:
             device = Device(
@@ -122,7 +112,7 @@ class TestDevice():
                     'name': 'table_name'},
                 protocol=TestDevice.PROTOCOL)
         except ValueError as error:
-            print 'TEST: state has an unsupported path extension: ', error
+            print 'state has an unsupported path extension: ', error
 
         try:
             device = Device(
@@ -132,7 +122,7 @@ class TestDevice():
                     'name': 4},
                 protocol=TestDevice.PROTOCOL)
         except TypeError as error:
-            print 'TEST: state has an integer name: ', error
+            print 'state has an integer name: ', error
 
     # TODO: finish to set the API
     def test_validate_protocol(self):
@@ -140,12 +130,10 @@ class TestDevice():
         pass
 
     def test_validate_disk(self):
-        """disk should be a dict."""
 
         pass
 
     def test_validate_memory(self):
-        """memory should be a dict."""
 
         pass
 
@@ -203,12 +191,12 @@ class TestPLC():
                 try:
                     self.get(2.22)
                 except TypeError as error:
-                    print 'TEST: get what is a float: ', error
+                    print 'get what is a float: ', error
 
                 try:
                     self.set(2, 5)
                 except TypeError as error:
-                    print 'TEST: set what is an integer: ', error
+                    print 'set what is an integer: ', error
 
         plc = ToyPLC(
             name=TestPLC.NAME,

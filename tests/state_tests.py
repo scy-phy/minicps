@@ -42,7 +42,8 @@ def test_SQLiteStateClassMethods():
         os.remove(PATH)
 
     except OSError as error:
-        print 'TEST %s do NOT exists: ', error
+        pass
+        # print '%s do NOT exists: ', error
 
     finally:
         SQLiteState._create(PATH, SCHEMA)
@@ -53,9 +54,6 @@ def test_SQLiteStateClassMethods():
 class TestSQLiteState():
 
     def test_NoPk(self):
-        """MiniCPS needs at least 1 primary key."""
-
-        print
 
         PATH = "temp/no_pk.sqlite"
         NAME = 'no_pk'
@@ -77,14 +75,12 @@ class TestSQLiteState():
             state = SQLiteState(STATE)
 
         except ValueError as error:
-            print 'TEST schema with no pk: ', error
+            print 'schema with no pk: ', error
 
         finally:
             SQLiteState._delete(PATH)
 
     def test_OnePk(self):
-
-        print
 
         PATH = "temp/one_pk.sqlite"
         NAME = 'one_pk'

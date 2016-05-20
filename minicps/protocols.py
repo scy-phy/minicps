@@ -89,6 +89,16 @@ class EnipProtocol(Protocol):
 
     """EnipProtocol manager.
 
+    EnipProtocol manages python cpppo library, Look at the original
+    documentation for more information.
+
+    Supported tags:
+        - SINT (8-bit)
+        - INT (16-bit)
+        - DINT (32-bit)
+        - REAL (32-bit float)
+        - BOOL (8-bit, bit #0)
+        - SSTRING (simple string)
     """
 
     def __init__(self, protocol):
@@ -96,3 +106,9 @@ class EnipProtocol(Protocol):
         super(EnipProtocol, self).__init__(protocol)
 
         # TODO: maybe add some enip specific stuff
+        if protocol['mode'] == 0:
+            pass  # do not start a server
+        elif protocol['mode'] == 1:
+            print 'TODO: decide mode 1'
+        elif protocol['mode'] == 2:
+            print 'TODO: decide mode 2'
