@@ -2,10 +2,11 @@
 protocols_test.
 """
 import os
-import pymodbus
+# import pymodbus
 import cpppo
 import subprocess
 import sys
+import shlex
 
 from minicps.protocols import Protocol, EnipProtocol
 
@@ -48,17 +49,24 @@ class TestEnipProtocol():
 
     SERVER_TCP_PORT = 44818
     SERVER_UDP_PORT = 2222
-    SERVER_CMD = sys.executable + ' -m cpppo.server.enip '
     SERVER_TAGS = 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
     SERVER_PRINT_STDOUT = '--print '
-    SERVER_HTTP = '--web localhost:8000 '
-    SERVER_LOG = '--log logs/protocol_tests_enip_server '
-
-    CLIENT_CMD = sys.executable + ' -m cpppo.server.enip.client '
     CLIENT_PRINT_STDOUT = '--print '
+    SERVER_HTTP = '--web localhost:8000 '
+    SERVER_ADDRESS = '--address localhost:' + str(SERVER_TCP_PORT) + ' '
+
+    if sys.platform.startswith('linux'):
+        BASH = '/bin/bash -c '
+        SERVER_LOG = '--log logs/protocol_tests_enip_server '
+        CLIENT_LOG = '--log logs/protocol_tests_enip_client '
+
+    else:
+        raise OSError
+
+    SERVER_CMD = sys.executable + ' -m cpppo.server.enip '
+    CLIENT_CMD = sys.executable + ' -m cpppo.server.enip.client '
     CLIENT_READ = 'SENSOR1 '
     CLIENT_WRITE = 'SENSOR1=2 '
-    CLIENT_LOG = '--log logs/protocol_tests_enip_client '
 
     def test_init(self):
 
@@ -73,34 +81,36 @@ class TestEnipProtocol():
 
         PROTOCOL = {
             'name': 'enip',
-            'mode': 0,
+            'mode': 0,  # client mode
             'port': -1,
         }
-
-        # start an enip server
-        cmd = TestEnipProtocol.SERVER_CMD + \
-            TestEnipProtocol.SERVER_PRINT_STDOUT + \
-            TestEnipProtocol.SERVER_LOG + \
-            TestEnipProtocol.SERVER_TAGS
-        server_pid = os.system(cmd)
-        # server_pid = subprocess.Popen([cmd])
-
-        # cmd = [
-        #     TestEnipProtocol.SERVER_CMD,
-        #     TestEnipProtocol.SERVER_PRINT_STDOUT,
-        #     TestEnipProtocol.SERVER_LOG,
-        #     TestEnipProtocol.SERVER_TAGS
-        # ]
-        # server_pid = subprocess.Popen(cmd)
-
-        print server_pid
 
         enip = EnipProtocol(
             protocol=PROTOCOL)
 
-        # enip._send(SERVER_ADDR, what)
+        # TODO: how to start TCP vs UDP server
+        # start a test server
+        cmd = shlex.split(
+            # TestEnipProtocol.BASH +
+            TestEnipProtocol.SERVER_CMD +
+            TestEnipProtocol.SERVER_PRINT_STDOUT +
+            TestEnipProtocol.SERVER_LOG +
+            TestEnipProtocol.SERVER_ADDRESS +
+            TestEnipProtocol.SERVER_TAGS
+        )
+        print 'DEBUG enip server cmd: ', cmd
 
-        # kill enip server
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            server.wait()
+        except Exception as error:
+            print 'ERROR enip server: ', error
+            server.kill()
+
+        # what = ('SENSOR1',)
+        # enip._receive(SERVER_ADDRESS, what)
+
+        # maybe add a try block ?
 
     def test_server(self):
 

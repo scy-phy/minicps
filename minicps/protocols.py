@@ -7,9 +7,12 @@ https://github.com/pjkundert/cpppo
 Modbus/TCP is supported using pymodbus module.
 """
 
-# import cpppo
-# import pymodbus
+import sys
+import shlex
+import subprocess
 
+import cpppo
+# import pymodbus
 
 
 # PROTOCOLS {{{1
@@ -40,40 +43,41 @@ class Protocol(object):
         self._port = protocol['port']
 
     @classmethod
-    def _start_server(cls, where, values):
+    def _start_server(cls, address, values):
         """Start a protocol server.
 
         Eg: create a ENIP server.
 
-        :where: to serve
+        :address: to serve
         :values: to serve
         """
 
         pass
 
     @classmethod
-    def _stop_server(cls, where):
+    def _stop_server(cls, address):
         """Stop a protocol server.
 
         Eg: stop a ENIP server.
 
-        :where: to stop
+        :address: to stop
         """
 
         pass
 
-    def _send(self, where, what):
+    def _send(self, address, what):
         """Send (serve) a value.
 
-        :where: to send
+        :address: to send
         :what: to send
         """
 
         pass
 
-    def _receive(self, what):
+    def _receive(self, address, what):
         """Recieve a (requested) value.
 
+        :address: to receive from
         :what: to ask for
         """
 
@@ -114,10 +118,25 @@ class EnipProtocol(Protocol):
                 print 'WARNING: not using std enip %d UDP port' % \
                     EnipProtocol.UDP_PORT
 
-    def _init_tcp_server(self):
+    @classmethod
+    def _start_server(cls, address, values):
+        """Start a protocol server.
+
+        Eg: create a ENIP server.
+
+        :address: to serve
+        :values: to serve
+        """
 
         pass
 
-    def _init_udp_server(self):
+    @classmethod
+    def _stop_server(cls, address):
+        """Stop a protocol server.
+
+        Eg: stop a ENIP server.
+
+        :address: to stop
+        """
 
         pass
