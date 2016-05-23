@@ -47,23 +47,12 @@ class TestEnipProtocol():
         'mode': 1,
     }
 
-    SERVER_TCP_PORT = 44818
-    SERVER_UDP_PORT = 2222
-    SERVER_TAGS = 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
-    SERVER_PRINT_STDOUT = '--print '
-    CLIENT_PRINT_STDOUT = '--print '
-    SERVER_HTTP = '--web localhost:8000 '
-    SERVER_ADDRESS = '--address localhost:' + str(SERVER_TCP_PORT) + ' '
-
     if sys.platform.startswith('linux'):
-        BASH = '/bin/bash -c '
-        SERVER_LOG = '--log logs/protocol_tests_enip_server '
+        SHELL = '/bin/bash -c '
         CLIENT_LOG = '--log logs/protocol_tests_enip_client '
-
     else:
         raise OSError
 
-    SERVER_CMD = sys.executable + ' -m cpppo.server.enip '
     CLIENT_CMD = sys.executable + ' -m cpppo.server.enip.client '
     CLIENT_READ = 'SENSOR1 '
     CLIENT_WRITE = 'SENSOR1=2 '
@@ -88,24 +77,10 @@ class TestEnipProtocol():
         enip = EnipProtocol(
             protocol=PROTOCOL)
 
+        server = EnipProtocol._start_server()
+
         # TODO: how to start TCP vs UDP server
         # start a test server
-        cmd = shlex.split(
-            # TestEnipProtocol.BASH +
-            TestEnipProtocol.SERVER_CMD +
-            TestEnipProtocol.SERVER_PRINT_STDOUT +
-            TestEnipProtocol.SERVER_LOG +
-            TestEnipProtocol.SERVER_ADDRESS +
-            TestEnipProtocol.SERVER_TAGS
-        )
-        print 'DEBUG enip server cmd: ', cmd
-
-        try:
-            server = subprocess.Popen(cmd, shell=False)
-            server.wait()
-        except Exception as error:
-            print 'ERROR enip server: ', error
-            server.kill()
 
         # what = ('SENSOR1',)
         # enip._receive(SERVER_ADDRESS, what)

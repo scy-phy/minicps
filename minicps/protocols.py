@@ -1,10 +1,24 @@
 """
 protocols.py.
 
-Ethernet/IP (ENIP) is partially supported using cpppo module
+Addresses are passed as string containing an optional port,
+eg: localhost[:44818].
+
+A Protocol instance can be used both as a client and a server.
+The server dictionary contains the static options to configure the running
+server. No client information are stored because the public API allows the
+query different hosts at different addresses in the same CPS network.
+The mode integer indicates whether the client wants to use the Protocol
+instance as a client (mode = 0 ) or client and server (mode > 1). Different
+positive modes indicates different server configurations eg: enip tcp server
+(mode = 1) vs enip udp server (mode = 2).
+
+
+Ethernet/IP (ENIP) is partially supported using cpppo module.
 https://github.com/pjkundert/cpppo
 
 Modbus/TCP is supported using pymodbus module.
+https://github.com/bashwork/pymodbus
 """
 
 import sys
@@ -32,7 +46,7 @@ class Protocol(object):
 
             - name: textual identifier
             - mode: int coding mode eg: 1 = modbus synch TCP
-            - port: server listening port
+            - server: dict containing server settings
 
         :protocol: validated dict passed from Device obj
         """
@@ -52,7 +66,7 @@ class Protocol(object):
         :values: to serve
         """
 
-        pass
+        print '_start_server: please override me.'
 
     @classmethod
     def _stop_server(cls, address):
@@ -63,25 +77,25 @@ class Protocol(object):
         :address: to stop
         """
 
-        pass
+        print '_stop_server: please override me.'
 
-    def _send(self, address, what):
+    def _send(self, what, address):
         """Send (serve) a value.
 
-        :address: to send
         :what: to send
+        :address: to receive from
         """
 
-        pass
+        print '_send: please override me.'
 
-    def _receive(self, address, what):
+    def _receive(self, what, address):
         """Recieve a (requested) value.
 
         :address: to receive from
         :what: to ask for
         """
 
-        pass
+        print '_receive: please override me.'
 
 
 class EnipProtocol(Protocol):
@@ -100,8 +114,8 @@ class EnipProtocol(Protocol):
         - SSTRING (simple string)
     """
 
-    TCP_PORT = 44818
-    UDP_PORT = 2222
+    SERVER_TCP_PORT = 44818
+    SERVER_UDP_PORT = 2222
 
     def __init__(self, protocol):
 
@@ -109,32 +123,77 @@ class EnipProtocol(Protocol):
 
         if self._mode == 0:
             print 'DEBUG: do NOT start a enip server.'
+
         elif self._mode == 1:
-            if self._port != EnipProtocol.TCP_PORT:
+            if self._port != EnipProtocol.SERVER_TCP_PORT:
                 print 'WARNING: not using std enip %d TCP port' % \
-                    EnipProtocol.TCP_PORT
+                    EnipProtocol.SERVER_TCP_PORT
+
+            # TODO: start TCP enip server
+
         elif self._mode == 2:
-            if self._port != EnipProtocol.UDP_PORT:
+            if self._port != EnipProtocol.SERVER_UDP_PORT:
                 print 'WARNING: not using std enip %d UDP port' % \
-                    EnipProtocol.UDP_PORT
+                    EnipProtocol.SERVER_UDP_PORT
 
+            # TODO: start UDP enip server
+
+    # TODO: how to start a UDP cpppo server?
     @classmethod
-    def _start_server(cls, address, values):
-        """Start a protocol server.
-
-        Eg: create a ENIP server.
+    def _start_server(
+        cls,
+        address='localhost',
+        port=44818,
+        values=(
+            ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
+        """Start an enip server.
 
         :address: to serve
         :values: to serve
         """
 
-        pass
+        TCP_PORT = 44818
+        UDP_PORT = 2222
+        CMD = sys.executable + ' -m cpppo.server.enip '
+        PRINT_STDOUT = '--print '
+        HTTP = '--web %s:80 ' % address
+        ADDRESS = '--address ' + address + ':' + str(port) + ' '
+
+        # TAGS = 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
+        TAGS = ''
+        for tag in values:
+            TAGS += tag[0]
+            TAGS += '='
+            TAGS += tag[1]
+            TAGS += ' '
+        print 'DEBUG enip server TAGS: ', TAGS
+
+        if sys.platform.startswith('linux'):
+            SHELL = '/bin/bash -c '
+            LOG = '--log logs/protocol_tests_enip_server '
+        else:
+            raise OSError
+
+        cmd = shlex.split(
+            CMD +
+            PRINT_STDOUT +
+            LOG +
+            ADDRESS +
+            TAGS
+        )
+        print 'DEBUG enip server cmd: ', cmd
+
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            # TODO: add initial value loading capability
+            server.wait()
+        except Exception as error:
+            print 'ERROR enip server: ', error
+            server.kill()
 
     @classmethod
     def _stop_server(cls, address):
-        """Stop a protocol server.
-
-        Eg: stop a ENIP server.
+        """Stop an enip server.
 
         :address: to stop
         """
