@@ -17,10 +17,19 @@ from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
 # TODO: still not spec of the dict
-PROTOCOL = {
+SERVER = {
+    'address': 'localhost:44818',
+}
+CLIENT_SERVER_PROTOCOL = {
     'name': 'enip',
-    'port': 4444,
     'mode': 1,
+    'server': SERVER,
+}
+
+CLIENT_PROTOCOL = {
+    'name': 'enip',
+    'mode': 0,
+    'server': '',
 }
 
 
@@ -29,45 +38,55 @@ class TestProtocol():
     def test_init(self):
 
         enip = Protocol(
-            protocol=PROTOCOL)
-
+            protocol=CLIENT_SERVER_PROTOCOL)
         eq_(enip._name, 'enip')
-        eq_(enip._port, 4444)
         eq_(enip._mode, 1)
+        eq_(enip._server['address'], 'localhost:44818')
+        del enip
 
-
-@SkipTest
-def test_EnipProtocolClassMethods():
-
-    pass
+        enip = Protocol(
+            protocol=CLIENT_PROTOCOL)
+        eq_(enip._name, 'enip')
+        eq_(enip._mode, 0)
+        eq_(enip._server, '')
 
 
 class TestEnipProtocol():
 
-    PROTOCOL = {
-        'name': 'enip',
-        'port': 44818,
-        'mode': 1,
+    TAGS = (
+        ('SENSOR1', 1, 'INT'),
+        ('SENSOR1', 2, 'INT'),
+        ('ACTUATOR1', 'INT'))
+    SERVER = {
+        'address': 'localhost:44818',
+        'tags': TAGS
     }
-
+    CLIENT_SERVER_PROTOCOL = {
+        'name': 'enip',
+        'mode': 1,
+        'server': SERVER,
+    }
+    CLIENT_PROTOCOL = {
+        'name': 'enip',
+        'mode': 0,
+        'server': '',
+    }
+    CLIENT_CMD = sys.executable + ' -m cpppo.server.enip.client '
     if sys.platform.startswith('linux'):
         SHELL = '/bin/bash -c '
         CLIENT_LOG = '--log logs/protocol_tests_enip_client '
     else:
         raise OSError
 
-    CLIENT_CMD = sys.executable + ' -m cpppo.server.enip.client '
-    CLIENT_READ = 'SENSOR1 '
-    CLIENT_WRITE = 'SENSOR1=2 '
-
     def test_init(self):
 
         enip = EnipProtocol(
-            protocol=TestEnipProtocol.PROTOCOL)
-
+            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
         eq_(enip._name, 'enip')
-        eq_(enip._port, 44818)
-        eq_(enip._mode, 1)
+        del enip
+        enip = EnipProtocol(
+            protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+        eq_(enip._name, 'enip')
 
     def test_server_stop(self):
 
@@ -96,7 +115,7 @@ class TestEnipProtocol():
         cmd = EnipProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
-            time.sleep(15)
+            time.sleep(1)
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
@@ -107,25 +126,22 @@ class TestEnipProtocol():
 
     def test_client(self):
 
-        PROTOCOL = {
-            'name': 'enip',
-            'mode': 0,
-            'port': -1,
-        }
-
         enip = EnipProtocol(
-            protocol=PROTOCOL)
+            protocol=CLIENT_PROTOCOL)
+
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            time.sleep(1)
+            EnipProtocol._stop_server(server)
+        except Exception as error:
+            print 'ERROR test_server_multikey: ', error
 
         # what = ('SENSOR1',)
         # enip._receive(SERVER_ADDRESS, what)
 
     def test_client_server(self):
 
-        PROTOCOL = {
-            'name': 'enip',
-            'mode': 1,
-            'port': 1,
-        }
-
         enip = EnipProtocol(
-            protocol=PROTOCOL)
+            protocol=CLIENT_SERVER_PROTOCOL)

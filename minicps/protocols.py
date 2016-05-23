@@ -46,7 +46,7 @@ class Protocol(object):
 
             - name: textual identifier
             - mode: int coding mode eg: 1 = modbus synch TCP
-            - server: dict containing server settings
+            - server: dict containing server settings, empty if mode = 0
 
         :protocol: validated dict passed from Device obj
         """
@@ -55,7 +55,7 @@ class Protocol(object):
         # TODO: update
         self._name = protocol['name']
         self._mode = protocol['mode']
-        self._port = protocol['port']
+        self._server = protocol['server']
 
     @classmethod
     def _start_server(cls, address, values):
@@ -115,8 +115,9 @@ class EnipProtocol(Protocol):
         - SSTRING (simple string)
     """
 
-    SERVER_TCP_PORT = 44818
-    SERVER_UDP_PORT = 2222
+    # server ports
+    TCP_PORT = '44818'
+    UDP_PORT = '2222'
 
     def __init__(self, protocol):
 
@@ -126,16 +127,16 @@ class EnipProtocol(Protocol):
             print 'DEBUG: do NOT start a enip server.'
 
         elif self._mode == 1:
-            if self._port != EnipProtocol.SERVER_TCP_PORT:
+            if not self._server['address'].endswith(EnipProtocol.TCP_PORT):
                 print 'WARNING: not using std enip %d TCP port' % \
-                    EnipProtocol.SERVER_TCP_PORT
+                    EnipProtocol.TCP_PORT
 
             # TODO: start TCP enip server
 
         elif self._mode == 2:
-            if self._port != EnipProtocol.SERVER_UDP_PORT:
+            if not self._server['address'].endswith(EnipProtocol.UDP_PORT):
                 print 'WARNING: not using std enip %d UDP port' % \
-                    EnipProtocol.SERVER_UDP_PORT
+                    EnipProtocol.UDP_PORT
 
             # TODO: start UDP enip server
 
@@ -161,8 +162,8 @@ class EnipProtocol(Protocol):
         :returns: cmd string passable to Popen object
         """
 
-        TCP_PORT = 44818
-        UDP_PORT = 2222
+        # TCP_PORT = '44818'
+        # UDP_PORT = '2222'
         CMD = sys.executable + ' -m cpppo.server.enip '
         PRINT_STDOUT = '--print '
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
