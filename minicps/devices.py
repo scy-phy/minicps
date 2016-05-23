@@ -108,6 +108,7 @@ class Device(object):
 
         print "TODO _stop: please override me"
 
+    # TODO: add what doc
     def set(self, what, value):
         """Set a value.
 
@@ -119,6 +120,7 @@ class Device(object):
         else:
             return self._state._set(what, value)
 
+    # TODO: add what doc
     def get(self, what):
         """Get a value.
 
@@ -129,6 +131,24 @@ class Device(object):
             raise TypeError('Parameter must be a tuple.')
         else:
             return self._state._get(what)
+
+    def send(self, what, address):
+        """Set a value.
+
+        :returns: sent value
+        """
+
+        # TODO: validate what tuple and address string
+        pass
+
+    def recieve(self, what, address):
+        """Set a value.
+
+        :returns: sent value
+        """
+
+        # TODO: validate what tuple and address string
+        pass
 
 
 class PLC(Device):
