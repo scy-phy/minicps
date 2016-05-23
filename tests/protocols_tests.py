@@ -78,6 +78,7 @@ class TestEnipProtocol():
     else:
         raise OSError
 
+    @SkipTest
     def test_init(self):
 
         enip = EnipProtocol(
@@ -88,6 +89,7 @@ class TestEnipProtocol():
             protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
         eq_(enip._name, 'enip')
 
+    @SkipTest
     def test_server_stop(self):
 
         cmd = EnipProtocol._start_server_cmd()
@@ -142,12 +144,12 @@ class TestEnipProtocol():
 
             time.sleep(1)
             EnipProtocol._stop_server(server)
+
         except Exception as error:
-            print 'ERROR test_server_multikey: ', error
+            EnipProtocol._stop_server(server)
+            print 'ERROR test_client: ', error
 
-        # what = ('SENSOR1',)
-        # enip._receive(SERVER_ADDRESS, what)
-
+    @SkipTest
     def test_client_server(self):
 
         enip = EnipProtocol(

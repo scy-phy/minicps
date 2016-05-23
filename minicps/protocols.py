@@ -38,6 +38,8 @@ class Protocol(object):
     to support multi-protocol CPS.
     """
 
+    _SERIALIZER = ':'
+
     # TODO: what if the server supports multiple protocols with different ports
     def __init__(self, protocol):
         """Init a State object.
@@ -116,8 +118,8 @@ class EnipProtocol(Protocol):
     """
 
     # server ports
-    TCP_PORT = '44818'
-    UDP_PORT = '2222'
+    _TCP_PORT = '44818'
+    _UDP_PORT = '2222'
 
     def __init__(self, protocol):
 
@@ -127,23 +129,41 @@ class EnipProtocol(Protocol):
             print 'DEBUG: do NOT start a enip server.'
 
         elif self._mode == 1:
-            if not self._server['address'].endswith(EnipProtocol.TCP_PORT):
+            if not self._server['address'].endswith(EnipProtocol._TCP_PORT):
                 print 'WARNING: not using std enip %d TCP port' % \
-                    EnipProtocol.TCP_PORT
+                    EnipProtocol._TCP_PORT
 
             # TODO: start TCP enip server
 
         elif self._mode == 2:
-            if not self._server['address'].endswith(EnipProtocol.UDP_PORT):
+            if not self._server['address'].endswith(EnipProtocol._UDP_PORT):
                 print 'WARNING: not using std enip %d UDP port' % \
-                    EnipProtocol.UDP_PORT
+                    EnipProtocol._UDP_PORT
 
             # TODO: start UDP enip server
 
-    # TODO: check if : is a good serializer
+    @classmethod
+    def _tuple_to_cpppo_tag(cls, what, value, serializer=':'):
+        """Returns a cpppo string to read/write a server."""
+
+        tag_string = ''
+        tag_string += str(what[0])
+        for field in what[1:]:
+            tag_string += EnipProtocol._SERIALIZER
+            tag_string += str(field)
+        if value:
+            tag_string += '='
+            tag_string += str(value)
+        print 'DEBUG _send tag_string: ', tag_string
+
+        return tag_string
+
     @classmethod
     def _tuple_to_cpppo_tags(cls, tags, serializer=':'):
-        """Returns a cpppo formatted tags string."""
+        """Returns a cpppo tags string to init a server.
+
+        cpppo API: SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT
+        """
 
         tags_string = ''
         for tag in tags:
@@ -181,16 +201,12 @@ class EnipProtocol(Protocol):
         :returns: cmd string passable to Popen object
         """
 
-        # TCP_PORT = '44818'
-        # UDP_PORT = '2222'
         CMD = sys.executable + ' -m cpppo.server.enip '
         PRINT_STDOUT = '--print '
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         ADDRESS = '--address ' + address + ' '
         TAGS = EnipProtocol._tuple_to_cpppo_tags(tags)
-
-        # cpppo API: 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
 
         if sys.platform.startswith('linux'):
             SHELL = '/bin/bash -c '
@@ -252,7 +268,7 @@ class EnipProtocol(Protocol):
         :address: where
         """
 
-        print '_send: please override me.'
+        tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
 
     def _receive(self, what, address):
         """Recieve a (requested) value.
