@@ -71,50 +71,60 @@ class TestEnipProtocol():
 
     def test_server_stop(self):
 
-        PROTOCOL = {
-            'name': 'enip',
-            'mode': 0,  # client mode
-            'port': -1,
-        }
-
-        enip = EnipProtocol(
-            protocol=PROTOCOL)
-
         cmd = EnipProtocol._start_server_cmd()
         try:
             server = subprocess.Popen(cmd, shell=False)
             # server.wait()
-            time.sleep(2)
+            time.sleep(1)
             EnipProtocol._stop_server(server)
+            time.sleep(1)
 
         except Exception as error:
-            print 'ERROR enip server: ', error
+            print 'ERROR test_server_stop: ', error
             server.kill()
-
-        # TODO: how to start TCP vs UDP server
-        # start a test server
-
-        # what = ('SENSOR1',)
-        # enip._receive(SERVER_ADDRESS, what)
-
-        # maybe add a try block ?
+            time.sleep(1)
 
     @SkipTest
     def test_server_start(self):
 
-        PROTOCOL = {
-            'name': 'enip',
-            'mode': 1,
-            'port': -1,
-        }
-        ADDRESS = 'localhost:44818'
+        ADDRESS = 'localhost:44444'  # TEST port
         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
-
-        enip = EnipProtocol(
-            protocol=PROTOCOL)
 
         try:
             print "TEST: client has to kill the cpppo process."
             EnipProtocol._start_server(ADDRESS, TAGS)
         except Exception as error:
-            print 'ERROR enip server: ', error
+            print 'ERROR test_server_start: ', error
+
+    def test_server_multikey(self):
+
+        pass
+
+    def test_server_udp(self):
+
+        pass
+
+    def test_client(self):
+
+        PROTOCOL = {
+            'name': 'enip',
+            'mode': 0,
+            'port': -1,
+        }
+
+        enip = EnipProtocol(
+            protocol=PROTOCOL)
+
+        # what = ('SENSOR1',)
+        # enip._receive(SERVER_ADDRESS, what)
+
+    def test_client_server(self):
+
+        PROTOCOL = {
+            'name': 'enip',
+            'mode': 1,
+            'port': 1,
+        }
+
+        enip = EnipProtocol(
+            protocol=PROTOCOL)

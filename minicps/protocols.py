@@ -201,8 +201,8 @@ class EnipProtocol(Protocol):
 
         try:
             cmd = EnipProtocol._start_server_cmd(address, tags)
-            subprocess.Popen(cmd, shell=False)
-            # server.wait()
+            server = subprocess.Popen(cmd, shell=False)
+            server.wait()
 
         except Exception as error:
             print 'ERROR enip _start_server: ', error
