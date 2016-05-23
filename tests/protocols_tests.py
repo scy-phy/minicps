@@ -124,6 +124,7 @@ class TestEnipProtocol():
 
         pass
 
+    # TODO: add read SENSOR1 and read/write ACTUATOR1
     def test_send(self):
 
         enip = EnipProtocol(
