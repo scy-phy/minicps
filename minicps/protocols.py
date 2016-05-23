@@ -140,6 +140,25 @@ class EnipProtocol(Protocol):
 
             # TODO: start UDP enip server
 
+    # TODO: check if : is a good serializer
+    @classmethod
+    def _tuple_to_cpppo_tags(cls, tags, serializer=':'):
+        """Returns a cpppo formatted tags string."""
+
+        tags_string = ''
+        for tag in tags:
+            tags_string += str(tag[0])
+            for field in tag[1:-1]:
+                tags_string += serializer
+                tags_string += str(tag[field])
+
+            tags_string += '='
+            tags_string += str(tag[-1])
+            tags_string += ' '
+        print 'DEBUG enip server tags_string: ', tags_string
+
+        return tags_string
+
     # TODO: how to start a UDP cpppo server?
     # TODO: parametric PRINT_STDOUT and others
     @classmethod
@@ -169,21 +188,9 @@ class EnipProtocol(Protocol):
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         ADDRESS = '--address ' + address + ' '
+        TAGS = EnipProtocol._tuple_to_cpppo_tags(tags)
 
         # cpppo API: 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
-        TAGS = ''
-        SERIALIZER = ':'  # consistent with redis hints
-        # SERIALIZER = '|'
-        for tag in tags:
-            TAGS += str(tag[0])
-            for field in tag[1:-1]:
-                TAGS += SERIALIZER
-                TAGS += str(tag[field])
-
-            TAGS += '='
-            TAGS += str(tag[-1])
-            TAGS += ' '
-        print 'DEBUG enip server TAGS: ', TAGS
 
         if sys.platform.startswith('linux'):
             SHELL = '/bin/bash -c '
@@ -233,11 +240,16 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR stop enip server: ', error
 
-    def _send(self, what, address):
+    def _send(
+            self,
+            what,
+            value,
+            address='localhost:44818'):
         """Send (serve) a value.
 
-        :what: to send
-        :address: to receive from
+        :what: tuple addressing what
+        :value: sent
+        :address: where
         """
 
         print '_send: please override me.'

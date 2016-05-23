@@ -109,6 +109,7 @@ class TestEnipProtocol():
         except Exception as error:
             print 'ERROR test_server_start: ', error
 
+    @SkipTest
     def test_server_multikey(self):
 
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
@@ -133,6 +134,12 @@ class TestEnipProtocol():
         cmd = EnipProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
+
+            what = ('SENSOR1', 1)
+            value = 1
+            address = 'localhost:44818'
+            enip._send(what, value, address)
+
             time.sleep(1)
             EnipProtocol._stop_server(server)
         except Exception as error:
