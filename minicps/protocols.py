@@ -125,13 +125,23 @@ class EnipProtocol(Protocol):
 
         super(EnipProtocol, self).__init__(protocol)
 
-        if self._mode == 0:
-            print 'DEBUG: do NOT start a enip server.'
+        self._client_cmd = sys.executable + ' -m cpppo.server.enip.client '
 
-        elif self._mode == 1:
+        if sys.platform.startswith('linux'):
+            self._client_log = 'logs/enip_client '
+        else:
+            raise OSError
+
+        if self._mode == 1:
             if not self._server['address'].endswith(EnipProtocol._TCP_PORT):
                 print 'WARNING: not using std enip %d TCP port' % \
                     EnipProtocol._TCP_PORT
+            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
+
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_tcp_server '
+            else:
+                raise OSError
 
             # TODO: start TCP enip server
 
@@ -139,6 +149,12 @@ class EnipProtocol(Protocol):
             if not self._server['address'].endswith(EnipProtocol._UDP_PORT):
                 print 'WARNING: not using std enip %d UDP port' % \
                     EnipProtocol._UDP_PORT
+            # TODO: add --udp flag
+            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_udp_server '
+            else:
+                raise OSError
 
             # TODO: start UDP enip server
 
@@ -146,7 +162,7 @@ class EnipProtocol(Protocol):
     def _tuple_to_cpppo_tag(cls, what, value, serializer=':'):
         """Returns a cpppo string to read/write a server."""
 
-        tag_string = ''
+        tag_string = ' '
         tag_string += str(what[0])
         for field in what[1:]:
             tag_string += EnipProtocol._SERIALIZER
@@ -210,7 +226,7 @@ class EnipProtocol(Protocol):
 
         if sys.platform.startswith('linux'):
             SHELL = '/bin/bash -c '
-            LOG = '--log logs/protocol_tests_enip_server '
+            LOG = '--log logs/protocols_tests_enip_server '
         else:
             raise OSError
 
@@ -221,7 +237,7 @@ class EnipProtocol(Protocol):
             ADDRESS +
             TAGS
         )
-        print 'DEBUG enip server cmd: ', cmd
+        print 'DEBUG enip _start_server cmd: ', cmd
 
         return cmd
 
@@ -265,10 +281,25 @@ class EnipProtocol(Protocol):
 
         :what: tuple addressing what
         :value: sent
-        :address: where
+        :address: ip[:port]
         """
 
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
+
+        cmd = shlex.split(
+            self._client_cmd +
+            '--log ' + self._client_log +
+            '--address ' + address +
+            tag_string
+        )
+        print 'DEBUG enip _send cmd: ', cmd
+
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()  # TODO: necessary to wait child subproc ?
+
+        except Exception as error:
+            print 'ERROR enip _send: ', error
 
     def _receive(self, what, address):
         """Recieve a (requested) value.
