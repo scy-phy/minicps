@@ -74,22 +74,16 @@ class TestEnipProtocol():
         cmd = EnipProtocol._start_server_cmd()
         try:
             server = subprocess.Popen(cmd, shell=False)
-            # server.wait()
-            time.sleep(1)
             EnipProtocol._stop_server(server)
-            time.sleep(1)
 
         except Exception as error:
             print 'ERROR test_server_stop: ', error
-            server.kill()
-            time.sleep(1)
 
     @SkipTest
     def test_server_start(self):
 
-        ADDRESS = 'localhost:44444'  # TEST port
+        ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
-
         try:
             print "TEST: client has to kill the cpppo process."
             EnipProtocol._start_server(ADDRESS, TAGS)
@@ -98,7 +92,14 @@ class TestEnipProtocol():
 
     def test_server_multikey(self):
 
-        pass
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            time.sleep(15)
+            EnipProtocol._stop_server(server)
+        except Exception as error:
+            print 'ERROR test_server_multikey: ', error
 
     def test_server_udp(self):
 

@@ -140,6 +140,7 @@ class EnipProtocol(Protocol):
             # TODO: start UDP enip server
 
     # TODO: how to start a UDP cpppo server?
+    # TODO: parametric PRINT_STDOUT and others
     @classmethod
     def _start_server_cmd(
         cls,
@@ -147,6 +148,13 @@ class EnipProtocol(Protocol):
         tags=(
             ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
         """Build a Popen cmd string for cpppo server.
+
+        Tags can be any tuple of tuples. Each tuple has to contain a set of
+        string-convertible fields, the last one has to be a string containing
+        a supported datatype. The current serializer is : (colon).
+
+        Consistency between enip server key-values and state key-values has to
+        be guaranteed by the client.
 
         :address: to serve
         :tags: to serve
@@ -161,13 +169,18 @@ class EnipProtocol(Protocol):
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         ADDRESS = '--address ' + address + ' '
 
-        # TAGS = 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
-        # TODO: add support for multi-key serialized tag eg: SENSOR1|1
+        # cpppo API: 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
         TAGS = ''
+        SERIALIZER = ':'  # consistent with redis hints
+        # SERIALIZER = '|'
         for tag in tags:
-            TAGS += tag[0]
+            TAGS += str(tag[0])
+            for field in tag[1:-1]:
+                TAGS += SERIALIZER
+                TAGS += str(tag[field])
+
             TAGS += '='
-            TAGS += tag[1]
+            TAGS += str(tag[-1])
             TAGS += ' '
         print 'DEBUG enip server TAGS: ', TAGS
 
@@ -218,3 +231,21 @@ class EnipProtocol(Protocol):
             server.kill()
         except Exception as error:
             print 'ERROR stop enip server: ', error
+
+    def _send(self, what, address):
+        """Send (serve) a value.
+
+        :what: to send
+        :address: to receive from
+        """
+
+        print '_send: please override me.'
+
+    def _receive(self, what, address):
+        """Recieve a (requested) value.
+
+        :address: to receive from
+        :what: to ask for
+        """
+
+        print '_receive: please override me.'
