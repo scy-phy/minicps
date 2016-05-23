@@ -52,6 +52,7 @@ class Protocol(object):
         """
 
         # https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
+        # TODO: update
         self._name = protocol['name']
         self._mode = protocol['mode']
         self._port = protocol['port']
@@ -140,28 +141,30 @@ class EnipProtocol(Protocol):
 
     # TODO: how to start a UDP cpppo server?
     @classmethod
-    def _start_server(
+    def _start_server_cmd(
         cls,
-        address='localhost',
-        port=44818,
-        values=(
+        address='localhost:44818',
+        tags=(
             ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
-        """Start an enip server.
+        """Build a Popen cmd string for cpppo server.
 
         :address: to serve
-        :values: to serve
+        :tags: to serve
+        :returns: cmd string passable to Popen object
         """
 
         TCP_PORT = 44818
         UDP_PORT = 2222
         CMD = sys.executable + ' -m cpppo.server.enip '
         PRINT_STDOUT = '--print '
-        HTTP = '--web %s:80 ' % address
-        ADDRESS = '--address ' + address + ':' + str(port) + ' '
+        HTTP = '--web %s:80 ' % address[0:address.find(':')]
+        # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
+        ADDRESS = '--address ' + address + ' '
 
         # TAGS = 'SENSOR1=INT SENSOR2=REAL ACTUATOR1=INT '
+        # TODO: add support for multi-key serialized tag eg: SENSOR1|1
         TAGS = ''
-        for tag in values:
+        for tag in tags:
             TAGS += tag[0]
             TAGS += '='
             TAGS += tag[1]
@@ -183,19 +186,35 @@ class EnipProtocol(Protocol):
         )
         print 'DEBUG enip server cmd: ', cmd
 
-        try:
-            server = subprocess.Popen(cmd, shell=False)
-            # TODO: add initial value loading capability
-            server.wait()
-        except Exception as error:
-            print 'ERROR enip server: ', error
-            server.kill()
+        return cmd
 
     @classmethod
-    def _stop_server(cls, address):
-        """Stop an enip server.
+    def _start_server(cls, address, tags):
+        """Start a cpppo enip server.
 
-        :address: to stop
+        Notice that the client has to manage the new process,
+        eg:kill it after use.
+
+        :address: to serve
+        :tags: to serve
         """
 
-        pass
+        try:
+            cmd = EnipProtocol._start_server_cmd(address, tags)
+            subprocess.Popen(cmd, shell=False)
+            # server.wait()
+
+        except Exception as error:
+            print 'ERROR enip _start_server: ', error
+
+    @classmethod
+    def _stop_server(cls, server):
+        """Stop an enip server.
+
+        :server: Popen object
+        """
+
+        try:
+            server.kill()
+        except Exception as error:
+            print 'ERROR stop enip server: ', error

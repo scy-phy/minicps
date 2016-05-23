@@ -1,12 +1,15 @@
 """
 protocols_test.
 """
+
 import os
-# import pymodbus
-import cpppo
 import subprocess
 import sys
 import shlex
+import time
+
+# import pymodbus
+import cpppo
 
 from minicps.protocols import Protocol, EnipProtocol
 
@@ -66,7 +69,7 @@ class TestEnipProtocol():
         eq_(enip._port, 44818)
         eq_(enip._mode, 1)
 
-    def test_client(self):
+    def test_server_stop(self):
 
         PROTOCOL = {
             'name': 'enip',
@@ -77,7 +80,16 @@ class TestEnipProtocol():
         enip = EnipProtocol(
             protocol=PROTOCOL)
 
-        server = EnipProtocol._start_server()
+        cmd = EnipProtocol._start_server_cmd()
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            # server.wait()
+            time.sleep(2)
+            EnipProtocol._stop_server(server)
+
+        except Exception as error:
+            print 'ERROR enip server: ', error
+            server.kill()
 
         # TODO: how to start TCP vs UDP server
         # start a test server
@@ -87,6 +99,22 @@ class TestEnipProtocol():
 
         # maybe add a try block ?
 
-    def test_server(self):
+    @SkipTest
+    def test_server_start(self):
 
-        pass
+        PROTOCOL = {
+            'name': 'enip',
+            'mode': 1,
+            'port': -1,
+        }
+        ADDRESS = 'localhost:44818'
+        TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
+
+        enip = EnipProtocol(
+            protocol=PROTOCOL)
+
+        try:
+            print "TEST: client has to kill the cpppo process."
+            EnipProtocol._start_server(ADDRESS, TAGS)
+        except Exception as error:
+            print 'ERROR enip server: ', error
