@@ -15,7 +15,9 @@ class MiniCPS(object):
 
     """Main container used to run the simulation."""
 
-    def __init__(self, name, net):
+    # TODO: validate inputs
+
+    def __init__(self, name, net, nodes):
         """MiniCPS initialization steps:
 
         net object usually contains reference to:
@@ -24,22 +26,34 @@ class MiniCPS(object):
             - the CPU allocation
             - the [remote] SDN controller
 
+        Names in nodes tuple must match containers name of the net object.
+
         :name: CPS name
         :net: Mininet object
+        :nodes: tuples of strings
         """
 
         self.name = name
         self.net = net
+        self.nodes = nodes
 
-        self._init_mininet()
-
-    def _init_mininet(self):
-        """Init mininet network."""
-
-        # TODO: decide wheter to store it or not
-        self._topo = self.net.topo
+        # self._topo = self.net.topo
         # print 'DEBUG self._topo:', self._topo
 
+        # TODO: move to public API
         self.net.start()
+
+        self._nodes = []
+        # get container references
+        for node in self.nodes:
+            self._nodes.append(self.net.get(node))
+
+        for _node in self._nodes:
+            print _node.IP()
+
+        # run them as python modules
+        # TODO
+
         CLI(self.net)
+
         self.net.stop()

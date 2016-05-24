@@ -83,17 +83,17 @@ def test_MininetLinearTopo():
     net.stop()
 
 
-@SkipTest
 def test_MiniCPS():
 
     print
     topo = SingleSwitchTopo(n=4)
-    net = Mininet(
-        topo=topo)
+    net = Mininet(topo=topo)
+    nodes = ('h1', 'h2')
 
     mcps = MiniCPS(
-        name='name',
-        net=net)
+        name='test_MiniCPS',
+        net=net,
+        nodes=nodes)
 
 
 @SkipTest
