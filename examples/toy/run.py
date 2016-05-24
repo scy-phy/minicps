@@ -18,8 +18,6 @@ from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
 
 class ToyTopo(Topo):
 
-    """Single switch connected to n hosts."""
-
     def build(self):
 
         switch = self.addSwitch('s1')
@@ -42,7 +40,9 @@ if __name__ == "__main__":
     topo = ToyTopo()
     net = Mininet(
         topo=topo)
+    nodes = ('plc1', 'plc2')
 
-    MiniCPS(
+    minicps = MiniCPS(
         name='toy',
-        net=net)
+        net=net,
+        nodes=nodes)

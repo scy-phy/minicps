@@ -126,8 +126,8 @@ class EnipProtocol(Protocol):
     """
 
     # server ports
-    _TCP_PORT = '44818'
-    _UDP_PORT = '2222'
+    _TCP_PORT = ':44818'
+    _UDP_PORT = ':2222'
 
     def __init__(self, protocol):
 
@@ -142,8 +142,12 @@ class EnipProtocol(Protocol):
 
         # tcp enip server
         if self._mode == 1:
-            if not self._server['address'].endswith(EnipProtocol._TCP_PORT):
-                print 'WARNING: not using std enip %d TCP port' % \
+            if not self._server['address'].find(':'):
+                print 'DEBUG: concatenating server address with default port'
+                self._server['address'] += EnipProtocol._TCP_PORT
+
+            elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
+                print 'WARNING: not using std enip %s TCP port' % \
                     EnipProtocol._TCP_PORT
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
@@ -160,8 +164,12 @@ class EnipProtocol(Protocol):
 
         # udp enip server
         elif self._mode == 2:
-            if not self._server['address'].endswith(EnipProtocol._UDP_PORT):
-                print 'WARNING: not using std enip %d UDP port' % \
+            if not self._server['address'].find(':'):
+                print 'DEBUG: concatenating server address with default port'
+                self._server['address'] += EnipProtocol._UDP_PORT
+
+            elif not self._server['address'].endswith(EnipProtocol._UDP_PORT):
+                print 'WARNING: not using std enip %s UDP port' % \
                     EnipProtocol._UDP_PORT
             # TODO: add --udp flag
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '

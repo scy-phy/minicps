@@ -4,12 +4,9 @@ toy plc1.py
 
 import time
 
-# tags are strings key-val pairs
-
-# TODO: self.get is different from write to PLC memory ?
-
 from minicps.devices import PLC
-from examples.toy.utils import PLC1_TAG_DICT, PLC2_ADDR, PATH, NAME
+from examples.toy.utils import PLC1_DATA, PLC2_ADDR, STATE
+from examples.toy.utils import PLC1_PROTOCOL
 
 
 # TODO: decide how to map what tuples into memory and disk
@@ -19,7 +16,6 @@ class ToyPLC1(PLC):
 
         # sensor reading
         sensor1 = self.get(('SENSOR1', 1))
-
         # update PLC memory
         self.memory['SENSOR1'] = sensor1
 
@@ -34,6 +30,8 @@ class ToyPLC1(PLC):
 
         # wait for the other plcs
         time.sleep(sleep)  # TODO: test it
+
+        self._protocol._server_subprocess.kill()
 
     def main_loop(self, sleep=0.0):
 
@@ -83,17 +81,13 @@ class ToyPLC1(PLC):
 
 if __name__ == "__main__":
 
-    STATE = {
-        'name': NAME,
-        'path': PATH
-    }
     # notice that memory init is different form disk init
     plc1 = ToyPLC1(
         name='plc1',
         state=STATE,
-        protocol='enip',
-        memory=PLC1_TAG_DICT,
-        disk=PLC1_TAG_DICT)
+        protocol=PLC1_PROTOCOL,
+        memory=PLC1_DATA,
+        disk=PLC1_DATA)
 
     plc1.pre_loop(sleep=0.5)
 

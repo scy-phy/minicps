@@ -2,21 +2,19 @@
 toy_tests.py
 """
 
+import os
+
 from nose.plugins.skip import SkipTest
 
 from minicps.state import SQLiteState
 from examples.toy.plc1 import ToyPLC1
 from examples.toy.utils import toy_logger
 # from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
-from examples.toy.utils import PLC1_TAG_DICT, PLC2_TAG_DICT
-from examples.toy.utils import PATH, NAME, SCHEMA, SCHEMA_INIT
-
-STATE = {
-    'name': NAME,
-    'path': PATH
-}
+from examples.toy.utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL
+from examples.toy.utils import STATE, PATH, SCHEMA, SCHEMA_INIT
 
 
+@SkipTest
 def test_toy_logger():
 
     toy_logger.debug("TEST: debug message")
@@ -26,19 +24,24 @@ def test_toy_logger():
     toy_logger.critical("TEST: critical message")
 
 
-@SkipTest
 class TestToy():
 
     def test_ToyPLC1(self):
 
-        SQLiteState._create(PATH, SCHEMA)
-        SQLiteState._init(PATH, SCHEMA_INIT)
+        try:
+            os.remove(PATH)
+        except OSError:
+            pass
 
-        plc1 = ToyPLC1(
-            name='plc1',
-            state=STATE,
-            protocol='enip',  # TODO: fix protocol once ready
-            memory=PLC1_TAG_DICT,
-            disk=PLC1_TAG_DICT)
+        finally:
+            SQLiteState._create(PATH, SCHEMA)
+            SQLiteState._init(PATH, SCHEMA_INIT)
 
-        SQLiteState._delete(PATH)
+            plc1 = ToyPLC1(
+                name='plc1',
+                state=STATE,
+                protocol=PLC1_PROTOCOL,
+                memory=PLC1_DATA,
+                disk=PLC1_DATA)
+
+            SQLiteState._delete(PATH)
