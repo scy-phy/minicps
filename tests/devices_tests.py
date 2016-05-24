@@ -22,8 +22,8 @@ class TestDevice():
     }
     PROTOCOL = {
         'name': 'enip',
-        'mode': 1,
-        'port': 4444,
+        'mode': 0,
+        'server': '',
     }
 
     MEMORY = {
@@ -38,7 +38,7 @@ class TestDevice():
         'TAG5': '5',
     }
 
-    def test_validate_name(self):
+    def test_validate_device_name(self):
 
         try:
             device = Device(
@@ -87,6 +87,14 @@ class TestDevice():
         try:
             device = Device(
                 name=TestDevice.NAME,
+                state={'name': 'table_name'},
+                protocol=TestDevice.PROTOCOL)
+        except KeyError as error:
+            print 'state has less than 2 keys: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
                 state={
                     'path': '/bla',
                     'bla': 'table_name'},
@@ -99,10 +107,10 @@ class TestDevice():
                 name=TestDevice.NAME,
                 state={
                     'path': 0,
-                    'name': 'table_name'},
+                    'name': 0},
                 protocol=TestDevice.PROTOCOL)
         except TypeError as error:
-            print 'state has a key referencing an int: ', error
+            print 'state has integer values: ', error
 
         try:
             device = Device(
@@ -124,10 +132,91 @@ class TestDevice():
         except TypeError as error:
             print 'state has an integer name: ', error
 
-    # TODO: finish to set the API
     def test_validate_protocol(self):
 
-        pass
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol='protocol')
+        except TypeError as error:
+            print 'protocol is string: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={})
+        except KeyError as error:
+            print 'protocol is an empty dict: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 'enip', 'mode': 0, 'server': '',
+                    'too': 'much'})
+        except KeyError as error:
+            print 'protocol has more than 3 keys: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={'name': 'enip', 'mode': 0})
+        except KeyError as error:
+            print 'protocol has less than 3 keys: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 'enip', 'mode': 0, 'bla': ''})
+        except KeyError as error:
+            print 'protocol has a wrong key: ', error
+
+        # protocol['name']
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 1, 'mode': 0, 'server': ''})
+        except TypeError as error:
+            print 'protocol name is not a string: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 'wow', 'mode': 0, 'server': ''})
+        except ValueError as error:
+            print 'protocol has an unsupported name: ', error
+
+        # protocol['mode']
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 'enip', 'mode': 0.3, 'server': ''})
+        except TypeError as error:
+            print 'protocol mode is a float: ', error
+
+        try:
+            device = Device(
+                name=TestDevice.NAME,
+                state=TestDevice.STATE,
+                protocol={
+                    'name': 'enip', 'mode': -3, 'server': ''})
+        except ValueError as error:
+            print 'protocol mode is a negative int: ', error
+
+        # protocol['server'] TODO
+        # protocol['client'] TODO
 
     def test_validate_disk(self):
 

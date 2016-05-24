@@ -51,7 +51,7 @@ class Device(object):
         else:
             state_keys = state.keys()
             if (not state_keys) or (len(state_keys) != 2):
-                raise KeyError('Dict must contain 2 keys.')
+                raise KeyError('State must contain 2 keys.')
             else:
                 for key in state_keys:
                     if (key != 'path') and (key != 'name'):
@@ -59,7 +59,7 @@ class Device(object):
             state_values = state.values()
             for val in state_values:
                 if type(val) is not str:
-                    raise TypeError('Value must be a string.')
+                    raise TypeError('state values must be strings.')
             # state['path']
             subpath, extension = splitext(state['path'])
             # print 'DEBUG subpath: ', subpath
@@ -71,7 +71,35 @@ class Device(object):
                 raise TypeError('State name must be a string.')
 
         # protocol
-        # TODO
+        if type(protocol) is not dict:
+            raise TypeError('Protocol must be a dict.')
+        else:
+            protocol_keys = protocol.keys()
+            if (not protocol_keys) or (len(protocol_keys) != 3):
+                raise KeyError('Protocol must contain 3 keys.')
+            else:
+                for key in protocol_keys:
+                    if ((key != 'name') and
+                            (key != 'mode') and
+                            (key != 'server')):
+                        raise KeyError('%s is an invalid key.' % key)
+
+            # protocol['name']
+            if type(protocol['name']) is not str:
+                raise TypeError('Protocol name must be a string.')
+            else:
+                name = protocol['name']
+                if (name != 'enip'):
+                    raise ValueError('%s protocol not supported.' % protocol)
+            # protocol['mode']
+            if type(protocol['mode']) is not int:
+                raise TypeError('Protocol mode must be a int.')
+            else:
+                mode = protocol['mode']
+                if (mode < 0):
+                    raise ValueError('Protocol mode must be positive.')
+            # protocol['server'] TODO
+            # protocol['client'] TODO after adding it to the API
 
     def _init_state(self):
         """Bind device to the physical layer API."""
