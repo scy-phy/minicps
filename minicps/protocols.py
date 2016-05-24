@@ -298,6 +298,9 @@ class EnipProtocol(Protocol):
             address='localhost:44818'):
         """Send (serve) a value.
 
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+
         :what: tuple addressing what
         :value: sent
         :address: ip[:port]
@@ -316,7 +319,7 @@ class EnipProtocol(Protocol):
 
         try:
             client = subprocess.Popen(cmd, shell=False)
-            client.wait()  # TODO: necessary to wait child subproc ?
+            client.wait()
 
         except Exception as error:
             print 'ERROR enip _send: ', error
@@ -326,6 +329,9 @@ class EnipProtocol(Protocol):
             self, what,
             address='localhost:44818'):
         """Recieve a (requested) value.
+
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
 
         :what: to ask for
         :address: to receive from
@@ -344,7 +350,7 @@ class EnipProtocol(Protocol):
 
         try:
             client = subprocess.Popen(cmd, shell=False)
-            client.wait()  # TODO: necessary to wait child subproc ?
+            client.wait()
 
         except Exception as error:
             print 'ERROR enip _receive: ', error
