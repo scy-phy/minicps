@@ -29,13 +29,17 @@ test-swat:
 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
 
 
+# STATE {{{1
+
+kill-cpppo:
+	sudo pkill  -f -u root "python -m cpppo.server.enip"
+
 # MINICPS TESTS {{{1
 
 # regex testMatch: (?:^|[b_.-])[Tt]est)
 # --exe: include also executable files
 # -s: don't capture std output
 # nosetests -s tests/devices_tests.py:fun_name
-
 
 test:
 	$(TESTER) $(TESTER_OPTS) tests
