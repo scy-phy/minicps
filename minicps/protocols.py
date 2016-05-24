@@ -60,6 +60,8 @@ class Protocol(object):
         if self._mode > 0:
             # TODO: update server dict field: log
             self._server = protocol['server']
+        else:
+            self._server = {}
 
     @classmethod
     def _start_server(cls, address, values):

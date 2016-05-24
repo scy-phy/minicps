@@ -48,6 +48,7 @@ class TestProtocol():
             protocol=CLIENT_PROTOCOL)
         eq_(enip._name, 'enip')
         eq_(enip._mode, 0)
+        eq_(enip._server, {})
 
 
 class TestEnipProtocol():
