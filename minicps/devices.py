@@ -1,5 +1,17 @@
 """
 devices.py
+
+This module contains:
+    - the bindings to the physical layer API
+    - the bindings to the network API (mininet)
+    - the user input validation code
+
+Any device can be initialized with any couple of (state, protocol)
+dictionaries. The consistency of the system should be guaranteed by the
+client, e.g., do NOT init two different PLCs referencing to two different
+states or speaking two different protocols.
+
+Device subclasses can be customized overriding the _start and _stop methods.
 """
 
 import time
@@ -136,9 +148,11 @@ class Device(object):
 
         print "TODO _stop: please override me"
 
-    # TODO: add what doc
     def set(self, what, value):
-        """Set a value.
+        """Set (write) a state value.
+
+        :what: tuple with field identifiers
+        :value: value
 
         :returns: setted value
         """
@@ -148,9 +162,10 @@ class Device(object):
         else:
             return self._state._set(what, value)
 
-    # TODO: add what doc
     def get(self, what):
-        """Get a value.
+        """Get (read) a state value.
+
+        :what: (Immutable) tuple with field identifiers
 
         :returns: get value
         """
@@ -176,7 +191,7 @@ class Device(object):
             return self._protocol._send(what, value, address)
 
     def recieve(self, what, address):
-        """Recieve a (requested) value.
+        """Receive a (requested) value.
 
         :what: to ask for
         :address: to receive from
@@ -194,7 +209,7 @@ class PLC(Device):
 
     """Programmable Logic Controller.
 
-    PLC has control, monitor and network capabilites.
+    PLC has control, monitor and network capabilities.
 
     Usually they run a pre-loop initialization routine and then they enter a
     main loop.
