@@ -16,9 +16,10 @@ from minicps.protocols import Protocol, EnipProtocol
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
-# TODO: still not spec of the dict
+# TODO: add new server keys
 SERVER = {
     'address': 'localhost:44818',
+    'tags': (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT')),
 }
 CLIENT_SERVER_PROTOCOL = {
     'name': 'enip',
@@ -42,13 +43,16 @@ class TestProtocol():
         eq_(enip._name, 'enip')
         eq_(enip._mode, 1)
         eq_(enip._server['address'], 'localhost:44818')
+        eq_(
+            enip._server['tags'],
+            (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT')))
         del enip
 
         enip = Protocol(
             protocol=CLIENT_PROTOCOL)
         eq_(enip._name, 'enip')
         eq_(enip._mode, 0)
-        eq_(enip._server, {})
+        eq_(enip._server, {})  # pass an empty server dict
 
 
 class TestEnipProtocol():
@@ -165,12 +169,12 @@ class TestEnipProtocol():
         try:
             server = subprocess.Popen(cmd, shell=False)
 
-            # write a multikey
+            # read a multikey
             what = ('SENSOR1', 1)
             address = 'localhost:44818'
             enip._receive(what, address)
 
-            # write a single key
+            # read a single key
             what = ('ACTUATOR1',)
             address = 'localhost:44818'
             enip._receive(what, address)
@@ -185,5 +189,24 @@ class TestEnipProtocol():
 
     def test_client_server(self):
 
-        enip = EnipProtocol(
-            protocol=CLIENT_SERVER_PROTOCOL)
+        try:
+            enip = EnipProtocol(
+                protocol=CLIENT_SERVER_PROTOCOL)
+
+            time.sleep(0.5)
+
+            # read a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            # read a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            EnipProtocol._stop_server(enip._server_subprocess)
+
+        except Exception as error:
+            EnipProtocol._stop_server(enip._server_subprocess)
+            print 'ERROR test_client_server: ', error

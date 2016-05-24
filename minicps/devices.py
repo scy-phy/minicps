@@ -48,7 +48,6 @@ class Device(object):
         self._init_protocol()
         self._start()
 
-    # TODO: validate protocol dict
     def _validate_inputs(self, name, protocol, state, disk, memory):
 
         # name string

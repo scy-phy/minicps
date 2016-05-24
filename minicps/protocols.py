@@ -140,6 +140,7 @@ class EnipProtocol(Protocol):
         else:
             raise OSError
 
+        # tcp enip server
         if self._mode == 1:
             if not self._server['address'].endswith(EnipProtocol._TCP_PORT):
                 print 'WARNING: not using std enip %d TCP port' % \
@@ -151,8 +152,13 @@ class EnipProtocol(Protocol):
             else:
                 raise OSError
 
-            # TODO: start TCP enip server
+            cmd = EnipProtocol._start_server_cmd(
+                address=self._server['address'],
+                tags=self._server['tags'])
 
+            self._server_subprocess = subprocess.Popen(cmd, shell=False)
+
+        # udp enip server
         elif self._mode == 2:
             if not self._server['address'].endswith(EnipProtocol._UDP_PORT):
                 print 'WARNING: not using std enip %d UDP port' % \
@@ -213,7 +219,8 @@ class EnipProtocol(Protocol):
     # TODO: parametric PRINT_STDOUT and others
     @classmethod
     def _start_server_cmd(
-        cls, address='localhost:44818',
+        cls,
+        address='localhost:44818',
         tags=(
             ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
         """Build a Popen cmd string for cpppo server.
