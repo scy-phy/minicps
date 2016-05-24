@@ -148,10 +148,40 @@ class TestEnipProtocol():
                 value += 1
 
             EnipProtocol._stop_server(server)
+            time.sleep(0.5)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_client: ', error
+            time.sleep(0.5)
+
+    def test_receive_multikey(self):
+
+        enip = EnipProtocol(
+            protocol=CLIENT_PROTOCOL)
+
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+
+            # write a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            # write a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            EnipProtocol._stop_server(server)
+            time.sleep(0.5)
+
+        except Exception as error:
+            EnipProtocol._stop_server(server)
+            print 'ERROR test_client: ', error
+            time.sleep(0.5)
 
     def test_client_server(self):
 

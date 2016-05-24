@@ -180,7 +180,7 @@ class EnipProtocol(Protocol):
         if value:
             tag_string += '='
             tag_string += str(value)
-        print 'DEBUG _send tag_string: ', tag_string
+        print 'DEBUG _tuple_to_cpppo_tag tag_string: ', tag_string
 
         return tag_string
 
@@ -283,9 +283,7 @@ class EnipProtocol(Protocol):
             print 'ERROR stop enip server: ', error
 
     def _send(
-            self,
-            what,
-            value,
+            self, what, value,
             address='localhost:44818'):
         """Send (serve) a value.
 
@@ -294,6 +292,7 @@ class EnipProtocol(Protocol):
         :address: ip[:port]
         """
 
+        tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
 
         cmd = shlex.split(
@@ -311,17 +310,36 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _send: ', error
 
-    def _receive(self, what, address):
+    def _receive(
+            self, what,
+            address='localhost:44818'):
         """Recieve a (requested) value.
 
         :what: to ask for
         :address: to receive from
         """
 
-        print '_receive: please override me.'
+        tag_string = ''
+        tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
 
+        cmd = shlex.split(
+            self._client_cmd +
+            '--log ' + self._client_log +
+            '--address ' + address +
+            tag_string
+        )
+        print 'DEBUG enip _receive cmd: ', cmd
+
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()  # TODO: necessary to wait child subproc ?
+
+        except Exception as error:
+            print 'ERROR enip _receive: ', error
+
+    # TODO
     def _send_multiple(self, what, address):
-        """Recieve a (requested) value.
+        """Send (serve) multiple values.
 
         :address: to receive from
         :what: to ask for
