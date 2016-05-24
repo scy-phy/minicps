@@ -40,9 +40,7 @@ if __name__ == "__main__":
     topo = ToyTopo()
     net = Mininet(
         topo=topo)
-    nodes = ('plc1', 'plc2')
 
     minicps = MiniCPS(
         name='toy',
-        net=net,
-        nodes=nodes)
+        net=net)

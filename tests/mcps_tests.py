@@ -90,10 +90,12 @@ def test_MiniCPS():
     net = Mininet(topo=topo)
     nodes = ('h1', 'h2')
 
+    print net.values()
+    print net.keys()
+
     mcps = MiniCPS(
         name='test_MiniCPS',
-        net=net,
-        nodes=nodes)
+        net=net)
 
 
 @SkipTest
