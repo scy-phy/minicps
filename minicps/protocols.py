@@ -96,7 +96,7 @@ class Protocol(object):
         print '_send: please override me.'
 
     def _receive(self, what, address):
-        """Recieve a (requested) value.
+        """Receive a (requested) value.
 
         :address: to receive from
         :what: to ask for
@@ -213,8 +213,7 @@ class EnipProtocol(Protocol):
     # TODO: parametric PRINT_STDOUT and others
     @classmethod
     def _start_server_cmd(
-        cls,
-        address='localhost:44818',
+        cls, address='localhost:44818',
         tags=(
             ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
         """Build a Popen cmd string for cpppo server.
