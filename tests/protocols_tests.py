@@ -87,7 +87,6 @@ class TestEnipProtocol():
             protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
         eq_(enip._name, 'enip')
 
-    @SkipTest
     def test_server_stop(self):
 
         cmd = EnipProtocol._start_server_cmd()
@@ -115,7 +114,7 @@ class TestEnipProtocol():
         cmd = EnipProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
-            time.sleep(3)
+            # time.sleep(3)
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
@@ -124,8 +123,7 @@ class TestEnipProtocol():
 
         pass
 
-    # TODO: add read SENSOR1 and read/write ACTUATOR1
-    def test_send(self):
+    def test_send_multikey(self):
 
         enip = EnipProtocol(
             protocol=CLIENT_PROTOCOL)
@@ -135,20 +133,26 @@ class TestEnipProtocol():
         try:
             server = subprocess.Popen(cmd, shell=False)
 
+            # write a multikey
             what = ('SENSOR1', 1)
             address = 'localhost:44818'
             for value in range(5):
                 enip._send(what, value, address)
                 value += 1
 
-            time.sleep(1)
+            # write a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+                value += 1
+
             EnipProtocol._stop_server(server)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_client: ', error
 
-    @SkipTest
     def test_client_server(self):
 
         enip = EnipProtocol(

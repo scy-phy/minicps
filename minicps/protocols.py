@@ -163,14 +163,20 @@ class EnipProtocol(Protocol):
             # TODO: start UDP enip server
 
     @classmethod
-    def _tuple_to_cpppo_tag(cls, what, value, serializer=':'):
-        """Returns a cpppo string to read/write a server."""
+    def _tuple_to_cpppo_tag(cls, what, value=None, serializer=':'):
+        """Returns a cpppo string to read/write a server.
+
+        Can be used both to generate cpppo scalar read query, like
+        SENSOR1:1, and scalar write query, like ACTUATOR1=1.
+        """
 
         tag_string = ' '
         tag_string += str(what[0])
-        for field in what[1:]:
-            tag_string += EnipProtocol._SERIALIZER
-            tag_string += str(field)
+
+        if len(what) > 1:
+            for field in what[1:]:
+                tag_string += EnipProtocol._SERIALIZER
+                tag_string += str(field)
         if value:
             tag_string += '='
             tag_string += str(value)
@@ -308,8 +314,8 @@ class EnipProtocol(Protocol):
     def _receive(self, what, address):
         """Recieve a (requested) value.
 
-        :address: to receive from
         :what: to ask for
+        :address: to receive from
         """
 
         print '_receive: please override me.'
