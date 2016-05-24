@@ -19,4 +19,5 @@ if __name__ == "__main__":
 
     minicps = MiniCPS(
         name='toy',
-        net=net)
+        net=net,
+        path='examples/toy')

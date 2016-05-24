@@ -20,7 +20,11 @@ class ToyPLC2(PLC):
 
     def main_loop(self, sleep=0.0):
 
-        pass
+        while(True):
+            try:
+                pass
+            except Exception:
+                self._protocol._server_subprocess.kill()
         # TODO
         # COUNT = 0
         # while(COUNT < 100):
@@ -38,7 +42,3 @@ if __name__ == "__main__":
         protocol=PLC2_PROTOCOL,
         memory=PLC2_DATA,
         disk=PLC2_DATA)
-
-    plc2.pre_loop(sleep=0.5)
-
-    plc2.main_loop(sleep=0.5)

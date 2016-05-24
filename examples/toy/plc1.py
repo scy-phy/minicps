@@ -31,13 +31,15 @@ class ToyPLC1(PLC):
         # wait for the other plcs
         time.sleep(sleep)  # TODO: test it
 
-        self._protocol._server_subprocess.kill()
-
     def main_loop(self, sleep=0.0):
 
-        pass
-        # COUNT = 0
-        # while(COUNT < 100):
+        while(True):
+
+            try:
+                pass
+            except Exception:
+                self._protocol._server_subprocess.kill()
+# COUNT = 0 # while(COUNT < 100):
 
         #     sensor2 = self.get(('SENSOR2',))
         #     self.memory['SENSOR2'] = sensor2
@@ -88,7 +90,3 @@ if __name__ == "__main__":
         protocol=PLC1_PROTOCOL,
         memory=PLC1_DATA,
         disk=PLC1_DATA)
-
-    plc1.pre_loop(sleep=0.5)
-
-    plc1.main_loop(sleep=0.5)

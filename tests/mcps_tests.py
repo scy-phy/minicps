@@ -85,17 +85,16 @@ def test_MininetLinearTopo():
 
 def test_MiniCPS():
 
-    print
     topo = SingleSwitchTopo(n=4)
     net = Mininet(topo=topo)
-    nodes = ('h1', 'h2')
 
-    print net.values()
-    print net.keys()
-
-    mcps = MiniCPS(
-        name='test_MiniCPS',
-        net=net)
+    try:
+        mcps = MiniCPS(
+            name='test_MiniCPS',
+            net=net,
+            path='examples/toy')
+    except Exception as e:
+        print 'TEST test_MiniCPS error: ', e
 
 
 @SkipTest
