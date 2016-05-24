@@ -81,8 +81,10 @@ class TestEnipProtocol():
     else:
         raise OSError
 
+    @SkipTest
     def test_init(self):
 
+        # TODO: add _stop_server
         enip = EnipProtocol(
             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
         eq_(enip._name, 'enip')
@@ -109,6 +111,7 @@ class TestEnipProtocol():
         try:
             print "TEST: client has to kill the cpppo process."
             EnipProtocol._start_server(ADDRESS, TAGS)
+            # TODO: add _stop_server
         except Exception as error:
             print 'ERROR test_server_start: ', error
 
@@ -118,7 +121,6 @@ class TestEnipProtocol():
         cmd = EnipProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
-            # time.sleep(3)
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
@@ -142,22 +144,18 @@ class TestEnipProtocol():
             address = 'localhost:44818'
             for value in range(5):
                 enip._send(what, value, address)
-                value += 1
 
             # write a single key
             what = ('ACTUATOR1',)
             address = 'localhost:44818'
             for value in range(5):
                 enip._send(what, value, address)
-                value += 1
 
             EnipProtocol._stop_server(server)
-            time.sleep(0.5)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_client: ', error
-            time.sleep(0.5)
 
     def test_receive_multikey(self):
 
@@ -180,20 +178,16 @@ class TestEnipProtocol():
             enip._receive(what, address)
 
             EnipProtocol._stop_server(server)
-            time.sleep(0.5)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_client: ', error
-            time.sleep(0.5)
 
     def test_client_server(self):
 
         try:
             enip = EnipProtocol(
                 protocol=CLIENT_SERVER_PROTOCOL)
-
-            time.sleep(0.5)
 
             # read a multikey
             what = ('SENSOR1', 1)
@@ -204,6 +198,18 @@ class TestEnipProtocol():
             what = ('ACTUATOR1',)
             address = 'localhost:44818'
             enip._receive(what, address)
+
+            # write a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+
+            # write a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
 
             EnipProtocol._stop_server(enip._server_subprocess)
 

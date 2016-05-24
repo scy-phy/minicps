@@ -292,6 +292,7 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR stop enip server: ', error
 
+    # TODO: remove try ... except
     def _send(
             self, what, value,
             address='localhost:44818'):
@@ -320,6 +321,7 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _send: ', error
 
+    # TODO: remove try ... except
     def _receive(
             self, what,
             address='localhost:44818'):
