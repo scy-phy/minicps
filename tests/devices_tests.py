@@ -148,8 +148,8 @@ class TestPLC():
     }
     PROTOCOL = {
         'name': 'enip',
-        'mode': 1,
-        'port': 4444,
+        'mode': 0,
+        'server': '',
     }
 
     SCHEMA = """

@@ -132,23 +132,34 @@ class Device(object):
         else:
             return self._state._get(what)
 
-    def send(self, what, address):
-        """Set a value.
+    def send(self, what, value, address):
+        """Send (serve) a value.
+
+        :what: tuple addressing what
+        :value: sent
+        :address: ip[:port]
 
         :returns: sent value
         """
 
-        # TODO: validate what tuple and address string
-        pass
+        if type(what) is not tuple:
+            raise TypeError('Parameter must be a tuple.')
+        else:
+            return self._protocol._send(what, value, address)
 
     def recieve(self, what, address):
-        """Set a value.
+        """Recieve a (requested) value.
+
+        :what: to ask for
+        :address: to receive from
 
         :returns: sent value
         """
 
-        # TODO: validate what tuple and address string
-        pass
+        if type(what) is not tuple:
+            raise TypeError('Parameter must be a tuple.')
+        else:
+            return self._protocol._receive(what, address)
 
 
 class PLC(Device):

@@ -53,11 +53,13 @@ class Protocol(object):
         :protocol: validated dict passed from Device obj
         """
 
-        # https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
-        # TODO: update
+        # TODO: add client dictionary
         self._name = protocol['name']
         self._mode = protocol['mode']
-        self._server = protocol['server']
+
+        if self._mode > 0:
+            # TODO: update server dict field: log
+            self._server = protocol['server']
 
     @classmethod
     def _start_server(cls, address, values):
