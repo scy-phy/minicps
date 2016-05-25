@@ -142,7 +142,8 @@ class EnipProtocol(Protocol):
 
         # tcp enip server
         if self._mode == 1:
-            if not self._server['address'].find(':'):
+            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
                 print 'DEBUG: concatenating server address with default port'
                 self._server['address'] += EnipProtocol._TCP_PORT
 

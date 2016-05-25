@@ -10,7 +10,7 @@ from minicps.state import SQLiteState
 from examples.toy.plc1 import ToyPLC1
 from examples.toy.utils import toy_logger
 # from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
-from examples.toy.utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL
+from examples.toy.utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL, PLC1_TAGS
 from examples.toy.utils import STATE, PATH, SCHEMA, SCHEMA_INIT
 
 
@@ -28,6 +28,16 @@ class TestToy():
 
     def test_ToyPLC1(self):
 
+        plc1_server = {
+            'address': 'localhost',
+            'tags': PLC1_TAGS
+        }
+        plc1_protocol = {
+            'name': 'enip',
+            'mode': 1,
+            'server': plc1_server
+        }
+
         try:
             os.remove(PATH)
         except OSError:
@@ -40,7 +50,7 @@ class TestToy():
             plc1 = ToyPLC1(
                 name='plc1',
                 state=STATE,
-                protocol=PLC1_PROTOCOL,
+                protocol=plc1_protocol,
                 memory=PLC1_DATA,
                 disk=PLC1_DATA)
 

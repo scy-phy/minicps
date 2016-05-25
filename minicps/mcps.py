@@ -48,7 +48,8 @@ class MiniCPS(object):
                 cmd = sys.executable + ' ' + \
                     self.path + '/' + host.name + '.py &'
                 print 'DEBUG MiniCPS cmd: ', cmd
-                host.cmd(cmd)
+                # host.cmd(cmd)
+                host.cmd('pwd')
 
         CLI(self.net)
 

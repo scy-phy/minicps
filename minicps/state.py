@@ -159,15 +159,15 @@ class SQLiteState(State):
                 else:
                     # sort by pk order
                     pks.sort(key=lambda x: x[5])
-                    print 'DEBUG sorted pks: ', pks
+                    # print 'DEBUG sorted pks: ', pks
 
                     what_list = []
                     for pk in pks:
                         what_list.append(pk[1])
-                    print 'DEBUG what list: ', what_list
+                    # print 'DEBUG what list: ', what_list
 
                     self._what = tuple(what_list)
-                    print 'DEBUG self._what: ', self._what
+                    # print 'DEBUG self._what: ', self._what
 
             except sqlite3.Error, e:
                 print('ERROR: %s: ' % e.args[0])

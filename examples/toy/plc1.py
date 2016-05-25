@@ -13,32 +13,47 @@ from examples.toy.utils import PLC1_PROTOCOL
 class ToyPLC1(PLC):
 
     def pre_loop(self, sleep=0.4):
+        print 'DEBUG: toy plc1 enters pre_loop'
+        print
 
-        # sensor reading
-        sensor1 = self.get(('SENSOR1', 1))
-        # update PLC memory
+        SENSOR1_ADDR = ('SENSOR1', 1)
+
+        sensor1 = self.set(SENSOR1_ADDR, 2)
+        print 'DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_ADDR)
         self.memory['SENSOR1'] = sensor1
 
-        if sensor1 == '1':
-            self.memory['SENSOR3'] = '0'
+        self.send(SENSOR1_ADDR, 2, 'localhost')
+        self.recieve(SENSOR1_ADDR, 'localhost')
 
-            # ACTUATOR1 ON
-            self.memory['ACTUATOR1'] = '1'
-            self.set(('ACTUATOR1',), self.memory['ACTUATOR1'])
-        else:
-            pass
+        # if sensor1 == '1':
+        #     self.memory['SENSOR3'] = '0'
+
+        #     # ACTUATOR1 ON
+        #     self.memory['ACTUATOR1'] = '1'
+        #     self.set(('ACTUATOR1',), self.memory['ACTUATOR1'])
+        # else:
+        #     pass
 
         # wait for the other plcs
         time.sleep(sleep)  # TODO: test it
 
-    def main_loop(self, sleep=0.0):
+    def main_loop(self, sleep=0.5):
+        print 'DEBUG: toy plc1 enters main_loop'
+        print
 
+        count = 0
+        END = 1
         while(True):
 
-            try:
-                pass
-            except Exception:
-                self._protocol._server_subprocess.kill()
+            time.sleep(1)
+            count += 1
+
+            if count > END:
+                break
+
+        print 'DEBUG toy plc1 shutdown'
+        self._protocol._server_subprocess.kill()
+
 # COUNT = 0 # while(COUNT < 100):
 
         #     sensor2 = self.get(('SENSOR2',))
