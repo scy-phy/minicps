@@ -144,12 +144,13 @@ class EnipProtocol(Protocol):
         if self._mode == 1:
             print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port'
+                print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += EnipProtocol._TCP_PORT
 
             elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
                 print 'WARNING: not using std enip %s TCP port' % \
                     EnipProtocol._TCP_PORT
+
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
             if sys.platform.startswith('linux'):
@@ -165,8 +166,9 @@ class EnipProtocol(Protocol):
 
         # udp enip server
         elif self._mode == 2:
-            if not self._server['address'].find(':'):
-                print 'DEBUG: concatenating server address with default port'
+            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
+                print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += EnipProtocol._UDP_PORT
 
             elif not self._server['address'].endswith(EnipProtocol._UDP_PORT):
