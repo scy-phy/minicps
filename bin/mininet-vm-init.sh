@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: if not installed as module add minicps soft link to /usr/lib/python2.7
+
 # TODO: add parametric installation
 # mininet vm is running Ubuntu
 cd
