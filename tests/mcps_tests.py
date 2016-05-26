@@ -91,8 +91,7 @@ def test_MiniCPS():
     try:
         mcps = MiniCPS(
             name='test_MiniCPS',
-            net=net,
-            path='examples/toy')
+            net=net)
     except Exception as e:
         print 'TEST test_MiniCPS error: ', e
 

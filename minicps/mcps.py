@@ -7,18 +7,14 @@ MiniCPS augments Mininet capabilities in the context of Cyber-Physical
 Systems.
 """
 
-import sys
-from mininet.cli import CLI
 
-
-# TODO: maybe return some pid
 class MiniCPS(object):
 
     """Main container used to run the simulation."""
 
     # TODO: validate inputs
 
-    def __init__(self, name, net, path):
+    def __init__(self, name, net):
         """MiniCPS initialization steps:
 
         net object usually contains reference to:
@@ -29,29 +25,11 @@ class MiniCPS(object):
 
         :name: CPS name
         :net: Mininet object
-        :path: string containig the cps root folder path
         """
 
         self.name = name
         self.net = net
-        # TODO: maybe remove path
-        self.path = path
-
-        self._hosts = net.hosts
 
         self.net.start()
-
-        # cmd = ''
-        # for host in self._hosts:
-        #     if host.name == 'c0' or host.name == 's1':
-        #         continue
-        #     else:
-        #         cmd = sys.executable + ' ' + \
-        #             self.path + '/' + host.name + '.py &'
-        #         print 'DEBUG MiniCPS cmd: ', cmd
-        #         # host.cmd(cmd)
-        #         host.cmd('pwd')
-
-        CLI(self.net)
-
+        self.net.pingAll()
         self.net.stop()

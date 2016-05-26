@@ -5,6 +5,7 @@ toy run.py
 import os
 import sys
 from mininet.net import Mininet
+from mininet.cli import CLI
 from minicps.mcps import MiniCPS
 
 # TODO: find a nicer way to manage examples path
@@ -12,12 +13,33 @@ sys.path.append(os.getcwd())
 from examples.toy.topo import ToyTopo
 
 
+class ToyCPS(MiniCPS):
+
+    """Main container used to run the simulation."""
+
+    # TODO: validate inputs
+
+    def __init__(self, name, net):
+
+        self.name = name
+        self.net = net
+
+        self.net.start()
+
+        # start devices
+        plc1, plc2 = self.net.get('plc1', 'plc2')
+        plc1.cmd(sys.executable + ' examples/toy/plc1.py &')
+        plc2.cmd(sys.executable + ' examples/toy/plc2.py &')
+
+        CLI(self.net)
+
+        self.net.stop()
+
 if __name__ == "__main__":
 
     topo = ToyTopo()
     net = Mininet(topo=topo)
 
-    minicps = MiniCPS(
-        name='toy',
-        net=net,
-        path='examples/toy')
+    toycps = ToyCPS(
+        name='toyCPS',
+        net=net)
