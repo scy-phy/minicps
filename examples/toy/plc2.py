@@ -34,27 +34,19 @@ class ToyPLC2(PLC):
         print
 
         count = 0
-        END = 1e6
-        try:
-            while(True):
+        END = 6
+        while(True):
+            set_s32 = self.set(SENSOR3_2, count)
+            print 'DEBUG: toy plc2 set SENSOR3_2: ', set_s32
+            self.send(SENSOR3_1, count, PLC1_ADDR)
 
-                set_s32 = self.set(SENSOR3_2, count)
-                print 'DEBUG: toy plc2 set SENSOR3_2: ', set_s32
-                self.send(SENSOR3_1, count, PLC1_ADDR)
+            time.sleep(1)
+            count += 1
 
-                time.sleep(1)
-                count += 1
+            if count > END:
+                print 'DEBUG toy plc1 shutdown'
+                break
 
-                if count > END:
-                    break
-
-            print 'DEBUG toy plc1 shutdown'
-
-        except KeyboardInterrupt:
-            pass
-
-        finally:
-            self._protocol._server_subprocess.kill()
 
 if __name__ == "__main__":
 

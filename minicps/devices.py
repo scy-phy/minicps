@@ -47,6 +47,7 @@ class Device(object):
         self._init_state()
         self._init_protocol()
         self._start()
+        self._stop()
 
     def _validate_inputs(self, name, protocol, state, disk, memory):
 
@@ -200,6 +201,7 @@ class Device(object):
             return self._protocol._receive(what, address)
 
 
+# TODO: rename pre_loop and main_loop?
 class PLC(Device):
 
     """Programmable Logic Controller.
@@ -215,10 +217,10 @@ class PLC(Device):
         self.pre_loop()
         self.main_loop()
 
-    # TODO
     def _stop(self):
 
-        pass
+        if self.protocol['mode'] > 0:
+            self._protocol._server_subprocess.kill()
 
     def pre_loop(self, sleep=0.5):
         """PLC boot process.
@@ -244,6 +246,7 @@ class PLC(Device):
             sec += 1
 
 
+# TODO: add show something
 class HMI(Device):
 
     """Human Machine Interface.
@@ -255,10 +258,10 @@ class HMI(Device):
 
         self.main_loop()
 
-    # TODO
     def _stop(self):
 
-        pass
+        if self.protocol['mode'] > 0:
+            self._protocol._server_subprocess.kill()
 
     def main_loop(self, sleep=0.5):
         """HMI main loop.

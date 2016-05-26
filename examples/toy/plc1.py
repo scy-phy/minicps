@@ -43,28 +43,20 @@ class ToyPLC1(PLC):
         print
 
         count = 0
-        END = 1e6
-        try:
-            while(True):
+        END = 6
+        while(True):
+            rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
+            # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
+            get_s32 = self.get(SENSOR3_2)
+            print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32
 
-                rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
-                # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
-                get_s32 = self.get(SENSOR3_2)
-                print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32
+            time.sleep(1)
+            count += 1
 
-                time.sleep(1)
-                count += 1
+            if count > END:
+                print 'DEBUG toy plc1 shutdown'
+                break
 
-                if count > END:
-                    break
-
-            print 'DEBUG toy plc1 shutdown'
-
-        except KeyboardInterrupt:
-            pass
-
-        finally:
-            self._protocol._server_subprocess.kill()
 
 if __name__ == "__main__":
 
