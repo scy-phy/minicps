@@ -242,3 +242,34 @@ class PLC(Device):
             time.sleep(sleep)
 
             sec += 1
+
+
+class HMI(Device):
+
+    """Human Machine Interface.
+
+    HMI has monitor and network capabilities.
+    """
+
+    def _start(self):
+
+        self.main_loop()
+
+    # TODO
+    def _stop(self):
+
+        pass
+
+    def main_loop(self, sleep=0.5):
+        """HMI main loop.
+
+        :sleep: sleep n sec after each iteration
+        """
+
+        sec = 0
+        while(sec < 1):
+
+            print "TODO main_loop: please override me"
+            time.sleep(sleep)
+
+            sec += 1

@@ -6,7 +6,7 @@ import time
 import sys
 import os
 
-from minicps.devices import Device, PLC
+from minicps.devices import Device, PLC, HMI
 from minicps.state import SQLiteState
 
 from nose.tools import eq_
@@ -232,8 +232,8 @@ class TestPLC():
     NAME = 'plc_tests'
     PATH = 'temp/plc_tests.sqlite'
     STATE = {
-        'path': 'temp/plc_tests.sqlite',
-        'name': 'plc_tests'
+        'path': PATH,
+        'name': NAME
     }
     PROTOCOL = {
         'name': 'enip',
@@ -293,3 +293,71 @@ class TestPLC():
             protocol=TestPLC.PROTOCOL)
 
         SQLiteState._delete(TestPLC.PATH)
+
+
+class TestHMI():
+
+    NAME = 'hmi_tests'
+    PATH = 'temp/hmi_tests.sqlite'
+    STATE = {
+        'path': PATH,
+        'name': NAME
+    }
+    PROTOCOL = {
+        'name': 'enip',
+        'mode': 0,
+        'server': '',
+    }
+
+    SCHEMA = """
+    CREATE TABLE hmi_tests (
+        name              TEXT NOT NULL,
+        datatype          TEXT NOT NULL,
+        value             TEXT,
+        PRIMARY KEY (name)
+    );
+    """
+
+    SCHEMA_INIT = """
+        INSERT INTO hmi_tests VALUES ('SENSOR1',   'int', '1');
+        INSERT INTO hmi_tests VALUES ('SENSOR2',   'float', '22.2');
+        INSERT INTO hmi_tests VALUES ('SENSOR3',   'int', '5');
+        INSERT INTO hmi_tests VALUES ('ACTUATOR2', 'int', '2');
+    """
+
+    def test_set_get(self, sleep=0.3):
+
+        try:
+            os.remove(TestHMI.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestHMI.PATH, TestHMI.SCHEMA)
+        SQLiteState._init(TestHMI.PATH, TestHMI.SCHEMA_INIT)
+
+        class ToyHMI(HMI):
+
+            def main_loop(self):
+
+                eq_(self.set(('SENSOR1',), '10'), '10')
+                eq_(self.get(('SENSOR1',)), '10')
+                eq_(self.get(('SENSOR2',)), '22.2')
+                eq_(self.get(('SENSOR3',)), '5')
+                time.sleep(sleep)
+
+                try:
+                    self.get(2.22)
+                except TypeError as error:
+                    print 'get what is a float: ', error
+
+                try:
+                    self.set(2, 5)
+                except TypeError as error:
+                    print 'set what is an integer: ', error
+
+        hmi = ToyHMI(
+            name=TestHMI.NAME,
+            state=TestHMI.STATE,
+            protocol=TestHMI.PROTOCOL)
+
+        SQLiteState._delete(TestHMI.PATH)
