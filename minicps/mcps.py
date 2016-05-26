@@ -34,22 +34,23 @@ class MiniCPS(object):
 
         self.name = name
         self.net = net
+        # TODO: maybe remove path
         self.path = path
 
         self._hosts = net.hosts
 
         self.net.start()
 
-        cmd = ''
-        for host in self._hosts:
-            if host.name == 'c0' or host.name == 's1':
-                continue
-            else:
-                cmd = sys.executable + ' ' + \
-                    self.path + '/' + host.name + '.py &'
-                print 'DEBUG MiniCPS cmd: ', cmd
-                # host.cmd(cmd)
-                host.cmd('pwd')
+        # cmd = ''
+        # for host in self._hosts:
+        #     if host.name == 'c0' or host.name == 's1':
+        #         continue
+        #     else:
+        #         cmd = sys.executable + ' ' + \
+        #             self.path + '/' + host.name + '.py &'
+        #         print 'DEBUG MiniCPS cmd: ', cmd
+        #         # host.cmd(cmd)
+        #         host.cmd('pwd')
 
         CLI(self.net)
 

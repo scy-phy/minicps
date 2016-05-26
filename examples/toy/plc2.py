@@ -3,15 +3,26 @@ toy plc2.py
 """
 
 import time
+import os
+import sys
 
 from minicps.devices import PLC
+
+# TODO: find a nicer way to manage examples path
+sys.path.append(os.getcwd())
 from examples.toy.utils import PLC2_DATA, PLC1_ADDR, STATE
 from examples.toy.utils import PLC2_PROTOCOL
 
 
+SENSOR3_1 = ('SENSOR3', 1)
+SENSOR3_2 = ('SENSOR3', 2)
+
+
 class ToyPLC2(PLC):
 
-    def pre_loop(self, sleep=0.4):
+    def pre_loop(self, sleep=0.6):
+        print 'DEBUG: toy plc2 enters pre_loop'
+        print
 
         # TODO
 
@@ -19,19 +30,31 @@ class ToyPLC2(PLC):
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.0):
+        print 'DEBUG: toy plc2 enters main_loop'
+        print
 
-        while(True):
-            try:
-                pass
-            except Exception:
-                self._protocol._server_subprocess.kill()
-        # TODO
-        # COUNT = 0
-        # while(COUNT < 100):
+        count = 0
+        END = 1e6
+        try:
+            while(True):
 
-        #     time.sleep(sleep)
-        #     COUNT += 1
+                set_s32 = self.set(SENSOR3_2, count)
+                print 'DEBUG: toy plc2 set SENSOR3_2: ', set_s32
+                self.send(SENSOR3_1, count, PLC1_ADDR)
 
+                time.sleep(1)
+                count += 1
+
+                if count > END:
+                    break
+
+            print 'DEBUG toy plc1 shutdown'
+
+        except KeyboardInterrupt:
+            pass
+
+        finally:
+            self._protocol._server_subprocess.kill()
 
 if __name__ == "__main__":
 

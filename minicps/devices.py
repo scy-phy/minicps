@@ -180,8 +180,6 @@ class Device(object):
         :what: tuple addressing what
         :value: sent
         :address: ip[:port]
-
-        :returns: sent value
         """
 
         if type(what) is not tuple:
@@ -194,8 +192,6 @@ class Device(object):
 
         :what: to ask for
         :address: to receive from
-
-        :returns: sent value
         """
 
         if type(what) is not tuple:

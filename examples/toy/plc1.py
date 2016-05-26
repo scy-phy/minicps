@@ -3,98 +3,68 @@ toy plc1.py
 """
 
 import time
+import os
+import sys
 
 from minicps.devices import PLC
+
+# TODO: find a nicer way to manage examples path
+sys.path.append(os.getcwd())
 from examples.toy.utils import PLC1_DATA, PLC2_ADDR, STATE
-from examples.toy.utils import PLC1_PROTOCOL
+from examples.toy.utils import PLC1_PROTOCOL, PLC1_ADDR
+
+
+# constant tag addresses
+SENSOR1_1 = ('SENSOR1', 1)
+SENSOR2_1 = ('SENSOR2', 1)
+SENSOR3_1 = ('SENSOR3', 1)
+ACTUATOR1_1 = ('ACTUATOR1', 1)
+ACTUATOR2_1 = ('ACTUATOR2', 1)
+
+SENSOR3_2 = ('SENSOR3', 2)
 
 
 # TODO: decide how to map what tuples into memory and disk
 class ToyPLC1(PLC):
 
-    def pre_loop(self, sleep=0.4):
+    def pre_loop(self, sleep=0.1):
         print 'DEBUG: toy plc1 enters pre_loop'
         print
 
-        SENSOR1_ADDR = ('SENSOR1', 1)
+        # sensor1 = self.set(SENSOR1_1, 2)
+        # print 'DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_1)
+        # self.memory['SENSOR1'] = sensor1
+        self.send(SENSOR3_1, 2, PLC1_ADDR)
 
-        sensor1 = self.set(SENSOR1_ADDR, 2)
-        print 'DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_ADDR)
-        self.memory['SENSOR1'] = sensor1
-
-        self.send(SENSOR1_ADDR, 2, 'localhost')
-        self.recieve(SENSOR1_ADDR, 'localhost')
-
-        # if sensor1 == '1':
-        #     self.memory['SENSOR3'] = '0'
-
-        #     # ACTUATOR1 ON
-        #     self.memory['ACTUATOR1'] = '1'
-        #     self.set(('ACTUATOR1',), self.memory['ACTUATOR1'])
-        # else:
-        #     pass
-
-        # wait for the other plcs
-        time.sleep(sleep)  # TODO: test it
+        time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
         print 'DEBUG: toy plc1 enters main_loop'
         print
 
         count = 0
-        END = 1
-        while(True):
+        END = 1e6
+        try:
+            while(True):
 
-            time.sleep(1)
-            count += 1
+                rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
+                # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
+                get_s32 = self.get(SENSOR3_2)
+                print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32
 
-            if count > END:
-                break
+                time.sleep(1)
+                count += 1
 
-        print 'DEBUG toy plc1 shutdown'
-        self._protocol._server_subprocess.kill()
+                if count > END:
+                    break
 
-# COUNT = 0 # while(COUNT < 100):
+            print 'DEBUG toy plc1 shutdown'
 
-        #     sensor2 = self.get(('SENSOR2',))
-        #     self.memory['SENSOR2'] = sensor2
+        except KeyboardInterrupt:
+            pass
 
-        #     # do computation with tag values
-        #     sensor1_int = int(self.memory['SENSOR1'])
-        #     sensor2_int = int(self.memory['SENSOR2'])
-        #     result = (sensor1_int + sensor2_int) / 2
-
-        #     if result >= 2:
-        #         self.memory['SENSOR2'] = str(result)
-        #     elif result == 0:
-        #         self.memory['SENSOR2'] = str(result + 1)
-        #     else:
-        #         pass
-
-        #     # update state of the system
-        #     self.memory['ACTUATOR2'] = '0'   # TODO: test it
-        #     self.set(('ACTUATOR2',), self.memory['ACTUATOR2'])
-
-        #     # network interaction
-        #     # ADDR = IP[:port]
-
-        #     # receive: TODO and TEST
-        #     # self.memory['SENSOR4'] = self.receive('SENSOR4', PLC2_ADDR)
-
-        #     # send: TODO and TEST
-        #     # self.send('TAG4', PLC2_ADDR)
-
-        #     if self.memory['SENSOR4'] <= 5:
-        #         self.memory['ACTUATOR2'] = '1'   # TODO: test it
-        #         self.set(('ACTUATOR2',), self.memory['ACTUATOR2'])
-        #     else:
-        #         pass
-
-        #     # Sleep
-        #     time.sleep(sleep)
-
-        #     COUNT += 1
-
+        finally:
+            self._protocol._server_subprocess.kill()
 
 if __name__ == "__main__":
 

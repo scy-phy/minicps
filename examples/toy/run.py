@@ -4,11 +4,11 @@ toy run.py
 
 import os
 import sys
-# TODO: find a nicer way to manage path
-sys.path.append(os.getcwd())
-
 from mininet.net import Mininet
 from minicps.mcps import MiniCPS
+
+# TODO: find a nicer way to manage examples path
+sys.path.append(os.getcwd())
 from examples.toy.topo import ToyTopo
 
 
