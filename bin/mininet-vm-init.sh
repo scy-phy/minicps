@@ -16,6 +16,7 @@ sudo pip install pycomm nose-cov sphinx-rtd-theme
 echo "Install additional tools"
 sudo apt-get install zenmap wireshark elinks ettercap-graphical 
 sudo apt-get install tmux ack-grep tree curl firefox htop
+sudo apt-get install sqlite
 
 # echo "Cloning repos"
 # git clone https://github.com/mininet/mininet.git
