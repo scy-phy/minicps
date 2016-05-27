@@ -2,7 +2,6 @@
 toy_tests.py
 """
 
-import os
 
 from nose.plugins.skip import SkipTest
 
@@ -12,6 +11,8 @@ from utils import toy_logger
 # from utils import PLC1_ADDR, PLC2_ADDR
 from utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL, PLC1_TAGS
 from utils import STATE, PATH, SCHEMA, SCHEMA_INIT
+
+import os
 
 
 @SkipTest

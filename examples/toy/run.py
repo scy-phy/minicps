@@ -2,12 +2,12 @@
 toy run.py
 """
 
-import sys
 from mininet.net import Mininet
 from mininet.cli import CLI
 from minicps.mcps import MiniCPS
-
 from topo import ToyTopo
+
+import sys
 
 
 class ToyCPS(MiniCPS):

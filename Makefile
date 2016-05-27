@@ -15,22 +15,28 @@ TESTER_OPTS_COV = $(TESTER_OPTS) --with-cov --cov-report annotate
 # TOY {{{1
 
 toy:
-	cd examples/toy; \
-	$(PYTHON) $(PYTHON_OPTS) run.py; \
-	cd ../..
+	cd examples/toy; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
 test-toy:
-	cd examples/toy; \
-	$(TESTER) $(TESTER_OPTS) tests.py
-	cd ../..
+	cd examples/toy; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
 
 # SWAT {{{1
 
-swat-tutorial:
-	$(PYTHON) $(PYTHON_OPTS) examples/swat/tutorial/run.py
+swat-s1:
+	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
-test-swat:
-	$(TESTER) $(TESTER_OPTS) examples/swat/tests
+test-swat-s1:
+	cd examples/swat-s1; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
+
+# TODO: restructure dirs
+# swat-tutorial:
+# 	cd examples/swat; \
+# 	$(PYTHON) $(PYTHON_OPTS) tutorial/run.py
+# 	cd ../..
+
+
+# test-swat:
+# 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
 
 
 # STATE {{{1

@@ -2,13 +2,13 @@
 toy plc2.py
 """
 
+from minicps.devices import PLC
+from utils import PLC2_DATA, PLC1_ADDR, STATE
+from utils import PLC2_PROTOCOL
+
 import time
 import sys
 
-from minicps.devices import PLC
-
-from utils import PLC2_DATA, PLC1_ADDR, STATE
-from utils import PLC2_PROTOCOL
 
 SENSOR3_1 = ('SENSOR3', 1)
 SENSOR3_2 = ('SENSOR3', 2)

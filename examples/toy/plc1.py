@@ -2,14 +2,14 @@
 toy plc1.py
 """
 
+from minicps.devices import PLC
+from utils import PLC1_DATA, PLC2_ADDR, STATE
+from utils import PLC1_PROTOCOL, PLC1_ADDR
+
 import time
 import os
 import sys
 
-from minicps.devices import PLC
-
-from utils import PLC1_DATA, PLC2_ADDR, STATE
-from utils import PLC1_PROTOCOL, PLC1_ADDR
 
 # constant tag addresses
 SENSOR1_1 = ('SENSOR1', 1)

@@ -90,6 +90,8 @@ target/
 /logs
 examples/toy/logs
 examples/swat/logs
+examples/swat-s1/logs
+examples/swat-s1/real-tags
 
 # State
 *.sqlite

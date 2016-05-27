@@ -115,18 +115,6 @@ class PMP_UDT(object):
         self.FTS = '0'
 
 
-# CPPPO {{{1
-
-PLC1_CPPPO_CACHE = "examples/swat/plc1_cpppo.cache"
-PLC2_CPPPO_CACHE = "examples/swat/plc2_cpppo.cache"
-PLC3_CPPPO_CACHE = "examples/swat/plc3_cpppo.cache"
-PLC4_CPPPO_CACHE = "examples/swat/plc4_cpppo.cache"
-PLC5_CPPPO_CACHE = "examples/swat/plc5_cpppo.cache"
-PLC6_CPPPO_CACHE = "examples/swat/plc6_cpppo.cache"
-
-# basic atomic types are: INT (16-bit), SINT (8-bit) DINT (32-bit) integer
-# and REAL (32-bit float)
-
 # TODO: use separate lists for cpppo and state_db
 P1_PLC1_TAGS = [
     # ('AI_FIT_101_FLOW', 'INT'),

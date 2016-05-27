@@ -1,3 +1,0 @@
-"""
-swat toy module
-"""

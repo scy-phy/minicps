@@ -10,10 +10,7 @@ topology you want to build.
 import time
 import os
 import sys
-# TODO: find a nicer way to manage path
-sys.path.append(os.getcwd())
 
-from examples.swat.utils import init_swat, nxgraph_sub1
 
 from minicps.networks import MininetTopoFromNxGraph
 from minicps.sdn import POXSwat
@@ -21,6 +18,8 @@ from minicps.sdn import POXSwat
 from mininet.cli import CLI
 from mininet.net import Mininet
 from mininet.link import TCLink
+
+from utils import init_swat, nxgraph_sub1
 
 
 def minicps_tutorial(net):
@@ -71,13 +70,13 @@ def minicps_tutorial(net):
 if __name__ == '__main__':
 
     # SPHINX_SWAT_TUTORIAL SET ATTACKER
-    swat_graph = nxgraph_sub1(attacker=False)
+    # swat_graph = nxgraph_sub1(attacker=False)
     # SPHINX_SWAT_TUTORIAL END ATTACKER
 
-    topo = MininetTopoFromNxGraph(swat_graph)
+    # topo = MininetTopoFromNxGraph(swat_graph)
 
     # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
-    net = Mininet(topo=topo, link=TCLink, listenPort=6634)
+    # net = Mininet(topo=topo, link=TCLink, listenPort=6634)
     # comment above and uncomment below to enable POXSwat SDN controller
     # controller = POXSwat
     # net = Mininet(
@@ -85,4 +84,6 @@ if __name__ == '__main__':
     #     link=TCLink, listenPort=6634)
     # SPHINX_SWAT_TUTORIAL END SET SDN CONTROLLER
 
-    minicps_tutorial(net)
+    # minicps_tutorial(net)
+
+    print 'DEBUG: redo'
