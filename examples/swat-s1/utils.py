@@ -83,19 +83,15 @@ MAC = {
 
 # others
 PLC1_DATA = {
-    'SENSOR1': '0',
-    'SENSOR2': '0.0',
-    'SENSOR3': '0',  # interlock with PLC2
-    'ACTUATOR1': '1',  # 0 means OFF and 1 means ON
-    'ACTUATOR2': '0',
 }
 PLC2_DATA = {
-    'SENSOR3': '0'  # interlock with PLC1
+}
+PLC3_DATA = {
 }
 
 # protocol
-PLC1_MAC = '00:00:00:00:00:01'
-PLC1_ADDR = '10.0.0.1'
+PLC1_ADDR = IP['plc1']
+# TODO
 PLC1_TAGS = (
     ('SENSOR1', 1, 'INT'),
     ('SENSOR2', 1, 'REAL'),
@@ -112,8 +108,8 @@ PLC1_PROTOCOL = {
     'server': PLC1_SERVER
 }
 
-PLC2_MAC = '00:00:00:00:00:02'
-PLC2_ADDR = '10.0.0.2'
+PLC2_ADDR = IP['plc2']
+# TODO
 PLC2_TAGS = (
     ('SENSOR3', 2, 'INT'),)  # interlock with PLC1
 PLC2_SERVER = {
@@ -124,6 +120,20 @@ PLC2_PROTOCOL = {
     'name': 'enip',
     'mode': 1,
     'server': PLC2_SERVER
+}
+
+PLC3_ADDR = IP['plc3']
+# TODO
+PLC3_TAGS = (
+    ('SENSOR3', 3, 'INT'),)  # interlock with PLC1
+PLC3_SERVER = {
+    'address': PLC3_ADDR,
+    'tags': PLC3_TAGS
+}
+PLC3_PROTOCOL = {
+    'name': 'enip',
+    'mode': 1,
+    'server': PLC3_SERVER
 }
 
 # state {{{1
