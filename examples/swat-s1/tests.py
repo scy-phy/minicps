@@ -2,14 +2,28 @@
 swat-s1 tests.
 """
 
+from mininet.cli import CLI
+from mininet.net import Mininet
+
+from nose.plugins.skip import SkipTest
+
+from topo import SwatTopo
+
 import subprocess
 import sys
 
 
+# TODO
 def test_init():
 
-    try:
-        rc = subprocess.call(sys.executable + ' run.py')
-        print rc
-    except Exception as error:
-        print 'TEST: error: ', error
+    pass
+
+
+def test_topo():
+
+    topo = SwatTopo()
+    net = Mininet(topo=topo)
+
+    net.start()
+    net.pingAll()
+    net.stop()

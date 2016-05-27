@@ -59,10 +59,26 @@ FIT_201 = 0.0
 # SPHINX_SWAT_TUTORIAL END SET PROCESS
 
 
+# topo {{{1
+IP = {
+    'plc1': '192.168.1.10',
+    'plc2': '192.168.1.20',
+    'plc3': '192.168.1.30',
+    'plc4': '192.168.1.40',
+    'plc5': '192.168.1.50',
+    'plc6': '192.168.1.60',
+    'attacker': '192.168.1.77',
+}
 
-
-
-
+MAC = {
+    'plc1': '00:1D:9C:C7:B0:70',
+    'plc2': '00:1D:9C:C8:BC:46',
+    'plc3': '00:1D:9C:C8:BD:F2',
+    'plc4': '00:1D:9C:C7:FA:2C',
+    'plc5': '00:1D:9C:C8:BC:2F',
+    'plc6': '00:1D:9C:C7:FA:2D',
+    'attacker': 'AA:AA:AA:AA:AA:AA',
+}
 
 
 # others
@@ -110,7 +126,7 @@ PLC2_PROTOCOL = {
     'server': PLC2_SERVER
 }
 
-# state
+# state {{{1
 PATH = 'swat_s1_db.sqlite'
 NAME = 'swat_s1'
 
