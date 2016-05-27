@@ -8,11 +8,8 @@ import sys
 
 from minicps.devices import PLC
 
-# TODO: find a nicer way to manage examples path
-sys.path.append(os.getcwd())
-from examples.toy.utils import PLC1_DATA, PLC2_ADDR, STATE
-from examples.toy.utils import PLC1_PROTOCOL, PLC1_ADDR
-
+from utils import PLC1_DATA, PLC2_ADDR, STATE
+from utils import PLC1_PROTOCOL, PLC1_ADDR
 
 # constant tag addresses
 SENSOR1_1 = ('SENSOR1', 1)
@@ -43,7 +40,7 @@ class ToyPLC1(PLC):
         print
 
         count = 0
-        END = 6
+        END = 6e6
         while(True):
             rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
             # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31

@@ -7,11 +7,11 @@ import os
 from nose.plugins.skip import SkipTest
 
 from minicps.state import SQLiteState
-from examples.toy.plc1 import ToyPLC1
-from examples.toy.utils import toy_logger
-# from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
-from examples.toy.utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL, PLC1_TAGS
-from examples.toy.utils import STATE, PATH, SCHEMA, SCHEMA_INIT
+from plc1 import ToyPLC1
+from utils import toy_logger
+# from utils import PLC1_ADDR, PLC2_ADDR
+from utils import PLC1_DATA, PLC2_DATA, PLC1_PROTOCOL, PLC1_TAGS
+from utils import STATE, PATH, SCHEMA, SCHEMA_INIT
 
 
 @SkipTest
@@ -54,4 +54,4 @@ class TestToy():
                 memory=PLC1_DATA,
                 disk=PLC1_DATA)
 
-            SQLiteState._delete(PATH)
+            # SQLiteState._delete(PATH)

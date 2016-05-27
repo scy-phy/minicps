@@ -15,10 +15,14 @@ TESTER_OPTS_COV = $(TESTER_OPTS) --with-cov --cov-report annotate
 # TOY {{{1
 
 toy:
-	$(PYTHON) $(PYTHON_OPTS) examples/toy/run.py
+	cd examples/toy; \
+	$(PYTHON) $(PYTHON_OPTS) run.py; \
+	cd ../..
 
 test-toy:
-	$(TESTER) $(TESTER_OPTS) examples/toy/tests/toy_tests.py
+	cd examples/toy; \
+	$(TESTER) $(TESTER_OPTS) tests.py
+	cd ../..
 
 # SWAT {{{1
 

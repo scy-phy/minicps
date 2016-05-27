@@ -1,7 +1,11 @@
+"""
+toy topology
+"""
+
 from mininet.topo import Topo
 
-from examples.toy.utils import PLC1_MAC, PLC2_MAC
-from examples.toy.utils import PLC1_ADDR, PLC2_ADDR
+from utils import PLC1_MAC, PLC2_MAC
+from utils import PLC1_ADDR, PLC2_ADDR
 
 
 class ToyTopo(Topo):

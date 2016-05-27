@@ -3,16 +3,12 @@ toy plc2.py
 """
 
 import time
-import os
 import sys
 
 from minicps.devices import PLC
 
-# TODO: find a nicer way to manage examples path
-sys.path.append(os.getcwd())
-from examples.toy.utils import PLC2_DATA, PLC1_ADDR, STATE
-from examples.toy.utils import PLC2_PROTOCOL
-
+from utils import PLC2_DATA, PLC1_ADDR, STATE
+from utils import PLC2_PROTOCOL
 
 SENSOR3_1 = ('SENSOR3', 1)
 SENSOR3_2 = ('SENSOR3', 2)
@@ -34,7 +30,7 @@ class ToyPLC2(PLC):
         print
 
         count = 0
-        END = 6
+        END = 6e6
         while(True):
             set_s32 = self.set(SENSOR3_2, count)
             print 'DEBUG: toy plc2 set SENSOR3_2: ', set_s32

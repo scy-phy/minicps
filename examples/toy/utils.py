@@ -16,7 +16,7 @@ toy_logger = build_debug_logger(
     bytes_per_file=10000,
     rotating_files=2,
     lformat='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    ldir='examples/toy/logs/',
+    ldir='logs/',
     suffix='')
 
 
@@ -66,7 +66,7 @@ PLC2_PROTOCOL = {
 }
 
 # state
-PATH = 'examples/toy/toy_db.sqlite'
+PATH = 'toy_db.sqlite'
 NAME = 'toy_table'
 
 STATE = {
