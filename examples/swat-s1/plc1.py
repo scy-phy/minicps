@@ -11,30 +11,26 @@ import time
 import os
 import sys
 
-
-# TODO: addresses
-# constant tag addresses
-# SENSOR1_1 = ('SENSOR1', 1)
-# SENSOR2_1 = ('SENSOR2', 1)
-# SENSOR3_1 = ('SENSOR3', 1)
-# ACTUATOR1_1 = ('ACTUATOR1', 1)
-# ACTUATOR2_1 = ('ACTUATOR2', 1)
-
-# SENSOR3_2 = ('SENSOR3', 2)
+PLC1_ADDR = IP['plc1']
 PLC2_ADDR = IP['plc2']
+PLC3_ADDR = IP['plc3']
+
+AI_FIT_101_FLOW = ('NO', 'AI_FIT_101_FLOW', 1)
+DO_MV_101_OPEN = ('NO', 'DO_MV_101_OPEN', 1)
+AI_LIT_101_LEVEL = ('NO', 'AI_LIT_101_LEVEL', 1)
+DO_P_101_START = ('NO', 'DO_P_101_START', 1)
+# interlocks to be received from plc2 and plc3
+AI_LIT_301_LEVEL = ('NO', 'AI_LIT_301_LEVEL', 3)
+AI_FIT_201_FLOW = ('NO', 'AI_FIT_201_FLOW', 2)
+DO_MV_201_OPEN = ('NO', 'DO_MV_201_OPEN', 2)
 
 
-# TODO: decide how to map what tuples into memory and disk
-class ToyPLC1(PLC):
+# TODO: real value tag where to read/write flow sensor
+class SwatPLC1(PLC):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s1 plc1 enters pre_loop'
         print
-
-        # sensor1 = self.set(SENSOR1_1, 2)
-        # print 'DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_1)
-        # self.memory['SENSOR1'] = sensor1
-        self.send(SENSOR3_1, 2, PLC1_ADDR)
 
         time.sleep(sleep)
 
@@ -43,25 +39,25 @@ class ToyPLC1(PLC):
         print
 
         count = 0
-        END = 6e6
+        END = 6
         while(True):
-            rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
-            # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
-            get_s32 = self.get(SENSOR3_2)
-            print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32
+            self.set(AI_FIT_101_FLOW, count)
+            fit101 = self.get(AI_FIT_101_FLOW)
+            print 'DEBUG: swat plc1 get FIT101: ', fit101
+            self.send(AI_FIT_101_FLOW, count, PLC1_ADDR)
 
             time.sleep(1)
             count += 1
 
             if count > END:
-                print 'DEBUG toy plc1 shutdown'
+                print 'DEBUG swat plc1 shutdown'
                 break
 
 
 if __name__ == "__main__":
 
     # notice that memory init is different form disk init
-    plc1 = ToyPLC1(
+    plc1 = SwatPLC1(
         name='plc1',
         state=STATE,
         protocol=PLC1_PROTOCOL,

@@ -4,6 +4,12 @@ swat-s1 utils.py
 sqlite and enip use name (string) and pid (int) has key and the state stores
 values as strings.
 
+Actuator tags are redundant, we will use only the XXX_XXX_OPEN tag ignoring
+the XXX_XXX_CLOSE with the following convention:
+    - 0 = error
+    - 1 = off
+    - 2 = on
+
 sqlite uses float keyword and cpppo use REAL keyword.
 """
 
@@ -82,22 +88,30 @@ MAC = {
 
 
 # others
+# TODO
 PLC1_DATA = {
+    'TODO': 'TODO',
 }
+# TODO
 PLC2_DATA = {
+    'TODO': 'TODO',
 }
+# TODO
 PLC3_DATA = {
+    'TODO': 'TODO',
 }
+
 
 # protocol
 PLC1_ADDR = IP['plc1']
-# TODO
 PLC1_TAGS = (
-    ('SENSOR1', 1, 'INT'),
-    ('SENSOR2', 1, 'REAL'),
-    ('SENSOR3', 1, 'INT'),  # interlock with PLC2
-    ('ACTUATOR1', 1, 'INT'),  # 0 means OFF and 1 means ON
-    ('ACTUATOR2', 1, 'INT'))
+    ('NO', 'AI_FIT_101_FLOW', 1, 'INT'),
+    ('NO', 'DO_MV_101_OPEN', 1, 'INT'),
+    ('NO', 'AI_LIT_101_LEVEL', 1, 'INT'),
+    ('NO', 'DO_P_101_START', 1, 'INT'),
+    ('NO', 'AI_LIT_301_LEVEL', 3, 'INT'),
+    ('NO', 'AI_FIT_201_FLOW', 2, 'INT'),
+    ('NO', 'DO_MV_201_OPEN', 2, 'INT'))
 PLC1_SERVER = {
     'address': PLC1_ADDR,
     'tags': PLC1_TAGS
@@ -109,9 +123,9 @@ PLC1_PROTOCOL = {
 }
 
 PLC2_ADDR = IP['plc2']
-# TODO
 PLC2_TAGS = (
-    ('SENSOR3', 2, 'INT'),)  # interlock with PLC1
+    ('NO', 'AI_FIT_201_FLOW', 2, 'INT'),
+    ('NO', 'DO_MV_201_OPEN', 2, 'INT'))
 PLC2_SERVER = {
     'address': PLC2_ADDR,
     'tags': PLC2_TAGS
@@ -123,9 +137,8 @@ PLC2_PROTOCOL = {
 }
 
 PLC3_ADDR = IP['plc3']
-# TODO
 PLC3_TAGS = (
-    ('SENSOR3', 3, 'INT'),)  # interlock with PLC1
+    ('NO', 'AI_LIT_301_LEVEL', 3, 'INT'),)
 PLC3_SERVER = {
     'address': PLC3_ADDR,
     'tags': PLC3_TAGS
@@ -161,7 +174,6 @@ DATATYPES = [
     'DINT',
     'BOOL',
     'REAL',
-
     'FIT_UDT',
     'AIN_UDT',  # eg: LIT
     'MV_UDT',

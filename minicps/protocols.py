@@ -217,7 +217,8 @@ class EnipProtocol(Protocol):
             tags_string += str(tag[0])
             for field in tag[1:-1]:
                 tags_string += serializer
-                tags_string += str(tag[field])
+                # print 'DEBUG _tuple_to_cpppo_tags field: ', field
+                tags_string += str(field)
 
             tags_string += '='
             tags_string += str(tag[-1])

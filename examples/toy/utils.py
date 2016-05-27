@@ -33,36 +33,15 @@ PLC2_DATA = {
 }
 
 
-PLC2_TAGS = (
-    # ('AI_FIT_201_FLOW', 'INT'),
-    ('DO_MV_201_CLOSE', 'INT'),
-    ('DO_MV_201_OPEN', 'INT'),
-    ('HMI_FIT201-Pv', 'REAL'),
-    ('HMI_MV201-Status', 'INT'),
-)
-
-PLC3_TAGS = (
-    ('AI_LIT_301_LEVEL', 'INT'),
-    ('HMI_LIT301-Pv', 'REAL'),
-)
-
-
 # protocol
 PLC1_MAC = '00:00:00:00:00:01'
-PLC1_ADDR = '10.0.0.1'
 PLC1_TAGS = (
-    ('AI_FIT_101_FLOW', 1, 'INT'),
-    ('DO_MV_101_CLOSE', 1, 'INT'),
-    ('DO_MV_101_OPEN', 1, 'INT'),
-    ('AI_LIT_101_LEVEL', 1, 'INT'),
-    ('DO_P_101_START', 1, 'INT'),
-    ('HMI_FIT201-Pv', 1, 'REAL'),
-    ('HMI_MV201-Status', 1, 'INT'),
-    ('HMI_MV101-Status', 1, 'INT'),
-    ('HMI_P101-Status', 1, 'INT'),
-    ('HMI_LIT301-Pv', 1, 'REAL'),
-    ('HMI_LIT101-Pv', 1, 'REAL'),
-)
+    ('SENSOR1', 1, 'INT'),
+    ('SENSOR2', 1, 'REAL'),
+    ('SENSOR3', 1, 'INT'),  # interlock with PLC2
+    ('ACTUATOR1', 1, 'INT'),  # 0 means OFF and 1 means ON
+    ('ACTUATOR2', 1, 'INT'))
+PLC1_ADDR = '10.0.0.1'
 PLC1_SERVER = {
     'address': PLC1_ADDR,
     'tags': PLC1_TAGS

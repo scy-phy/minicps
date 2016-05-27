@@ -34,6 +34,8 @@ def init_db(db_path, datatypes):
                         datatype = fields[4][1:-1]  # extract BOOL from "BOOL"
                         if datatype in datatypes:
                             scope = fields[1]
+                            if not scope:
+                                scope = 'NO'
                             name = fields[2]
                             print 'DEBUG: name: %s  datatype: %s' % (
                                 name, datatype)
