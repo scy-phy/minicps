@@ -2,8 +2,10 @@
 utils_tests.py
 """
 
-import subprocess
 from minicps.utils import build_debug_logger, mcps_logger, wait_timeout
+from nose.plugins.skip import SkipTest
+
+import subprocess
 
 
 def test_global_logger():
@@ -26,6 +28,7 @@ def test_build_debug_logger():
     logger.critical("TEST: critical message")
 
 
+@SkipTest
 def test_wait_timeout():
 
     cmd_list = ['/bin/bash', '/bin/sleep', '5']

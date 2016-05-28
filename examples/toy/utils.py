@@ -55,7 +55,7 @@ PLC1_PROTOCOL = {
 PLC2_MAC = '00:00:00:00:00:02'
 PLC2_ADDR = '10.0.0.2'
 PLC2_TAGS = (
-    ('SENSOR3', 2, 'INT'),)  # interlock with PLC1
+    ('SENSOR3', 2, 'INT'), )  # interlock with PLC1
 PLC2_SERVER = {
     'address': PLC2_ADDR,
     'tags': PLC2_TAGS

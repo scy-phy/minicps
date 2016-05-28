@@ -13,11 +13,10 @@ instance as a client (mode = 0 ) or client and server (mode > 1). Different
 positive modes indicates different server configurations eg: enip tcp server
 (mode = 1) vs enip udp server (mode = 2).
 
-
-Ethernet/IP (ENIP) is partially supported using cpppo module.
+Ethernet/IP (ENIP) is partially supported using cpppo module:
 https://github.com/pjkundert/cpppo
 
-Modbus/TCP is supported using pymodbus module.
+Modbus/TCP is supported using pymodbus module:
 https://github.com/bashwork/pymodbus
 """
 
@@ -116,7 +115,13 @@ class EnipProtocol(Protocol):
     EnipProtocol manages python cpppo library, Look at the original
     documentation for more information.
 
-    Supported tags:
+    Tags are passed as a tuple of tuples, if the tuple contains only 1 tag
+    remember to put an ending comma, otherwise python will interpret the data
+    as a tuple and not as a tuple of tuples.
+
+        eg: tag = (('SENSOR1'), )
+
+    Supported tag datatypes:
         - SINT (8-bit)
         - INT (16-bit)
         - DINT (32-bit)
