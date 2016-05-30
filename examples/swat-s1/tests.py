@@ -13,7 +13,6 @@ import subprocess
 import sys
 
 
-# TODO
 def test_init():
 
     pass
@@ -27,3 +26,8 @@ def test_topo():
     net.start()
     net.pingAll()
     net.stop()
+
+
+def test_plcs():
+
+    pass
