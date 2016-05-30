@@ -6,7 +6,7 @@ import time
 import sys
 import os
 
-from minicps.devices import Device, PLC, HMI
+from minicps.devices import Device, PLC, HMI, Tank
 from minicps.state import SQLiteState
 
 from nose.tools import eq_
@@ -229,7 +229,6 @@ class TestDevice():
         pass
 
 
-@SkipTest
 class TestTank():
 
     """TestTank: device with state capability."""
@@ -258,6 +257,48 @@ class TestTank():
         INSERT INTO tank_tests VALUES ('ACTUATOR2', 'int', '2');
     """
 
+    SECTION = 1.5  # m^2
+    FIT = 2.55  # m^3/h
+    INFLOWS = [
+        [False, FIT, 0.5],
+    ]
+    OUTFLOWS = [
+        [False, FIT, 0.5],
+        [False, FIT, 0.3],
+    ]
+    THRESHOLDS = {
+        'LL': 250.0,
+        'L': 500.0,
+        'H': 800.0,
+        'HH': 1200.0,
+    }
+    LEVEL = 500.0
+
+    def test_init(self):
+
+        try:
+            os.remove(TestTank.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestTank.PATH, TestTank.SCHEMA)
+        SQLiteState._init(TestTank.PATH, TestTank.SCHEMA_INIT)
+
+        tank = Tank(
+            name=TestTank.NAME,
+            state=TestTank.STATE,
+            protocol=TestTank.PROTOCOL,
+
+            section=TestTank.SECTION,
+            inflows=TestTank.INFLOWS,
+            outflows=TestTank.OUTFLOWS,
+            tresholds=TestTank.THRESHOLDS,
+            level=TestTank.LEVEL
+        )
+
+        SQLiteState._delete(TestTank.PATH)
+
+    @SkipTest
     def test_set_get(self, sleep=0.3):
 
         try:

@@ -132,15 +132,15 @@ class Device(object):
     def _init_protocol(self):
         """Bind device to network API."""
 
-        name = self.protocol['name']
-
         if self.protocol is None:
-            print 'DEBUG: %s has no networking capabilites.' % self.name
+            print 'DEBUG: %s has no networking capabilities.' % self.name
             pass
-        elif name == 'enip':
-            self._protocol = EnipProtocol(self.protocol)
         else:
-            print 'ERROR: %s protocol not supported.' % self.protocol
+            name = self.protocol['name']
+            if name == 'enip':
+                self._protocol = EnipProtocol(self.protocol)
+            else:
+                print 'ERROR: %s protocol not supported.' % self.protocol
 
     def _start(self):
         """Start a device."""
@@ -232,7 +232,7 @@ class PLC(Device):
         :sleep: sleep n sec after it
         """
 
-        print "TODO pre_loop: please override me"
+        print "TODO PLC pre_loop: please override me"
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
@@ -244,7 +244,7 @@ class PLC(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO main_loop: please override me"
+            print "TODO PLC main_loop: please override me"
             time.sleep(sleep)
 
             sec += 1
@@ -276,7 +276,49 @@ class HMI(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO main_loop: please override me"
+            print "TODO HMI main_loop: please override me"
+            time.sleep(sleep)
+
+            sec += 1
+
+
+class Tank(Device):
+
+    """Tank.
+
+    Tank has:
+        - state capabilities
+        - no memory
+        - no disk
+        - no networking capabilities
+    """
+
+    def __init__(
+            self, name, protocol, state,
+            section, inflows, outflows, tresholds, level):
+
+        super(Tank, self).__init__(name, protocol, state)
+
+        self.section = section
+        self.inflows = inflows
+        self.outflows = outflows
+        self.tresholds = tresholds
+        self.level = level
+
+    def _start(self):
+
+        self.main_loop()
+
+    def main_loop(self, sleep=0.5):
+        """Tank main loop.
+
+        :sleep: sleep n sec after each iteration
+        """
+
+        sec = 0
+        while(sec < 1):
+
+            print "TODO Tank main_loop: please override me"
             time.sleep(sleep)
 
             sec += 1
