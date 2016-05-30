@@ -84,7 +84,8 @@ class Device(object):
 
         # protocol
         if type(protocol) is not dict:
-            raise TypeError('Protocol must be a dict.')
+            if protocol is not None:
+                raise TypeError('Protocol must be either None or a dict.')
         else:
             protocol_keys = protocol.keys()
             if (not protocol_keys) or (len(protocol_keys) != 3):
@@ -133,7 +134,10 @@ class Device(object):
 
         name = self.protocol['name']
 
-        if name == 'enip':
+        if self.protocol is None:
+            print 'DEBUG: %s has no networking capabilites.' % self.name
+            pass
+        elif name == 'enip':
             self._protocol = EnipProtocol(self.protocol)
         else:
             print 'ERROR: %s protocol not supported.' % self.protocol
