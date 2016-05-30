@@ -15,6 +15,8 @@ from nose.plugins.skip import SkipTest
 
 class TestDevice():
 
+    """TestDevice: build and input validation tests."""
+
     NAME = 'devices_tests'
     STATE = {
         'path': 'temp/devices_tests.sqlite',
@@ -227,7 +229,77 @@ class TestDevice():
         pass
 
 
+@SkipTest
+class TestTank():
+
+    """TestTank: device with state capability."""
+
+    NAME = 'tank_tests'
+    PATH = 'temp/tank_tests.sqlite'
+    STATE = {
+        'path': PATH,
+        'name': NAME
+    }
+    PROTOCOL = None
+
+    SCHEMA = """
+    CREATE TABLE tank_tests (
+        name              TEXT NOT NULL,
+        datatype          TEXT NOT NULL,
+        value             TEXT,
+        PRIMARY KEY (name)
+    );
+    """
+
+    SCHEMA_INIT = """
+        INSERT INTO tank_tests VALUES ('SENSOR1',   'int', '1');
+        INSERT INTO tank_tests VALUES ('SENSOR2',   'float', '22.2');
+        INSERT INTO tank_tests VALUES ('SENSOR3',   'int', '5');
+        INSERT INTO tank_tests VALUES ('ACTUATOR2', 'int', '2');
+    """
+
+    def test_set_get(self, sleep=0.3):
+
+        try:
+            os.remove(TestTank.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestTank.PATH, TestTank.SCHEMA)
+        SQLiteState._init(TestTank.PATH, TestTank.SCHEMA_INIT)
+
+        class ToyTank(Tank):
+
+            def pre_loop(self):
+
+                eq_(self.set(('SENSOR1',), '10'), '10')
+                eq_(self.get(('SENSOR1',)), '10')
+                eq_(self.get(('SENSOR2',)), '22.2')
+                eq_(self.get(('SENSOR3',)), '5')
+                time.sleep(sleep)
+
+                try:
+                    self.get(2.22)
+                except TypeError as error:
+                    print 'get what is a float: ', error
+
+                try:
+                    self.set(2, 5)
+                except TypeError as error:
+                    print 'set what is an integer: ', error
+
+        # TODO: add atts
+        tank = ToyTank(
+            name=TestTank.NAME,
+            state=TestTank.STATE,
+            protocol=TestTank.PROTOCOL)
+
+        SQLiteState._delete(TestTank.PATH)
+
+
 class TestPLC():
+
+    """TestPLC: device with state and protocol client/server capabilites."""
 
     NAME = 'plc_tests'
     PATH = 'temp/plc_tests.sqlite'
@@ -296,6 +368,8 @@ class TestPLC():
 
 
 class TestHMI():
+
+    """TestHMI: device with state and protocol client capabilites."""
 
     NAME = 'hmi_tests'
     PATH = 'temp/hmi_tests.sqlite'
