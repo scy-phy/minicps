@@ -295,12 +295,9 @@ class Tank(Device):
 
     def __init__(
             self, name, protocol, state,
-            section, inflows, outflows, thresholds, level):
+            section, level):
         """
         :section: cross section of the tank in m^2
-        :inflows: list of inflows list
-        :outflows: list of outflows list
-        :thresholds: dictionary of thresholds values
         :level: current level in m
 
         Eg: inflows = [[True, 2.5], [False, 3.3]]
@@ -309,33 +306,11 @@ class Tank(Device):
         super(Tank, self).__init__(name, protocol, state)
 
         self.section = section
-        self.inflows = inflows
-        self.outflows = outflows
-        self.thresholds = thresholds
         self.level = level
 
     def _start(self):
 
         self.main_loop()
-
-    def _compute_new_level(self):
-        """Compute new level in meters."""
-
-        new_level = self.level
-
-        for inflow in self.inflows:
-            if inflow[0]:
-                new_level += inflow[1]
-
-        for outflow in self.outflows:
-            if outflow[0]:
-                new_level -= inflow[1]
-
-        print 'DEBUG _compute_new_level new_level: ', new_level
-
-        self.level = new_level
-
-        return self.level
 
     def main_loop(self, sleep=0.5):
         """Tank main loop.

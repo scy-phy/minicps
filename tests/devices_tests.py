@@ -290,9 +290,6 @@ class TestTank():
             protocol=TestTank.PROTOCOL,
 
             section=TestTank.SECTION,
-            inflows=TestTank.INFLOWS,
-            outflows=TestTank.OUTFLOWS,
-            thresholds=TestTank.THRESHOLDS,
             level=TestTank.LEVEL
         )
 

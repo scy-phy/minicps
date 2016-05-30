@@ -27,6 +27,7 @@ swat = build_debug_logger(
 # SPHINX_SWAT_TUTORIAL SET PROCESS
 GRAVITATION = 9.81             # m.s^-2
 TANK_DIAMETER = 1.38           # m
+TANK_SECTION = 1.5           # m^2
 TIMEOUT = 10000                # s
 PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
 PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
