@@ -303,14 +303,19 @@ class Tank(Device):
         Eg: inflows = [[True, 2.5], [False, 3.3]]
         """
 
-        super(Tank, self).__init__(name, protocol, state)
-
         self.section = section
         self.level = level
+        super(Tank, self).__init__(name, protocol, state)
 
     def _start(self):
 
+        self.pre_loop()
         self.main_loop()
+
+    def pre_loop(self, sleep=0.5):
+        """Tank pre_loop."""
+
+        print "TODO Tank pre_loop: please override me"
 
     def main_loop(self, sleep=0.5):
         """Tank main loop.

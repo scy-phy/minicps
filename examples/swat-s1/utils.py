@@ -28,7 +28,6 @@ swat = build_debug_logger(
 GRAVITATION = 9.81             # m.s^-2
 TANK_DIAMETER = 1.38           # m
 TANK_SECTION = 1.5           # m^2
-TIMEOUT = 10000                # s
 PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
 PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
 
@@ -45,21 +44,37 @@ T_HMI_R = 100E-3
 DISPLAYED_SAMPLES = 14
 
 # Control logic thresholds
-LIT_101 = {  # raw water tank mm
+LIT_101_MM = {  # raw water tank mm
     'LL': 250.0,
     'L': 500.0,
     'H': 800.0,
     'HH': 1200.0,
 }
+LIT_101_M = {  # raw water tank m
+    'LL': 0.250,
+    'L': 0.500,
+    'H': 0.800,
+    'HH': 1.200,
+}
 
-LIT_301 = {  # ultrafiltration tank mm
+LIT_301_MM = {  # ultrafiltration tank mm
     'LL': 250.0,
     'L': 800.0,
     'H': 1000.0,
     'HH': 1200.0,
 }
+LIT_301_M = {  # ultrafiltration tank m
+    'LL': 0.250,
+    'L': 0.800,
+    'H': 1.000,
+    'HH': 1.200,
+}
 
 TANK_HEIGHT = 1.600  # m
+
+PERIOD_SEC = 1  # physical process sampling rate in sec
+PERIOD_HOURS = PERIOD_SEC / 3600.0
+RWT_INIT_LEVEL = 0.500  # l
 
 # m^3 / h
 FIT_201 = 0.0
