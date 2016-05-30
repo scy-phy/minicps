@@ -103,6 +103,15 @@ class Protocol(object):
 
         print '_receive: please override me.'
 
+    def _send_multiple(self, what, address):
+        """Send (serve) multiple values.
+
+        :address: to receive from
+        :what: to ask for
+        """
+
+        print '_send_multiple: please override me.'
+
 
 # TODO:  support vectorial tags def, read and write
 # def:   SCADA[0-3]=INT
@@ -372,12 +381,3 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _receive: ', error
 
-    # TODO
-    def _send_multiple(self, what, address):
-        """Send (serve) multiple values.
-
-        :address: to receive from
-        :what: to ask for
-        """
-
-        print '_receive: please override me.'
