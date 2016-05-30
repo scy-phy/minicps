@@ -64,7 +64,6 @@ TANK_HEIGHT = 1.600  # m
 FIT_201 = 0.0
 # SPHINX_SWAT_TUTORIAL END SET PROCESS
 
-
 # topo {{{1
 IP = {
     'plc1': '192.168.1.10',
@@ -102,16 +101,17 @@ PLC3_DATA = {
 }
 
 
-# protocol
 PLC1_ADDR = IP['plc1']
 PLC1_TAGS = (
-    ('NO', 'AI_FIT_101_FLOW', 1, 'INT'),
-    ('NO', 'DO_MV_101_OPEN', 1, 'INT'),
-    ('NO', 'AI_LIT_101_LEVEL', 1, 'INT'),
-    ('NO', 'DO_P_101_START', 1, 'INT'),
-    ('NO', 'AI_LIT_301_LEVEL', 3, 'INT'),
-    ('NO', 'AI_FIT_201_FLOW', 2, 'INT'),
-    ('NO', 'DO_MV_201_OPEN', 2, 'INT'))
+    ('FIT101', 1, 'REAL'),
+    ('MV101', 1, 'INT'),
+    ('LIT101', 1, 'REAL'),
+    ('P101', 1, 'INT'),
+    # interlocks does NOT go to the statedb
+    ('FIT201', 1, 'REAL'),
+    ('MV201', 1, 'INT'),
+    ('LIT301', 1, 'REAL'),
+)
 PLC1_SERVER = {
     'address': PLC1_ADDR,
     'tags': PLC1_TAGS
@@ -124,8 +124,10 @@ PLC1_PROTOCOL = {
 
 PLC2_ADDR = IP['plc2']
 PLC2_TAGS = (
-    ('NO', 'AI_FIT_201_FLOW', 2, 'INT'),
-    ('NO', 'DO_MV_201_OPEN', 2, 'INT'))
+    ('FIT201', 2, 'REAL'),
+    ('MV201', 2, 'INT'),
+    # no interlocks
+)
 PLC2_SERVER = {
     'address': PLC2_ADDR,
     'tags': PLC2_TAGS
@@ -138,7 +140,9 @@ PLC2_PROTOCOL = {
 
 PLC3_ADDR = IP['plc3']
 PLC3_TAGS = (
-    ('NO', 'AI_LIT_301_LEVEL', 3, 'INT'),)
+    ('LIT301', 3, 'REAL'),
+    # no interlocks
+)
 PLC3_SERVER = {
     'address': PLC3_ADDR,
     'tags': PLC3_TAGS
@@ -160,22 +164,21 @@ STATE = {
 
 SCHEMA = """
 CREATE TABLE swat_s1 (
-    scope             TEXT NOT NULL,
     name              TEXT NOT NULL,
-    datatype          TEXT NOT NULL,
-    value             TEXT,
     pid               INTEGER NOT NULL,
-    PRIMARY KEY (scope, name, pid)
+    value             TEXT,
+    PRIMARY KEY (name, pid)
 );
 """
 
-DATATYPES = [
-    'INT',
-    'DINT',
-    'BOOL',
-    'REAL',
-    'FIT_UDT',
-    'AIN_UDT',  # eg: LIT
-    'MV_UDT',
-    'PMP_UDT',
-]
+SCHEMA_INIT = """
+    INSERT INTO swat_s1 VALUES ('FIT101',   1, '2.55');
+    INSERT INTO swat_s1 VALUES ('MV101',    1, '0');
+    INSERT INTO swat_s1 VALUES ('LIT101',   1, '500.0');
+    INSERT INTO swat_s1 VALUES ('P101',     1, '1');
+
+    INSERT INTO swat_s1 VALUES ('FIT201',   2, '2.55');
+    INSERT INTO swat_s1 VALUES ('MV201',    2, '0');
+
+    INSERT INTO swat_s1 VALUES ('LIT301',   3, '500.0');
+"""
