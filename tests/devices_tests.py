@@ -292,7 +292,7 @@ class TestTank():
             section=TestTank.SECTION,
             inflows=TestTank.INFLOWS,
             outflows=TestTank.OUTFLOWS,
-            tresholds=TestTank.THRESHOLDS,
+            thresholds=TestTank.THRESHOLDS,
             level=TestTank.LEVEL
         )
 
