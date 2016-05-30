@@ -10,7 +10,7 @@ PYTHON_OPTS =
 # http://web.mit.edu/gnu/doc/html/make_7.html
 TESTER = sudo nosetests
 TESTER_OPTS = -s -v --exe
-TESTER_OPTS_COV = $(TESTER_OPTS) --with-cov --cov-report annotate
+TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 
 # TOY {{{1
 
@@ -19,6 +19,10 @@ toy:
 
 test-toy:
 	cd examples/toy; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
+
+# TODO: test
+test-toy-cover:
+	cd examples/toy; $(TESTER) $(TESTER_OPTS_COV_HTML) tests.py; cd ../..
 
 # SWAT {{{1
 
@@ -33,8 +37,6 @@ test-swat-s1:
 # 	cd examples/swat; \
 # 	$(PYTHON) $(PYTHON_OPTS) tutorial/run.py
 # 	cd ../..
-
-
 # test-swat:
 # 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
 
