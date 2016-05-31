@@ -40,9 +40,10 @@ class SwatPLC2(PLC):
 
             fit201 = float(self.get(FIT201_2))
             print "DEBUG PLC2 - get fit201: %f" % fit201
-            self.send(FIT201_2, fit201, PLC2_ADDR)
 
-            print self.recieve(FIT201_2, PLC2_ADDR)
+            self.send(FIT201_2, fit201, PLC2_ADDR)
+            fit201 = self.recieve(FIT201_2, PLC2_ADDR)
+            print "DEBUG PLC2 - receive fit201: ", fit201
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1

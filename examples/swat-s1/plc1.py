@@ -5,7 +5,7 @@ swat-s1 plc1.py
 from minicps.devices import PLC
 from utils import PLC1_DATA, STATE, PLC1_PROTOCOL
 from utils import PLC_PERIOD_SEC, PLC_SAMPLES
-from utils import IP, LIT_101_M, FIT_201_THRESH
+from utils import IP, LIT_101_M, LIT_301_M, FIT_201_THRESH
 
 import time
 
@@ -84,21 +84,22 @@ class SwatPLC1(PLC):
             self.send(FIT201_1, fit201, PLC1_ADDR)
 
             # read from PLC3
-            lit301 = float(self.recieve(FIT301_3, PLC3_ADDR))
+            lit301 = float(self.recieve(LIT301_3, PLC3_ADDR))
             print "DEBUG PLC1 - receive lit301: %f" % lit301
             self.send(LIT301_1, lit301, PLC1_ADDR)
 
-            if fit201 <= FIT_201_THRESH or lit301 >= LIT_301['H']:
+            if fit201 <= FIT_201_THRESH or lit301 >= LIT_301_M['H']:
                 # CLOSE p101
                 self.set(P101, 0)
                 self.send(P101, 0, PLC1_ADDR)
-                print "INFO PLC1 - fit201 under FIT_201_THRESH -> close p101."
+                print "INFO PLC1 - fit201 under FIT_201_THRESH " \
+                      "or over LIT_301_M['H']: -> close p101."
 
-            elif lit301 <= LIT_301['L']:
+            elif lit301 <= LIT_301_M['L']:
                 # OPEN p101
                 self.set(P101, 1)
                 self.send(P101, 1, PLC1_ADDR)
-                print "INFO PLC1 - lit301 under LIT_301['L'] -> open p101."
+                print "INFO PLC1 - lit301 under LIT_301_M['L'] -> open p101."
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1

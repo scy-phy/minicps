@@ -72,10 +72,10 @@ LIT_301_M = {  # ultrafiltration tank m
 
 TANK_HEIGHT = 1.600  # m
 
-PLC_PERIOD_SEC = 0.50
+PLC_PERIOD_SEC = 0.50  # plc update rate in seconds
 PLC_PERIOD_HOURS = PLC_PERIOD_SEC / 3600.0
 PLC_SAMPLES = 1000
-PP_PERIOD_SEC = 0.25  # physical process sampling rate in sec
+PP_PERIOD_SEC = 0.40  # physical process update rate in seconds
 PP_PERIOD_HOURS = PP_PERIOD_SEC / 3600.0
 PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
 
