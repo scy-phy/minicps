@@ -375,8 +375,20 @@ class EnipProtocol(Protocol):
         print 'DEBUG enip _receive cmd: ', cmd
 
         try:
-            client = subprocess.Popen(cmd, shell=False)
-            client.wait()
+            client = subprocess.Popen(
+                cmd,
+                shell=False,
+                stdout=subprocess.PIPE)
+
+            # client.communicate is blocking
+            raw_out = client.communicate()
+            # print 'DEBUG enip _receive raw_out: ', raw_out
+
+            # value is stored as first tuple element
+            # between a pair of square brackets
+            raw_string = raw_out[0]
+            out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
+            return out
 
         except Exception as error:
             print 'ERROR enip _receive: ', error
