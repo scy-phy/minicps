@@ -343,6 +343,7 @@ class EnipProtocol(Protocol):
         )
         print 'DEBUG enip _send cmd: ', cmd
 
+        # TODO: pipe stdout and return the sent value
         try:
             client = subprocess.Popen(cmd, shell=False)
             client.wait()
