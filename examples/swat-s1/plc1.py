@@ -80,15 +80,15 @@ class SwatPLC1(PLC):
                 self.send(P101, 0, PLC1_ADDR)
 
             # TODO: use it when implement raw water tank
-            # # read from PLC2 (constant value)
-            # fit201 = float(self.recieve(FIT201_2, PLC2_ADDR))
-            # print "DEBUG PLC1 - receive fit201: %f" % fit201
-            # self.send(FIT201_1, fit201, PLC1_ADDR)
+            # read from PLC2 (constant value)
+            fit201 = float(self.recieve(FIT201_2, PLC2_ADDR))
+            print "DEBUG PLC1 - receive fit201: %f" % fit201
+            self.send(FIT201_1, fit201, PLC1_ADDR)
 
             # # read from PLC3
-            # lit301 = float(self.recieve(LIT301_3, PLC3_ADDR))
-            # print "DEBUG PLC1 - receive lit301: %f" % lit301
-            # self.send(LIT301_1, lit301, PLC1_ADDR)
+            lit301 = float(self.recieve(LIT301_3, PLC3_ADDR))
+            print "DEBUG PLC1 - receive lit301: %f" % lit301
+            self.send(LIT301_1, lit301, PLC1_ADDR)
 
             # if fit201 <= FIT_201_THRESH or lit301 >= LIT_301_M['H']:
             #     # CLOSE p101
