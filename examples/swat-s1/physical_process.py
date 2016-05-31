@@ -22,6 +22,8 @@ import time
 MV101 = ('MV101', 1)
 P101 = ('P101', 1)
 LIT101 = ('LIT101', 1)
+FIT101 = ('FIT101', 1)
+FIT201 = ('FIT201', 2)
 
 
 # TODO: implement orefice drain with Bernoulli/Torricelli formula
@@ -29,10 +31,15 @@ class RawWaterTank(Tank):
 
     def pre_loop(self):
 
-        # TODO: move to run.py
-        self.set(MV101, 0)
-        self.set(P101, 1)
-        self.set(LIT101, 0.500)
+        # test overflow
+        self.set(MV101, 1)
+        self.set(P101, 0)
+        self.level = self.set(LIT101, 0.800)
+
+        # test underflow
+        # self.set(MV101, 0)
+        # self.set(P101, 1)
+        # self.level = self.set(LIT101, 0.500)
 
     def main_loop(self):
 
@@ -47,16 +54,22 @@ class RawWaterTank(Tank):
             # inflows volumes
             mv101 = self.get(MV101)
             if int(mv101) == 1:
+                self.set(FIT101, PUMP_FLOWRATE_IN)
                 inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
                 water_volume += inflow
-            p101 = self.get(P101)
+            else:
+                self.set(FIT101, 0.00)
 
             # outflows volumes
+            p101 = self.get(P101)
             if int(p101) == 1:
+                self.set(FIT201, PUMP_FLOWRATE_OUT)
                 outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank outflow: ", outflow
                 water_volume -= outflow
+            else:
+                self.set(FIT201, 0.00)
 
             # compute new water_level
             new_level = water_volume / self.section
@@ -65,19 +78,19 @@ class RawWaterTank(Tank):
             if new_level <= 0.0:
                 new_level = 0.0
 
-            # update water level
+            # update internal and state water level
             print "DEBUG new_level: %.5f \t delta: %.5f" % (
                 new_level, new_level - self.level)
-            self.level = new_level
+            self.level = self.set(LIT101, new_level)
 
             # 988 sec starting from 0.500 m
             if new_level >= LIT_101_M['HH']:
-                print 'DEBUG RawWaterTank above HH: ', count
+                print 'DEBUG RawWaterTank above HH count: ', count
                 break
 
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
-                print 'DEBUG RawWaterTank below LL: ', count
+                print 'DEBUG RawWaterTank below LL count: ', count
                 break
 
             count += 1

@@ -27,7 +27,7 @@ swat = build_debug_logger(
 # SPHINX_SWAT_TUTORIAL SET PROCESS
 GRAVITATION = 9.81             # m.s^-2
 TANK_DIAMETER = 1.38           # m
-TANK_SECTION = 1.5           # m^2
+TANK_SECTION = 1.5             # m^2
 PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
 PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
 
@@ -72,11 +72,13 @@ LIT_301_M = {  # ultrafiltration tank m
 
 TANK_HEIGHT = 1.600  # m
 
-PLC_PERIOD_SEC = 0.50  # plc update rate in seconds
+PLC_PERIOD_SEC = 0.40  # plc update rate in seconds
 PLC_PERIOD_HOURS = PLC_PERIOD_SEC / 3600.0
 PLC_SAMPLES = 1000
-PP_PERIOD_SEC = 0.40  # physical process update rate in seconds
-PP_PERIOD_HOURS = PP_PERIOD_SEC / 3600.0
+
+PP_RESCALING_HOURS = 100
+PP_PERIOD_SEC = 0.20  # physical process update rate in seconds
+PP_PERIOD_HOURS = (PP_PERIOD_SEC / 3600.0) * PP_RESCALING_HOURS
 PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
 
 RWT_INIT_LEVEL = 0.500  # l

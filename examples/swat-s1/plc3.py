@@ -40,6 +40,7 @@ class SwatPLC3(PLC):
 
             lit301 = float(self.get(LIT301_3))
             print "DEBUG PLC3 - get lit301: %f" % lit301
+
             self.send(LIT301_3, lit301, PLC3_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
