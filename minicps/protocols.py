@@ -215,7 +215,7 @@ class EnipProtocol(Protocol):
         if value:
             tag_string += '='
             tag_string += str(value)
-        print 'DEBUG _tuple_to_cpppo_tag tag_string: ', tag_string
+        # print 'DEBUG _tuple_to_cpppo_tag tag_string: ', tag_string
 
         return tag_string
 
@@ -341,7 +341,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             tag_string
         )
-        print 'DEBUG enip _send cmd: ', cmd
+        # print 'DEBUG enip _send cmd: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -373,7 +373,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             tag_string
         )
-        print 'DEBUG enip _receive cmd: ', cmd
+        # print 'DEBUG enip _receive cmd: ', cmd
 
         try:
             client = subprocess.Popen(
