@@ -4,12 +4,10 @@ swat-s1 plc1.py
 
 from minicps.devices import PLC
 from utils import PLC1_DATA, STATE
-from utils import PLC1_PROTOCOL, PLC1_ADDR, PLC_PERIOD
+from utils import PLC1_PROTOCOL
 from utils import IP, LIT_101_M, FIT_201
 
 import time
-import os
-import sys
 
 PERIOD = 0.25
 
@@ -39,7 +37,14 @@ class SwatPLC1(PLC):
 
         time.sleep(sleep)
 
-    def main_loop(self, sleep=0.5):
+    def main_loop(self):
+        """plc1 main loop.
+
+            - read sensors value
+            - drive actuators according to the control strategy
+            - update its enip server
+        """
+
         print 'DEBUG: swat-s1 plc1 enters main_loop.'
         print
 
