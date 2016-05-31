@@ -4,25 +4,30 @@ swat-s1 plc1.py
 
 from minicps.devices import PLC
 from utils import PLC1_DATA, STATE
-from utils import PLC1_PROTOCOL, PLC1_ADDR
-from utils import IP
+from utils import PLC1_PROTOCOL, PLC1_ADDR, PLC_PERIOD
+from utils import IP, LIT_101_M, FIT_201
 
 import time
 import os
 import sys
 
+PERIOD = 0.25
+
 PLC1_ADDR = IP['plc1']
 PLC2_ADDR = IP['plc2']
 PLC3_ADDR = IP['plc3']
 
-AI_FIT_101_FLOW = ('NO', 'AI_FIT_101_FLOW', 1)
-DO_MV_101_OPEN = ('NO', 'DO_MV_101_OPEN', 1)
-AI_LIT_101_LEVEL = ('NO', 'AI_LIT_101_LEVEL', 1)
-DO_P_101_START = ('NO', 'DO_P_101_START', 1)
+FIT101 = ('FIT101', 1)
+MV101 = ('MV101', 1)
+LIT101 = ('LIT101', 1)
+P101 = ('P101', 1)
 # interlocks to be received from plc2 and plc3
-AI_LIT_301_LEVEL = ('NO', 'AI_LIT_301_LEVEL', 3)
-AI_FIT_201_FLOW = ('NO', 'AI_FIT_201_FLOW', 2)
-DO_MV_201_OPEN = ('NO', 'DO_MV_201_OPEN', 2)
+LIT301_1 = ('LIT301', 1)  # to be sent
+LIT301_3 = ('LIT301', 3)  # to be received
+FIT201_1 = ('FIT201', 1)
+FIT201_2 = ('FIT201', 2)
+MV201_1 = ('MV201', 1)
+MV201_2 = ('MV201', 2)
 
 
 # TODO: real value tag where to read/write flow sensor
@@ -35,20 +40,67 @@ class SwatPLC1(PLC):
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
-        print 'DEBUG: swat-s1 plc1 enters main_loop'
+        print 'DEBUG: swat-s1 plc1 enters main_loop.'
         print
 
         count = 0
         END = 6
         while(True):
-            self.set(AI_FIT_101_FLOW, count)
-            fit101 = self.get(AI_FIT_101_FLOW)
-            print 'DEBUG: swat plc1 get FIT101: ', fit101
-            self.send(AI_FIT_101_FLOW, count, PLC1_ADDR)
 
-            time.sleep(1)
+            # lit101 [meters]
+            lit101 = float(self.get(LIT101))
+            self.send(LIT101, lit101, PLC1_ADDR)
+
+            if lit101 >= LIT_101_M['HH']:
+                print "WARNING PLC1 - lit101 over HH: %.2f >= %.2f." % (
+                    lit101, LIT_101_M['HH'])
+
+            elif lit101 <= LIT_101_M['LL']:
+                print "WARNING PLC1 - lit101 under LL: %.2f <= %.2f." % (
+                    lit101, LIT_101_M['LL'])
+
+                # CLOSE p101
+                print "INFO PLC1 - close p101."
+                self.set(P101, 0)
+                self.send(P101, 0, PLC1_ADDR)
+
+            elif lit101 <= LIT_101_M['L']:
+                # OPEN mv101
+                print "INFO PLC1 - lit101 under L -> open mv101."
+                self.set(MV101, 1)
+                self.send(MV101, 1, PLC1_ADDR)
+
+            elif lit101 >= LIT_101['H']:
+                # CLOSE mv101
+                print "INFO PLC1 - lit101 over H -> close mv101."
+                self.set(MV101, 0)
+                self.send(MV101, 0, PLC1_ADDR)
+
+            # read from PLC2 (constant value)
+            fit201 = float(self.recieve(FIT201_2, PLC2_ADDR))
+            print "DEBUG PLC1 - receive fit201: %f" % fit201
+            self.send(FIT201_1, fit201, PLC1_ADDR)
+
+            # read from PLC3
+            lit301 = float(self.recieve(FIT301_3, PLC3_ADDR))
+            print "DEBUG PLC1 - receive lit301: %f" % lit301
+            self.send(LIT301_1, lit301, PLC1_ADDR)
+
+            if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
+                # CLOSE p101
+                self.set(P101, 0)
+                self.send(P101, 0, PLC1_ADDR)
+                print "INFO PLC1 - fit201 under FIT_201 -> close p101."
+
+            elif lit301 <= LIT_301['L']:
+                # OPEN p101
+                self.set(P101, 1)
+                self.send(P101, 1, PLC1_ADDR)
+                print "INFO PLC1 - lit301 under LIT_301['L'] -> open p101."
+
+            time.sleep(PERIOD)
+
             count += 1
-
             if count > END:
                 print 'DEBUG swat plc1 shutdown'
                 break

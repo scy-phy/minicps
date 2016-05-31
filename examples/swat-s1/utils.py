@@ -72,6 +72,7 @@ LIT_301_M = {  # ultrafiltration tank m
 
 TANK_HEIGHT = 1.600  # m
 
+# TODO: add plcs period
 PERIOD_SEC = 1  # physical process sampling rate in sec
 PERIOD_HOURS = PERIOD_SEC / 3600.0
 RWT_INIT_LEVEL = 0.500  # l
@@ -190,11 +191,11 @@ CREATE TABLE swat_s1 (
 SCHEMA_INIT = """
     INSERT INTO swat_s1 VALUES ('FIT101',   1, '2.55');
     INSERT INTO swat_s1 VALUES ('MV101',    1, '0');
-    INSERT INTO swat_s1 VALUES ('LIT101',   1, '500.0');
+    INSERT INTO swat_s1 VALUES ('LIT101',   1, '0.500');
     INSERT INTO swat_s1 VALUES ('P101',     1, '1');
 
     INSERT INTO swat_s1 VALUES ('FIT201',   2, '2.55');
     INSERT INTO swat_s1 VALUES ('MV201',    2, '0');
 
-    INSERT INTO swat_s1 VALUES ('LIT301',   3, '500.0');
+    INSERT INTO swat_s1 VALUES ('LIT301',   3, '0.500');
 """
