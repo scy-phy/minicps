@@ -72,13 +72,18 @@ LIT_301_M = {  # ultrafiltration tank m
 
 TANK_HEIGHT = 1.600  # m
 
-# TODO: add plcs period
-PERIOD_SEC = 1  # physical process sampling rate in sec
-PERIOD_HOURS = PERIOD_SEC / 3600.0
+PLC_PERIOD_SEC = 0.50
+PLC_PERIOD_HOURS = PLC_PERIOD_SEC / 3600.0
+PLC_SAMPLES = 1000
+PP_PERIOD_SEC = 0.25  # physical process sampling rate in sec
+PP_PERIOD_HOURS = PP_PERIOD_SEC / 3600.0
+PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
+
 RWT_INIT_LEVEL = 0.500  # l
 
 # m^3 / h
-FIT_201 = 0.0
+FIT_201_THRESH = 1.00
+
 # SPHINX_SWAT_TUTORIAL END SET PROCESS
 
 # topo {{{1
@@ -194,7 +199,7 @@ SCHEMA_INIT = """
     INSERT INTO swat_s1 VALUES ('LIT101',   1, '0.500');
     INSERT INTO swat_s1 VALUES ('P101',     1, '1');
 
-    INSERT INTO swat_s1 VALUES ('FIT201',   2, '2.55');
+    INSERT INTO swat_s1 VALUES ('FIT201',   2, '2.45');
     INSERT INTO swat_s1 VALUES ('MV201',    2, '0');
 
     INSERT INTO swat_s1 VALUES ('LIT301',   3, '0.500');

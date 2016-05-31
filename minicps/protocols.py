@@ -380,4 +380,3 @@ class EnipProtocol(Protocol):
 
         except Exception as error:
             print 'ERROR enip _receive: ', error
-

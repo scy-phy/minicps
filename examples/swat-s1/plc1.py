@@ -3,13 +3,11 @@ swat-s1 plc1.py
 """
 
 from minicps.devices import PLC
-from utils import PLC1_DATA, STATE
-from utils import PLC1_PROTOCOL
-from utils import IP, LIT_101_M, FIT_201
+from utils import PLC1_DATA, STATE, PLC1_PROTOCOL
+from utils import PLC_PERIOD_SEC, PLC_SAMPLES
+from utils import IP, LIT_101_M, FIT_201_THRESH
 
 import time
-
-PERIOD = 0.25
 
 PLC1_ADDR = IP['plc1']
 PLC2_ADDR = IP['plc2']
@@ -40,17 +38,16 @@ class SwatPLC1(PLC):
     def main_loop(self):
         """plc1 main loop.
 
-            - read sensors value
-            - drive actuators according to the control strategy
-            - update its enip server
+            - reads sensors value
+            - drives actuators according to the control strategy
+            - updates its enip server
         """
 
         print 'DEBUG: swat-s1 plc1 enters main_loop.'
         print
 
         count = 0
-        END = 6
-        while(True):
+        while(count <= PLC_SAMPLES):
 
             # lit101 [meters]
             lit101 = float(self.get(LIT101))
@@ -91,11 +88,11 @@ class SwatPLC1(PLC):
             print "DEBUG PLC1 - receive lit301: %f" % lit301
             self.send(LIT301_1, lit301, PLC1_ADDR)
 
-            if fit201 <= FIT_201 or lit301 >= LIT_301['H']:
+            if fit201 <= FIT_201_THRESH or lit301 >= LIT_301['H']:
                 # CLOSE p101
                 self.set(P101, 0)
                 self.send(P101, 0, PLC1_ADDR)
-                print "INFO PLC1 - fit201 under FIT_201 -> close p101."
+                print "INFO PLC1 - fit201 under FIT_201_THRESH -> close p101."
 
             elif lit301 <= LIT_301['L']:
                 # OPEN p101
@@ -103,12 +100,10 @@ class SwatPLC1(PLC):
                 self.send(P101, 1, PLC1_ADDR)
                 print "INFO PLC1 - lit301 under LIT_301['L'] -> open p101."
 
-            time.sleep(PERIOD)
-
+            time.sleep(PLC_PERIOD_SEC)
             count += 1
-            if count > END:
-                print 'DEBUG swat plc1 shutdown'
-                break
+
+        print 'DEBUG swat plc1 shutdown'
 
 
 if __name__ == "__main__":

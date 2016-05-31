@@ -5,14 +5,13 @@ swat-s1 tests.
 # from mininet.cli import CLI
 from mininet.net import Mininet
 
-from physical_process import RawWaterTank
-
 from nose.plugins.skip import SkipTest
-
-from topo import SwatTopo
 
 from utils import STATE, RWT_INIT_LEVEL
 from utils import TANK_SECTION
+from topo import SwatTopo
+from physical_process import RawWaterTank
+
 
 # import subprocess
 # import sys
@@ -36,7 +35,7 @@ def test_topo():
 
 def test_raw_water_tank():
 
-    rwt = RawWaterTank(
+    RawWaterTank(
         name='test_rwt',
         state=STATE,
         protocol=None,

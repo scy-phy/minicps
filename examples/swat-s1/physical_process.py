@@ -7,18 +7,20 @@ to the equation of continuity from the domain of hydraulics
 principle (for the trajectories).
 """
 
-# TODO: use subprocess
-from minicps.devices import Tank
 from time import sleep, time
 from math import pow, pi
-from utils import TANK_DIAMETER, PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT
-from utils import TANK_HEIGHT, TANK_SECTION
-from utils import T_PP_R, T_PP_W, LIT_101_M
-from utils import STATE, PERIOD_SEC, PERIOD_HOURS, RWT_INIT_LEVEL
+
+from minicps.devices import Tank
+
+from utils import PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT
+from utils import TANK_HEIGHT, TANK_SECTION, TANK_DIAMETER
+from utils import LIT_101_M, RWT_INIT_LEVEL
+from utils import STATE, PP_PERIOD_SEC, PP_PERIOD_HOURS, PP_SAMPLES
 
 import sys
 
 
+# TODO: review volume to level computations
 class OldTank(object):
 
     """Tank in the physical process."""
@@ -232,19 +234,18 @@ class RawWaterTank(Tank):
     def main_loop(self):
 
         count = 0
-        SAMPLES = 60 * 60 * 1
-        while(count < SAMPLES):
+        while(count < PP_SAMPLES):
             new_level = self.level
 
             mv101 = self.get(MV101)
             if int(mv101) == 1:
-                inflow = PUMP_FLOWRATE_IN * PERIOD_HOURS
+                inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
                 new_level += inflow
 
             p101 = self.get(P101)
             if int(p101) == 1:
-                outflow = PUMP_FLOWRATE_OUT * PERIOD_HOURS
+                outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank outflow: ", outflow
                 new_level -= outflow
 
@@ -267,6 +268,7 @@ class RawWaterTank(Tank):
                 break
 
             count += 1
+            time.sleep(PP_PERIOD_SEC)
 
 
 if __name__ == '__main__':
