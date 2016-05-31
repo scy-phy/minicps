@@ -13,7 +13,7 @@ from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
 
-PATH = "temp/state_tests.sqlite"
+PATH = "/var/tmp/state_tests.sqlite"
 NAME = 'state_tests'
 STATE = {
     'name': NAME,
