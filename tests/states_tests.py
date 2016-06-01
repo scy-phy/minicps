@@ -1,5 +1,5 @@
 """
-state_tests.py
+states_tests.py
 
 SQLite uses text datatype instead of varchar.
 """
@@ -13,15 +13,15 @@ from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
 
-PATH = "/var/tmp/state_tests.sqlite"
-NAME = 'state_tests'
+PATH = "/var/tmp/states_tests.sqlite"
+NAME = 'states_tests'
 STATE = {
     'name': NAME,
     'path': PATH
 }
 
 SCHEMA = """
-CREATE TABLE state_tests (
+CREATE TABLE states_tests (
     name              TEXT NOT NULL,
     datatype          TEXT NOT NULL,
     value             TEXT,
@@ -30,9 +30,9 @@ CREATE TABLE state_tests (
 """
 
 SCHEMA_INIT = """
-    INSERT INTO state_tests VALUES ('SENSOR1',   'int', '1');
-    INSERT INTO state_tests VALUES ('SENSOR2',   'float', '22.2');
-    INSERT INTO state_tests VALUES ('ACTUATOR2', 'int', '2');
+    INSERT INTO states_tests VALUES ('SENSOR1',   'int', '1');
+    INSERT INTO states_tests VALUES ('SENSOR2',   'float', '22.2');
+    INSERT INTO states_tests VALUES ('ACTUATOR2', 'int', '2');
 """
 
 

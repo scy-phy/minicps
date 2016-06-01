@@ -79,7 +79,7 @@ test-utils:
 	$(TESTER) $(TESTER_OPTS) tests/utils_tests.py
 
 test-state:
-	$(TESTER) $(TESTER_OPTS) tests/state_tests.py
+	$(TESTER) $(TESTER_OPTS) tests/states_tests.py
 
 test-devices:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py
