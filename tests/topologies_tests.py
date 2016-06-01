@@ -9,7 +9,7 @@ from nose.plugins.skip import SkipTest
 
 from examples.swat.networks import L3EthStar
 
-from minicps.sdn import OF_MISC
+from minicps.sdns import OF_MISC
 from minicps.utils import TEMP_DIR
 
 from mininet.net import Mininet

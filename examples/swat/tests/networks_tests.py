@@ -6,7 +6,7 @@ from nose.tools import ok_
 from nose.plugins.skip import SkipTest
 # from nose.plugins.skip import Skip, SkipTest
 
-from minicps.sdn import OF_MISC
+from minicps.sdns import OF_MISC
 from minicps.utils import TEMP_DIR
 
 from examples.swat.utils import L1_PLCS_IP, L3_NODES, PLCS_MAC

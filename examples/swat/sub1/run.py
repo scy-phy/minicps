@@ -19,10 +19,9 @@ import sys
 import os
 # sys.path.append(os.getcwd())
 
-from minicps.sdn import POXSwat
+from minicps.sdns import POXSwat
 from minicps.networks import PLC, HMI, DumbSwitch, Histn, Attacker, Workstn, POXSwat
 from minicps.networks import EthLink, TopoFromNxGraph
-from minicps import constants as c
 
 from constants import logger, init_swat
 from utils import L1_PLCS_IP, L1_NETMASK, PLCS_MAC, L2_HMI

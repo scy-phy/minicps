@@ -13,7 +13,7 @@ import sys
 
 
 from minicps.networks import MininetTopoFromNxGraph
-from minicps.sdn import POXSwat
+from minicps.sdns import POXSwat
 
 from mininet.cli import CLI
 from mininet.net import Mininet

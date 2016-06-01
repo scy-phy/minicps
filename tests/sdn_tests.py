@@ -12,7 +12,7 @@ from mininet.cli import CLI
 
 from nose.plugins.skip import SkipTest  # Skip
 
-from minicps.sdn import OF_MISC, POXL2Pairs
+from minicps.sdns import OF_MISC, POXL2Pairs
 from minicps.utils import _arp_cache_rtts
 # from minicps.networks import L3EthStar  # TODO from topology
 
