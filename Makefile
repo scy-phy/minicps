@@ -41,10 +41,6 @@ test-swat-s1:
 # 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
 
 
-# STATE {{{1
-
-kill-cpppo:
-	sudo pkill  -f -u root "python -m cpppo.server.enip"
 
 # MINICPS TESTS {{{1
 
@@ -88,6 +84,8 @@ test-devices:
 # clean {{{1
 clean: clean-cover, clan-pyc, clean-logs
 
+clean-simulation: clean-cpppo, clean-mininet
+
 clean-cover:
 	rm -f minicps/*,cover
 	rm -f tests/*,cover
@@ -98,3 +96,10 @@ clean-pyc:
 
 clean-logs:
 	rm -f logs/*.log
+
+clean-cpppo:
+	sudo pkill  -f -u root "python -m cpppo.server.enip"
+
+clean-mininet:
+	sudo mn -c
+
