@@ -1,5 +1,5 @@
 """
-sdn_tests.
+sdns_tests.
 """
 
 import time

@@ -69,8 +69,8 @@ test-mcps:
 test-networks:
 	$(TESTER) $(TESTER_OPTS) tests/networks_tests.py
 
-test-sdn:
-	$(TESTER) $(TESTER_OPTS) tests/sdn_tests.py
+test-sdns:
+	$(TESTER) $(TESTER_OPTS) tests/sdns_tests.py
 
 test-protocols:
 	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py
@@ -78,7 +78,7 @@ test-protocols:
 test-utils:
 	$(TESTER) $(TESTER_OPTS) tests/utils_tests.py
 
-test-state:
+test-states:
 	$(TESTER) $(TESTER_OPTS) tests/states_tests.py
 
 test-devices:
