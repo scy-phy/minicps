@@ -6,7 +6,7 @@ SQLite uses text datatype instead of varchar.
 
 import os
 
-from minicps.state import SQLiteState
+from minicps.states import SQLiteState
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest

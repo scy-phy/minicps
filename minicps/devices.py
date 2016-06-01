@@ -17,7 +17,8 @@ Device subclasses can be customized overriding the _start and _stop methods.
 import time
 
 from os.path import splitext
-from minicps.state import SQLiteState, RedisState
+
+from minicps.states import SQLiteState, RedisState
 from minicps.protocols import EnipProtocol
 
 

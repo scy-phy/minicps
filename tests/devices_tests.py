@@ -7,7 +7,7 @@ import sys
 import os
 
 from minicps.devices import Device, PLC, HMI, Tank
-from minicps.state import SQLiteState
+from minicps.states import SQLiteState
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
