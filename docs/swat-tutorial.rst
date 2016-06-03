@@ -10,10 +10,34 @@ Water Treatment testbed. In particular, we demonstrate basic controls through
 simulated PLCs, the network traffic, and simple physical layer simulation. We
 now provide: 
 
-* A brief system overview
 * A list of the pre-requisites to run the tutorial
-* Step-by-step instructions
+* A brief system overview
+* Step-by-step instructions to run and modify the simulation
 
+
+.. PREREQUISITES {{{2
+
+=============
+Prerequisites
+=============
+
+This tutorial assumes that the reader has a basic understanding of ``python
+2.x``,  has familiarly with Linux OS, ``bash``, Mininet
+and has a basic understanding of networking tools such
+as: ``wireshark``, ``ifconfig`` and ``nmap``.
+
+This tutorial will use the following conventions for command syntax:
+
+``command``
+   is typed inside a terminal (running ``bash``)
+
+``mininet> command``
+   is typed inside mininet CLI
+
+``C-d``
+   it means to press and hold ``Ctrl`` and then press ``d``.
+
+Before continuing please read the :ref:`api` doc.
 
 .. SYSTEM OVERVIEW {{{2
 
@@ -98,48 +122,16 @@ indeed our simulation separate the two cases using different functions.
        is in stand-by mode.
 
 
-.. PREREQUISITES {{{2
-
-=============
-Prerequisites
-=============
-
-This tutorial assumes that the reader has a basic understanding of ``python
-2.x``,  has familiarly with Linux OS, ``bash``, Mininet
-and has a basic understanding of networking tools such
-as: ``wireshark``, ``ifconfig`` and ``nmap``.
-
-This tutorial will use the following conventions for command syntax:
-
-``command``
-   is typed inside a terminal (running ``bash``)
-
-``mininet> command``
-   is typed inside mininet CLI
-
-``C-d``
-   it means to press and hold ``Ctrl`` and then press ``d``.
-
-It is important that you run the commands from the minicps root folder, you
-can monitor your current working directory using:
-
-.. code-block:: console
-
-   pwd
-
-And you should see something like ``../minicps``.
-
-
 .. SWAT EXPLOTATION {{{2
 
 =====================
-SWaT's exploration
+MiniCPS simulation
 =====================
 
 
 .. SWAT TOPOLOGY {{{3
 
-SWaT topology
+Topology
 ---------------
 
 To start the simulation, open up a terminal, navigate into the root 
@@ -201,134 +193,78 @@ You can optionally clean the OS environment typing:
 
 .. CHANGING INITIAL VALUES {{{3
 
-Interaction with the simulation
--------------------------------
+Customization
+--------------
 
-Open and termina and ``cd examples/swat-s1/``. This folder can be used as a
+Open and terminal and ``cd examples/swat-s1/``. This folder can be used as a
 template to implement a Cyber-Physical System simulation.
 
-The ``init.py`` script can be run once to generate the database containing
-the state information.
+The ``init.py`` script can be run once to generate the sqlite database containing
+the state information using two helper class methods.
 
-The ``run.py`` script contains 
+The ``topo.py`` script contains the mininet ``SwatTopo(Topo)`` subclass used to set the
+CPS topology and network parameters (e.g., IP, MAC, netmasks).
 
-Open ``examples/swat/state_db.py``,
-to change LIT101 initial value select one line from the following:
+The ``run.py`` script contains the ``SwatS1CPS(MiniCPS)`` class that you can
+use to customize your simulation. By default the user has to manually run the
+PLC logic and physical process simulation script. 
+You can start every script automatically uncommenting the following lines:
 
-.. literalinclude:: ../examples/swat/sub1/state_db.py
-   :start-after: # SPHINX_SWAT_TUTORIAL SET LIT101DB
-   :end-before:  # SPHINX_SWAT_TUTORIAL END SET LIT101DB
+.. literalinclude:: ../examples/swat-s1/run.py
+   :language: python
+   :start-after: # SPHINX_SWAT_TUTORIAL RUN(
+   :end-before:  # SPHINX_SWAT_TUTORIAL RUN)
 
-Open ``examples/swat/constants.py``,
-to change process values set:
+In this example it is required to start ``plc2.py`` and ``plc3.py``
+**before** ``plc1.py`` because the latter will start requesting Ethernet/IP
+tags from the formers to drive the system.
 
-.. literalinclude:: ../examples/swat/constants.py
-   :start-after: # SPHINX_SWAT_TUTORIAL SET PROCESS
-   :end-before:  # SPHINX_SWAT_TUTORIAL END SET PROCESS
+If you want to change the initial values of the simulation open
+``physical_process.py`` and look at:
 
+.. literalinclude:: ../examples/swat-s1/physical_process.py
+   :language: python
+   :start-after: # SPHINX_SWAT_TUTORIAL STATE INIT(
+   :end-before:  # SPHINX_SWAT_TUTORIAL STATE INIT)
 
-.. LOGS AND ERRORS {{{3
+The ``Device,set`` method requires a ``what`` tuple and a ``value`` that
+depends on the sensor or actuator type. The same ``what`` tuple can be used
+to address EtherNet/IP tags in the PLCs enip servers. These are the tags
+``what`` tuples used for this simulation:
 
-Logs and Errors
-----------------------
+.. literalinclude:: ../examples/swat-s1/physical_process.py
+   :language: python
+   :start-after: # SPHINX_SWAT_TUTORIAL TAGS(
+   :end-before:  # SPHINX_SWAT_TUTORIAL TAGS)
 
-``logs/swat.log`` keeps track of all logged information
-appending them to the same file. 
+We are using two fields, the first is a ``str`` indicating the name of the
+tag and the second is an ``int`` indicating the plc number. For example: 
 
-``examples/swat/err`` is a folder that may
-contains a ``component.err`` file for each component that during the *last*
-simulation has written to ``stderr`` (e.g.: ``hmi.err``).
+- plc2 will store an addressable enip tag using  ``FIT201_2 = ('FIT201', 2)``
+- plc1 will store in its enip server an addressable enip tag using  ``FIT201_1 = ('FIT201', 1)``
 
+If you want to change any of the plcs logics take a look at ``plc1.py``,
+``plc2.py`` and ``plc3.py``. If you want to change the physical process
+simulation logic look at ``physical_process.py``. Notice that if you manually
+run the logic script you can *plug-and-play* them in any fashion, e.g., you
+can test the same plc logics in a scenario where a tank is supposed to
+overflow and then stop the physical_process script and run another one where
+the tank is supposed to underflow, without stopping the plcs scripts.
 
-.. DUMB PLC1 {{{3
-
-Dumb plc1
-----------
-
-Open ``examples/swat/tutorial/run.py``,
-uncomment the line containing ``..ImageContainer.py...`` :
-
-.. literalinclude:: ../examples/swat/tutorial/run.py
-   :start-after: # SPHINX_SWAT_TUTORIAL SET POPUP
-   :end-before:  # SPHINX_SWAT_TUTORIAL END SET POPUP
-
-Run the simulation again... A window like the one below should pop-up (if you have an X server on your system):
-
-.. image:: images/swat-tutorial-popup.png
-
-The window contains three subplots: *HMI_MV101-Status*, *HMI_LIT101-Pv*
-and *HMI_P101-Status*
-
-HMI_MV101-Status and HMI_P101-Status are using the same encoding:
-
-* ``2.00`` means OPEN/ON
-* ``1.00`` means CLOSED/OFF
-* ``0.00`` means ERROR
-
-HMI_LIT101-Pv shows a graph of the last fifteen samples of the water level
-from the tank in :math:`mm`.
-
-IF you let the time pass you will notice that the flow will increase and the
-MV101 and P101 status will remain the same. That is because by default the
-tutorial launches a *dumb* PLC1 script. You can check
-``examples/swat/plc1a.py`` to gain more insights.
-
-You can stop the simulation typing:
-
-.. code-block:: console
-
-   mininet> C-d
-
-And optionally clean the OS environment typing:
-
-.. code-block:: console
-
-   sudo mn -c
+The ``log/`` directory is used to store log information about the simulation.
 
 
-.. STD PLC1 {{{3
-
-Standard plc1
------------------
-
-Open ``examples/swat/tutorial/run.py`` and comment/uncomment the relevant lines
-to call the standard plc1 script:
-
-.. literalinclude:: ../examples/swat/tutorial/run.py
-   :start-after: # SPHINX_SWAT_TUTORIAL SET PLC1
-   :end-before:  # SPHINX_SWAT_TUTORIAL END SET PLC1
-
-Now start the simulation. You should see the same pop-up window like in
-`Dumb plc1`_ but this time PLC1 will react according to the initial
-conditions and the system thresholds.
-
-If you have analyzed the services running on the mininet instance you
-will have noticed a web server listening on ``192.160.1.100:80``. Try
-to browse that IP within mininet during the simulation.
-
-You can stop the simulation typing:
-
-.. code-block:: console
-
-   mininet> C-d
-
-And optionally clean the OS environment typing:
-
-.. code-block:: console
-
-   sudo mn -c
+.. TODO: add HMI and ImageContainer and custom SDN controller from old swat
 
 
-.. POXSWAT SDN CONTROLLER {{{3
+.. POXSwat SDN Controller
+.. --------------------------
 
-POXSwat SDN Controller
---------------------------
+.. Open ``examples/swat/tutorial/run.py``, uncomment:
 
-Open ``examples/swat/tutorial/run.py``, uncomment:
+.. .. literalinclude:: ../examples/swat/tutorial/run.py
+..    :start-after: # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
+..    :end-before:  # SPHINX_SWAT_TUTORIAL END SET SDN CONTROLLER
 
-.. literalinclude:: ../examples/swat/tutorial/run.py
-   :start-after: # SPHINX_SWAT_TUTORIAL SET SDN CONTROLLER
-   :end-before:  # SPHINX_SWAT_TUTORIAL END SET SDN CONTROLLER
-
-If you are familiar with SDN and the ``pox`` platform take a look at
-``examples/swat/pox_controller.py``.
+.. If you are familiar with SDN and the ``pox`` platform take a look at
+.. ``examples/swat/pox_controller.py``.

@@ -19,11 +19,14 @@ import sys
 import time
 
 
+# SPHINX_SWAT_TUTORIAL TAGS(
 MV101 = ('MV101', 1)
 P101 = ('P101', 1)
 LIT101 = ('LIT101', 1)
+LIT301 = ('LIT301', 3)
 FIT101 = ('FIT101', 1)
 FIT201 = ('FIT201', 2)
+# SPHINX_SWAT_TUTORIAL TAGS)
 
 
 # TODO: implement orefice drain with Bernoulli/Torricelli formula
@@ -31,10 +34,11 @@ class RawWaterTank(Tank):
 
     def pre_loop(self):
 
-        # test overflow
+        # SPHINX_SWAT_TUTORIAL STATE INIT(
         self.set(MV101, 1)
         self.set(P101, 0)
         self.level = self.set(LIT101, 0.800)
+        # SPHINX_SWAT_TUTORIAL STATE INIT)
 
         # test underflow
         # self.set(MV101, 0)
