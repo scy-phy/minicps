@@ -84,7 +84,9 @@ test-devices:
 # clean {{{1
 clean: clean-cover, clan-pyc, clean-logs
 
-clean-simulation: clean-cpppo, clean-mininet
+clean-simulation:
+	sudo pkill  -f -u root "python -m cpppo.server.enip"
+	sudo mn -c
 
 clean-cover:
 	rm -f minicps/*,cover
