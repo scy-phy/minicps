@@ -1,9 +1,12 @@
 .. API {{{1
 .. _api:
 
+
 *************
 API
 *************
+
+.. automodule:: minicps
 
 .. .. DEVICES {{{2
 
@@ -18,7 +21,12 @@ Devices
 
 .. .. MINICPS {{{2
 
-.. .. automodule:: minicps
-..    :members:
-..    :undoc-members:
+=======
+MiniCPS
+=======
+
+.. automodule:: minicps.mcps
+   :members:
+   :undoc-members:
+   :special-members: __init__
 

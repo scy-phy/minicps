@@ -13,10 +13,10 @@ Contents:
 
    userguide
    api
+   swat-tutorial
    tests
    misc
 
-.. swat-tutorial TODO: rewrite
 
 
 Indices and tables

@@ -2,7 +2,7 @@
 .. _swat-tutorial:
 
 *************
-SWaT Tutorial
+SWaT tutorial
 *************
 
 This tutorial shows how to use MiniCPS to simulate a subprocess of a  
@@ -53,6 +53,8 @@ Supply and Storage control
 ----------------------------
 
 The simulation focuses on the first subprocess of the SWaT testbed.
+
+.. TODO: ask Nils new image
 
 .. image:: images/swat-tutorial-subprocess.png
 
@@ -140,12 +142,12 @@ SWaT's exploration
 SWaT topology
 ---------------
 
-To start the simulation, open up a terminal, navigate into your ``minicps``
-directory and type:
+To start the simulation, open up a terminal, navigate into the root 
+``minicps`` directory, (the one containing a ``Makefile``) and type:
    
 .. code-block:: console
 
-   ./bin/swat-tutorial
+   make swat-s1
 
 Now you should see the ``mininet`` CLI:
 
@@ -178,6 +180,12 @@ At this time you should be able to answer questions such as:
 * Are there web servers or ftp servers  running on some host ?
 * Is the file system shared ?
 
+Another convenient way to run bash commands is directly from the mininet prompt
+
+.. code-block:: console
+
+   mininet> s1 wireshark
+
 You can exit mininet by pressing ``C-d`` or typing:
 
 .. code-block:: console
@@ -188,13 +196,21 @@ You can optionally clean the OS environment typing:
 
 .. code-block:: console
 
-   sudo mn -c
+   make clean-simulation
 
 
 .. CHANGING INITIAL VALUES {{{3
 
-Changing initial values
--------------------------
+Interaction with the simulation
+-------------------------------
+
+Open and termina and ``cd examples/swat-s1/``. This folder can be used as a
+template to implement a Cyber-Physical System simulation.
+
+The ``init.py`` script can be run once to generate the database containing
+the state information.
+
+The ``run.py`` script contains 
 
 Open ``examples/swat/state_db.py``,
 to change LIT101 initial value select one line from the following:

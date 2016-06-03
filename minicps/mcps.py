@@ -1,10 +1,9 @@
 """
-mcps.py
+MiniCPS is a container class, you can subclass it with a specialized version
+targeted for your CPS.
 
-Main module for functional classes.
-
-MiniCPS augments Mininet capabilities in the context of Cyber-Physical
-Systems.
+E.g., ``MyCPS(MiniCPS)`` once constructed runs an interactive simulation where
+each PLC device also run a webserver and the SCADA runs an FTP server.
 """
 
 
@@ -17,14 +16,14 @@ class MiniCPS(object):
     def __init__(self, name, net):
         """MiniCPS initialization steps:
 
-        net object usually contains reference to:
+        :param str name: CPS name
+        :param Mininet net: Mininet object
+
+        ``net`` object usually contains reference to:
             - the topology
             - the link shaping
             - the CPU allocation
             - the [remote] SDN controller
-
-        :name: CPS name
-        :net: Mininet object
         """
 
         self.name = name
