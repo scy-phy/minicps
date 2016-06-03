@@ -12,11 +12,11 @@ Contents:
    :maxdepth: 3
 
    userguide
-   swat-tutorial
+   api
    misc
-.. Proofread first and then include maybe group the two files into one
-   .. api
-   .. tests
+
+.. swat-tutorial TODO: rewrite
+.. tests TODO: check
 
 
 Indices and tables

@@ -1,17 +1,25 @@
 """
-devices.py
+``devices`` module contains:
 
-This module contains:
-    - the bindings to the physical layer API
-    - the bindings to the network API (mininet)
+    - ``get`` and ``set`` physical layer's API methods
+    - ``send`` and ``receive`` network layer's API methods
     - the user input validation code
 
-Any device can be initialized with any couple of (state, protocol)
-dictionaries. The consistency of the system should be guaranteed by the
-client, e.g., do NOT init two different PLCs referencing to two different
-states or speaking two different protocols.
+Any device can be initialized with any couple of ``state`` and
+``protocol`` dictionaries.
 
-Device subclasses can be customized overriding the _start and _stop methods.
+List of supported protocols:
+    - Ethernet/IP subset through ``cpppo``
+
+List of supported backends:
+    - Sqlite through ``sqlite3``
+
+The consistency of the system should be guaranteed by the
+client, e.g., do NOT init two different PLCs referencing to two different
+states or speaking two different industrial protocols.
+
+Device subclasses can be specialized overriding their public methods
+e.g., PLC ``pre_loop`` and ``main_loop`` methods.
 """
 
 import time
@@ -28,13 +36,31 @@ class Device(object):
 
     # TODO: state dict convention (eg: multiple table support?)
     def __init__(self, name, protocol, state, disk={}, memory={}):
-        """PLC1 initialization steps:
+        """
 
-        :name: name
-        :protocol: used for network emulation
-        :state: dict containing 'path' and 'name'
-        :disk: persistent memory
-        :memory: main memory
+        :param str name: device name
+        :param dict protocol: used to set up the network layer API
+        :param dict state: used to set up the physical layer API
+        :param dict disk: persistent memory
+        :param dict memory: main memory
+
+        Device construction example:
+
+        >>> device = Device(
+        >>>     name='dev',
+        >>>     protocol={
+        >>>         'name': 'enip',
+        >>>         'mode': 1,
+        >>>         'server': {
+        >>>             'address': '10.0.0.1',
+        >>>             'tags': (('SENSOR1', 1), ('SENSOR2', 1)),
+        >>>             }
+        >>>     state={
+        >>>         'path': '/path/to/db.sqlite',
+        >>>         'name': 'table_name',
+        >>>     }
+        >>> )
+
         """
 
         self._validate_inputs(name, protocol, state, disk, memory)
@@ -154,12 +180,12 @@ class Device(object):
         print "TODO _stop: please override me"
 
     def set(self, what, value):
-        """Set (write) a state value.
+        """Set aka write a state value.
 
-        :what: tuple with field identifiers
-        :value: value
+        :param tuple what: field[s] identifier[s]
+        :param value: value to be setted
 
-        :returns: setted value
+        :returns: setted value or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
@@ -168,11 +194,11 @@ class Device(object):
             return self._state._set(what, value)
 
     def get(self, what):
-        """Get (read) a state value.
+        """Get (read) a ``state`` value.
 
-        :what: (Immutable) tuple with field identifiers
+        :param tuple what: field[s] identifier[s]
 
-        :returns: get value
+        :returns: gotten value or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
@@ -181,11 +207,13 @@ class Device(object):
             return self._state._get(what)
 
     def send(self, what, value, address):
-        """Send (serve) a value.
+        """Send aka serve a value to another host.
 
-        :what: tuple addressing what
-        :value: sent
-        :address: ip[:port]
+        :param tuple what: field[s] identifier[s]
+        :param value: value to be setted
+        :param str address: ``ip[:port]``
+
+        :returns: ``None`` or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
@@ -194,10 +222,12 @@ class Device(object):
             return self._protocol._send(what, value, address)
 
     def recieve(self, what, address):
-        """Receive a (requested) value.
+        """Receive a value from another host.
 
-        :what: to ask for
-        :address: to receive from
+        :param tuple what: field[s] identifier[s]
+        :param str address: ``ip[:port]``
+
+        :returns: recv value or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
@@ -209,12 +239,11 @@ class Device(object):
 # TODO: rename pre_loop and main_loop?
 class PLC(Device):
 
-    """Programmable Logic Controller.
+    """Programmable Logic Controller class.
 
-    PLC has control, monitor and network capabilities.
-
-    Usually they run a pre-loop initialization routine and then they enter a
-    main loop.
+    PLC provides:
+        - state APIs: e.g., drive an actuator
+        - network APIs: e.g., communicate with another PLC
     """
 
     def _start(self):
@@ -230,7 +259,7 @@ class PLC(Device):
     def pre_loop(self, sleep=0.5):
         """PLC boot process.
 
-        :sleep: sleep n sec after it
+        :param float sleep: second[s] to sleep before returning
         """
 
         print "TODO PLC pre_loop: please override me"
@@ -239,7 +268,7 @@ class PLC(Device):
     def main_loop(self, sleep=0.5):
         """PLC main loop.
 
-        :sleep: sleep n sec after each iteration
+        :param float sleep: second[s] to sleep after each iteration
         """
 
         sec = 0
@@ -254,9 +283,11 @@ class PLC(Device):
 # TODO: add show something
 class HMI(Device):
 
-    """Human Machine Interface.
+    """Human Machine Interface class.
 
-    HMI has monitor and network capabilities.
+    HMI provides:
+        - state APIs: e.g., get a water level indicator
+        - network APIs: e.g., monitors a PLC's tag
     """
 
     def _start(self):
@@ -271,7 +302,7 @@ class HMI(Device):
     def main_loop(self, sleep=0.5):
         """HMI main loop.
 
-        :sleep: sleep n sec after each iteration
+        :param float sleep: second[s] to sleep after each iteration
         """
 
         sec = 0
@@ -285,23 +316,21 @@ class HMI(Device):
 
 class Tank(Device):
 
-    """Tank.
+    """Tank class.
 
-    Tank has:
-        - state capabilities
-        - no memory
-        - no disk
-        - no networking capabilities
+    Tank provides:
+        - state APIs: e.g., set a water level indicator
     """
 
     def __init__(
             self, name, protocol, state,
             section, level):
         """
-        :section: cross section of the tank in m^2
-        :level: current level in m
-
-        Eg: inflows = [[True, 2.5], [False, 3.3]]
+        :param str name: device name
+        :param dict protocol: used to set up the network layer API
+        :param dict state: used to set up the physical layer API
+        :param float section: cross section of the tank in m^2
+        :param float level: current level in m
         """
 
         self.section = section
@@ -314,14 +343,17 @@ class Tank(Device):
         self.main_loop()
 
     def pre_loop(self, sleep=0.5):
-        """Tank pre_loop."""
+        """Tank pre_loop.
+
+        :param float sleep: second[s] to sleep before returning
+        """
 
         print "TODO Tank pre_loop: please override me"
 
     def main_loop(self, sleep=0.5):
         """Tank main loop.
 
-        :sleep: sleep n sec after each iteration
+        :param float sleep: second[s] to sleep after each iteration
         """
 
         sec = 0
