@@ -8,7 +8,7 @@ API
 
 .. automodule:: minicps
 
-.. .. DEVICES {{{2
+.. DEVICES {{{2
 
 =======
 Devices
@@ -19,7 +19,7 @@ Devices
    :undoc-members:
    :special-members: __init__
 
-.. .. MINICPS {{{2
+.. MINICPS {{{2
 
 =======
 MiniCPS
