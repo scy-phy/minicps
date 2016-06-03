@@ -4,8 +4,6 @@
 API
 *************
 
-.. automodule:: minicps
-
 =========
 Devices
 =========
