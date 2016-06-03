@@ -70,6 +70,12 @@ Then clone ``minicps`` repository:
 
     git clone https://github.com/scy-phy/minicps
 
+and add ``minicps`` to the python path, for example using a soft link:
+
+.. code-block:: console
+
+    ln -s ~/minicps/minicps /usr/lib/python2.7/minicps
+
 MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
 
 .. code-block:: console
@@ -141,25 +147,16 @@ Now you should be able to run:
 .. code-block:: console
 
     cd ~/minicps
-    ./bin/swat-tutorial
+    make test
 
-Which should start the command line with ``mininet>`` prompt. To directly
-continue with the tutorial, look at :ref:`swat-tutorial`.
+.. Which should start the command line with ``mininet>`` prompt. To directly
+.. continue with the tutorial, look at :ref:`swat-tutorial`.
 
 
 .. CONFIGURE MINICPS {{{2
 
 Configure MiniCPS
 ==================
-
-.. GENERAL {{{3
-
-General
------------------
-
-Every switch listens to ``6634`` debugging port.
-You can change it via ``OF_MISC`` dict in the ``minicps.constants``
-
 
 .. SSH {{{3
 
@@ -243,50 +240,6 @@ Then to navigate a static version through a browser (e.g., ``firefox``) type:
 
 .. LOGGING AND TESTING {{{2
 
-Logging and Testing
-====================
-
-.. LOGGING {{{3
-
-Logging
----------
-
-The relevant log files are stored in the ``logs`` dir.
-
-Each MiniCPS module and its associated testing module is managed by a
-dedicated ``logging`` object. You can tweak the number of backups file that are
-automatically rotating and their size, through the ``minicps.constants`` module.
-
-Each ``scripts/pox/component`` generate a separate ``POXComponent.log`` that
-will be overwritten each time you run a new ``mininet`` configuration.
-
-The swat tutorial produces a ``swat.log`` file. Each time you run a new swat
-simulation the logger will append messages to that file. Please control
-``swat.log``'s size and manage it manually.  
-
-
-.. TESTING {{{3
-
-Testing
--------
-
-You can intentionally skip a particular test adding/uncommenting ``raise SkipTest``.
-You can see skipped test summary in the nosetests output.
-
-If you want to run all the tests contained in the `topology_tests` module, type:
-
-.. code-block:: console
-
-    sudo nosetests tests/topology_tests
-
-To run a single test within a script use:
-
-.. code-block:: console
-
-    sudo nosetests tests/topology_tests:test_name
-
-Some common and useful ``nosetests`` options:
-
-* ``-s`` opt to prevent nosetests to capture stdout
-* ``-v`` opt to obtain a more verbose output
-* more on ``nosetests --help``
+.. Logging and Testing
+.. ====================
+.. TODO
