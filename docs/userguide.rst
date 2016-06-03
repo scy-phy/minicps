@@ -83,6 +83,7 @@ MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
    sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
 
 .. TODO: remove sudo and add pip -U?
+
 For *Ethernet/IP* support install ``cpppo``
 
 .. code-block:: console
