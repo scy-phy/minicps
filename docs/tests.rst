@@ -1,11 +1,11 @@
-.. .. TESTS {{{1
-.. .. _tests:
+.. TESTS {{{1
+.. _tests:
 
 *************
 Tests
 *************
 
-.. .. DEVICES {{{2
+.. DEVICES {{{2
 
 =======
 Devices
