@@ -24,7 +24,7 @@ FIT201_1 = ('FIT201', 1)
 FIT201_2 = ('FIT201', 2)
 MV201_1 = ('MV201', 1)
 MV201_2 = ('MV201', 2)
-
+# SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
 # TODO: real value tag where to read/write flow sensor
 class SwatPLC1(PLC):

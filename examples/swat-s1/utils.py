@@ -24,7 +24,7 @@ swat = build_debug_logger(
     suffix='')
 
 # physical process {{{1
-# SPHINX_SWAT_TUTORIAL SET PROCESS
+# SPHINX_SWAT_TUTORIAL PROCESS UTILS(
 GRAVITATION = 9.81             # m.s^-2
 TANK_DIAMETER = 1.38           # m
 TANK_SECTION = 1.5             # m^2
@@ -85,8 +85,7 @@ RWT_INIT_LEVEL = 0.500  # l
 
 # m^3 / h
 FIT_201_THRESH = 1.00
-
-# SPHINX_SWAT_TUTORIAL END SET PROCESS
+# SPHINX_SWAT_TUTORIAL PROCESS UTILS)
 
 # topo {{{1
 IP = {
@@ -125,6 +124,7 @@ PLC3_DATA = {
 }
 
 
+# SPHINX_SWAT_TUTORIAL PLC1 UTILS(
 PLC1_ADDR = IP['plc1']
 PLC1_TAGS = (
     ('FIT101', 1, 'REAL'),
@@ -145,6 +145,7 @@ PLC1_PROTOCOL = {
     'mode': 1,
     'server': PLC1_SERVER
 }
+# SPHINX_SWAT_TUTORIAL PLC1 UTILS)
 
 PLC2_ADDR = IP['plc2']
 PLC2_TAGS = (
@@ -178,6 +179,7 @@ PLC3_PROTOCOL = {
 }
 
 # state {{{1
+# SPHINX_SWAT_TUTORIAL STATE(
 PATH = 'swat_s1_db.sqlite'
 NAME = 'swat_s1'
 
@@ -185,6 +187,7 @@ STATE = {
     'name': NAME,
     'path': PATH
 }
+# SPHINX_SWAT_TUTORIAL STATE)
 
 SCHEMA = """
 CREATE TABLE swat_s1 (

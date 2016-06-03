@@ -172,7 +172,8 @@ At this time you should be able to answer questions such as:
 * Are there web servers or ftp servers  running on some host ?
 * Is the file system shared ?
 
-Another convenient way to run bash commands is directly from the mininet prompt
+Another convenient way to run bash commands is directly from the mininet prompt, 
+for example type:
 
 .. code-block:: console
 
@@ -191,23 +192,33 @@ You can optionally clean the OS environment typing:
    make clean-simulation
 
 
-.. CHANGING INITIAL VALUES {{{3
+.. CUSTOMIZATION {{{3
+
+.. TODO: add literalinclude plc logics
+.. TODO: explain how to speed-up simulation
 
 Customization
 --------------
 
-Open and terminal and ``cd examples/swat-s1/``. This folder can be used as a
-template to implement a Cyber-Physical System simulation.
+Open a terminal and ``cd examples/swat-s1/``. The files contained in this folder 
+can be used as a template to implement your Cyber-Physical System simulation.
+For example you can copy it in your home folder and start designing your CPS
+simulation.
+
+For the rest of the section we will use our SWaT subprocess simulation
+example to show how to design, run and configure MiniCPS. Let's start
+describing the various files used for the simulation.
 
 The ``init.py`` script can be run once to generate the sqlite database containing
-the state information using two helper class methods.
+the state information.
 
 The ``topo.py`` script contains the mininet ``SwatTopo(Topo)`` subclass used to set the
 CPS topology and network parameters (e.g., IP, MAC, netmasks).
 
 The ``run.py`` script contains the ``SwatS1CPS(MiniCPS)`` class that you can
-use to customize your simulation. By default the user has to manually run the
-PLC logic and physical process simulation script. 
+use to customize your simulation. In this example the user has to manually run the
+PLC logic scripts and physical process script, for example opening four ``xterm`` from the 
+``mininwt>`` prompt and launch the scripts. 
 You can start every script automatically uncommenting the following lines:
 
 .. literalinclude:: ../examples/swat-s1/run.py
@@ -219,18 +230,44 @@ In this example it is required to start ``plc2.py`` and ``plc3.py``
 **before** ``plc1.py`` because the latter will start requesting Ethernet/IP
 tags from the formers to drive the system.
 
-If you want to change the initial values of the simulation open
-``physical_process.py`` and look at:
+The ``utils.py`` module contains the shared constants and the configuration
+dictionaries for each MIniCPS Device subclass. Let's take as an illustrative
+example plc1 configuration dictionaries:
 
-.. literalinclude:: ../examples/swat-s1/physical_process.py
+.. literalinclude:: ../examples/swat-s1/utils.py
    :language: python
-   :start-after: # SPHINX_SWAT_TUTORIAL STATE INIT(
-   :end-before:  # SPHINX_SWAT_TUTORIAL STATE INIT)
+   :start-after: # SPHINX_SWAT_TUTORIAL PLC1 UTILS(
+   :end-before:  # SPHINX_SWAT_TUTORIAL PLC1 UTILS)
 
-The ``Device,set`` method requires a ``what`` tuple and a ``value`` that
-depends on the sensor or actuator type. The same ``what`` tuple can be used
-to address EtherNet/IP tags in the PLCs enip servers. These are the tags
-``what`` tuples used for this simulation:
+The ``PLC1_PROTOCOL`` dictionary
+allows MiniCPS to use the correct network configuration settings for the 
+``send`` and ``receive`` methods, in this case for plc1 
+MiniCPS will initialize a ``cpppo`` Ethernet/IP servers with the specified
+tags.
+
+It is important to understand the ``mode`` encoding, mode is expected to be
+a non-negative integer and it will set networking mode of the associated
+Device. 
+Use a ``1`` if you want a device that both is serving enip tags and
+it is able to query an enip server, e.g., a PLC device.
+Use a ``0`` if you want a device has only enip client capabilities,
+e.g., an HMI device.
+In case you want to simulate a Device that has no network capabilites you can
+set the protocol dict to ``None``, e.g., a Tank device.
+
+.. literalinclude:: ../examples/swat-s1/utils.py
+   :language: python
+   :start-after: # SPHINX_SWAT_TUTORIAL STATE(
+   :end-before:  # SPHINX_SWAT_TUTORIAL STATE)
+
+The ``STATE`` dictionary is shared among devices and 
+allows MiniCPS to use the correct physical layer API for the ``set`` and
+``get`` methods.
+
+The simulation presents both physical and network interaction and the nice
+thing about MiniCPS is that any device can use the **same** addressing
+strategy to interact with the state and to request values through the network.
+This example uses the following constants tuples as addresses:
 
 .. literalinclude:: ../examples/swat-s1/physical_process.py
    :language: python
@@ -240,12 +277,24 @@ to address EtherNet/IP tags in the PLCs enip servers. These are the tags
 We are using two fields, the first is a ``str`` indicating the name of the
 tag and the second is an ``int`` indicating the plc number. For example: 
 
-- plc2 will store an addressable enip tag using  ``FIT201_2 = ('FIT201', 2)``
-- plc1 will store in its enip server an addressable enip tag using  ``FIT201_1 = ('FIT201', 1)``
+- plc2 will store an addressable real enip tag using  
+  ``FIT201_2 = ('FIT201', 2)``
+- plc1 will store in its enip server an addressable real enip tag using
+  ``FIT201_1 = ('FIT201', 1)``
+
+If you want to change the initial values of the simulation open
+``physical_process.py`` and look at:
+
+.. literalinclude:: ../examples/swat-s1/physical_process.py
+   :language: python
+   :start-after: # SPHINX_SWAT_TUTORIAL STATE INIT(
+   :end-before:  # SPHINX_SWAT_TUTORIAL STATE INIT)
 
 If you want to change any of the plcs logics take a look at ``plc1.py``,
-``plc2.py`` and ``plc3.py``. If you want to change the physical process
-simulation logic look at ``physical_process.py``. Notice that if you manually
+``plc2.py`` and ``plc3.py`` and remember to set the relevant values in the
+``utils.py`` module.
+
+If you manually
 run the logic script you can *plug-and-play* them in any fashion, e.g., you
 can test the same plc logics in a scenario where a tank is supposed to
 overflow and then stop the physical_process script and run another one where
@@ -253,6 +302,11 @@ the tank is supposed to underflow, without stopping the plcs scripts.
 
 The ``log/`` directory is used to store log information about the simulation.
 
+You can clean the simulation environment from minicps root directory using:
+
+.. code-block:: console
+
+   make clean-simulation
 
 .. TODO: add HMI and ImageContainer and custom SDN controller from old swat
 
