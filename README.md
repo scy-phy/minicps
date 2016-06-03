@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/minicps/badge/?version=latest)](http://minicps.readthedocs.io/en/latest/?badge=latest)
+
 # MiniCPS #
 
 MiniCPS is a lightweight simulator for accurate network traffic in an
@@ -6,6 +8,3 @@ interaction.
 
 MiniCPS is developed by the [SCy-Phy](http://scy-phy.github.io/index.html)
 group from SUTD (Singapore Univeristy of Design and Technology).
-
-MiniCPS docs are hosted on
-[readthedocs](http://minicps.readthedocs.org/en/latest/index.html).
