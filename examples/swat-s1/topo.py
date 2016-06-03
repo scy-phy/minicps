@@ -7,10 +7,10 @@ from mininet.topo import Topo
 from utils import IP, MAC
 
 
-# TODO: add netmasks?
+# TODO: add netmasks to IPs?
 class SwatTopo(Topo):
 
-    """SWaT 6 plcs + attacker + private dirs."""
+    """SWaT 3 plcs + attacker + private dirs."""
 
     def build(self):
 
@@ -33,24 +33,6 @@ class SwatTopo(Topo):
             ip=IP['plc3'],
             mac=MAC['plc3'])
         self.addLink(plc3, switch)
-
-        plc4 = self.addHost(
-            'plc4',
-            ip=IP['plc4'],
-            mac=MAC['plc4'])
-        self.addLink(plc4, switch)
-
-        plc5 = self.addHost(
-            'plc5',
-            ip=IP['plc5'],
-            mac=MAC['plc5'])
-        self.addLink(plc5, switch)
-
-        plc6 = self.addHost(
-            'plc6',
-            ip=IP['plc6'],
-            mac=MAC['plc6'])
-        self.addLink(plc6, switch)
 
         attacker = self.addHost(
             'attacker',
