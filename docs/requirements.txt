@@ -1,0 +1,4 @@
+cpppo
+nose
+coverage
+sphinx_rtd_theme
