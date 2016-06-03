@@ -13,10 +13,10 @@ Contents:
 
    userguide
    api
+   tests
    misc
 
 .. swat-tutorial TODO: rewrite
-.. tests TODO: check
 
 
 Indices and tables

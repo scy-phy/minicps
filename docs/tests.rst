@@ -1,38 +1,16 @@
 .. .. TESTS {{{1
 .. .. _tests:
 
-.. *************
-.. Tests
-.. *************
-
-
-.. .. CONSTANTS {{{2
-
-.. ================
-.. Constants
-.. ================
-
-.. .. automodule:: tests.constants_tests
-..    :members:
-..    :undoc-members:
-
-
-.. .. TOPOLOGY {{{2
-
-.. ================
-.. Topology
-.. ==============
-
-.. .. automodule:: tests.topologies_tests
-..    :members:
-..    :undoc-members:
+*************
+Tests
+*************
 
 .. .. DEVICES {{{2
 
-.. ================
-.. Devices
-.. ==============
+=======
+Devices
+=======
 
-.. .. automodule:: tests.devices_tests
-..    :members:
-..    :undoc-members:
+.. automodule:: tests.devices_tests
+   :members:
+   :undoc-members:

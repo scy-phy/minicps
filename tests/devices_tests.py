@@ -41,6 +41,11 @@ class TestDevice():
     }
 
     def test_validate_device_name(self):
+        """Validate device name:
+
+            - name is an int
+            - name is an empty string
+        """
 
         try:
             device = Device(
@@ -59,6 +64,15 @@ class TestDevice():
             print 'name is empty string: ', error
 
     def test_validate_state(self):
+        """Validate device state:
+
+            - state is a string
+            - state is an empty dict
+            - state has more/less than two keys
+            - state has a wrong key
+            - state has an unsupported path extension
+            - state has an integer name value
+        """
 
         try:
             device = Device(
@@ -135,6 +149,17 @@ class TestDevice():
             print 'state has an integer name: ', error
 
     def test_validate_protocol(self):
+        """Validate device protocol:
+
+            - protocol is a string
+            - protocol is an empty dict
+            - protocol has more/less than three keys
+            - protocol has a wrong key
+            - protocol name is not a string
+            - protocol has an unsupported name
+            - protocol mode is a float
+            - protocol mode is a negative int
+        """
 
         try:
             device = Device(
