@@ -203,6 +203,9 @@ class EnipProtocol(Protocol):
 
         Can be used both to generate cpppo scalar read query, like
         SENSOR1:1, and scalar write query, like ACTUATOR1=1.
+
+        Value correctness is up the client and it is blindly
+        converted to string and appended to the cpppo client query.
         """
 
         tag_string = ' '
