@@ -1,0 +1,27 @@
+# MiniCPS .travis.yml
+#
+# Commits that have [ci skip] anywhere in the commit messages are ignored by Travis CI.
+
+language: python
+
+branches:
+  only:
+    - master
+
+python:
+  - "2.6"
+  - "2.7"
+
+# travis-ci automatically preinstalls
+#
+# pytest
+# nose
+# mock
+
+# travis-ci automatically installs
+#
+# pip install -r requirements.txt
+
+script: make tests-travis
+
+

@@ -6,11 +6,22 @@ MININET = sudo mn
 PYTHON = sudo python
 PYTHON_OPTS = 
 
+# regex testMatch: (?:^|[b_.-])[Tt]est)
+# --exe: include also executable files
+# -s: don't capture std output
+# nosetests -s tests/devices_tests.py:fun_name
+
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
+
+# sudo because of mininet
 TESTER = sudo nosetests
+TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
+
+# http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
+.PHONY: tests tests-travis clean
 
 # TOY {{{1
 
@@ -42,14 +53,15 @@ test-swat-s1:
 
 
 
-# MINICPS TESTS {{{1
+# TESTS {{{1
 
-# regex testMatch: (?:^|[b_.-])[Tt]est)
-# --exe: include also executable files
-# -s: don't capture std output
-# nosetests -s tests/devices_tests.py:fun_name
+# TRAVIS {{{2
+tests-travis:
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
 
-test:
+tests:
 	$(TESTER) $(TESTER_OPTS) tests
 
 # https://pypi.python.org/pypi/nose-cov/1.6
@@ -59,6 +71,7 @@ test:
 # test-cov:
 # 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
 
+# MANUAL {{{2
 test-mcps:
 	$(TESTER) $(TESTER_OPTS) tests/mcps_tests.py
 
@@ -82,7 +95,7 @@ test-devices:
 
 
 # clean {{{1
-clean: clean-cover, clan-pyc, clean-logs
+clean: clean-cover clean-pyc clean-logs
 
 clean-simulation:
 	sudo pkill  -f -u root "python -m cpppo.server.enip"
