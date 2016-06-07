@@ -24,4 +24,5 @@ python:
 
 script: make tests-travis
 
-
+notifications:
+    email: false
