@@ -114,9 +114,12 @@ class Protocol(object):
 
 
 # TODO:  support vectorial tags def, read and write
-# def:   SCADA[0-3]=INT
-# write: SCADA[0-3]=1,2,3,4
-# read:  SCADA[0-3]
+# int def:   SCADA=INT[3]
+# int read:  SCADA[0-3]
+# int write: SCADA[0-3]=1,2,3,4
+# string def:   TEXT=SSTRING[30]
+# string read:  TEXT
+# string write: 'TEXT[0]=(SSTRING)"Hello world"'
 class EnipProtocol(Protocol):
 
     """EnipProtocol manager.
@@ -136,7 +139,7 @@ class EnipProtocol(Protocol):
         - DINT (32-bit)
         - REAL (32-bit float)
         - BOOL (8-bit, bit #0)
-        - SSTRING (simple string)
+        - SSTRING[10] (simple string of 10 chars)
     """
 
     # server ports
