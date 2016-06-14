@@ -22,7 +22,10 @@ python:
 #
 # pip install -r requirements.txt
 
+# TODO: add mininet-based tests
 script: make tests-travis
 
 notifications:
-    email: false
+  email:
+    on_success: change
+    on_failure: always
