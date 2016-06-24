@@ -207,8 +207,8 @@ class SQLiteState(State):
     def _set(self, what, value):
         """Returns setted value.
 
-        Pass a new tuple consisting of
-        (value, what[0], what[1], ...)
+        what_list overwrites the given what tuple
+        eg new what tuple: (value, what[0], what[1], ...)
         """
         what_list = [value]
 
