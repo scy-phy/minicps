@@ -368,6 +368,8 @@ class EnipProtocol(Protocol):
 
         :what: to ask for
         :address: to receive from
+
+        :returns: tag value as a `str`
         """
 
         tag_string = ''
