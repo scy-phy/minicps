@@ -66,6 +66,8 @@ PLC2_PROTOCOL = {
     'server': PLC2_SERVER
 }
 
+NETMASK = '/24'
+
 # state
 PATH = 'toy_db.sqlite'
 NAME = 'toy_table'
