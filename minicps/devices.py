@@ -156,6 +156,7 @@ class Device(object):
         else:
             print 'ERROR: %s backend not supported.' % self.state
 
+    # TODO: add optional process name for the server and log location
     def _init_protocol(self):
         """Bind device to network API."""
 
