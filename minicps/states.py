@@ -204,11 +204,15 @@ class SQLiteState(State):
         print 'DEBUG set_query:', set_query
         self._set_query = set_query
 
+    # TODO: return result of cursor.execute
     def _set(self, what, value):
         """Returns setted value.
 
-        what_list overwrites the given what tuple
-        eg new what tuple: (value, what[0], what[1], ...)
+        ``value``'s type is not checked, the client has to specify the correct
+        one.
+
+        what_list overwrites the given what tuple,
+        eg new what tuple: ``(value, what[0], what[1], ...)``
         """
         what_list = [value]
 
