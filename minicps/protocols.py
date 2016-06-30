@@ -219,6 +219,10 @@ class EnipProtocol(Protocol):
                 tag_string += EnipProtocol._SERIALIZER
                 tag_string += str(field)
         if value is not None:
+            if type(value) is str:
+                # TODO: add support for SSTRING tags
+                # ''' enip_client -a 192.168.1.20 'README:2[0]=(SSTRING)"string"' '''
+                pass
             tag_string += '='
             tag_string += str(value)
         # print 'DEBUG _tuple_to_cpppo_tag tag_string: ', tag_string
