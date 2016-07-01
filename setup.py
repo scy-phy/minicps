@@ -15,16 +15,14 @@ config = {
 
     'download_url': 'https://github.com/scy-phy/minicps',
 
-    'author email': 'abc@gmail.com',
+    'author email': 'daniele_antonioli@sutd.edu.sg',
 
-    'version': '0.1.0',
+    'version': '1.0.0',
 
     'install_requires': [
         'cpppo',
-        'networkx',
-        'matplotlib',
         'nose',
-        'nose-cover3',
+        'coverage',
     ],
 
     'package': ['minicps'],
