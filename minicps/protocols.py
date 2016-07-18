@@ -211,14 +211,18 @@ class EnipProtocol(Protocol):
         converted to string and appended to the cpppo client query.
         """
 
-        tag_string = ' '
+        tag_string = ''
         tag_string += str(what[0])
 
         if len(what) > 1:
             for field in what[1:]:
                 tag_string += EnipProtocol._SERIALIZER
                 tag_string += str(field)
-        if value:
+        if value is not None:
+            if type(value) is str:
+                # TODO: add support for SSTRING tags
+                # ''' enip_client -a 192.168.1.20 'README:2[0]=(SSTRING)"string"' '''
+                pass
             tag_string += '='
             tag_string += str(value)
         # print 'DEBUG _tuple_to_cpppo_tag tag_string: ', tag_string
@@ -340,14 +344,15 @@ class EnipProtocol(Protocol):
 
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
+        # print 'DEBUG enip _send tag_string: ', tag_string
 
         cmd = shlex.split(
             self._client_cmd +
             '--log ' + self._client_log +
             '--address ' + address +
-            tag_string
+            ' ' + tag_string
         )
-        # print 'DEBUG enip _send cmd: ', cmd
+        # print 'DEBUG enip _send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -379,9 +384,9 @@ class EnipProtocol(Protocol):
             self._client_cmd +
             '--log ' + self._client_log +
             '--address ' + address +
-            tag_string
+            ' ' + tag_string
         )
-        # print 'DEBUG enip _receive cmd: ', cmd
+        # print 'DEBUG enip _receive cmd shlex list: ', cmd
 
         try:
             client = subprocess.Popen(
