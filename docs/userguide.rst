@@ -146,7 +146,7 @@ Now you should be able to run:
 .. code-block:: console
 
     cd ~/minicps
-    make test
+    make tests
 
 .. Which should start the command line with ``mininet>`` prompt. To directly
 .. continue with the tutorial, look at :ref:`swat-tutorial`.
