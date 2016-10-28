@@ -3,6 +3,8 @@
 
 [Coverage Status]: https://travis-ci.org/scy-phy/minicps
 [CS img]: https://travis-ci.org/scy-phy/minicps.svg
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/hslatman/awesome-industrial-control-system-security)
+<!--- TODO: update link once PR is accepted -->
 
 
 # MiniCPS #
