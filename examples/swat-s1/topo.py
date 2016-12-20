@@ -7,7 +7,6 @@ from mininet.topo import Topo
 from utils import IP, MAC, NETMASK
 
 
-# TODO: add netmasks to IPs?
 class SwatTopo(Topo):
 
     """SWaT 3 plcs + attacker + private dirs."""
