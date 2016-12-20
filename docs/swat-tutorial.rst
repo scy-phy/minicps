@@ -218,7 +218,7 @@ CPS topology and network parameters (e.g., IP, MAC, netmasks).
 The ``run.py`` script contains the ``SwatS1CPS(MiniCPS)`` class that you can
 use to customize your simulation. In this example the user has to manually run the
 PLC logic scripts and physical process script, for example opening four ``xterm`` from the 
-``mininwt>`` prompt and launch the scripts. 
+``mininet>`` prompt and launch the scripts. 
 You can start every script automatically uncommenting the following lines:
 
 .. literalinclude:: ../examples/swat-s1/run.py
