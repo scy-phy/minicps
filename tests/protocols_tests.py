@@ -8,10 +8,10 @@ import sys
 import shlex
 import time
 
-# import pymodbus
+import pymodbus
 import cpppo
 
-from minicps.protocols import Protocol, EnipProtocol
+from minicps.protocols import Protocol, EnipProtocol, ModbusProtocol
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
@@ -33,7 +33,7 @@ CLIENT_PROTOCOL = {
     'server': '',
 }
 
-
+# TestProtocol {{{1
 class TestProtocol():
 
     def test_init(self):
@@ -53,8 +53,9 @@ class TestProtocol():
         eq_(enip._name, 'enip')
         eq_(enip._mode, 0)
         eq_(enip._server, {})  # pass an empty server dict
+# }}}
 
-
+# TestEniptProtocol {{{1
 class TestEnipProtocol():
 
     TAGS = (
@@ -216,3 +217,180 @@ class TestEnipProtocol():
         except Exception as error:
             EnipProtocol._stop_server(enip._server_subprocess)
             print 'ERROR test_client_server: ', error
+# }}}
+
+# TestModbusProtocol {{{1
+class TestModbusProtocol():
+
+    TAGS = (
+        ('SENSOR1', 1, 'INT'),
+        ('SENSOR1', 2, 'INT'),
+        ('ACTUATOR1', 'INT'))
+    SERVER = {
+        'address': 'localhost:44818',
+        'tags': TAGS
+    }
+    CLIENT_SERVER_PROTOCOL = {
+        'name': 'modbus',
+        'mode': 1,
+        'server': SERVER,
+    }
+    CLIENT_PROTOCOL = {
+        'name': 'modbus',
+        'mode': 0,
+        'server': '',
+    }
+    if sys.platform.startswith('linux'):
+        SHELL = '/bin/bash -c '
+        CLIENT_LOG = '--log logs/protocols_tests_modbus '
+    else:
+        raise OSError
+
+    # TODO
+    @SkipTest
+    def test_init(self):
+
+        # TODO: add _stop_server
+        modbus = ModbusProtocol(
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
+        eq_(modbus._name, 'modbus')
+        del modbus
+        modbus = EnipProtocol(
+            protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
+        eq_(modbus._name, 'modbus')
+
+    def test_server_stop(self):
+
+        cmd = ModbusProtocol._start_server_cmd()
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            print 'ERROR test_server_stop: ', error
+
+    # TODO
+    @SkipTest
+    def test_server_start(self):
+
+        ADDRESS = 'localhost:44818'  # TEST port
+        TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
+        try:
+            print "TEST: client has to kill the cpppo process."
+            EnipProtocol._start_server(ADDRESS, TAGS)
+            # TODO: add _stop_server
+        except Exception as error:
+            print 'ERROR test_server_start: ', error
+
+    # TODO
+    @SkipTest
+    def test_server_multikey(self):
+
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            EnipProtocol._stop_server(server)
+        except Exception as error:
+            print 'ERROR test_server_multikey: ', error
+
+    # TODO
+    @SkipTest
+    def test_server_udp(self):
+
+        pass
+
+    # TODO
+    @SkipTest
+    def test_send_multikey(self):
+
+        enip = EnipProtocol(
+            protocol=CLIENT_PROTOCOL)
+
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+
+            # write a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+
+            # write a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+
+            EnipProtocol._stop_server(server)
+
+        except Exception as error:
+            EnipProtocol._stop_server(server)
+            print 'ERROR test_client: ', error
+
+    # TODO
+    @SkipTest
+    def test_receive_multikey(self):
+
+        enip = EnipProtocol(
+            protocol=CLIENT_PROTOCOL)
+
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+
+            # read a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            # read a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            EnipProtocol._stop_server(server)
+
+        except Exception as error:
+            EnipProtocol._stop_server(server)
+            print 'ERROR test_client: ', error
+
+    # TODO
+    @SkipTest
+    def test_client_server(self):
+
+        try:
+            enip = EnipProtocol(
+                protocol=CLIENT_SERVER_PROTOCOL)
+
+            # read a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            # read a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            enip._receive(what, address)
+
+            # write a multikey
+            what = ('SENSOR1', 1)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+
+            # write a single key
+            what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            for value in range(5):
+                enip._send(what, value, address)
+
+            EnipProtocol._stop_server(enip._server_subprocess)
+
+        except Exception as error:
+            EnipProtocol._stop_server(enip._server_subprocess)
+            print 'ERROR test_client_server: ', error
+# }}}

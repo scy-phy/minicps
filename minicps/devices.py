@@ -27,7 +27,7 @@ import time
 from os.path import splitext
 
 from minicps.states import SQLiteState, RedisState
-from minicps.protocols import EnipProtocol
+from minicps.protocols import EnipProtocol, ModbusProtocol
 
 
 class Device(object):
@@ -129,7 +129,7 @@ class Device(object):
                 raise TypeError('Protocol name must be a string.')
             else:
                 name = protocol['name']
-                if (name != 'enip'):
+                if (name != 'enip' or name != 'modbus'):
                     raise ValueError('%s protocol not supported.' % protocol)
             # protocol['mode']
             if type(protocol['mode']) is not int:
@@ -167,6 +167,8 @@ class Device(object):
             name = self.protocol['name']
             if name == 'enip':
                 self._protocol = EnipProtocol(self.protocol)
+            elif name == 'modbus':
+                self._protocol = ModbusProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol
 

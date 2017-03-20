@@ -25,10 +25,10 @@ import shlex
 import subprocess
 
 import cpppo
-# import pymodbus
+import pymodbus
 
 
-# PROTOCOLS {{{1
+# Protocol {{{1
 class Protocol(object):
 
     """Base class.
@@ -112,6 +112,9 @@ class Protocol(object):
 
         print '_send_multiple: please override me.'
 
+# }}}
+
+# EnipProtocol {{{1
 
 # TODO:  support vectorial tags def, read and write
 # int def:   SCADA=INT[3]
@@ -406,3 +409,76 @@ class EnipProtocol(Protocol):
 
         except Exception as error:
             print 'ERROR enip _receive: ', error
+
+# }}}
+
+
+# ModbusProtocol {{{1
+class ModbusProtocol(Protocol):
+
+    """ModbusProtocol manager.
+
+    Tag names are registers.
+
+    """
+
+    # server ports
+    _TCP_PORT = ':502'
+    # _UDP_PORT = ':2222'
+
+    def __init__(self, protocol):
+
+        super(EnipProtocol, self).__init__(protocol)
+
+        self._client_cmd = sys.executable + ' -m cpppo.server.enip.client '
+
+        if sys.platform.startswith('linux'):
+            self._client_log = 'logs/modbus_client '
+        else:
+            raise OSError
+
+        # tcp enip server
+        if self._mode == 1:
+            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
+                print 'DEBUG: concatenating server address with default port.'
+                self._server['address'] += EnipProtocol._TCP_PORT
+
+            elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
+                print 'WARNING: not using std enip %s TCP port' % \
+                    EnipProtocol._TCP_PORT
+
+            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
+
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_tcp_server '
+            else:
+                raise OSError
+
+            cmd = EnipProtocol._start_server_cmd(
+                address=self._server['address'],
+                tags=self._server['tags'])
+
+            self._server_subprocess = subprocess.Popen(cmd, shell=False)
+
+        # udp enip server
+        elif self._mode == 2:
+            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
+                print 'DEBUG: concatenating server address with default port.'
+                self._server['address'] += EnipProtocol._UDP_PORT
+
+            elif not self._server['address'].endswith(EnipProtocol._UDP_PORT):
+                print 'WARNING: not using std enip %s UDP port' % \
+                    EnipProtocol._UDP_PORT
+            # TODO: add --udp flag
+            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_udp_server '
+            else:
+                raise OSError
+
+            # TODO: start UDP enip server
+
+    pass
+# }}}
