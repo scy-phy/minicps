@@ -430,7 +430,7 @@ class ModbusProtocol(Protocol):
 
         super(EnipProtocol, self).__init__(protocol)
 
-        self._client_cmd = sys.executable + ' -m cpppo.server.enip.client '
+        self._client_cmd = sys.executable + ' scripts/pymodbus/asynch-server.py '
 
         if sys.platform.startswith('linux'):
             self._client_log = 'logs/modbus_client '
