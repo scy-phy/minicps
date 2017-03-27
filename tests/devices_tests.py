@@ -6,7 +6,7 @@ import time
 import sys
 import os
 
-from minicps.devices import Device, PLC, HMI, Tank
+from minicps.devices import Device, PLC, HMI, Tank, SCADAServer
 from minicps.states import SQLiteState
 
 from nose.tools import eq_
@@ -498,3 +498,73 @@ class TestHMI():
             protocol=TestHMI.PROTOCOL)
 
         SQLiteState._delete(TestHMI.PATH)
+
+
+class TestSCADAServer():
+
+    """TestSCADAServer: device with state and protocol client/server capabilites."""
+
+    NAME = 'scadaserver_tests'
+    PATH = 'temp/scadaserver_tests.sqlite'
+    STATE = {
+        'path': PATH,
+        'name': NAME
+    }
+    PROTOCOL = {
+        'name': 'enip',
+        'mode': 0,
+        'server': '',
+    }
+
+    SCHEMA = """
+    CREATE TABLE scadaserver_tests (
+        name              TEXT NOT NULL,
+        datatype          TEXT NOT NULL,
+        value             TEXT,
+        PRIMARY KEY (name)
+    );
+    """
+
+    SCHEMA_INIT = """
+        INSERT INTO scadaserver_tests VALUES ('SENSOR1',   'int', '1');
+        INSERT INTO scadaserver_tests VALUES ('SENSOR2',   'float', '22.2');
+        INSERT INTO scadaserver_tests VALUES ('SENSOR3',   'int', '5');
+        INSERT INTO scadaserver_tests VALUES ('ACTUATOR2', 'int', '2');
+    """
+
+    def test_set_get(self, sleep=0.3):
+
+        try:
+            os.remove(TestSCADAServer.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestSCADAServer.PATH, TestSCADAServer.SCHEMA)
+        SQLiteState._init(TestSCADAServer.PATH, TestSCADAServer.SCHEMA_INIT)
+
+        class ToySCADAServer(SCADAServer):
+
+            def pre_loop(self):
+
+                eq_(self.set(('SENSOR1',), '10'), '10')
+                eq_(self.get(('SENSOR1',)), '10')
+                eq_(self.get(('SENSOR2',)), '22.2')
+                eq_(self.get(('SENSOR3',)), '5')
+                time.sleep(sleep)
+
+                try:
+                    self.get(2.22)
+                except TypeError as error:
+                    print 'get what is a float: ', error
+
+                try:
+                    self.set(2, 5)
+                except TypeError as error:
+                    print 'set what is an integer: ', error
+
+        scadaserver = ToySCADAServer(
+            name=TestSCADAServer.NAME,
+            state=TestSCADAServer.STATE,
+            protocol=TestSCADAServer.PROTOCOL)
+
+        SQLiteState._delete(TestSCADAServer.PATH)

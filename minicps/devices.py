@@ -244,7 +244,7 @@ class PLC(Device):
 
     PLC provides:
         - state APIs: e.g., drive an actuator
-        - network APIs: e.g., communicate with another PLC
+        - network APIs: e.g., communicate with another Device
     """
 
     def _start(self):
@@ -361,6 +361,48 @@ class Tank(Device):
         while(sec < 1):
 
             print "TODO Tank main_loop: please override me"
+            time.sleep(sleep)
+
+            sec += 1
+
+class SCADAServer(Device):
+
+    """SCADAServer class.
+
+    SCADAServer provides:
+        - state APIs: e.g., drive an actuator
+        - network APIs: e.g., communicate with another Device
+    """
+
+    def _start(self):
+
+        self.pre_loop()
+        self.main_loop()
+
+    def _stop(self):
+
+        if self.protocol['mode'] > 0:
+            self._protocol._server_subprocess.kill()
+
+    def pre_loop(self, sleep=0.5):
+        """SCADAServer boot process.
+
+        :param float sleep: second[s] to sleep before returning
+        """
+
+        print "TODO SCADAServer pre_loop: please override me"
+        time.sleep(sleep)
+
+    def main_loop(self, sleep=0.5):
+        """SCADAServer main loop.
+
+        :param float sleep: second[s] to sleep after each iteration
+        """
+
+        sec = 0
+        while(sec < 1):
+
+            print "TODO SCADAServer main_loop: please override me"
             time.sleep(sleep)
 
             sec += 1
