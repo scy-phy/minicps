@@ -89,7 +89,7 @@ class Protocol(object):
         """Send (serve) a value.
 
         :what: to send
-        :address: to receive from
+        :address: to send to
         """
 
         print '_send: please override me.'
@@ -369,7 +369,7 @@ class EnipProtocol(Protocol):
     def _receive(
             self, what,
             address='localhost:44818'):
-        """Recieve a (requested) value.
+        """Receive a (requested) value.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
