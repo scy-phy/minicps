@@ -12,6 +12,8 @@ from minicps.states import SQLiteState
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
+# NOTE: currently testing only set and get
+# TODO: find a way to test also send and recieve outside network emulaiton
 
 class TestDevice():
 
