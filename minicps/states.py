@@ -72,7 +72,7 @@ class SQLiteState(State):
 
     """SQLite state manager.
 
-    IT uses prepared statemetns to speed-up queries executions and protect
+    IT uses prepared statements to speed-up queries executions and protect
     against SQL injection attacks.
 
     Client has to use ordered primary key fields to use get and set.
