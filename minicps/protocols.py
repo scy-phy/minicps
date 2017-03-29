@@ -127,6 +127,8 @@ class EnipProtocol(Protocol):
 
     """EnipProtocol manager.
 
+    name: enip
+
     EnipProtocol manages python cpppo library, Look at the original
     documentation for more information.
 
@@ -413,10 +415,12 @@ class EnipProtocol(Protocol):
 # }}}
 
 
-# ModbusProtocol {{{1
-class ModbusProtocol(Protocol):
+# ModbusTcpProtocol {{{1
+class ModbusTcpProtocol(Protocol):
 
-    """ModbusProtocol manager.
+    """ModbusTcpProtocol manager.
+
+    name: modbustcp
 
     Tag names are registers.
 
@@ -433,7 +437,7 @@ class ModbusProtocol(Protocol):
         self._client_cmd = sys.executable + ' scripts/pymodbus/asynch-server.py '
 
         if sys.platform.startswith('linux'):
-            self._client_log = 'logs/modbus_client '
+            self._client_log = 'logs/modbustcp_client '
         else:
             raise OSError
 
@@ -480,5 +484,4 @@ class ModbusProtocol(Protocol):
 
             # TODO: start UDP enip server
 
-    pass
 # }}}

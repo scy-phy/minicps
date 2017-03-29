@@ -8,8 +8,9 @@
 Any device can be initialized with any couple of ``state`` and
 ``protocol`` dictionaries.
 
-List of supported protocols:
-    - Ethernet/IP subset through ``cpppo``
+List of supported protocols and identifiers:
+    - Ethernet/IP subset through ``cpppo``, use id ``enip``
+    - Modbus/TCP through ``pymodbus``, use id ``modbustcp``
 
 List of supported backends:
     - Sqlite through ``sqlite3``
@@ -27,7 +28,7 @@ import time
 from os.path import splitext
 
 from minicps.states import SQLiteState, RedisState
-from minicps.protocols import EnipProtocol, ModbusProtocol
+from minicps.protocols import EnipProtocol, ModbusTcpProtocol
 
 
 class Device(object):
@@ -129,7 +130,7 @@ class Device(object):
                 raise TypeError('Protocol name must be a string.')
             else:
                 name = protocol['name']
-                if (name != 'enip' or name != 'modbus'):
+                if (name != 'enip' and name != 'modbustcp'):
                     raise ValueError('%s protocol not supported.' % protocol)
             # protocol['mode']
             if type(protocol['mode']) is not int:
@@ -167,7 +168,7 @@ class Device(object):
             name = self.protocol['name']
             if name == 'enip':
                 self._protocol = EnipProtocol(self.protocol)
-            elif name == 'modbus':
+            elif name == 'modbustcp':
                 self._protocol = ModbusProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol

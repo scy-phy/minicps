@@ -11,7 +11,7 @@ import time
 import pymodbus
 import cpppo
 
-from minicps.protocols import Protocol, EnipProtocol, ModbusProtocol
+from minicps.protocols import Protocol, EnipProtocol, ModbusTcpProtocol
 
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
@@ -219,8 +219,8 @@ class TestEnipProtocol():
             print 'ERROR test_client_server: ', error
 # }}}
 
-# TestModbusProtocol {{{1
-class TestModbusProtocol():
+# TestModbusTcpProtocol {{{1
+class TestModbusTcpProtocol():
 
     TAGS = (
         ('SENSOR1', 1, 'INT'),
@@ -231,18 +231,18 @@ class TestModbusProtocol():
         'tags': TAGS
     }
     CLIENT_SERVER_PROTOCOL = {
-        'name': 'modbus',
+        'name': 'modbustcp',
         'mode': 1,
         'server': SERVER,
     }
     CLIENT_PROTOCOL = {
-        'name': 'modbus',
+        'name': 'modbustcp',
         'mode': 0,
         'server': '',
     }
     if sys.platform.startswith('linux'):
         SHELL = '/bin/bash -c '
-        CLIENT_LOG = '--log logs/protocols_tests_modbus '
+        CLIENT_LOG = '--log logs/protocols_tests_modbustcp '
     else:
         raise OSError
 
@@ -251,20 +251,20 @@ class TestModbusProtocol():
     def test_init(self):
 
         # TODO: add _stop_server
-        modbus = ModbusProtocol(
-            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
-        eq_(modbus._name, 'modbus')
-        del modbus
-        modbus = EnipProtocol(
-            protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(modbus._name, 'modbus')
+        modbustcp = ModbusTcpProtocol(
+            protocol=TestModbusTcpProtocol.CLIENT_PROTOCOL)
+        eq_(modbustcp._name, 'modbustcp')
+        del modbustcp
+        modbustcp = ModbusTcpProtocol(
+            protocol=TestModbusTcpProtocol.CLIENT_SERVER_PROTOCOL)
+        eq_(modbustcp._name, 'modbustcp')
 
     def test_server_stop(self):
 
-        cmd = ModbusProtocol._start_server_cmd()
+        cmd = ModbusTcpProtocol._start_server_cmd()
         try:
             server = subprocess.Popen(cmd, shell=False)
-            ModbusProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
 
         except Exception as error:
             print 'ERROR test_server_stop: ', error
