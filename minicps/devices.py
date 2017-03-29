@@ -169,7 +169,7 @@ class Device(object):
             if name == 'enip':
                 self._protocol = EnipProtocol(self.protocol)
             elif name == 'modbustcp':
-                self._protocol = ModbusProtocol(self.protocol)
+                self._protocol = ModbusTcpProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol
 
