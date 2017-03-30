@@ -10,7 +10,7 @@ from sys import argv
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', type=str, dest='ip', help='port number')
+    parser.add_argument('-i', type=str, dest='ip', help='request ip')
     parser.add_argument('-p', type=int, dest='port', choices=[502],
             default=502, help='port number')
     parser.add_argument('-u', type=int, dest='unit',
