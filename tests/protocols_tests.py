@@ -256,27 +256,6 @@ class TestModbusProtocol():
     else:
         raise OSError
 
-    def test_init(self):
-
-        # TODO: add _stop_server
-        modbus = ModbusProtocol(
-            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
-        eq_(modbus._name, 'modbus')
-        del modbus
-        modbus = ModbusProtocol(
-            protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(modbus._name, 'modbus')
-
-    @SkipTest
-    def test_server_stop(self):
-
-        cmd = ModbusProtocol._start_server_cmd()
-        try:
-            server = subprocess.Popen(cmd, shell=False)
-            ModbusProtocol._stop_server(server)
-
-        except Exception as error:
-            print 'ERROR test_server_stop: ', error
 
     @SkipTest
     def test_server_start_cmd(self):
@@ -288,14 +267,27 @@ class TestModbusProtocol():
         except Exception as error:
             print 'ERROR test_server_start_cmd: ', error
 
-    # TODO
+
     @SkipTest
-    def test_server_start_stop(self):
+    def test_server_start(self):
 
         try:
-            ModbusProtocol._start_server(ADDRESS, TAGS)
+            print "TEST: client has to kill the pymodbus process."
+            ModbusProtocol._start_server('localhost:502', self.TAGS)
 
         except Exception as error:
             print 'ERROR test_server_start: ', error
+
+
+    @SkipTest
+    def test_server_stop(self):
+
+        cmd = ModbusProtocol._start_server_cmd()
+        try:
+            server = subprocess.Popen(cmd, shell=False)
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            print 'ERROR test_server_stop: ', error
 
 # }}}

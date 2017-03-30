@@ -494,13 +494,14 @@ class ModbusProtocol(Protocol):
             # TODO: implement it
             pass
 
+
     # TODO: still not sure about the tags API
     @classmethod
     def _start_server_cmd(
         cls,
         address='localhost:502',
-        mode=1,
-        tags=(10, 10, 10, 10)):
+        tags=(10, 10, 10, 10),
+        mode=1):
             # ('CO1', 1, 'CO'), ('HR1', 1, 'HR'))):
         """Build a subprocess.Popen cmd string for pycomm server.
 
@@ -541,9 +542,32 @@ class ModbusProtocol(Protocol):
             MODE +
             DI + CO + IR + HR
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        print 'DEBUG modbus _start_server cmd: ', cmd
 
         return cmd
+
+
+    @classmethod
+    def _start_server(cls, address, tags, mode=1):
+        """Start a pymodbus modbus server.
+
+        Notice that the client has to manage the new process,
+        eg:kill it after use.
+
+        :address: to serve
+        :tags: ordered tuple of ints representing the numbers of discrete
+               inputs, coils, input registers, and holding registers to be init.
+               Current pymodbus servers only support ModbusSequentialDataBlock.
+        :mode: int greater than 1, typically set by the constructor
+        """
+
+        try:
+            cmd = ModbusProtocol._start_server_cmd(address, tags, mode)
+            server = subprocess.Popen(cmd, shell=False)
+
+        except Exception as error:
+            print 'ERROR modbus _start_server: ', error
+
 
     # FIXME: not implemented because we are passing just the number of tags
     @classmethod
@@ -561,19 +585,5 @@ class ModbusProtocol(Protocol):
 
         """
 
-        tags_string = ''
-        for tag in tags:
-            tags_string += str(tag[0])
-            for field in tag[1:-1]:
-                tags_string += serializer
-                # print 'DEBUG _tuple_to_cpppo_tags field: ', field
-                tags_string += str(field)
-
-            tags_string += '='
-            tags_string += str(tag[-1])
-            tags_string += ' '
-        print 'DEBUG enip server tags_string: ', tags_string
-
-        return tags_string
-
+        pass
 # }}}
