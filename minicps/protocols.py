@@ -138,7 +138,11 @@ class EnipProtocol(Protocol):
 
         eg: tag = (('SENSOR1'), )
 
-    Supported tag datatypes:
+    Supported modes:
+        - 0: client only
+        - 1: tcp enip server
+
+    Supported tag data types:
         - SINT (8-bit)
         - INT (16-bit)
         - DINT (32-bit)
@@ -422,8 +426,15 @@ class ModbusTcpProtocol(Protocol):
 
     name: modbustcp
 
-    Tag names are registers.
+    Supported modes:
+        - 0: client only
+        - 1: tcp modbus server
 
+    Supported tag data types:
+        - CO (1-bit, coil, read and write)
+        - DI (1-bit, digital input, read only)
+        - HR (16-bit, holding register, read and write)
+        - IR (16-bit, input register, read only)
     """
 
     # server ports
@@ -441,7 +452,7 @@ class ModbusTcpProtocol(Protocol):
         else:
             raise OSError
 
-        # tcp enip server
+        # modbus enip server
         if self._mode == 1:
             print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
@@ -465,23 +476,9 @@ class ModbusTcpProtocol(Protocol):
 
             self._server_subprocess = subprocess.Popen(cmd, shell=False)
 
-        # udp enip server
+        # udp modbus server
         elif self._mode == 2:
-            print 'DEBUG EnipProtocol server addr: ', self._server['address']
-            if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
-                self._server['address'] += EnipProtocol._UDP_PORT
-
-            elif not self._server['address'].endswith(EnipProtocol._UDP_PORT):
-                print 'WARNING: not using std enip %s UDP port' % \
-                    EnipProtocol._UDP_PORT
-            # TODO: add --udp flag
-            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
-            if sys.platform.startswith('linux'):
-                self._server_log = 'logs/enip_udp_server '
-            else:
-                raise OSError
-
-            # TODO: start UDP enip server
+            # TODO: implement it
+            pass
 
 # }}}

@@ -223,11 +223,16 @@ class TestEnipProtocol():
 class TestModbusTcpProtocol():
 
     TAGS = (
-        ('SENSOR1', 1, 'INT'),
-        ('SENSOR1', 2, 'INT'),
-        ('ACTUATOR1', 'INT'))
+        ('CO1', 1),
+        ('CO2', 0),
+        ('DI1', 0),
+        ('DI2', 1),
+        ('HR1', 1),
+        ('HR2', 2),
+        ('IR1', 3),
+        ('IR2', 4))
     SERVER = {
-        'address': 'localhost:44818',
+        'address': 'localhost:502',
         'tags': TAGS
     }
     CLIENT_SERVER_PROTOCOL = {
@@ -259,6 +264,7 @@ class TestModbusTcpProtocol():
             protocol=TestModbusTcpProtocol.CLIENT_SERVER_PROTOCOL)
         eq_(modbustcp._name, 'modbustcp')
 
+    @SkipTest
     def test_server_stop(self):
 
         cmd = ModbusTcpProtocol._start_server_cmd()
@@ -277,20 +283,17 @@ class TestModbusTcpProtocol():
         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
         try:
             print "TEST: client has to kill the cpppo process."
-            EnipProtocol._start_server(ADDRESS, TAGS)
+            ModbusTcpProtocol._start_server(ADDRESS, TAGS)
             # TODO: add _stop_server
         except Exception as error:
             print 'ERROR test_server_start: ', error
 
-    # TODO
-    @SkipTest
     def test_server_multikey(self):
 
-        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        cmd = ModbusTcpProtocol._start_server_cmd(tags=self.TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
-            EnipProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
 
@@ -304,11 +307,11 @@ class TestModbusTcpProtocol():
     @SkipTest
     def test_send_multikey(self):
 
-        enip = EnipProtocol(
+        enip = ModbusTcpProtocol(
             protocol=CLIENT_PROTOCOL)
 
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        cmd = ModbusTcpProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
 
@@ -324,21 +327,21 @@ class TestModbusTcpProtocol():
             for value in range(5):
                 enip._send(what, value, address)
 
-            EnipProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
 
         except Exception as error:
-            EnipProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
             print 'ERROR test_client: ', error
 
     # TODO
     @SkipTest
     def test_receive_multikey(self):
 
-        enip = EnipProtocol(
+        enip = ModbusTcpProtocol(
             protocol=CLIENT_PROTOCOL)
 
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+        cmd = ModbusTcpProtocol._start_server_cmd(tags=TAGS)
         try:
             server = subprocess.Popen(cmd, shell=False)
 
@@ -352,10 +355,10 @@ class TestModbusTcpProtocol():
             address = 'localhost:44818'
             enip._receive(what, address)
 
-            EnipProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
 
         except Exception as error:
-            EnipProtocol._stop_server(server)
+            ModbusTcpProtocol._stop_server(server)
             print 'ERROR test_client: ', error
 
     # TODO
@@ -363,7 +366,7 @@ class TestModbusTcpProtocol():
     def test_client_server(self):
 
         try:
-            enip = EnipProtocol(
+            enip = ModbusTcpProtocol(
                 protocol=CLIENT_SERVER_PROTOCOL)
 
             # read a multikey
@@ -388,9 +391,9 @@ class TestModbusTcpProtocol():
             for value in range(5):
                 enip._send(what, value, address)
 
-            EnipProtocol._stop_server(enip._server_subprocess)
+            ModbusTcpProtocol._stop_server(enip._server_subprocess)
 
         except Exception as error:
-            EnipProtocol._stop_server(enip._server_subprocess)
+            ModbusTcpProtocol._stop_server(enip._server_subprocess)
             print 'ERROR test_client_server: ', error
 # }}}
