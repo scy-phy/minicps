@@ -41,13 +41,21 @@ class Device(object):
 
     # TODO: state dict convention (eg: multiple table support?)
     def __init__(self, name, protocol, state, disk={}, memory={}):
-        """
+        """Init a Device object.
 
         :param str name: device name
         :param dict protocol: used to set up the network layer API
         :param dict state: used to set up the physical layer API
         :param dict disk: persistent memory
         :param dict memory: main memory
+
+        Protocol is a dict containing 3 keys:
+
+            - name: addresses a str identifying the protocol name (eg: enip)
+            - mode: addresses a int identifying the mode (eg: tcp asynch server)
+            - server: if mode equals 0 is empty,
+              otherwise it addresses a dict containing the server information
+              such as its address (with optional port number), and tags.
 
         Device construction example:
 
@@ -114,7 +122,7 @@ class Device(object):
             if type(state['name']) is not str:
                 raise TypeError('State name must be a string.')
 
-        # protocol
+        # protocol dict
         if type(protocol) is not dict:
             if protocol is not None:
                 raise TypeError('Protocol must be either None or a dict.')
@@ -144,6 +152,7 @@ class Device(object):
                 if (mode < 0):
                     raise ValueError('Protocol mode must be positive.')
             # protocol['server'] TODO
+
             # protocol['client'] TODO after adding it to the API
 
     def _init_state(self):
