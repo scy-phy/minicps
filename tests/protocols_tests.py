@@ -226,15 +226,16 @@ class TestEnipProtocol():
 class TestModbusProtocol():
 
     # NOTE: second tuple element is the process id
-    TAGS = (
-        ('CO1', 1, 'CO'),
-        ('CO1', 2, 'CO'),
-        ('DI1', 1, 'DI'),
-        ('DI1', 2, 'DI'),
-        ('HR1', 1, 'HR'),
-        ('HR2', 2, 'HR'),
-        ('IR1', 1, 'IR'),
-        ('IR2', 4, 'IR'))
+    TAGS = (10, 10, 10, 10)
+    # TAGS = (
+    #     ('CO1', 1, 'CO'),
+    #     ('CO1', 2, 'CO'),
+    #     ('DI1', 1, 'DI'),
+    #     ('DI1', 2, 'DI'),
+    #     ('HR1', 1, 'HR'),
+    #     ('HR2', 2, 'HR'),
+    #     ('IR1', 1, 'IR'),
+    #     ('IR2', 4, 'IR'))
     SERVER = {
         'address': 'localhost:502',
         'tags': TAGS
@@ -292,14 +293,14 @@ class TestModbusProtocol():
         except Exception as error:
             print 'ERROR test_server_start: ', error
 
-    def test_server_start_stop(self):
+    def test_server_start_cmd(self):
 
-        cmd = ModbusProtocol._start_server_cmd(tags=self.TAGS)
         try:
+            print "TEST: client has to kill the pymodbus process."
+            cmd = ModbusProtocol._start_server_cmd(tags=self.TAGS)
             server = subprocess.Popen(cmd, shell=False)
-            ModbusProtocol._stop_server(server)
         except Exception as error:
-            print 'ERROR test_server_start_stop: ', error
+            print 'ERROR test_server_start_cmd: ', error
 
     # TODO
     @SkipTest

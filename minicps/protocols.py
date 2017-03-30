@@ -431,7 +431,10 @@ class ModbusProtocol(Protocol):
     name: modbus
 
     Tag is a generic name to manage modbus datatypes: coils, discrete inputs,
-    holding registers, and input registers.
+    holding registers, and input registers. The servers will init all the tags
+    to 0, and they will use pymodbus's ModbusSequentialDataBlock. The
+    addressing is the default one (zero_mode=False). The context is using a
+    single slave mode.
 
     Supported modes:
         - 0: client only
@@ -491,24 +494,23 @@ class ModbusProtocol(Protocol):
             # TODO: implement it
             pass
 
+    # TODO: still not sure about the tags API
     @classmethod
     def _start_server_cmd(
         cls,
         address='localhost:502',
         mode=1,
-        tags=(
-            ('CO1', 1, 'CO'), ('HR1', 1, 'HR'))):
+        tags=(10, 10, 10, 10)):
+            # ('CO1', 1, 'CO'), ('HR1', 1, 'HR'))):
         """Build a subprocess.Popen cmd string for pycomm server.
-
-        Tags can be any tuple of tuples. Each tuple has to contain a set of
-        string-convertible fields, the last one has to be a string containing
-        a supported data type. The current serializer is : (colon).
 
         Consistency between modbus server key-values and state key-values has to
         be guaranteed by the client.
 
         :address: to serve
-        :tags: to serve
+        :tags: ordered tuple of ints representing the numbers of discrete
+               inputs, coils, input registers, and holding registers to be init.
+               Current pymodbus servers only support ModbusSequentialDataBlock.
 
         :returns: list of strings generated with shlex.split,
                   passable to subprocess.Popen object
@@ -526,23 +528,27 @@ class ModbusProtocol(Protocol):
         IP = '-i {} '.format(address[:colon_index])
         PORT = '-p {} '.format(address[colon_index+1:])
         MODE = '-m {} '.format(mode)
+        DI = '-d {} '.format(tags[0])
+        CO = '-c {} '.format(tags[1])
+        IR = '-r {} '.format(tags[2])
+        HR = '-R {} '.format(tags[3])
         # TAGS = ModbusProtocol._tuple_to_pymodbus_tags(tags)
-        TAGS = 'a '
 
         cmd = shlex.split(
             CMD +
             IP +
             PORT +
             MODE +
-            TAGS
+            DI + CO + IR + HR
         )
         print 'DEBUG enip _start_server cmd: ', cmd
 
         return cmd
 
+    # FIXME: not implemented because we are passing just the number of tags
     @classmethod
     def _tuple_to_pymodbus_tags(cls, tags, serializer=':'):
-        """Returns a TODO.
+        """Returns a TODO
 
         pymodbus server API:
 
