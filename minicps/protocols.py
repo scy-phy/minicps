@@ -37,16 +37,17 @@ class Protocol(object):
     to support multi-protocol CPS.
     """
 
+    # NOTE: used to serialize tags when multiple keys are used
     _SERIALIZER = ':'
 
     # TODO: what if the server supports multiple protocols with different ports
     def __init__(self, protocol):
-        """Init a State object.
+        """Init a Protocol object.
 
         protocol fields:
 
-            - name: textual identifier
-            - mode: int coding mode eg: 1 = modbus synch TCP
+            - name: textual identifier (eg: enip)
+            - mode: int coding mode eg: 1 = modbus asynch TCP
             - server: dict containing server settings, empty if mode = 0
 
         :protocol: validated dict passed from Device obj
@@ -268,7 +269,7 @@ class EnipProtocol(Protocol):
         address='localhost:44818',
         tags=(
             ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
-        """Build a Popen cmd string for cpppo server.
+        """Build a subprocess.Popen cmd string for cpppo server.
 
         Tags can be any tuple of tuples. Each tuple has to contain a set of
         string-convertible fields, the last one has to be a string containing
@@ -279,7 +280,9 @@ class EnipProtocol(Protocol):
 
         :address: to serve
         :tags: to serve
-        :returns: cmd string passable to Popen object
+
+        :returns: list of strings generated with shlex.split,
+                  passable to subprocess.Popen object
         """
 
         CMD = sys.executable + ' -m cpppo.server.enip '
@@ -329,7 +332,7 @@ class EnipProtocol(Protocol):
     def _stop_server(cls, server):
         """Stop an enip server.
 
-        :server: Popen object
+        :server: subprocess.Popen object
         """
 
         try:
@@ -419,6 +422,7 @@ class EnipProtocol(Protocol):
 # }}}
 
 
+# TODO: mode = 2: tcp synch modbus server
 # ModbusProtocol {{{1
 class ModbusProtocol(Protocol):
 
@@ -426,53 +430,59 @@ class ModbusProtocol(Protocol):
 
     name: modbus
 
+    Tag is a generic name to manage modbus datatypes: coils, discrete inputs,
+    holding registers, and input registers.
+
     Supported modes:
         - 0: client only
-        - 1: tcp modbus server
+        - 1: tcp asynch modbus server
 
     Supported tag data types:
         - CO (1-bit, coil, read and write)
-        - DI (1-bit, digital input, read only)
+        - DI (1-bit, discrete input, read only)
         - HR (16-bit, holding register, read and write)
         - IR (16-bit, input register, read only)
     """
 
     # server ports
     _TCP_PORT = ':502'
-    # _UDP_PORT = ':2222'
+    # _UDP_PORT = ':TODO
 
     def __init__(self, protocol):
 
-        super(EnipProtocol, self).__init__(protocol)
+        super(ModbusProtocol, self).__init__(protocol)
 
-        self._client_cmd = sys.executable + ' scripts/pymodbus/asynch-server.py '
+        # TODO: set the client command
+        self._client_cmd = sys.executable + ' scripts/pymodbus/synch-client.py '
 
         if sys.platform.startswith('linux'):
             self._client_log = 'logs/modbus_client '
         else:
             raise OSError
 
-        # modbus enip server
+        # modbus asynch tcp server
         if self._mode == 1:
-            print 'DEBUG EnipProtocol server addr: ', self._server['address']
-            if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
-                self._server['address'] += EnipProtocol._TCP_PORT
-
-            elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
-                print 'WARNING: not using std enip %s TCP port' % \
-                    EnipProtocol._TCP_PORT
-
-            self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
             if sys.platform.startswith('linux'):
-                self._server_log = 'logs/enip_tcp_server '
+                self._server_log = 'logs/modbus_tcp_server '
             else:
                 raise OSError
 
-            cmd = EnipProtocol._start_server_cmd(
+            print 'DEBUG ModbusProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
+                print 'DEBUG: concatenating server address with default port.'
+                self._server['address'] += ModbusProtocol._TCP_PORT
+
+            elif not self._server['address'].endswith(ModbusProtocol._TCP_PORT):
+                print 'WARNING: not using std modbus %s TCP port' % \
+                    ModbusProtocol._TCP_PORT
+
+
+            cmd = ModbusProtocol._start_server_cmd(
                 address=self._server['address'],
-                tags=self._server['tags'])
+                mode=self._mode,
+                tags=self._server['tags'],
+            )
 
             self._server_subprocess = subprocess.Popen(cmd, shell=False)
 
@@ -480,5 +490,84 @@ class ModbusProtocol(Protocol):
         elif self._mode == 2:
             # TODO: implement it
             pass
+
+    @classmethod
+    def _start_server_cmd(
+        cls,
+        address='localhost:502',
+        mode=1,
+        tags=(
+            ('CO1', 1, 'CO'), ('HR1', 1, 'HR'))):
+        """Build a subprocess.Popen cmd string for pycomm server.
+
+        Tags can be any tuple of tuples. Each tuple has to contain a set of
+        string-convertible fields, the last one has to be a string containing
+        a supported data type. The current serializer is : (colon).
+
+        Consistency between modbus server key-values and state key-values has to
+        be guaranteed by the client.
+
+        :address: to serve
+        :tags: to serve
+
+        :returns: list of strings generated with shlex.split,
+                  passable to subprocess.Popen object
+        """
+
+        if sys.platform.startswith('linux'):
+            SHELL = '/bin/bash -c '
+            LOG = '--log logs/protocols_tests_modbus_server '
+        else:
+            raise OSError
+
+        colon_index = address.find(':')
+
+        CMD = sys.executable + ' scripts/pymodbus/servers.py '
+        IP = '-i {} '.format(address[:colon_index])
+        PORT = '-p {} '.format(address[colon_index+1:])
+        MODE = '-m {} '.format(mode)
+        # TAGS = ModbusProtocol._tuple_to_pymodbus_tags(tags)
+        TAGS = 'a '
+
+        cmd = shlex.split(
+            CMD +
+            IP +
+            PORT +
+            MODE +
+            TAGS
+        )
+        print 'DEBUG enip _start_server cmd: ', cmd
+
+        return cmd
+
+    @classmethod
+    def _tuple_to_pymodbus_tags(cls, tags, serializer=':'):
+        """Returns a TODO.
+
+        pymodbus server API:
+
+            store = ModbusSlaveContext(
+                di=ModbusSequentialDataBlock(0, [17] * 100),
+                co=ModbusSequentialDataBlock(0, [17] * 100),
+                hr=ModbusSequentialDataBlock(0, [17] * 100),
+                ir=ModbusSequentialDataBlock(0, [17] * 100),
+            )
+
+        """
+
+        tags_string = ''
+        for tag in tags:
+            tags_string += str(tag[0])
+            for field in tag[1:-1]:
+                tags_string += serializer
+                # print 'DEBUG _tuple_to_cpppo_tags field: ', field
+                tags_string += str(field)
+
+            tags_string += '='
+            tags_string += str(tag[-1])
+            tags_string += ' '
+        print 'DEBUG enip server tags_string: ', tags_string
+
+        return tags_string
 
 # }}}

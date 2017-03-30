@@ -53,6 +53,8 @@ if __name__ == "__main__":
 
     # NOTE: currently only implements mode 1
     if mode == 1:
+        # NOTE: ip is a str
+        # NOTE: port is an int
         StartTcpServer(context, identity=identity, address=(ip, port))
     else:
         pass
