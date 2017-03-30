@@ -419,12 +419,12 @@ class EnipProtocol(Protocol):
 # }}}
 
 
-# ModbusTcpProtocol {{{1
-class ModbusTcpProtocol(Protocol):
+# ModbusProtocol {{{1
+class ModbusProtocol(Protocol):
 
-    """ModbusTcpProtocol manager.
+    """ModbusProtocol manager.
 
-    name: modbustcp
+    name: modbus
 
     Supported modes:
         - 0: client only
@@ -448,7 +448,7 @@ class ModbusTcpProtocol(Protocol):
         self._client_cmd = sys.executable + ' scripts/pymodbus/asynch-server.py '
 
         if sys.platform.startswith('linux'):
-            self._client_log = 'logs/modbustcp_client '
+            self._client_log = 'logs/modbus_client '
         else:
             raise OSError
 

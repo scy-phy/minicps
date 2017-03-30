@@ -26,7 +26,7 @@ if __name__ == "__main__":
     log.setLevel(logging.DEBUG)
 
     IP = argv[1]
-    PORT = argv[2]  # modbustcp 502
+    PORT = argv[2]  # modbus 502
     UNIT = argv[3]  # slave number 0
 
     client = ModbusClient(ip, port=port,

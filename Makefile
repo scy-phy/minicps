@@ -87,8 +87,8 @@ test-protocols:
 test-enip:
 	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py:TestEnipProtocol
 
-test-modbustcp:
-	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py:TestModbusTcpProtocol
+test-modbus:
+	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py:TestModbusProtocol
 
 test-utils:
 	$(TESTER) $(TESTER_OPTS) tests/utils_tests.py
