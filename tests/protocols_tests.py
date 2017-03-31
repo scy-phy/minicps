@@ -56,7 +56,7 @@ class TestProtocol():
 
 # }}}
 
-# TestEniptProtocol {{{1
+# TestEnipProtocol {{{1
 class TestEnipProtocol():
 
     # NOTE: second tuple element is the process id
@@ -255,7 +255,6 @@ class TestModbusProtocol():
     else:
         raise OSError
 
-
     @SkipTest
     def test_server_start_cmd(self):
 
@@ -265,7 +264,6 @@ class TestModbusProtocol():
             server = subprocess.Popen(cmd, shell=False)
         except Exception as error:
             print 'ERROR test_server_start_cmd: ', error
-
 
     @SkipTest
     def test_server_start(self):
@@ -277,7 +275,6 @@ class TestModbusProtocol():
         except Exception as error:
             print 'ERROR test_server_start: ', error
 
-
     def test_server_stop(self):
 
         cmd = ModbusProtocol._start_server_cmd()
@@ -287,6 +284,21 @@ class TestModbusProtocol():
 
         except Exception as error:
             print 'ERROR test_server_stop: ', error
+
+    def test_init(self):
+
+        # TODO: add _stop_server
+        client = ModbusProtocol(
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
+        eq_(client._name, 'modbus')
+        del client
+
+        server = ModbusProtocol(
+            protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
+        eq_(server._name, 'modbus')
+        server._stop_server(server._server_subprocess)
+        del server
+
 
     # TODO: test client commands
     # TODO: test client and server interactions
