@@ -162,6 +162,7 @@ class EnipProtocol(Protocol):
 
         self._client_cmd = sys.executable + ' -m cpppo.server.enip.client '
 
+        # NOTE: set up logging
         if sys.platform.startswith('linux'):
             self._client_log = 'logs/enip_client '
         else:
@@ -169,6 +170,13 @@ class EnipProtocol(Protocol):
 
         # tcp enip server
         if self._mode == 1:
+
+            # NOTE: set up logging
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_tcp_server '
+            else:
+                raise OSError
+
             print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
                 print 'DEBUG: concatenating server address with default port.'
@@ -180,22 +188,19 @@ class EnipProtocol(Protocol):
 
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
-            if sys.platform.startswith('linux'):
-                self._server_log = 'logs/enip_tcp_server '
-            else:
-                raise OSError
-
-            # cmd = EnipProtocol._start_server_cmd(
-            #     address=self._server['address'],
-            #     tags=self._server['tags'])
-            # self._server_subprocess = subprocess.Popen(cmd, shell=False)
-
             self._server_subprocess = EnipProtocol._start_server(
                     self._server['address'],
                     self._server['tags'])
 
         # TODO: udp enip server
         elif self._mode == 2:
+
+            # NOTE: set up logging
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_udp_server '
+            else:
+                raise OSError
+
             print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
                 print 'DEBUG: concatenating server address with default port.'
@@ -444,7 +449,7 @@ class ModbusProtocol(Protocol):
     single slave mode.
 
     Supported modes:
-        - 0: client only
+        - 0: client only (currently synch and blocking)
         - 1: tcp asynch modbus server
 
     Supported tag data types:
@@ -462,8 +467,9 @@ class ModbusProtocol(Protocol):
 
         super(ModbusProtocol, self).__init__(protocol)
 
-        # TODO: set the client command
+        # NOTE: currently using blocking synch client
         self._client_cmd = sys.executable + ' scripts/pymodbus/synch-client.py '
+        # self._client_cmd = sys.executable + ' scripts/pymodbus/asynch-client.py '
 
         if sys.platform.startswith('linux'):
             self._client_log = 'logs/modbus_client '
@@ -473,6 +479,7 @@ class ModbusProtocol(Protocol):
         # modbus asynch tcp server
         if self._mode == 1:
 
+            # NOTE: set up logging
             if sys.platform.startswith('linux'):
                 self._server_log = 'logs/modbus_tcp_server '
             else:
@@ -495,8 +502,13 @@ class ModbusProtocol(Protocol):
         # TODO: udp modbus server
         elif self._mode == 2:
 
+            # NOTE: set up logging
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/modbus_udp_server '
+            else:
+                raise OSError
+
             # TODO: implement it
-            pass
 
 
     @classmethod
@@ -576,7 +588,6 @@ class ModbusProtocol(Protocol):
         print 'DEBUG modbus _start_server cmd: ', cmd
 
         return cmd
-
 
 
 
