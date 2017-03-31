@@ -106,17 +106,19 @@ class TestEnipProtocol():
         except Exception as error:
             print 'ERROR test_server_stop: ', error
 
-    @SkipTest
     def test_init(self):
 
         # TODO: add _stop_server
-        enip = EnipProtocol(
+        client = EnipProtocol(
             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
-        eq_(enip._name, 'enip')
-        del enip
-        enip = EnipProtocol(
+        eq_(client._name, 'enip')
+        del client
+
+        server = EnipProtocol(
             protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(enip._name, 'enip')
+        eq_(server._name, 'enip')
+        server._stop_server(server._server_subprocess)
+        del server
 
     def test_server_multikey(self):
 
@@ -216,8 +218,10 @@ class TestEnipProtocol():
             EnipProtocol._stop_server(enip._server_subprocess)
             print 'ERROR test_client_server: ', error
 
+    @SkipTest
     def test_server_udp(self):
 
+        # TODO: implement it
         pass
 # }}}
 
