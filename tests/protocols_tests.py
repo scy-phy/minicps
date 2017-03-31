@@ -84,27 +84,18 @@ class TestEnipProtocol():
     else:
         raise OSError
 
-    @SkipTest
-    def test_server_start(self):
+    def test_server_start_stop(self):
 
         ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
+
         try:
             print "TEST: client has to kill the cpppo process."
-            EnipProtocol._start_server(ADDRESS, TAGS)
-            # TODO: add _stop_server
-        except Exception as error:
-            print 'ERROR test_server_start: ', error
-
-    def test_server_stop(self):
-
-        cmd = EnipProtocol._start_server_cmd()
-        try:
-            server = subprocess.Popen(cmd, shell=False)
+            server = EnipProtocol._start_server(ADDRESS, TAGS)
             EnipProtocol._stop_server(server)
 
         except Exception as error:
-            print 'ERROR test_server_stop: ', error
+            print 'ERROR test_server_start_stop: ', error
 
     def test_init(self):
 
