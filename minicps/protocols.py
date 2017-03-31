@@ -404,9 +404,7 @@ class EnipProtocol(Protocol):
         # print 'DEBUG enip _receive cmd shlex list: ', cmd
 
         try:
-            client = subprocess.Popen(
-                cmd,
-                shell=False,
+            client = subprocess.Popen(cmd, shell=False,
                 stdout=subprocess.PIPE)
 
             # client.communicate is blocking
@@ -417,6 +415,7 @@ class EnipProtocol(Protocol):
             # between a pair of square brackets
             raw_string = raw_out[0]
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
+
             return out
 
         except Exception as error:
@@ -655,8 +654,7 @@ class ModbusProtocol(Protocol):
             print 'ERROR modbus _send: ', error
 
 
-    # TODO: implement it
-    def _receive(self, what, address='localhost:44818'):
+    def _receive(self, what, address='localhost:502'):
         """Receive (read) a value from another host.
 
         It is a blocking operation the parent process will wait till the child
@@ -667,35 +665,46 @@ class ModbusProtocol(Protocol):
 
         :returns: tag value as a `str`
         """
-
-        tag_string = ''
-        tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
+        colon_index = address.find(':')
+        IP = '-i {} '.format(address[:colon_index])
+        PORT = '-p {} '.format(address[colon_index+1:])
+        # NOTE: following data is validated by client script
+        MODE = '-m {} '.format('r')
+        TYPE = '-t {} '.format(what[0])
+        OFFSET = '-o {} '.format(what[1])  # NOTE: 0-based
 
         cmd = shlex.split(
             self._client_cmd +
-            '--log ' + self._client_log +
-            '--address ' + address +
-            ' ' + tag_string
+            IP +
+            PORT +
+            MODE +
+            TYPE +
+            OFFSET
         )
-        # print 'DEBUG enip _receive cmd shlex list: ', cmd
+        print 'DEBUG modbus_receive cmd shlex list: ', cmd
 
         try:
-            client = subprocess.Popen(
-                cmd,
-                shell=False,
+            client = subprocess.Popen(cmd,shell=False,
                 stdout=subprocess.PIPE)
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            # print 'DEBUG enip _receive raw_out: ', raw_out
+            print 'DEBUG modbus _receive raw_out: ', raw_out
 
             # value is stored as first tuple element
             # between a pair of square brackets
-            raw_string = raw_out[0]
-            out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
+            raw_string = raw_out[0].strip()
+
+            # NOTE: registers store int
+            if what[0] == 'HR' or what[0] == 'IR':
+                out = int(raw_string)
+            # NOTE: coils and discrete inputs store bool
+            elif what[0] == 'CO' or what[0] == 'DI':
+                pass
+
             return out
 
         except Exception as error:
-            print 'ERROR enip _receive: ', error
+            print 'ERROR modbus _receive: ', error
 
 # }}}

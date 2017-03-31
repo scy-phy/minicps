@@ -278,6 +278,7 @@ class TestModbusProtocol():
             print 'ERROR test_init_server: ', error
 
 
+    @SkipTest
     def test_send(self):
 
         client = ModbusProtocol(
@@ -311,5 +312,41 @@ class TestModbusProtocol():
             ModbusProtocol._stop_server(server)
             print 'ERROR test_send: ', error
 
+    def test_receive(self):
+
+        client = ModbusProtocol(
+            protocol=CLIENT_PROTOCOL)
+
+        ADDRESS = 'localhost:502'
+        TAGS = (20, 20, 20, 20)
+        OFFSET = 10
+
+        try:
+            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1.0)
+
+            print('TEST: Read to holding registers')
+            for count in range(0, OFFSET):
+                what = ('HR', count)
+                eq_(client._receive(what, ADDRESS), 0)
+            print('')
+
+            print('TEST: Read to input registers')
+            for count in range(0, OFFSET):
+                what = ('IR', count)
+                eq_(client._receive(what, ADDRESS), 0)
+            print('')
+
+            # print('TEST: Read to coils')
+            # for count in range(0, OFFSET):
+            #     what = ('CO', count)
+            #     client._receive(what, ADDRESS)
+            # print('')
+
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            ModbusProtocol._stop_server(server)
+            print 'ERROR test_receive: ', error
 
 # }}}

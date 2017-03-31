@@ -54,6 +54,7 @@ if __name__ == "__main__":
 
     client.connect()
 
+    # TODO: check if asserts are slowing down read/write
     if args.mode == 'w':
 
         # NOTE: write_register
@@ -65,5 +66,22 @@ if __name__ == "__main__":
         elif args.type == 'CO':
             co_write = client.write_coil(args.offset, args.coil)
             assert(co_write.function_code < 0x80)
+
+
+    elif args.mode == 'r':
+
+        # NOTE: read_holding_registers
+        if args.type == 'HR':
+            hr_read = client.read_holding_registers(args.offset, count=1)
+            assert(hr_read.function_code < 0x80)
+            print(hr_read.registers[0])
+
+        # NOTE: read_holding_registers
+        elif args.type == 'IR':
+            ir_read = client.read_input_registers(args.offset, count=1)
+            assert(ir_read.function_code < 0x80)
+            print(ir_read.registers[0])
+
+
 
     client.close()
