@@ -643,7 +643,7 @@ class ModbusProtocol(Protocol):
             OFFSET +
             VALUE
         )
-        print 'DEBUG modbus_send cmd shlex list: ', cmd
+        # print 'DEBUG modbus_send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:

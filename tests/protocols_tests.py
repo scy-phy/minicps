@@ -16,23 +16,6 @@ from minicps.protocols import Protocol, EnipProtocol, ModbusProtocol
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
-# TODO: add new server keys
-SERVER = {
-    'address': 'localhost:44818',
-    'tags': (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT')),
-}
-CLIENT_SERVER_PROTOCOL = {
-    'name': 'enip',
-    'mode': 1,
-    'server': SERVER,
-}
-
-CLIENT_PROTOCOL = {
-    'name': 'enip',
-    'mode': 0,
-    'server': '',
-}
-
 # TestProtocol {{{1
 class TestProtocol():
 
@@ -114,7 +97,7 @@ class TestEnipProtocol():
     def test_send_multikey(self):
 
         enip = EnipProtocol(
-            protocol=CLIENT_PROTOCOL)
+            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
@@ -141,7 +124,7 @@ class TestEnipProtocol():
     def test_receive_multikey(self):
 
         enip = EnipProtocol(
-            protocol=CLIENT_PROTOCOL)
+            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
@@ -173,7 +156,7 @@ class TestEnipProtocol():
 
             # same instance used as server and client
             enip = EnipProtocol(
-                protocol=CLIENT_SERVER_PROTOCOL)
+                protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
 
             # read a multikey
             what = ('SENSOR1', 1)
@@ -210,8 +193,8 @@ class TestEnipProtocol():
 # TestModbusProtocol {{{1
 class TestModbusProtocol():
 
-    # NOTE: second tuple element is the process id
-    TAGS = (10, 10, 10, 10)
+    # NOTE: current API specifies only the number of tags
+    TAGS = (20, 20, 20, 20)
     # TAGS = (
     #     ('CO1', 1, 'CO'),
     #     ('CO1', 2, 'CO'),
@@ -276,11 +259,10 @@ class TestModbusProtocol():
             print 'ERROR test_init_server: ', error
 
 
-    @SkipTest
     def test_send(self):
 
         client = ModbusProtocol(
-            protocol=CLIENT_PROTOCOL)
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:502'
         TAGS = (20, 20, 20, 20)
@@ -313,7 +295,7 @@ class TestModbusProtocol():
     def test_receive(self):
 
         client = ModbusProtocol(
-            protocol=CLIENT_PROTOCOL)
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:502'
         TAGS = (20, 20, 20, 20)
@@ -358,28 +340,37 @@ class TestModbusProtocol():
         ADDRESS = 'localhost:502'
 
         try:
-
-            # same instance used as server and client
+            # NOTE: same instance used as server and client
             modbus = ModbusProtocol(
-                protocol=CLIENT_SERVER_PROTOCOL)
+                protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
+            time.sleep(1.0)
 
-            # read a multikey
+            print('TEST: Write and read coils')
             what = ('CO', 0)
+            value = True
+            modbus._send(what, value, ADDRESS)
+            what = ('CO', 0)
+            eq_(modbus._receive(what, ADDRESS)[0], True)
+            print('')
+
+            print('TEST: Write and read holding registers')
+            for hr in range(10):
+                what = ('HR', hr)
+                modbus._send(what, hr, ADDRESS)
+                what = ('HR', hr)
+                eq_(modbus._receive(what, ADDRESS), hr)
+            print('')
+
+            print('TEST: Read discrete inputs (init to False)')
+            what = ('DI', 0)
             eq_(modbus._receive(what, ADDRESS), [False] * 8)
+            print('')
 
-            # read a single key
-            what = ('HR', 0)
-            eq_(modbus._receive(what, ADDRESS), [False] * 8)
-
-            # write a multikey
-            what = ('SENSOR1', 1)
-            for value in range(5):
-                modbus._send(what, value, ADDRESS)
-
-            # write a single key
-            what = ('ACTUATOR1',)
-            for value in range(5):
-                modbus._send(what, value, ADDRESS)
+            print('TEST: Read input registers (init to 0)')
+            for ir in range(10):
+                what = ('IR', ir)
+                eq_(modbus._receive(what, ADDRESS), 0)
+            print('')
 
             ModbusProtocol._stop_server(modbus._server_subprocess)
 
