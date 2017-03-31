@@ -99,25 +99,31 @@ class TestEnipProtocol():
 
     def test_init_client(self):
 
-        client = EnipProtocol(
-            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
-        eq_(client._name, 'enip')
-        del client
+        try:
+            client = EnipProtocol(
+                protocol=TestEnipProtocol.CLIENT_PROTOCOL)
+            eq_(client._name, 'enip')
+            del client
+        except Exception as error:
+            print 'ERROR test_init_client: ', error
 
     def test_init_server(self):
 
-        server = EnipProtocol(
-            protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(server._name, 'enip')
-        server._stop_server(server._server_subprocess)
-        del server
+        try:
+            server = EnipProtocol(
+                protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+            eq_(server._name, 'enip')
+            server._stop_server(server._server_subprocess)
+            del server
+        except Exception as error:
+            print 'ERROR test_init_server: ', error
 
     def test_server_multikey(self):
 
+        ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
         try:
-            server = subprocess.Popen(cmd, shell=False)
+            server = EnipProtocol._start_server(ADDRESS, TAGS)
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
@@ -127,28 +133,27 @@ class TestEnipProtocol():
         enip = EnipProtocol(
             protocol=CLIENT_PROTOCOL)
 
+        ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+
         try:
-            server = subprocess.Popen(cmd, shell=False)
+            server = EnipProtocol._start_server(ADDRESS, TAGS)
 
             # write a multikey
             what = ('SENSOR1', 1)
-            address = 'localhost:44818'
             for value in range(5):
-                enip._send(what, value, address)
+                enip._send(what, value, ADDRESS)
 
             # write a single key
             what = ('ACTUATOR1',)
-            address = 'localhost:44818'
             for value in range(5):
-                enip._send(what, value, address)
+                enip._send(what, value, ADDRESS)
 
             EnipProtocol._stop_server(server)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
-            print 'ERROR test_client: ', error
+            print 'ERROR test_send_multikey: ', error
 
     def test_receive_multikey(self):
 
