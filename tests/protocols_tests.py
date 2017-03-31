@@ -36,23 +36,7 @@ CLIENT_PROTOCOL = {
 # TestProtocol {{{1
 class TestProtocol():
 
-    def test_init(self):
-
-        enip = Protocol(
-            protocol=CLIENT_SERVER_PROTOCOL)
-        eq_(enip._name, 'enip')
-        eq_(enip._mode, 1)
-        eq_(enip._server['address'], 'localhost:44818')
-        eq_(
-            enip._server['tags'],
-            (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT')))
-        del enip
-
-        enip = Protocol(
-            protocol=CLIENT_PROTOCOL)
-        eq_(enip._name, 'enip')
-        eq_(enip._mode, 0)
-        eq_(enip._server, {})  # pass an empty server dict
+    pass
 
 # }}}
 
@@ -160,30 +144,33 @@ class TestEnipProtocol():
         enip = EnipProtocol(
             protocol=CLIENT_PROTOCOL)
 
+        ADDRESS = 'localhost:44818'  # TEST port
         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
-        cmd = EnipProtocol._start_server_cmd(tags=TAGS)
+
         try:
-            server = subprocess.Popen(cmd, shell=False)
+            server = EnipProtocol._start_server(ADDRESS, TAGS)
 
             # read a multikey
             what = ('SENSOR1', 1)
             address = 'localhost:44818'
-            enip._receive(what, address)
+            enip._receive(what, ADDRESS)
 
             # read a single key
             what = ('ACTUATOR1',)
             address = 'localhost:44818'
-            enip._receive(what, address)
+            enip._receive(what, ADDRESS)
 
             EnipProtocol._stop_server(server)
 
         except Exception as error:
             EnipProtocol._stop_server(server)
-            print 'ERROR test_client: ', error
+            print 'ERROR test_receive_multikey: ', error
 
     def test_client_server(self):
 
         try:
+
+            # same instance used as server and client
             enip = EnipProtocol(
                 protocol=CLIENT_SERVER_PROTOCOL)
 
@@ -220,6 +207,7 @@ class TestEnipProtocol():
 
         # TODO: implement it
         pass
+
 # }}}
 
 # TestModbusProtocol {{{1
@@ -303,4 +291,5 @@ class TestModbusProtocol():
 
     # TODO: test client commands
     # TODO: test client and server interactions
+
 # }}}
