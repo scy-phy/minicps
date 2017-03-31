@@ -278,6 +278,28 @@ class TestModbusProtocol():
             print 'ERROR test_init_server: ', error
 
 
+    def test_send(self):
+
+        client = ModbusProtocol(
+            protocol=CLIENT_PROTOCOL)
+
+        ADDRESS = 'localhost:502'
+        TAGS = (10, 10, 10, 10)
+
+        try:
+            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1.0)
+
+            for count in range(0, 8):
+                what = ('HR', count)
+                client._send(what, count, ADDRESS)
+
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            ModbusProtocol._stop_server(server)
+            print 'ERROR test_send: ', error
+
     # TODO: test client commands
     # TODO: test client and server interactions
 

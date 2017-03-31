@@ -553,9 +553,8 @@ class ModbusProtocol(Protocol):
         else:
             raise OSError
 
-        colon_index = address.find(':')
-
         CMD = sys.executable + ' scripts/pymodbus/servers.py '
+        colon_index = address.find(':')
         IP = '-i {} '.format(address[:colon_index])
         PORT = '-p {} '.format(address[colon_index+1:])
         MODE = '-m {} '.format(mode)
@@ -621,15 +620,29 @@ class ModbusProtocol(Protocol):
         :address: ip[:port]
         """
 
+        colon_index = address.find(':')
         IP = '-i {} '.format(address[:colon_index])
         PORT = '-p {} '.format(address[colon_index+1:])
-        TYPE = '-t {} '.format(what[0])  # NOTE: validated by client script
-        VALUE = '-v {} '.format(what[1])  # NOTE: validated by client script
+        # NOTE: following data is validated by client script
+        MODE = '-m {} '.format('w')
+        TYPE = '-t {} '.format(what[0])
+        OFFSET = '-o {} '.format(what[1])  # NOTE: 0-based
+        if what[0] == 'HR':
+            VALUE = '-r {} '.format(value)
+        elif what[0] == 'CO':
+            VALUE = '-c {} '.format(value)
+        else:
+            raise ValueError('IR and DI are read only data.')
+
 
         cmd = shlex.split(
             self._client_cmd +
-            IP + PORT +
-            TYPE + VALUE
+            IP +
+            PORT +
+            MODE +
+            TYPE +
+            OFFSET +
+            VALUE
         )
         print 'DEBUG modbus_send cmd shlex list: ', cmd
 
