@@ -284,15 +284,26 @@ class TestModbusProtocol():
             protocol=CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:502'
-        TAGS = (10, 10, 10, 10)
+        TAGS = (20, 20, 20, 20)
+        OFFSET = 10
 
         try:
             server = ModbusProtocol._start_server(ADDRESS, TAGS)
             time.sleep(1.0)
 
-            for count in range(0, 8):
+            print('TEST: Write to holding registers')
+            for count in range(0, OFFSET):
                 what = ('HR', count)
                 client._send(what, count, ADDRESS)
+            print('')
+
+            coil = True
+            print('TEST: Write to coils')
+            for count in range(0, OFFSET):
+                what = ('CO', count)
+                client._send(what, coil, ADDRESS)
+                coil = not coil
+            print('')
 
             ModbusProtocol._stop_server(server)
 
@@ -300,7 +311,5 @@ class TestModbusProtocol():
             ModbusProtocol._stop_server(server)
             print 'ERROR test_send: ', error
 
-    # TODO: test client commands
-    # TODO: test client and server interactions
 
 # }}}
