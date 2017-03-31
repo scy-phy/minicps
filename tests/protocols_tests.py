@@ -85,16 +85,16 @@ class TestEnipProtocol():
         raise OSError
 
     @SkipTest
-    def test_init(self):
+    def test_server_start(self):
 
-        # TODO: add _stop_server
-        enip = EnipProtocol(
-            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
-        eq_(enip._name, 'enip')
-        del enip
-        enip = EnipProtocol(
-            protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(enip._name, 'enip')
+        ADDRESS = 'localhost:44818'  # TEST port
+        TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
+        try:
+            print "TEST: client has to kill the cpppo process."
+            EnipProtocol._start_server(ADDRESS, TAGS)
+            # TODO: add _stop_server
+        except Exception as error:
+            print 'ERROR test_server_start: ', error
 
     def test_server_stop(self):
 
@@ -107,16 +107,16 @@ class TestEnipProtocol():
             print 'ERROR test_server_stop: ', error
 
     @SkipTest
-    def test_server_start(self):
+    def test_init(self):
 
-        ADDRESS = 'localhost:44818'  # TEST port
-        TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
-        try:
-            print "TEST: client has to kill the cpppo process."
-            EnipProtocol._start_server(ADDRESS, TAGS)
-            # TODO: add _stop_server
-        except Exception as error:
-            print 'ERROR test_server_start: ', error
+        # TODO: add _stop_server
+        enip = EnipProtocol(
+            protocol=TestEnipProtocol.CLIENT_PROTOCOL)
+        eq_(enip._name, 'enip')
+        del enip
+        enip = EnipProtocol(
+            protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+        eq_(enip._name, 'enip')
 
     def test_server_multikey(self):
 
@@ -127,10 +127,6 @@ class TestEnipProtocol():
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
-
-    def test_server_udp(self):
-
-        pass
 
     def test_send_multikey(self):
 
@@ -220,6 +216,9 @@ class TestEnipProtocol():
             EnipProtocol._stop_server(enip._server_subprocess)
             print 'ERROR test_client_server: ', error
 
+    def test_server_udp(self):
+
+        pass
 # }}}
 
 # TestModbusProtocol {{{1
