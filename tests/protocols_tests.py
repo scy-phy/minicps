@@ -167,6 +167,8 @@ class TestEnipProtocol():
 
     def test_client_server(self):
 
+        ADDRESS = 'localhost:44818'
+
         try:
 
             # same instance used as server and client
@@ -175,25 +177,21 @@ class TestEnipProtocol():
 
             # read a multikey
             what = ('SENSOR1', 1)
-            address = 'localhost:44818'
-            enip._receive(what, address)
+            enip._receive(what, ADDRESS)
 
             # read a single key
             what = ('ACTUATOR1',)
-            address = 'localhost:44818'
-            enip._receive(what, address)
+            enip._receive(what, ADDRESS)
 
             # write a multikey
             what = ('SENSOR1', 1)
-            address = 'localhost:44818'
             for value in range(5):
-                enip._send(what, value, address)
+                enip._send(what, value, ADDRESS)
 
             # write a single key
             what = ('ACTUATOR1',)
-            address = 'localhost:44818'
             for value in range(5):
-                enip._send(what, value, address)
+                enip._send(what, value, ADDRESS)
 
             EnipProtocol._stop_server(enip._server_subprocess)
 
@@ -355,4 +353,37 @@ class TestModbusProtocol():
             ModbusProtocol._stop_server(server)
             print 'ERROR test_receive: ', error
 
+    def test_client_server(self):
+
+        ADDRESS = 'localhost:502'
+
+        try:
+
+            # same instance used as server and client
+            modbus = ModbusProtocol(
+                protocol=CLIENT_SERVER_PROTOCOL)
+
+            # read a multikey
+            what = ('CO', 0)
+            eq_(modbus._receive(what, ADDRESS), [False] * 8)
+
+            # read a single key
+            what = ('HR', 0)
+            eq_(modbus._receive(what, ADDRESS), [False] * 8)
+
+            # write a multikey
+            what = ('SENSOR1', 1)
+            for value in range(5):
+                modbus._send(what, value, ADDRESS)
+
+            # write a single key
+            what = ('ACTUATOR1',)
+            for value in range(5):
+                modbus._send(what, value, ADDRESS)
+
+            ModbusProtocol._stop_server(modbus._server_subprocess)
+
+        except Exception as error:
+            ModbusProtocol._stop_server(modbus._server_subprocess)
+            print 'ERROR test_client_server: ', error
 # }}}
