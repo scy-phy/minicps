@@ -279,7 +279,6 @@ class TestModbusProtocol():
             print 'ERROR test_server_start: ', error
 
 
-    @SkipTest
     def test_server_stop(self):
 
         cmd = ModbusProtocol._start_server_cmd()
@@ -290,4 +289,6 @@ class TestModbusProtocol():
         except Exception as error:
             print 'ERROR test_server_stop: ', error
 
+    # TODO: test client commands
+    # TODO: test client and server interactions
 # }}}

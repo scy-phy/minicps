@@ -586,4 +586,96 @@ class ModbusProtocol(Protocol):
         """
 
         pass
+
+
+    @classmethod
+    def _stop_server(cls, server):
+        """Stop a modbus server.
+
+        :server: subprocess.Popen object
+        """
+
+        try:
+            server.kill()
+        except Exception as error:
+            print 'ERROR stop modbus server: ', error
+
+    # TODO: remove try ... except, maybe return sent value
+    def _send(
+            self, what, value,
+            address='localhost:44818'):
+        """Send (serve) a value.
+
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+
+        :what: tuple addressing what
+        :value: sent
+        :address: ip[:port]
+        """
+
+        tag_string = ''
+        tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
+        # print 'DEBUG enip _send tag_string: ', tag_string
+
+        cmd = shlex.split(
+            self._client_cmd +
+            '--log ' + self._client_log +
+            '--address ' + address +
+            ' ' + tag_string
+        )
+        # print 'DEBUG enip _send cmd shlex list: ', cmd
+
+        # TODO: pipe stdout and return the sent value
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()
+
+        except Exception as error:
+            print 'ERROR enip _send: ', error
+
+    # TODO: remove try ... except, maybe return rec value
+    def _receive(
+            self, what,
+            address='localhost:44818'):
+        """Receive a (requested) value.
+
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+
+        :what: to ask for
+        :address: to receive from
+
+        :returns: tag value as a `str`
+        """
+
+        tag_string = ''
+        tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
+
+        cmd = shlex.split(
+            self._client_cmd +
+            '--log ' + self._client_log +
+            '--address ' + address +
+            ' ' + tag_string
+        )
+        # print 'DEBUG enip _receive cmd shlex list: ', cmd
+
+        try:
+            client = subprocess.Popen(
+                cmd,
+                shell=False,
+                stdout=subprocess.PIPE)
+
+            # client.communicate is blocking
+            raw_out = client.communicate()
+            # print 'DEBUG enip _receive raw_out: ', raw_out
+
+            # value is stored as first tuple element
+            # between a pair of square brackets
+            raw_string = raw_out[0]
+            out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
+            return out
+
+        except Exception as error:
+            print 'ERROR enip _receive: ', error
 # }}}
