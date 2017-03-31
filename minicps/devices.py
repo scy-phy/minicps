@@ -224,7 +224,7 @@ class Device(object):
             return self._state._get(what)
 
     def send(self, what, value, address):
-        """Send aka serve a value to another host.
+        """Send (write) a value to another host.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -239,7 +239,7 @@ class Device(object):
             return self._protocol._send(what, value, address)
 
     def recieve(self, what, address):
-        """Receive a value from another host.
+        """Receive (read) a value from another host.
 
         :param tuple what: field[s] identifier[s]
         :param str address: ``ip[:port]``

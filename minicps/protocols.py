@@ -16,7 +16,7 @@ positive modes indicates different server configurations eg: enip tcp server
 Ethernet/IP (ENIP) is partially supported using cpppo module:
 https://github.com/pjkundert/cpppo
 
-Modbus/TCP is supported using pymodbus module:
+Modbus is supported using pymodbus module:
 https://github.com/bashwork/pymodbus
 """
 
@@ -86,8 +86,8 @@ class Protocol(object):
 
         print '_stop_server: please override me.'
 
-    def _send(self, what, address):
-        """Send (serve) a value.
+    def _send(self, what, value, address):
+        """Send (write) a value to another host.
 
         :what: to send
         :address: to send to
@@ -96,7 +96,7 @@ class Protocol(object):
         print '_send: please override me.'
 
     def _receive(self, what, address):
-        """Receive a (requested) value.
+        """Receive (read) a value from another host.
 
         :address: to receive from
         :what: to ask for
@@ -104,8 +104,8 @@ class Protocol(object):
 
         print '_receive: please override me.'
 
-    def _send_multiple(self, what, address):
-        """Send (serve) multiple values.
+    def _send_multiple(self, what, values, address):
+        """Send (write) multiple values to another host.
 
         :address: to receive from
         :what: to ask for
@@ -295,11 +295,8 @@ class EnipProtocol(Protocol):
     # TODO: how to start a UDP cpppo server?
     # TODO: parametric PRINT_STDOUT and others
     @classmethod
-    def _start_server_cmd(
-        cls,
-        address='localhost:44818',
-        tags=(
-            ('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
+    def _start_server_cmd(cls, address='localhost:44818',
+        tags=(('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
         """Build a subprocess.Popen cmd string for cpppo server.
 
         Tags can be any tuple of tuples. Each tuple has to contain a set of
@@ -352,11 +349,8 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR stop enip server: ', error
 
-    # TODO: remove try ... except, maybe return sent value
-    def _send(
-            self, what, value,
-            address='localhost:44818'):
-        """Send (serve) a value.
+    def _send(self, what, value, address='localhost:44818'):
+        """Send (write) a value to another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
@@ -386,11 +380,8 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _send: ', error
 
-    # TODO: remove try ... except, maybe return rec value
-    def _receive(
-            self, what,
-            address='localhost:44818'):
-        """Receive a (requested) value.
+    def _receive(self, what, address='localhost:44818'):
+        """Receive (read) a value from another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
@@ -539,11 +530,8 @@ class ModbusProtocol(Protocol):
 
     # TODO: still not sure about the tags API
     @classmethod
-    def _start_server_cmd(
-        cls,
-        address='localhost:502',
-        tags=(10, 10, 10, 10),
-        mode=1):
+    def _start_server_cmd(cls, address='localhost:502',
+        tags=(10, 10, 10, 10), mode=1):
             # ('CO1', 1, 'CO'), ('HR1', 1, 'HR'))):
         """Build a subprocess.Popen cmd string for pycomm server.
 
@@ -589,7 +577,6 @@ class ModbusProtocol(Protocol):
         return cmd
 
 
-
     # FIXME: not implemented because we are passing just the number of tags
     @classmethod
     def _tuple_to_pymodbus_tags(cls, tags, serializer=':'):
@@ -623,11 +610,8 @@ class ModbusProtocol(Protocol):
 
 
     # TODO: implement it
-    # TODO: remove try ... except, maybe return sent value
-    def _send(
-            self, what, value,
-            address='localhost:44818'):
-        """Send (serve) a value.
+    def _send(self, what, value, address='localhost:502'):
+        """Send (write) a value to another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
@@ -637,17 +621,17 @@ class ModbusProtocol(Protocol):
         :address: ip[:port]
         """
 
-        tag_string = ''
-        tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
-        # print 'DEBUG enip _send tag_string: ', tag_string
+        IP = '-i {} '.format(address[:colon_index])
+        PORT = '-p {} '.format(address[colon_index+1:])
+        TYPE = '-t {} '.format(what[0])  # NOTE: validated by client script
+        VALUE = '-v {} '.format(what[1])  # NOTE: validated by client script
 
         cmd = shlex.split(
             self._client_cmd +
-            '--log ' + self._client_log +
-            '--address ' + address +
-            ' ' + tag_string
+            IP + PORT +
+            TYPE + VALUE
         )
-        # print 'DEBUG enip _send cmd shlex list: ', cmd
+        print 'DEBUG modbus_send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -655,15 +639,12 @@ class ModbusProtocol(Protocol):
             client.wait()
 
         except Exception as error:
-            print 'ERROR enip _send: ', error
+            print 'ERROR modbus _send: ', error
 
 
     # TODO: implement it
-    # TODO: remove try ... except, maybe return rec value
-    def _receive(
-            self, what,
-            address='localhost:44818'):
-        """Receive a (requested) value.
+    def _receive(self, what, address='localhost:44818'):
+        """Receive (read) a value from another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
