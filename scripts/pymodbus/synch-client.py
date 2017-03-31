@@ -82,6 +82,18 @@ if __name__ == "__main__":
             assert(ir_read.function_code < 0x80)
             print(ir_read.registers[0])
 
+        # NOTE: read_discrete_inputs
+        elif args.type == 'DI':
+            di_read = client.read_discrete_inputs(args.offset, count=1)
+            assert(di_read.function_code < 0x80)
+            print(di_read.bits)
+
+        # NOTE: read_discrete_inputs
+        elif args.type == 'CO':
+            co_read = client.read_coils(args.offset, count=1)
+            assert(co_read.function_code < 0x80)
+            print(co_read.bits)
+
 
 
     client.close()

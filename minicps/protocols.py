@@ -681,7 +681,7 @@ class ModbusProtocol(Protocol):
             TYPE +
             OFFSET
         )
-        print 'DEBUG modbus_receive cmd shlex list: ', cmd
+        # print 'DEBUG modbus_receive cmd shlex list: ', cmd
 
         try:
             client = subprocess.Popen(cmd,shell=False,
@@ -698,9 +698,19 @@ class ModbusProtocol(Protocol):
             # NOTE: registers store int
             if what[0] == 'HR' or what[0] == 'IR':
                 out = int(raw_string)
-            # NOTE: coils and discrete inputs store bool
+
+            # NOTE: coils and discrete inputs store 8 bools
             elif what[0] == 'CO' or what[0] == 'DI':
-                pass
+                out = []
+                bools = raw_string[1:-1].split(',')
+                # print 'DEBUG modbus _receive bools: ', bools
+                for b in bools:
+                    if b.strip() == 'False':
+                        out.append(False)
+                    elif b.strip() == 'True':
+                        out.append(True)
+                    else:
+                        raise TypeError('CO or DI values must be bool.')
 
             return out
 

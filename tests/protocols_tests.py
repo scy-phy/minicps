@@ -337,11 +337,17 @@ class TestModbusProtocol():
                 eq_(client._receive(what, ADDRESS), 0)
             print('')
 
-            # print('TEST: Read to coils')
-            # for count in range(0, OFFSET):
-            #     what = ('CO', count)
-            #     client._receive(what, ADDRESS)
-            # print('')
+            print('TEST: Read discrete inputs')
+            for count in range(0, OFFSET):
+                what = ('DI', count)
+                eq_(client._receive(what, ADDRESS), [False] * 8)
+            print('')
+
+            print('TEST: Read coils inputs')
+            for count in range(0, OFFSET):
+                what = ('CO', count)
+                eq_(client._receive(what, ADDRESS), [False] * 8)
+            print('')
 
             ModbusProtocol._stop_server(server)
 
