@@ -189,8 +189,8 @@ class EnipProtocol(Protocol):
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
             self._server_subprocess = EnipProtocol._start_server(
-                    self._server['address'],
-                    self._server['tags'])
+                    address=self._server['address'],
+                    tags=self._server['tags'])
 
         # TODO: udp enip server
         elif self._mode == 2:
@@ -434,7 +434,6 @@ class EnipProtocol(Protocol):
 # }}}
 
 
-# TODO: mode = 2: tcp synch modbus server
 # ModbusProtocol {{{1
 class ModbusProtocol(Protocol):
 
@@ -476,7 +475,7 @@ class ModbusProtocol(Protocol):
         else:
             raise OSError
 
-        # modbus asynch tcp server
+        # NOTE: modbus asynch tcp server
         if self._mode == 1:
 
             # NOTE: set up logging
@@ -495,9 +494,9 @@ class ModbusProtocol(Protocol):
                     ModbusProtocol._TCP_PORT
 
             self._server_subprocess = ModbusProtocol._start_server(
-                    self._server['address'],
-                    self._mode,
-                    self._server['tags'])
+                    address=self._server['address'],
+                    mode=self._mode,
+                    tags=self._server['tags'])
 
         # TODO: udp modbus server
         elif self._mode == 2:

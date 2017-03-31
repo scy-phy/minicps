@@ -74,7 +74,6 @@ class TestEnipProtocol():
         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
 
         try:
-            print "TEST: client has to kill the cpppo process."
             server = EnipProtocol._start_server(ADDRESS, TAGS)
             EnipProtocol._stop_server(server)
 
@@ -244,49 +243,39 @@ class TestModbusProtocol():
     else:
         raise OSError
 
-    @SkipTest
-    def test_server_start_cmd(self):
+    def test_server_start_stop(self):
 
         try:
-            print "TEST: client has to kill the pymodbus process."
-            cmd = ModbusProtocol._start_server_cmd(tags=self.TAGS)
-            server = subprocess.Popen(cmd, shell=False)
-        except Exception as error:
-            print 'ERROR test_server_start_cmd: ', error
-
-    @SkipTest
-    def test_server_start(self):
-
-        try:
-            print "TEST: client has to kill the pymodbus process."
-            ModbusProtocol._start_server('localhost:502', self.TAGS)
-
-        except Exception as error:
-            print 'ERROR test_server_start: ', error
-
-    def test_server_stop(self):
-
-        cmd = ModbusProtocol._start_server_cmd()
-        try:
-            server = subprocess.Popen(cmd, shell=False)
+            server = ModbusProtocol._start_server('localhost:502', self.TAGS)
             ModbusProtocol._stop_server(server)
 
         except Exception as error:
-            print 'ERROR test_server_stop: ', error
+            print 'ERROR test_server_start_stop: ', error
 
-    def test_init(self):
 
-        # TODO: add _stop_server
-        client = ModbusProtocol(
-            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
-        eq_(client._name, 'modbus')
-        del client
+    def test_init_client(self):
 
-        server = ModbusProtocol(
-            protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
-        eq_(server._name, 'modbus')
-        server._stop_server(server._server_subprocess)
-        del server
+        try:
+            client = ModbusProtocol(
+                protocol=TestModbusProtocol.CLIENT_PROTOCOL)
+            eq_(client._name, 'modbus')
+            del client
+
+        except Exception as error:
+            print 'ERROR test_init_client: ', error
+
+
+    def test_init_server(self):
+
+        try:
+            server = ModbusProtocol(
+                protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
+            eq_(server._name, 'modbus')
+            server._stop_server(server._server_subprocess)
+            del server
+
+        except Exception as error:
+            print 'ERROR test_init_server: ', error
 
 
     # TODO: test client commands
