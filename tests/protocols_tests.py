@@ -97,13 +97,14 @@ class TestEnipProtocol():
         except Exception as error:
             print 'ERROR test_server_start_stop: ', error
 
-    def test_init(self):
+    def test_init_client(self):
 
-        # TODO: add _stop_server
         client = EnipProtocol(
             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
         eq_(client._name, 'enip')
         del client
+
+    def test_init_server(self):
 
         server = EnipProtocol(
             protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
