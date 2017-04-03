@@ -227,8 +227,11 @@ class Device(object):
         else:
             return self._state._get(what)
 
-    def send(self, what, value, address):
+    def send(self, what, value, address, **kwargs):
         """Send (write) a value to another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -244,6 +247,9 @@ class Device(object):
 
     def recieve(self, what, address, **kwargs):
         """Receive (read) a value from another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
 
         :param tuple what: field[s] identifier[s]
         :param str address: ``ip[:port]``

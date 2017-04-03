@@ -347,6 +347,7 @@ class TestModbusProtocol():
             print 'ERROR test_receive: ', error
             assert False
 
+    @SkipTest
     def test_client_server(self):
 
         ADDRESS = 'localhost:502'
@@ -363,6 +364,12 @@ class TestModbusProtocol():
             modbus._send(what, value, ADDRESS)
             what = ('CO', 0)
             eq_(modbus._receive(what, ADDRESS), True)
+
+            what = ('CO', 1)
+            value = False
+            modbus._send(what, value, ADDRESS)
+            what = ('CO', 1)
+            eq_(modbus._receive(what, ADDRESS), False)
             print('')
 
             print('TEST: Write and read holding registers')
@@ -398,7 +405,6 @@ class TestModbusProtocol():
 
         ADDRESS = 'localhost:502'
         TAGS = (20, 20, 20, 20)
-        OFFSET = 10
 
         try:
             server = ModbusProtocol._start_server(ADDRESS, TAGS)
@@ -429,5 +435,32 @@ class TestModbusProtocol():
         except Exception as error:
             ModbusProtocol._stop_server(server)
             print 'ERROR test_receive_count: ', error
+            assert False
+
+    def test_client_server_count(self):
+
+        client = ModbusProtocol(
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
+
+        ADDRESS = 'localhost:502'
+        TAGS = (50, 50, 50, 50)
+
+        try:
+            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1.0)
+
+            print('TEST: Write and Read holding registers, offset=4, count=3')
+            what = ('HR', 4)
+            values = [1, 2, 3]
+            client._send(what, values, ADDRESS, count=3)
+            eq_(client._receive(what, ADDRESS, count=3), [1, 2, 3])
+            print('')
+
+
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            ModbusProtocol._stop_server(server)
+            print 'ERROR test_client_server_count: ', error
             assert False
 # }}}

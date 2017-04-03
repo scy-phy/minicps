@@ -40,11 +40,12 @@ if __name__ == "__main__":
             type=int, choices=range(1,2000),  # NOTE: bounds from the standard
             default=1)
     parser.add_argument('-r', dest='register',
-            help='register value', type=int, choices=range(0, 65536),
+            help='list of int values', type=int,
+            choices=range(0, 65536), nargs='+',
             default=0)
     parser.add_argument('-c', dest='coil',
-            help='coil value', type=bool,
-            default=True)  # NOTE: implicit True False choice
+            help='list of 0 (False) or 1 (True) int values', type=int, nargs='+',
+            default=0, choices=[0, 1])  #  argparse does not manage bool well
 
     args = parser.parse_args()
 
@@ -65,16 +66,31 @@ if __name__ == "__main__":
         # NOTE: write_register
         if args.type == 'HR':
             if args.count == 1:
-                hr_write = client.write_register(args.offset, int(args.register))
+                hr_write = client.write_register(args.offset, args.register[0])
                 assert(hr_write.function_code < 0x80)
-            # TODO: implement
-            # else:
-            #     hrs_write = client.write_registers(args.offset, args.values)
+            else:
+                hrs_write = client.write_registers(args.offset, args.register)
+                assert(hrs_write.function_code < 0x80)
 
-        # NOTE: write_coil
+        # NOTE: write_coil: map integers to bools
         elif args.type == 'CO':
-            co_write = client.write_coil(args.offset, args.coil)
-            assert(co_write.function_code < 0x80)
+
+            if args.count == 1:
+                if args.coil == 1:
+                    co_write = client.write_coil(args.offset, True)
+                else:
+                    co_write = client.write_coil(args.offset, False)
+                assert(co_write.function_code < 0x80)
+
+            else:
+                coils = []
+                for c in args.coil:
+                    if c == 1:
+                        coils.append(True)
+                    else:
+                        coils.append(False)
+                cos_write = client.write_coils(args.offset, coils)
+                assert(cos_write.function_code < 0x80)
 
 
     elif args.mode == 'r':

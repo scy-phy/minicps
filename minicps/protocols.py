@@ -86,7 +86,7 @@ class Protocol(object):
 
         print '_stop_server: please override me.'
 
-    def _send(self, what, value, address):
+    def _send(self, what, value, address, **kwargs):
         """Send (write) a value to another host.
 
         :what: to send
@@ -349,7 +349,7 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR stop enip server: ', error
 
-    def _send(self, what, value, address='localhost:44818'):
+    def _send(self, what, value, address='localhost:44818', **kwargs):
         """Send (write) a value to another host.
 
         It is a blocking operation the parent process will wait till the child
@@ -607,14 +607,20 @@ class ModbusProtocol(Protocol):
             print 'ERROR stop modbus server: ', error
 
 
-    def _send(self, what, value, address='localhost:502'):
+    def _send(self, what, value, address='localhost:502', **kwargs):
         """Send (write) a value to another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
 
+        Boolean values are converted back and forth to integers because
+        ``argparse`` does not handle bool arguments correctly, eg: False
+        string is evaluated and passed as True.
+
         pymodbus has a ``count`` kwarg to perform sequential read and write
-        starting from the offset passed inside ``what``.
+        starting from the offset passed inside ``what``. Default call will
+        write one value at a time. Pass a list of values if ``count`` is
+        greater than one.
 
 
         :what: tuple addressing what
@@ -629,10 +635,40 @@ class ModbusProtocol(Protocol):
         MODE = '-m {} '.format('w')
         TYPE = '-t {} '.format(what[0])
         OFFSET = '-o {} '.format(what[1])  # NOTE: 0-based
+
+        # NOTE: value is a list of bools or ints when write multiple times
+        if 'count' in kwargs and kwargs['count'] > 1:
+            count = kwargs['count']
+            COUNT = '--count {} '.format(count)
+        else:
+            count = 1
+            COUNT = '--count {} '.format(count)
+
+        # NOTE: value is a int when writing to a register
         if what[0] == 'HR':
-            VALUE = '-r {} '.format(value)
+            if count == 1:
+                VALUE = '-r {} '.format(value)
+            else:
+                VALUE = '-r '
+                for v in value:
+                    VALUE += str(v)
+                    VALUE += ' '
+
+        # NOTE: value is a bool when writing to a coil
         elif what[0] == 'CO':
-            VALUE = '-c {} '.format(value)
+            if count == 1:
+                if value == True:
+                    VALUE = '-c {} '.format(1)
+                else:
+                    VALUE = '-c {} '.format(0)
+            else:
+                VALUE = '-c '
+                for v in value:
+                    if v ==  True:
+                        VALUE += str(1)
+                    else:
+                        VALUE += str(0)
+                    VALUE += ' '
         else:
             raise ValueError('IR and DI are read only data.')
 
@@ -644,6 +680,7 @@ class ModbusProtocol(Protocol):
             MODE +
             TYPE +
             OFFSET +
+            COUNT +
             VALUE
         )
         # print 'DEBUG modbus_send cmd shlex list: ', cmd
@@ -664,7 +701,7 @@ class ModbusProtocol(Protocol):
         cpppo process returns.
 
         pymodbus has a ``count`` kwarg to perform sequential read and write
-        starting from the offset passed inside ``what``. Default setup will
+        starting from the offset passed inside ``what``. Default call will
         request and return one value at a time.
 
         The return type depends on the request type:
