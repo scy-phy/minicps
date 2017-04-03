@@ -194,7 +194,7 @@ class TestEnipProtocol():
 class TestModbusProtocol():
 
     # NOTE: current API specifies only the number of tags
-    TAGS = (20, 20, 20, 20)
+    TAGS = (200, 200, 200, 200)
     # TAGS = (
     #     ('CO1', 1, 'CO'),
     #     ('CO1', 2, 'CO'),

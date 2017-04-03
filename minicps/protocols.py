@@ -613,6 +613,10 @@ class ModbusProtocol(Protocol):
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
 
+        pymodbus has a ``count`` kwarg to perform sequential read and write
+        starting from the offset passed inside ``what``.
+
+
         :what: tuple addressing what
         :value: sent
         :address: ip[:port]
@@ -653,11 +657,15 @@ class ModbusProtocol(Protocol):
             print 'ERROR modbus _send: ', error
 
 
-    def _receive(self, what, address='localhost:502'):
+    def _receive(self, what, address='localhost:502', **kwargs):
         """Receive (read) a value from another host.
 
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
+
+        pymodbus has a ``count`` kwarg to perform sequential read and write
+        starting from the offset passed inside ``what``. Default setup will
+        request and return one value at a time.
 
         :what: to ask for
         :address: to receive from
@@ -672,13 +680,22 @@ class ModbusProtocol(Protocol):
         TYPE = '-t {} '.format(what[0])
         OFFSET = '-o {} '.format(what[1])  # NOTE: 0-based
 
+        # NOTE: kwargs
+        if 'count' in kwargs:
+            count = kwargs['count']
+            COUNT = '--count {} '.format(kwargs['count'])
+        else:
+            count = 1
+            COUNT = '--count {} '.format(1)
+
         cmd = shlex.split(
             self._client_cmd +
             IP +
             PORT +
             MODE +
             TYPE +
-            OFFSET
+            OFFSET +
+            COUNT
         )
         # print 'DEBUG modbus_receive cmd shlex list: ', cmd
 

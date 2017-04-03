@@ -33,13 +33,18 @@ if __name__ == "__main__":
             help='mode: read or write')
     parser.add_argument('-o', dest='offset', type=int,
             help='0-based modbus addressing offset',
-            choices=range(0,1000),  # NOTE: empirical value
+            choices=range(0,2000),  # NOTE: empirical value
             default=0)
+    parser.add_argument('--count', dest='count',
+            help='count for multiple read and write',
+            type=int, choices=range(1,2000),  # NOTE: bounds from the standard
+            default=1)
     parser.add_argument('-r', dest='register',
             help='register value', type=int, choices=range(0, 65536),
             default=0)
     parser.add_argument('-c', dest='coil',
-            help='coil value', type=bool, default=True)  # NOTE: implicit True False choice
+            help='coil value', type=bool,
+            default=True)  # NOTE: implicit True False choice
 
     args = parser.parse_args()
 

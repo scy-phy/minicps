@@ -26,19 +26,19 @@ if __name__ == "__main__":
             default=1, help='mode')
     # NOTE: tags
     parser.add_argument('-d', type=int, dest='discrete_inputs',
-            choices=range(1, 100),
+            choices=range(1, 1000),
             default=10,
             help='number of discrete inputs')
     parser.add_argument('-c', type=int, dest='coils',
-            choices=range(1, 100),
+            choices=range(1, 1000),
             default=10,
             help='number of coils')
     parser.add_argument('-r', type=int, dest='input_registers',
-            choices=range(1, 100),
+            choices=range(1, 1000),
             default=10,
             help='number of input registers')
     parser.add_argument('-R', type=int, dest='holding_registers',
-            choices=range(1, 100),
+            choices=range(1, 1000),
             default=10,
             help='number of holding registers')
 
