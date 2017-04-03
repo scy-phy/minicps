@@ -95,7 +95,7 @@ class Protocol(object):
 
         print '_send: please override me.'
 
-    def _receive(self, what, address):
+    def _receive(self, what, address, **kwargs):
         """Receive (read) a value from another host.
 
         :address: to receive from
@@ -380,7 +380,7 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _send: ', error
 
-    def _receive(self, what, address='localhost:44818'):
+    def _receive(self, what, address='localhost:44818', **kwargs):
         """Receive (read) a value from another host.
 
         It is a blocking operation the parent process will wait till the child
@@ -607,7 +607,6 @@ class ModbusProtocol(Protocol):
             print 'ERROR stop modbus server: ', error
 
 
-    # TODO: implement it
     def _send(self, what, value, address='localhost:502'):
         """Send (write) a value to another host.
 

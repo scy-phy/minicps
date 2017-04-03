@@ -242,7 +242,7 @@ class Device(object):
         else:
             return self._protocol._send(what, value, address)
 
-    def recieve(self, what, address):
+    def recieve(self, what, address, **kwargs):
         """Receive (read) a value from another network host.
 
         :param tuple what: field[s] identifier[s]
