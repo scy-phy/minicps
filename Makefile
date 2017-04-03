@@ -17,7 +17,7 @@ PYTHON_OPTS =
 # sudo because of mininet
 TESTER = sudo nosetests
 TESTER_TRAVIS = nosetests
-TESTER_OPTS = -s -v --exe
+TESTER_OPTS = -s -v --exe  --rednose
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 
 # http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date

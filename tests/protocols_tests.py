@@ -62,6 +62,7 @@ class TestEnipProtocol():
 
         except Exception as error:
             print 'ERROR test_server_start_stop: ', error
+            assert False
 
     def test_init_client(self):
 
@@ -72,6 +73,7 @@ class TestEnipProtocol():
             del client
         except Exception as error:
             print 'ERROR test_init_client: ', error
+            assert False
 
     def test_init_server(self):
 
@@ -83,6 +85,7 @@ class TestEnipProtocol():
             del server
         except Exception as error:
             print 'ERROR test_init_server: ', error
+            assert False
 
     def test_server_multikey(self):
 
@@ -93,6 +96,7 @@ class TestEnipProtocol():
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
+            assert False
 
     def test_send_multikey(self):
 
@@ -120,6 +124,7 @@ class TestEnipProtocol():
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_send_multikey: ', error
+            assert False
 
     def test_receive_multikey(self):
 
@@ -147,6 +152,7 @@ class TestEnipProtocol():
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_receive_multikey: ', error
+            assert False
 
     def test_client_server(self):
 
@@ -181,6 +187,7 @@ class TestEnipProtocol():
         except Exception as error:
             EnipProtocol._stop_server(enip._server_subprocess)
             print 'ERROR test_client_server: ', error
+            assert False
 
     @SkipTest
     def test_server_udp(self):
@@ -232,6 +239,7 @@ class TestModbusProtocol():
 
         except Exception as error:
             print 'ERROR test_server_start_stop: ', error
+            assert False
 
 
     def test_init_client(self):
@@ -244,6 +252,7 @@ class TestModbusProtocol():
 
         except Exception as error:
             print 'ERROR test_init_client: ', error
+            assert False
 
 
     def test_init_server(self):
@@ -257,6 +266,7 @@ class TestModbusProtocol():
 
         except Exception as error:
             print 'ERROR test_init_server: ', error
+            assert False
 
 
     def test_send(self):
@@ -291,6 +301,7 @@ class TestModbusProtocol():
         except Exception as error:
             ModbusProtocol._stop_server(server)
             print 'ERROR test_send: ', error
+            assert False
 
     def test_receive(self):
 
@@ -334,6 +345,7 @@ class TestModbusProtocol():
         except Exception as error:
             ModbusProtocol._stop_server(server)
             print 'ERROR test_receive: ', error
+            assert False
 
     def test_client_server(self):
 
@@ -343,7 +355,7 @@ class TestModbusProtocol():
             # NOTE: same instance used as server and client
             modbus = ModbusProtocol(
                 protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
-            time.sleep(1.4)
+            time.sleep(1.0)
 
             print('TEST: Write and read coils')
             what = ('CO', 0)
@@ -377,6 +389,7 @@ class TestModbusProtocol():
         except Exception as error:
             ModbusProtocol._stop_server(modbus._server_subprocess)
             print 'ERROR test_client_server: ', error
+            assert False
 
     def test_receive_count(self):
 
@@ -406,15 +419,15 @@ class TestModbusProtocol():
             eq_(client._receive(what, ADDRESS, count=2), [False] * 2)
             print('')
 
-            # print('TEST: Read coils inputs')
-            # for count in range(0, OFFSET):
-            #     what = ('CO', count)
-            #     eq_(client._receive(what, ADDRESS), [False] * 8)
-            # print('')
+            print('TEST: Read coils, count=9')
+            what = ('CO', 0)
+            eq_(client._receive(what, ADDRESS, count=9), [False] * 9)
+            print('')
 
             ModbusProtocol._stop_server(server)
 
         except Exception as error:
             ModbusProtocol._stop_server(server)
             print 'ERROR test_receive_count: ', error
+            assert False
 # }}}
