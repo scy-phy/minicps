@@ -1,3 +1,5 @@
 cpppo
 nose
 coverage
+pymodbus
+rednose
