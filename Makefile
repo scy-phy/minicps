@@ -81,6 +81,7 @@ test-networks:
 test-sdns:
 	$(TESTER) $(TESTER_OPTS) tests/sdns_tests.py
 
+
 test-protocols:
 	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py
 
@@ -90,14 +91,19 @@ test-enip:
 test-modbus:
 	$(TESTER) $(TESTER_OPTS) tests/protocols_tests.py:TestModbusProtocol
 
+
 test-utils:
 	$(TESTER) $(TESTER_OPTS) tests/utils_tests.py
 
 test-states:
 	$(TESTER) $(TESTER_OPTS) tests/states_tests.py
 
+
 test-devices:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py
+
+test-device:
+	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py:TestDevice
 
 
 # clean {{{1
