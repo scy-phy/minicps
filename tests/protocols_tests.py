@@ -305,13 +305,13 @@ class TestModbusProtocol():
             server = ModbusProtocol._start_server(ADDRESS, TAGS)
             time.sleep(1.0)
 
-            print('TEST: Read to holding registers')
+            print('TEST: Read holding registers')
             for count in range(0, OFFSET):
                 what = ('HR', count)
                 eq_(client._receive(what, ADDRESS), 0)
             print('')
 
-            print('TEST: Read to input registers')
+            print('TEST: Read input registers')
             for count in range(0, OFFSET):
                 what = ('IR', count)
                 eq_(client._receive(what, ADDRESS), 0)
@@ -377,4 +377,45 @@ class TestModbusProtocol():
         except Exception as error:
             ModbusProtocol._stop_server(modbus._server_subprocess)
             print 'ERROR test_client_server: ', error
+
+    def test_receive_count(self):
+
+        client = ModbusProtocol(
+            protocol=TestModbusProtocol.CLIENT_PROTOCOL)
+
+        ADDRESS = 'localhost:502'
+        TAGS = (20, 20, 20, 20)
+        OFFSET = 10
+
+        try:
+            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1.0)
+
+            print('TEST: Read holding registers, count=3')
+            what = ('HR', 0)
+            eq_(client._receive(what, ADDRESS, count=3), [0, 0, 0])
+            print('')
+
+            print('TEST: Read input registers, count=1')
+            what = ('IR', 0)
+            eq_(client._receive(what, ADDRESS, count=1), 0)
+            print('')
+
+            # print('TEST: Read discrete inputs')
+            # for count in range(0, OFFSET):
+            #     what = ('DI', count)
+            #     eq_(client._receive(what, ADDRESS), [False] * 8)
+            # print('')
+
+            # print('TEST: Read coils inputs')
+            # for count in range(0, OFFSET):
+            #     what = ('CO', count)
+            #     eq_(client._receive(what, ADDRESS), [False] * 8)
+            # print('')
+
+            ModbusProtocol._stop_server(server)
+
+        except Exception as error:
+            ModbusProtocol._stop_server(server)
+            print 'ERROR test_receive_count: ', error
 # }}}

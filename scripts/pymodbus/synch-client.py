@@ -64,8 +64,12 @@ if __name__ == "__main__":
 
         # NOTE: write_register
         if args.type == 'HR':
-            hr_write = client.write_register(args.offset, int(args.register))
-            assert(hr_write.function_code < 0x80)
+            if args.count == 1:
+                hr_write = client.write_register(args.offset, int(args.register))
+                assert(hr_write.function_code < 0x80)
+            # TODO: implement
+            # else:
+            #     hrs_write = client.write_registers(args.offset, args.values)
 
         # NOTE: write_coil
         elif args.type == 'CO':
@@ -77,25 +81,29 @@ if __name__ == "__main__":
 
         # NOTE: read_holding_registers
         if args.type == 'HR':
-            hr_read = client.read_holding_registers(args.offset, count=1)
+            hr_read = client.read_holding_registers(args.offset,
+                count=args.count)
             assert(hr_read.function_code < 0x80)
-            print(hr_read.registers[0])
+            print(hr_read.registers[0:args.count])
 
         # NOTE: read_holding_registers
         elif args.type == 'IR':
-            ir_read = client.read_input_registers(args.offset, count=1)
+            ir_read = client.read_input_registers(args.offset,
+                count=args.count)
             assert(ir_read.function_code < 0x80)
-            print(ir_read.registers[0])
+            print(ir_read.registers[0:args.count])
 
         # NOTE: read_discrete_inputs
         elif args.type == 'DI':
-            di_read = client.read_discrete_inputs(args.offset, count=1)
+            di_read = client.read_discrete_inputs(args.offset,
+                count=args.count)
             assert(di_read.function_code < 0x80)
             print(di_read.bits)
 
         # NOTE: read_discrete_inputs
         elif args.type == 'CO':
-            co_read = client.read_coils(args.offset, count=1)
+            co_read = client.read_coils(args.offset,
+                count=args.count)
             assert(co_read.function_code < 0x80)
             print(co_read.bits)
 

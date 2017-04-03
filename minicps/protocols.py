@@ -667,10 +667,16 @@ class ModbusProtocol(Protocol):
         starting from the offset passed inside ``what``. Default setup will
         request and return one value at a time.
 
+        The return type depends on the request type:
+            - read_coils returns an array of bools
+            - read_discrete_inputs returns a list of bools
+            - read_register returns an int
+            - read_registers returns a list of ints
+
         :what: to ask for
         :address: to receive from
 
-        :returns: tag value as a `str`
+        :returns: read value(s)
         """
         colon_index = address.find(':')
         IP = '-i {} '.format(address[:colon_index])
@@ -713,7 +719,19 @@ class ModbusProtocol(Protocol):
 
             # NOTE: registers store int
             if what[0] == 'HR' or what[0] == 'IR':
-                out = int(raw_string)
+
+                # NOTE: single read returns an int
+                if count == 1:
+                    out = int(raw_string[1:-1])
+
+                # NOTE: multiple reads returns a list of ints
+                else:
+                    out = []
+                    hrs = raw_string[1:-1].split(',')
+                    for hr in hrs:
+                        out.append(int(hr))
+                    if len(out) != count:
+                        raise ValueError('Wrong number of values in the response.')
 
             # NOTE: coils and discrete inputs store 8 bools
             elif what[0] == 'CO' or what[0] == 'DI':
