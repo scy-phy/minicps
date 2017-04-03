@@ -1,7 +1,7 @@
 """
 ``devices`` module contains:
 
-    - ``get`` and ``set`` physical layer's API methods
+    - ``get`` and ``set`` physical process's API methods
     - ``send`` and ``receive`` network layer's API methods
     - the user input validation code
 
@@ -197,7 +197,11 @@ class Device(object):
         print "TODO _stop: please override me"
 
     def set(self, what, value):
-        """Set aka write a state value.
+        """Set (write) a physical process state value.
+
+        The ``value`` to be set (Eg: drive an actuator) is identified by the
+        ``what`` tuple, and it is assumed to be already initialize. Indeed
+        ``set`` is not able to create new physical process values.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -211,7 +215,7 @@ class Device(object):
             return self._state._set(what, value)
 
     def get(self, what):
-        """Get (read) a ``state`` value.
+        """Get (read) a physical process state value.
 
         :param tuple what: field[s] identifier[s]
 
@@ -224,7 +228,7 @@ class Device(object):
             return self._state._get(what)
 
     def send(self, what, value, address):
-        """Send (write) a value to another host.
+        """Send (write) a value to another network host.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -239,7 +243,7 @@ class Device(object):
             return self._protocol._send(what, value, address)
 
     def recieve(self, what, address):
-        """Receive (read) a value from another host.
+        """Receive (read) a value from another network host.
 
         :param tuple what: field[s] identifier[s]
         :param str address: ``ip[:port]``
