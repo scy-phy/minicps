@@ -748,7 +748,7 @@ class ModbusProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print 'DEBUG modbus _receive raw_out: ', raw_out
+            # print 'DEBUG modbus _receive raw_out: ', raw_out
 
             # value is stored as first tuple element
             # between a pair of square brackets

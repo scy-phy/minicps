@@ -451,11 +451,17 @@ class TestModbusProtocol():
 
             print('TEST: Write and Read holding registers, offset=4, count=3')
             what = ('HR', 4)
-            values = [1, 2, 3]
-            client._send(what, values, ADDRESS, count=3)
-            eq_(client._receive(what, ADDRESS, count=3), [1, 2, 3])
+            hrs = [1, 2, 3]
+            client._send(what, hrs, ADDRESS, count=3)
+            eq_(client._receive(what, ADDRESS, count=3), hrs)
             print('')
 
+            print('TEST: Write and Read holding registers, offset=4, count=3')
+            what = ('CO', 7)
+            cos = [True, False, False, True, False]
+            client._send(what, cos, ADDRESS, count=5)
+            eq_(client._receive(what, ADDRESS, count=5), cos)
+            print('')
 
             ModbusProtocol._stop_server(server)
 
