@@ -735,16 +735,34 @@ class ModbusProtocol(Protocol):
 
             # NOTE: coils and discrete inputs store 8 bools
             elif what[0] == 'CO' or what[0] == 'DI':
-                out = []
-                bools = raw_string[1:-1].split(',')
                 # print 'DEBUG modbus _receive bools: ', bools
-                for b in bools:
-                    if b.strip() == 'False':
-                        out.append(False)
-                    elif b.strip() == 'True':
-                        out.append(True)
+
+                # NOTE: pymodbus always returns at least a list of 8 bools
+                bools = raw_string[1:-1].split(',')
+
+                # NOTE: single read returns a bool
+                if count == 1:
+                    if bools[0] == 'False':
+                        out = False
+                    elif bools[0] == 'True':
+                        out = True
                     else:
                         raise TypeError('CO or DI values must be bool.')
+
+                # NOTE: multiple reads returns a list of bools
+                else:
+                    out = []
+                    i = 0
+                    for b in bools:
+                        if i >= count:
+                            break
+                        elif b.strip() == 'False':
+                            out.append(False)
+                        elif b.strip() == 'True':
+                            out.append(True)
+                        else:
+                            raise TypeError('CO or DI values must be bool.')
+                        i += 1
 
             return out
 

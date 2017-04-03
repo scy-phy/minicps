@@ -273,15 +273,15 @@ class TestModbusProtocol():
             time.sleep(1.0)
 
             print('TEST: Write to holding registers')
-            for count in range(0, OFFSET):
-                what = ('HR', count)
-                client._send(what, count, ADDRESS)
+            for offset in range(0, OFFSET):
+                what = ('HR', offset)
+                client._send(what, offset, ADDRESS)
             print('')
 
             coil = True
             print('TEST: Write to coils')
-            for count in range(0, OFFSET):
-                what = ('CO', count)
+            for offset in range(0, OFFSET):
+                what = ('CO', offset)
                 client._send(what, coil, ADDRESS)
                 coil = not coil
             print('')
@@ -306,27 +306,27 @@ class TestModbusProtocol():
             time.sleep(1.0)
 
             print('TEST: Read holding registers')
-            for count in range(0, OFFSET):
-                what = ('HR', count)
+            for offset in range(0, OFFSET):
+                what = ('HR', offset)
                 eq_(client._receive(what, ADDRESS), 0)
             print('')
 
             print('TEST: Read input registers')
-            for count in range(0, OFFSET):
-                what = ('IR', count)
+            for offset in range(0, OFFSET):
+                what = ('IR', offset)
                 eq_(client._receive(what, ADDRESS), 0)
             print('')
 
             print('TEST: Read discrete inputs')
-            for count in range(0, OFFSET):
-                what = ('DI', count)
-                eq_(client._receive(what, ADDRESS), [False] * 8)
+            for offset in range(0, OFFSET):
+                what = ('DI', offset)
+                eq_(client._receive(what, ADDRESS), False)
             print('')
 
             print('TEST: Read coils inputs')
-            for count in range(0, OFFSET):
-                what = ('CO', count)
-                eq_(client._receive(what, ADDRESS), [False] * 8)
+            for offset in range(0, OFFSET):
+                what = ('CO', offset)
+                eq_(client._receive(what, ADDRESS), False)
             print('')
 
             ModbusProtocol._stop_server(server)
@@ -343,14 +343,14 @@ class TestModbusProtocol():
             # NOTE: same instance used as server and client
             modbus = ModbusProtocol(
                 protocol=TestModbusProtocol.CLIENT_SERVER_PROTOCOL)
-            time.sleep(1.0)
+            time.sleep(1.4)
 
             print('TEST: Write and read coils')
             what = ('CO', 0)
             value = True
             modbus._send(what, value, ADDRESS)
             what = ('CO', 0)
-            eq_(modbus._receive(what, ADDRESS)[0], True)
+            eq_(modbus._receive(what, ADDRESS), True)
             print('')
 
             print('TEST: Write and read holding registers')
@@ -363,7 +363,7 @@ class TestModbusProtocol():
 
             print('TEST: Read discrete inputs (init to False)')
             what = ('DI', 0)
-            eq_(modbus._receive(what, ADDRESS), [False] * 8)
+            eq_(modbus._receive(what, ADDRESS), False)
             print('')
 
             print('TEST: Read input registers (init to 0)')
@@ -401,11 +401,10 @@ class TestModbusProtocol():
             eq_(client._receive(what, ADDRESS, count=1), 0)
             print('')
 
-            # print('TEST: Read discrete inputs')
-            # for count in range(0, OFFSET):
-            #     what = ('DI', count)
-            #     eq_(client._receive(what, ADDRESS), [False] * 8)
-            # print('')
+            print('TEST: Read discrete inputs, count=2')
+            what = ('DI', 0)
+            eq_(client._receive(what, ADDRESS, count=2), [False] * 2)
+            print('')
 
             # print('TEST: Read coils inputs')
             # for count in range(0, OFFSET):
