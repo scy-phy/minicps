@@ -231,10 +231,16 @@ class TestModbusProtocol():
     else:
         raise OSError
 
+    from minicps import __file__ as minicps_path
+    minicps_path = minicps_path[:-12]
+    SERVER_CMD_PATH = sys.executable + ' ' + minicps_path + \
+            'pymodbus/servers.py '   # NOTE: ending whitespace
+
     def test_server_start_stop(self):
 
         try:
-            server = ModbusProtocol._start_server('localhost:502', self.TAGS)
+            server = ModbusProtocol._start_server(self.SERVER_CMD_PATH,
+                'localhost:502', self.TAGS)
             ModbusProtocol._stop_server(server)
 
         except Exception as error:
@@ -279,7 +285,7 @@ class TestModbusProtocol():
         OFFSET = 10
 
         try:
-            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            server = ModbusProtocol._start_server(self.SERVER_CMD_PATH, ADDRESS, TAGS)
             time.sleep(1.0)
 
             print('TEST: Write to holding registers')
@@ -313,7 +319,7 @@ class TestModbusProtocol():
         OFFSET = 10
 
         try:
-            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            server = ModbusProtocol._start_server(self.SERVER_CMD_PATH, ADDRESS, TAGS)
             time.sleep(1.0)
 
             print('TEST: Read holding registers')
@@ -407,7 +413,7 @@ class TestModbusProtocol():
         TAGS = (20, 20, 20, 20)
 
         try:
-            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            server = ModbusProtocol._start_server(self.SERVER_CMD_PATH, ADDRESS, TAGS)
             time.sleep(1.0)
 
             print('TEST: Read holding registers, count=3')
@@ -446,7 +452,7 @@ class TestModbusProtocol():
         TAGS = (50, 50, 50, 50)
 
         try:
-            server = ModbusProtocol._start_server(ADDRESS, TAGS)
+            server = ModbusProtocol._start_server(self.SERVER_CMD_PATH, ADDRESS, TAGS)
             time.sleep(1.0)
 
             print('TEST: Write and Read holding registers, offset=4, count=3')

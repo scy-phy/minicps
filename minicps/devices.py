@@ -243,9 +243,9 @@ class Device(object):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._protocol._send(what, value, address)
+            return self._protocol._send(what, value, address, **kwargs)
 
-    def recieve(self, what, address, **kwargs):
+    def receive(self, what, address, **kwargs):
         """Receive (read) a value from another network host.
 
         ``kwargs`` dict is used to pass extra key-value pair according to the
@@ -254,13 +254,13 @@ class Device(object):
         :param tuple what: field[s] identifier[s]
         :param str address: ``ip[:port]``
 
-        :returns: recv value or ``TypeError`` if ``what`` is not a ``tuple``
+        :returns: received value or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._protocol._receive(what, address)
+            return self._protocol._receive(what, address, **kwargs)
 
 
 # TODO: rename pre_loop and main_loop?

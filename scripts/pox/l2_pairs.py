@@ -283,7 +283,7 @@ def _handle_PacketIn(event):
 
         # define an action object to be appended to the actions list
         # the action tell the switch to use event.port as output port
-        # event.port was the port on which the switch recieved the packet
+        # event.port was the port on which the switch received the packet
         # that generates the PackeIn
         action = of.ofp_action_output(port=event.port)  # then forward packet to event.port
 
@@ -309,7 +309,7 @@ def _handle_PacketIn(event):
 
 def _handle_PortStatus(event):
     """
-    Controller recieve info from a datapath about
+    Controller received info from a datapath about
     port changes.
 
 
@@ -350,7 +350,7 @@ def launch(std_flood_port=True):
 
     Datapath mgmt can be programmed using event
     handling. Each event (in this case PacketIn)
-    triggers an handler that recieve an Event obj
+    triggers an handler that received an Event obj
     as argument. The Event obj contains a reference
     to the relevant Connection obj. Indeed the handler
     can use Event obj to retrieve information about

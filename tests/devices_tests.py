@@ -13,7 +13,7 @@ from nose.tools import eq_, raises
 from nose.plugins.skip import SkipTest
 
 # NOTE: currently testing only set and get
-# TODO: find a way to test also send and recieve outside network emulaiton
+# TODO: find a way to test also send and received outside network emulaiton
 
 class TestDevice():
 
