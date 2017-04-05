@@ -9,12 +9,14 @@ Any device can be initialized with any couple of ``state`` and
 ``protocol`` dictionaries.
 
 List of supported protocols and identifiers:
+    - Devices with no networking capabilities have to set ``protocol`` equal
+        to ``None``.
     - Ethernet/IP subset through ``cpppo``, use id ``enip``
-        - mode 0: client only
-        - mode 1: tcp enip server
+        - Mode 0: client only.
+        - Mode 1: tcp enip server.
     - Modbus through ``pymodbus``, use id ``modbus``
-        - mode 0: client only
-        - mode 1: tcp modbus server
+        - Mode 0: client only.
+        - Mode 1: tcp modbus server.
 
 List of supported backends:
     - Sqlite through ``sqlite3``
@@ -49,13 +51,20 @@ class Device(object):
         :param dict disk: persistent memory
         :param dict memory: main memory
 
-        Protocol is a dict containing 3 keys:
+        ``protocol`` (when is not ``None``) is a ``dict`` containing 3 keys:
 
-            - name: addresses a str identifying the protocol name (eg: enip)
-            - mode: addresses a int identifying the mode (eg: tcp asynch server)
-            - server: if mode equals 0 is empty,
-              otherwise it addresses a dict containing the server information
-              such as its address (with optional port number), and tags.
+            - ``name``: addresses a str identifying the protocol name (eg:
+              ``enip``)
+            - ``mode``: int identifying the server mode (eg: mode equals
+              ``1``)
+            - ``server``: if ``mode`` equals ``0`` is empty,
+                otherwise it addresses a dict containing the server information
+                such as its address, and a list of data to serve.
+
+        ``state`` is a ``dict`` containing 2 keys:
+
+            - ``path``: full (LInux) path to the database (eg: /tmp/test.sqlite)
+            - ``name``: table name
 
         Device construction example:
 

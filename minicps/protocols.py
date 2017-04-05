@@ -1,5 +1,5 @@
 """
-protocols.py.
+``protocols`` module.
 
 Addresses are passed as string containing an optional port,
 eg: localhost[:44818].

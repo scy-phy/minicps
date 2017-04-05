@@ -1,5 +1,8 @@
 """
-states.py
+``states`` module.
+
+MiniCPS uses prepared statements to speed-up the execution of the queries,
+and protect the database against SQL injection attacks.
 """
 
 import os
@@ -15,7 +18,9 @@ class State(object):
     def __init__(self, state):
         """Init a State object.
 
-        :state: validated dict passed from Device obj
+        For ``state`` format see the ``devices`` module docstring.
+
+        :param dict state: validated dict passed from a Device instance.
         """
 
         self._state = state
@@ -72,8 +77,7 @@ class SQLiteState(State):
 
     """SQLite state manager.
 
-    It uses prepared statements to speed-up the execution of the queries, and protect
-    the database against SQL injection attacks.
+    SQLite uses TEXT data type instead of VARCHAR.
 
     Client has to use ordered primary key fields to use get and set.
     """
