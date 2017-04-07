@@ -8,8 +8,8 @@ import sys
 import shlex
 import time
 
-import pymodbus
-import cpppo
+#import pymodbus
+#import cpppo
 
 from minicps.protocols import Protocol, EnipProtocol, ModbusProtocol
 
@@ -108,19 +108,23 @@ class TestEnipProtocol():
 
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
-
+            time.sleep(1) # wait for the server to actually start so client can connect
             # write a multikey
-            what = ('SENSOR1', 1)
+            what = ('SENSOR1', 1, 'INT') # added type here
             for value in range(5):
                 enip._send(what, value, ADDRESS)
 
             # write a single key
-            what = ('ACTUATOR1',)
+            what = ('ACTUATOR1', 'INT')
             for value in range(5):
-                enip._send(what, value, ADDRESS)
+                enip._send(what, 1, ADDRESS)
+
+            # write a single key
+            what = ('HMI_TEST101', 'REAL')
+            for value in range(5):
+                enip._send(what, 1, ADDRESS)
 
             EnipProtocol._stop_server(server)
-
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_send_multikey: ', error
@@ -136,6 +140,7 @@ class TestEnipProtocol():
 
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1) # wait for the server to actually start so client can connect
 
             # read a multikey
             what = ('SENSOR1', 1)
@@ -144,6 +149,11 @@ class TestEnipProtocol():
 
             # read a single key
             what = ('ACTUATOR1',)
+            address = 'localhost:44818'
+            enip._receive(what, ADDRESS)
+
+            # Read a single key - present tag
+            what = ('HMI_TEST101',)
             address = 'localhost:44818'
             enip._receive(what, ADDRESS)
 
@@ -164,6 +174,8 @@ class TestEnipProtocol():
             enip = EnipProtocol(
                 protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
 
+            time.sleep(1) # wait for the server to actually start so client can connect
+
             # read a multikey
             what = ('SENSOR1', 1)
             enip._receive(what, ADDRESS)
@@ -172,13 +184,22 @@ class TestEnipProtocol():
             what = ('ACTUATOR1',)
             enip._receive(what, ADDRESS)
 
+            # read a single key - present tag
+            what = ('HMI_TEST101',)
+            enip._receive(what, ADDRESS)
+
             # write a multikey
-            what = ('SENSOR1', 1)
+            what = ('SENSOR1', 1, 'INT') # added type here
             for value in range(5):
                 enip._send(what, value, ADDRESS)
 
             # write a single key
-            what = ('ACTUATOR1',)
+            what = ('ACTUATOR1', 'INT') # added type here
+            for value in range(5):
+                enip._send(what, value, ADDRESS)
+
+            # write a single key - present
+            what = ('HMI_TEST101', 'REAL') # added type here
             for value in range(5):
                 enip._send(what, value, ADDRESS)
 
@@ -197,7 +218,7 @@ class TestEnipProtocol():
 
 # }}}
 
-# TestModbusProtocol {{{1
+# # TestModbusProtocol {{{1
 class TestModbusProtocol():
 
     # NOTE: current API specifies only the number of tags
@@ -475,4 +496,4 @@ class TestModbusProtocol():
             ModbusProtocol._stop_server(server)
             print 'ERROR test_client_server_count: ', error
             assert False
-# }}}
+# # }}}
