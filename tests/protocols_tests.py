@@ -23,7 +23,181 @@ class TestProtocol():
 
 # }}}
 
-# TestEnipProtocol {{{1
+# # TestEnipProtocol {{{1
+# class TestEnipProtocol():
+
+#     # NOTE: second tuple element is the process id
+#     TAGS = (
+#         ('SENSOR1', 1, 'INT'),
+#         ('SENSOR1', 2, 'INT'),
+#         ('ACTUATOR1', 'INT'))
+#     SERVER = {
+#         'address': 'localhost:44818',
+#         'tags': TAGS
+#     }
+#     CLIENT_SERVER_PROTOCOL = {
+#         'name': 'enip',
+#         'mode': 1,
+#         'server': SERVER,
+#     }
+#     CLIENT_PROTOCOL = {
+#         'name': 'enip',
+#         'mode': 0,
+#         'server': '',
+#     }
+#     if sys.platform.startswith('linux'):
+#         SHELL = '/bin/bash -c '
+#         CLIENT_LOG = '--log logs/protocols_tests_enip_client '
+#     else:
+#         raise OSError
+
+#     def test_server_start_stop(self):
+
+#         ADDRESS = 'localhost:44818'  # TEST port
+#         TAGS = (('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))
+
+#         try:
+#             server = EnipProtocol._start_server(ADDRESS, TAGS)
+#             EnipProtocol._stop_server(server)
+
+#         except Exception as error:
+#             print 'ERROR test_server_start_stop: ', error
+#             assert False
+
+#     def test_init_client(self):
+
+#         try:
+#             client = EnipProtocol(
+#                 protocol=TestEnipProtocol.CLIENT_PROTOCOL)
+#             eq_(client._name, 'enip')
+#             del client
+#         except Exception as error:
+#             print 'ERROR test_init_client: ', error
+#             assert False
+
+#     def test_init_server(self):
+
+#         try:
+#             server = EnipProtocol(
+#                 protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+#             eq_(server._name, 'enip')
+#             server._stop_server(server._server_subprocess)
+#             del server
+#         except Exception as error:
+#             print 'ERROR test_init_server: ', error
+#             assert False
+
+#     def test_server_multikey(self):
+
+#         ADDRESS = 'localhost:44818'  # TEST port
+#         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+#         try:
+#             server = EnipProtocol._start_server(ADDRESS, TAGS)
+#             EnipProtocol._stop_server(server)
+#         except Exception as error:
+#             print 'ERROR test_server_multikey: ', error
+#             assert False
+
+#     def test_send_multikey(self):
+
+#         enip = EnipProtocol(
+#             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
+
+#         ADDRESS = 'localhost:44818'  # TEST port
+#         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+
+#         try:
+#             server = EnipProtocol._start_server(ADDRESS, TAGS)
+
+#             # write a multikey
+#             what = ('SENSOR1', 1)
+#             for value in range(5):
+#                 enip._send(what, value, ADDRESS)
+
+#             # write a single key
+#             what = ('ACTUATOR1',)
+#             for value in range(5):
+#                 enip._send(what, value, ADDRESS)
+
+#             EnipProtocol._stop_server(server)
+
+#         except Exception as error:
+#             EnipProtocol._stop_server(server)
+#             print 'ERROR test_send_multikey: ', error
+#             assert False
+
+#     def test_receive_multikey(self):
+
+#         enip = EnipProtocol(
+#             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
+
+#         ADDRESS = 'localhost:44818'  # TEST port
+#         TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+
+#         try:
+#             server = EnipProtocol._start_server(ADDRESS, TAGS)
+
+#             # read a multikey
+#             what = ('SENSOR1', 1)
+#             address = 'localhost:44818'
+#             enip._receive(what, ADDRESS)
+
+#             # read a single key
+#             what = ('ACTUATOR1',)
+#             address = 'localhost:44818'
+#             enip._receive(what, ADDRESS)
+
+#             EnipProtocol._stop_server(server)
+
+#         except Exception as error:
+#             EnipProtocol._stop_server(server)
+#             print 'ERROR test_receive_multikey: ', error
+#             assert False
+
+#     def test_client_server(self):
+
+#         ADDRESS = 'localhost:44818'
+
+#         try:
+
+#             # same instance used as server and client
+#             enip = EnipProtocol(
+#                 protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+
+#             # read a multikey
+#             what = ('SENSOR1', 1)
+#             enip._receive(what, ADDRESS)
+
+#             # read a single key
+#             what = ('ACTUATOR1',)
+#             enip._receive(what, ADDRESS)
+
+#             # write a multikey
+#             what = ('SENSOR1', 1)
+#             for value in range(5):
+#                 enip._send(what, value, ADDRESS)
+
+#             # write a single key
+#             what = ('ACTUATOR1',)
+#             for value in range(5):
+#                 enip._send(what, value, ADDRESS)
+
+#             EnipProtocol._stop_server(enip._server_subprocess)
+
+#         except Exception as error:
+#             EnipProtocol._stop_server(enip._server_subprocess)
+#             print 'ERROR test_client_server: ', error
+#             assert False
+
+#     @SkipTest
+#     def test_server_udp(self):
+
+#         # TODO: implement it
+#         pass
+
+# # }}}
+
+# TestEnipProtocol 2 {{{1
 class TestEnipProtocol():
 
     # NOTE: second tuple element is the process id
