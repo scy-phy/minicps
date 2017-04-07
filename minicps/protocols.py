@@ -24,9 +24,10 @@ import sys
 import shlex
 import subprocess
 
-import cpppo
-import pymodbus
+from multiprocessing import Process
 
+#import cpppo
+#import pymodbus
 
 # Protocol {{{1
 class Protocol(object):
@@ -431,8 +432,226 @@ class EnipProtocol(Protocol):
         except Exception as error:
             print 'ERROR enip _receive: ', error
 
-# }}}
 
+class EnipProtocol(Protocol):
+    """EnipProtocol manager.
+
+    EnipProtocol manages python enip library, Look at the original
+    documentation for more information.
+
+    Tags are passed as a tuple of tuples, if the tuple contains only 1 tag
+    remember to put an ending comma, otherwise python will interpret the data
+    as a tuple and not as a tuple of tuples.
+
+        eg: tag = (('SENSOR1'), )
+
+    Supported tag datatypes:
+        - SINT (8-bit)
+        - INT (16-bit)
+        - DINT (32-bit)
+        - REAL (32-bit float)
+        - BOOL (8-bit, bit #0)
+        - SSTRING[10] (simple string of 10 chars) # TODO: Not supported yet.
+    """
+
+    # server ports
+    _TCP_PORT = ':44818'
+    # _UDP_PORT = ':2222' # not supported
+
+    def __init__(self, protocol):
+
+        super(EnipProtocol, self).__init__(protocol)
+
+        if sys.platform.startswith('linux'):
+            self._client_log = 'logs/enip_client '
+        else:
+            raise OSError
+
+        # tcp enip server
+        if self._mode == 1:
+
+            # NOTE: set up logging
+            if sys.platform.startswith('linux'):
+                self._server_log = 'logs/enip_tcp_server '
+            else:
+                raise OSError
+
+            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            if self._server['address'].find(':') == -1:
+                print 'DEBUG: concatenating server address with default port.'
+                self._server['address'] += EnipProtocol._TCP_PORT
+
+            elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
+                print 'WARNING: not using std enip %s TCP port' % EnipProtocol._TCP_PORT
+
+            self._server_subprocess = EnipProtocol._start_server(
+                    address=self._server['address'],
+                    tags=self._server['tags'])
+
+        # TODO: udp enip server
+        elif self._mode == 2: pass
+
+    @classmethod
+    def _tuple_to_enip_tags(cls, tag):
+        tag = [str(x) for x in tag]
+        return "{0}@{1}".format(':'.join(tag[:-1]), tag[-1])
+
+    @classmethod
+    def _nested_tuples_to_enip_tags(cls, tags):
+        """ Tuple to input format for server script init
+        :tags:  ((SENSOR1, BOOL), (ACTUATOR1, 1, SINT), (TEMP2, REAL))
+        :return: a string of the tuples (name and type separated by serializer) separated by white space
+                 E.g. 'sensor1_BOOL actuator1:1_SINT temp2_REAL'
+        """
+        tag_list = [cls._tuple_to_enip_tags(tag) for tag in tags]
+        return '--tags ' + ' '.join(tag_list)
+
+    @classmethod
+    def _start_server_cmd(cls, address='localhost:44818',
+        tags=(('SENSOR1', 'INT'), ('ACTUATOR1', 'INT'))):
+        """Build a Popen cmd string for enip server.
+
+        Tags can be any tuple of tuples. Each tuple has to contain a set of
+        string-convertible fields, the last one has to be a string containing
+        a supported datatype. The current serializer is : (colon).
+
+        Consistency between enip server key-values and state key-values has to
+        be guaranteed by the client.
+
+        :tags: to serve
+        :returns: cmd string passable to Popen object
+        """
+
+        if address.find(":") != -1:
+            address, port = address.split(":")
+
+        if address == "localhost": address = "127.0.0.1"
+
+
+        VERBOSE = '-v '
+        ADDRESS = '--address ' + address + ' '
+        PORT = '--port ' + port + ' '
+        TAGS = cls._nested_tuples_to_enip_tags(tags)
+
+        ENV = "python3"
+        CMD = " /home/ahnafsidd/Github/enip-server/enipserver/server.py "
+
+        if sys.platform.startswith('linux'):
+            LOG = '--log logs/protocols_tests_enip_server '
+        else:
+            raise OSError
+
+        cmd = shlex.split(
+            ENV +
+            CMD +
+            VERBOSE +
+            #LOG +
+            #ADDRESS +
+            TAGS
+        )
+        print 'DEBUG enip _start_server cmd: ', cmd
+
+        return cmd
+
+    @classmethod
+    def _start_server(cls, address, tags):
+        """Start a enip server.
+
+        Notice that the client has to manage the new process,
+        eg:kill it after use.
+
+        :address: to serve
+        :tags: to serve
+        """
+        try:
+            cmd = cls._start_server_cmd(address, tags)
+            cls.server = subprocess.Popen(cmd, shell=False)
+
+            return cls.server
+
+        except Exception as error:
+            print 'ERROR enip _start_server: ', error
+
+    @classmethod
+    def _stop_server(cls, server):
+        """Stop an enip server.
+
+        :server: Popen object
+        """
+        try:
+            server.kill()
+        except Exception as error:
+            print 'ERROR stop enip server: ', error
+
+    def _send(self, what, value, address='localhost', **kwargs):
+        """Send (serve) a value.
+
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+
+        :what: tuple of (tag name, datatype)
+        :value: sent
+        :address: ip
+        """
+        tag = self._tuple_to_enip_tags(what)
+
+        ENV = "python " #sys.executable
+        CMD = "{0}pyenip/single_write.py ".format(self._minicps_path)
+        ADDRESS = "-i {0} ".format(address)
+        TAG = "-t {0} ".format(tag)
+        VAL = "-v {0}".format(value)
+
+        cmd = shlex.split(
+            ENV +
+            CMD +
+            ADDRESS +
+            TAG +
+            VAL
+        )
+        print 'DEBUG enip _start_server cmd: ', cmd
+
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()
+
+        except Exception as error:
+            print 'ERROR enip _send: ', error
+
+    def _receive(self, what, address='localhost'):
+
+        """Receive a (requested) value.
+
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+
+        :what: tag
+        :address: to receive from
+
+        :returns: tuple of (value, datatype)
+        """
+        tag_name = ':'.join([str(x) for x in what])
+
+        ENV = "python " #sys.executable
+        CMD = "{0}pyenip/single_read.py ".format(self._minicps_path)
+        ADDRESS = "-i {0} ".format(address)
+        TAG = "-t {0} ".format(tag_name)
+
+        cmd = shlex.split(
+            ENV +
+            CMD +
+            ADDRESS +
+            TAG
+        )
+        print 'DEBUG enip _start_server cmd: ', cmd
+
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()
+
+        except Exception as error:
+            print 'ERROR enip _receive: ', error
+
+# }}}
 
 # ModbusProtocol {{{1
 class ModbusProtocol(Protocol):
