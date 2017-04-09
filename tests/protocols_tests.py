@@ -231,10 +231,11 @@ class TestModbusProtocol():
     else:
         raise OSError
 
-    from minicps import __file__ as minicps_path
-    minicps_path = minicps_path[:-12]
+    from minicps import __file__
+    index = __file__.rfind('minicps')
+    minicps_path = __file__[:index+7] + '/'
     SERVER_CMD_PATH = sys.executable + ' ' + minicps_path + \
-            'pymodbus/servers.py '   # NOTE: ending whitespace
+        'pymodbus/servers.py '   # NOTE: ending whitespace
 
     def test_server_start_stop(self):
 
