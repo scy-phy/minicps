@@ -2,6 +2,10 @@
 #
 # Commits that have [ci skip] anywhere in the commit messages are ignored by Travis CI.
 
+# NOTE: Travis will use a non docker based infrastructure
+# NOTE: because of pymodbus
+sudo: required
+
 language: python
 
 branches:
@@ -12,17 +16,16 @@ python:
   - "2.6"
   - "2.7"
 
-# travis-ci automatically preinstalls
-#
+# NOTE: Travis-ci automatically preinstalls
 # pytest
 # nose
 # mock
 
-# travis-ci automatically installs
+# NOTE: Travis-ci automatically runs
 #
 # pip install -r requirements.txt
 
-# TODO: add mininet-based tests
+# TODO: Add mininet-based tests
 script: make tests-travis
 
 notifications:
