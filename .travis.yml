@@ -13,7 +13,6 @@ branches:
     - master
 
 python:
-  - "2.6"
   - "2.7"
 
 # NOTE: Travis-ci automatically preinstalls
