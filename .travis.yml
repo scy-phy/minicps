@@ -1,8 +1,9 @@
 # MiniCPS .travis.yml
 #
-# Commits that have [ci skip] anywhere in the commit messages are ignored by Travis CI.
+# NOTE: Commits that have [ci skip] anywhere in the commit messages are ignored by Travis CI.
+# NOTE: Validate file using https://lint.travis-ci.org/
 
-# NOTE: Travis will use a non docker based infrastructure
+# NOTE: When sudo is enabled Travis will use a non docker based infrastructure
 # NOTE: because of pymodbus
 sudo: required
 
@@ -24,8 +25,8 @@ python:
 # NOTE: Travis-ci automatically runs
 #
 install:
-  sudo pip install -r requirements.txt
-  pip install -r requirements.txt
+  - sudo pip install -r requirements.txt
+  - pip install -r requirements.txt
 
 # TODO: Add mininet-based tests
 script: make tests-travis
