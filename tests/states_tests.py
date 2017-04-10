@@ -1,7 +1,6 @@
 """
 states_tests.py
 
-SQLite uses text datatype instead of varchar.
 """
 
 import os
@@ -13,11 +12,11 @@ from nose.plugins.skip import SkipTest
 
 # TODO: change to /tmp when install SQLitesutdio in ubuntu
 
-PATH = "/var/tmp/states_tests.sqlite"
+PATH = "/tmp/states_tests.sqlite"
 NAME = 'states_tests'
 STATE = {
+    'path': PATH,
     'name': NAME,
-    'path': PATH
 }
 
 SCHEMA = """
@@ -45,17 +44,22 @@ def test_SQLiteStateClassMethods():
         pass
         # print '%s do NOT exists: ', error
 
-    finally:
+    try:
         SQLiteState._create(PATH, SCHEMA)
         SQLiteState._init(PATH, SCHEMA_INIT)
         SQLiteState._delete(PATH)
+
+    except Exception as error:
+        print 'ERROR test_SQLiteStateClassMethods: ', error
+        assert False
+
 
 
 class TestSQLiteState():
 
     def test_NoPk(self):
 
-        PATH = "temp/no_pk.sqlite"
+        PATH = "/tmp/no_pk.sqlite"
         NAME = 'no_pk'
         STATE = {
             'name': NAME,
@@ -82,7 +86,7 @@ class TestSQLiteState():
 
     def test_OnePk(self):
 
-        PATH = "temp/one_pk.sqlite"
+        PATH = "/tmp/one_pk.sqlite"
         NAME = 'one_pk'
         STATE = {
             'name': NAME,
@@ -117,7 +121,7 @@ class TestSQLiteState():
 
     def test_TwoPk(self):
 
-        PATH = "temp/two_pks.sqlite"
+        PATH = "/tmp/two_pks.sqlite"
         NAME = 'two_pks'
         STATE = {
             'name': NAME,

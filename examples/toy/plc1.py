@@ -42,7 +42,7 @@ class ToyPLC1(PLC):
         count = 0
         END = 6e6
         while(True):
-            rec_s31 = self.recieve(SENSOR3_1, PLC1_ADDR)
+            rec_s31 = self.receive(SENSOR3_1, PLC1_ADDR)
             # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
             get_s32 = self.get(SENSOR3_2)
             print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32

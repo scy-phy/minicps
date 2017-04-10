@@ -6,16 +6,23 @@ import time
 import sys
 import os
 
-from minicps.devices import Device, PLC, HMI, Tank
+from minicps.devices import Device, PLC, HMI, Tank, SCADAServer, RTU
 from minicps.states import SQLiteState
 
-from nose.tools import eq_
+from nose.tools import eq_, raises
 from nose.plugins.skip import SkipTest
 
+# NOTE: currently testing only set and get
+# TODO: find a way to test also send and received outside network emulaiton
 
 class TestDevice():
 
-    """TestDevice: build and input validation tests."""
+    """TestDevice: build and input validation tests.
+
+    Reading this tests is a good way to review the MiniCPS APIs for the
+    physical process and network layer.
+
+    """
 
     NAME = 'devices_tests'
     STATE = {
@@ -40,207 +47,165 @@ class TestDevice():
         'TAG5': '5',
     }
 
-    def test_validate_device_name(self):
-        """Validate device name:
+    @raises(TypeError)
+    def test_device_name_is_int(self):
 
-            - name is an int
-            - name is an empty string
-        """
+        device = Device(
+            name=1,
+            state=TestDevice.STATE,
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=1,
-                state=TestDevice.STATE,
-                protocol=TestDevice.PROTOCOL)
-        except TypeError as error:
-            print 'name is an int: ', error
+    @raises(ValueError)
+    def test_device_name_is_empty_string(self):
 
-        try:
-            device = Device(
-                name='',
-                state=TestDevice.STATE,
-                protocol=TestDevice.PROTOCOL)
-        except ValueError as error:
-            print 'name is empty string: ', error
+        device = Device(
+            name='',
+            state=TestDevice.STATE,
+            protocol=TestDevice.PROTOCOL)
 
-    def test_validate_state(self):
-        """Validate device state:
+    @raises(TypeError)
+    def test_device_state_is_string(self):
 
-            - state is a string
-            - state is an empty dict
-            - state has more/less than two keys
-            - state has a wrong key
-            - state has an unsupported path extension
-            - state has an integer name value
-        """
+        device = Device(
+            name=TestDevice.NAME,
+            state='state',
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state='state',
-                protocol=TestDevice.PROTOCOL)
-        except TypeError as error:
-            print 'state is string: ', error
+    @raises(KeyError)
+    def test_device_state_empty_dict(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={},
-                protocol=TestDevice.PROTOCOL)
-        except KeyError as error:
-            print 'state is an empty dict: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state={},
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={
-                    'name': 'table_name', 'path': '/path.db',
-                    'wrong': 'key-val'},
-                protocol=TestDevice.PROTOCOL)
-        except KeyError as error:
-            print 'state has more than 2 keys: ', error
+    @raises(KeyError)
+    def test_device_state_more_than_two_keys(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={'name': 'table_name'},
-                protocol=TestDevice.PROTOCOL)
-        except KeyError as error:
-            print 'state has less than 2 keys: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state={
+                'name': 'table_name', 'path': '/path.db',
+                'wrong': 'key-val'},
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={
-                    'path': '/bla',
-                    'bla': 'table_name'},
-                protocol=TestDevice.PROTOCOL)
-        except KeyError as error:
-            print 'state has a wrong key: ', error
+    @raises(KeyError)
+    def test_device_state_less_than_two_keys(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={
-                    'path': 0,
-                    'name': 0},
-                protocol=TestDevice.PROTOCOL)
-        except TypeError as error:
-            print 'state has integer values: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state={'name': 'table_name'},
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={
-                    'path': '/not/supported.ext',
-                    'name': 'table_name'},
-                protocol=TestDevice.PROTOCOL)
-        except ValueError as error:
-            print 'state has an unsupported path extension: ', error
+    @raises(KeyError)
+    def test_device_state_wrong_key(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state={
-                    'path': '/not/supported.ext',
-                    'name': 4},
-                protocol=TestDevice.PROTOCOL)
-        except TypeError as error:
-            print 'state has an integer name: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state={
+                'path': '/bla',
+                'bla': 'table_name'},
+            protocol=TestDevice.PROTOCOL)
 
-    def test_validate_protocol(self):
-        """Validate device protocol:
+    @raises(TypeError)
+    def test_device_state_integer_values(self):
 
-            - protocol is a string
-            - protocol is an empty dict
-            - protocol has more/less than three keys
-            - protocol has a wrong key
-            - protocol name is not a string
-            - protocol has an unsupported name
-            - protocol mode is a float
-            - protocol mode is a negative int
-        """
+        device = Device(
+            name=TestDevice.NAME,
+            state={
+                'path': 0,
+                'name': 0},
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol='protocol')
-        except TypeError as error:
-            print 'protocol is string: ', error
+    @raises(ValueError)
+    def test_device_state_unsupported_path_extension(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={})
-        except KeyError as error:
-            print 'protocol is an empty dict: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state={
+                'path': '/not/supported.ext',
+                'name': 'table_name'},
+            protocol=TestDevice.PROTOCOL)
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 'enip', 'mode': 0, 'server': '',
-                    'too': 'much'})
-        except KeyError as error:
-            print 'protocol has more than 3 keys: ', error
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={'name': 'enip', 'mode': 0})
-        except KeyError as error:
-            print 'protocol has less than 3 keys: ', error
+    @raises(TypeError)
+    def test_device_protocol_is_string(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 'enip', 'mode': 0, 'bla': ''})
-        except KeyError as error:
-            print 'protocol has a wrong key: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol='protocol')
 
-        # protocol['name']
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 1, 'mode': 0, 'server': ''})
-        except TypeError as error:
-            print 'protocol name is not a string: ', error
+    @raises(KeyError)
+    def test_device_protocol_empty_dict(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 'wow', 'mode': 0, 'server': ''})
-        except ValueError as error:
-            print 'protocol has an unsupported name: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={})
 
-        # protocol['mode']
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 'enip', 'mode': 0.3, 'server': ''})
-        except TypeError as error:
-            print 'protocol mode is a float: ', error
+    @raises(KeyError)
+    def test_device_protocol_more_than_three_keys(self):
 
-        try:
-            device = Device(
-                name=TestDevice.NAME,
-                state=TestDevice.STATE,
-                protocol={
-                    'name': 'enip', 'mode': -3, 'server': ''})
-        except ValueError as error:
-            print 'protocol mode is a negative int: ', error
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 'enip', 'mode': 0, 'server': '',
+                'too': 'much'})
+
+    @raises(KeyError)
+    def test_device_protocol_less_than_three_keys(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={'name': 'enip', 'mode': 0})
+
+    @raises(KeyError)
+    def test_device_protocol_wrong_key(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 'enip', 'mode': 0, 'bla': ''})
+
+    @raises(TypeError)
+    def test_device_protocol_name_not_string(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 1, 'mode': 0, 'server': ''})
+
+    @raises(ValueError)
+    def test_device_protocol_name_unsupported_name(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 'wow', 'mode': 0, 'server': ''})
+
+    @raises(TypeError)
+    def test_device_protocol_mode_float(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 'enip', 'mode': 0.3, 'server': ''})
+
+    @raises(ValueError)
+    def test_device_protocol_mode_negative_int(self):
+
+        device = Device(
+            name=TestDevice.NAME,
+            state=TestDevice.STATE,
+            protocol={
+                'name': 'enip', 'mode': -3, 'server': ''})
 
         # protocol['server'] TODO
         # protocol['client'] TODO
@@ -498,3 +463,143 @@ class TestHMI():
             protocol=TestHMI.PROTOCOL)
 
         SQLiteState._delete(TestHMI.PATH)
+
+
+class TestSCADAServer():
+
+    """TestSCADAServer: device with state and protocol client/server capabilites."""
+
+    NAME = 'scadaserver_tests'
+    PATH = 'temp/scadaserver_tests.sqlite'
+    STATE = {
+        'path': PATH,
+        'name': NAME
+    }
+    PROTOCOL = {
+        'name': 'enip',
+        'mode': 0,
+        'server': '',
+    }
+
+    SCHEMA = """
+    CREATE TABLE scadaserver_tests (
+        name              TEXT NOT NULL,
+        datatype          TEXT NOT NULL,
+        value             TEXT,
+        PRIMARY KEY (name)
+    );
+    """
+
+    SCHEMA_INIT = """
+        INSERT INTO scadaserver_tests VALUES ('SENSOR1',   'int', '1');
+        INSERT INTO scadaserver_tests VALUES ('SENSOR2',   'float', '22.2');
+        INSERT INTO scadaserver_tests VALUES ('SENSOR3',   'int', '5');
+        INSERT INTO scadaserver_tests VALUES ('ACTUATOR2', 'int', '2');
+    """
+
+    def test_set_get(self, sleep=0.3):
+
+        try:
+            os.remove(TestSCADAServer.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestSCADAServer.PATH, TestSCADAServer.SCHEMA)
+        SQLiteState._init(TestSCADAServer.PATH, TestSCADAServer.SCHEMA_INIT)
+
+        class ToySCADAServer(SCADAServer):
+
+            def pre_loop(self):
+
+                eq_(self.set(('SENSOR1',), '10'), '10')
+                eq_(self.get(('SENSOR1',)), '10')
+                eq_(self.get(('SENSOR2',)), '22.2')
+                eq_(self.get(('SENSOR3',)), '5')
+                time.sleep(sleep)
+
+                try:
+                    self.get(2.22)
+                except TypeError as error:
+                    print 'get what is a float: ', error
+
+                try:
+                    self.set(2, 5)
+                except TypeError as error:
+                    print 'set what is an integer: ', error
+
+        scadaserver = ToySCADAServer(
+            name=TestSCADAServer.NAME,
+            state=TestSCADAServer.STATE,
+            protocol=TestSCADAServer.PROTOCOL)
+
+        SQLiteState._delete(TestSCADAServer.PATH)
+
+
+class TestRTU():
+
+    """TestRTU: device with state and protocol client/server capabilites."""
+
+    NAME = 'rtu_tests'
+    PATH = 'temp/rtu_tests.sqlite'
+    STATE = {
+        'path': PATH,
+        'name': NAME
+    }
+    PROTOCOL = {
+        'name': 'enip',
+        'mode': 0,
+        'server': '',
+    }
+
+    SCHEMA = """
+    CREATE TABLE rtu_tests (
+        name              TEXT NOT NULL,
+        datatype          TEXT NOT NULL,
+        value             TEXT,
+        PRIMARY KEY (name)
+    );
+    """
+
+    SCHEMA_INIT = """
+        INSERT INTO rtu_tests VALUES ('SENSOR1',   'int', '1');
+        INSERT INTO rtu_tests VALUES ('SENSOR2',   'float', '22.2');
+        INSERT INTO rtu_tests VALUES ('SENSOR3',   'int', '5');
+        INSERT INTO rtu_tests VALUES ('ACTUATOR2', 'int', '2');
+    """
+
+    def test_set_get(self, sleep=0.3):
+
+        try:
+            os.remove(TestRTU.PATH)
+        except OSError:
+            pass
+
+        SQLiteState._create(TestRTU.PATH, TestRTU.SCHEMA)
+        SQLiteState._init(TestRTU.PATH, TestRTU.SCHEMA_INIT)
+
+        class ToyRTU(RTU):
+
+            def pre_loop(self):
+
+                eq_(self.set(('SENSOR1',), '10'), '10')
+                eq_(self.get(('SENSOR1',)), '10')
+                eq_(self.get(('SENSOR2',)), '22.2')
+                eq_(self.get(('SENSOR3',)), '5')
+                time.sleep(sleep)
+
+                try:
+                    self.get(2.22)
+                except TypeError as error:
+                    print 'get what is a float: ', error
+
+                try:
+                    self.set(2, 5)
+                except TypeError as error:
+                    print 'set what is an integer: ', error
+
+        scadaserver = ToyRTU(
+            name=TestRTU.NAME,
+            state=TestRTU.STATE,
+            protocol=TestRTU.PROTOCOL)
+
+        SQLiteState._delete(TestRTU.PATH)

@@ -1,15 +1,22 @@
 """
 ``devices`` module contains:
 
-    - ``get`` and ``set`` physical layer's API methods
+    - ``get`` and ``set`` physical process's API methods
     - ``send`` and ``receive`` network layer's API methods
     - the user input validation code
 
 Any device can be initialized with any couple of ``state`` and
 ``protocol`` dictionaries.
 
-List of supported protocols:
-    - Ethernet/IP subset through ``cpppo``
+List of supported protocols and identifiers:
+    - Devices with no networking capabilities have to set ``protocol`` equal
+        to ``None``.
+    - Ethernet/IP subset through ``cpppo``, use id ``enip``
+        - Mode 0: client only.
+        - Mode 1: tcp enip server.
+    - Modbus through ``pymodbus``, use id ``modbus``
+        - Mode 0: client only.
+        - Mode 1: tcp modbus server.
 
 List of supported backends:
     - Sqlite through ``sqlite3``
@@ -27,7 +34,7 @@ import time
 from os.path import splitext
 
 from minicps.states import SQLiteState, RedisState
-from minicps.protocols import EnipProtocol
+from minicps.protocols import EnipProtocol, ModbusProtocol
 
 
 class Device(object):
@@ -36,13 +43,28 @@ class Device(object):
 
     # TODO: state dict convention (eg: multiple table support?)
     def __init__(self, name, protocol, state, disk={}, memory={}):
-        """
+        """Init a Device object.
 
         :param str name: device name
         :param dict protocol: used to set up the network layer API
         :param dict state: used to set up the physical layer API
         :param dict disk: persistent memory
         :param dict memory: main memory
+
+        ``protocol`` (when is not ``None``) is a ``dict`` containing 3 keys:
+
+            - ``name``: addresses a str identifying the protocol name (eg:
+              ``enip``)
+            - ``mode``: int identifying the server mode (eg: mode equals
+              ``1``)
+            - ``server``: if ``mode`` equals ``0`` is empty,
+                otherwise it addresses a dict containing the server information
+                such as its address, and a list of data to serve.
+
+        ``state`` is a ``dict`` containing 2 keys:
+
+            - ``path``: full (LInux) path to the database (eg: /tmp/test.sqlite)
+            - ``name``: table name
 
         Device construction example:
 
@@ -109,7 +131,7 @@ class Device(object):
             if type(state['name']) is not str:
                 raise TypeError('State name must be a string.')
 
-        # protocol
+        # protocol dict
         if type(protocol) is not dict:
             if protocol is not None:
                 raise TypeError('Protocol must be either None or a dict.')
@@ -129,7 +151,7 @@ class Device(object):
                 raise TypeError('Protocol name must be a string.')
             else:
                 name = protocol['name']
-                if (name != 'enip'):
+                if (name != 'enip' and name != 'modbus'):
                     raise ValueError('%s protocol not supported.' % protocol)
             # protocol['mode']
             if type(protocol['mode']) is not int:
@@ -139,6 +161,7 @@ class Device(object):
                 if (mode < 0):
                     raise ValueError('Protocol mode must be positive.')
             # protocol['server'] TODO
+
             # protocol['client'] TODO after adding it to the API
 
     def _init_state(self):
@@ -167,6 +190,8 @@ class Device(object):
             name = self.protocol['name']
             if name == 'enip':
                 self._protocol = EnipProtocol(self.protocol)
+            elif name == 'modbus':
+                self._protocol = ModbusProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol
 
@@ -181,7 +206,11 @@ class Device(object):
         print "TODO _stop: please override me"
 
     def set(self, what, value):
-        """Set aka write a state value.
+        """Set (write) a physical process state value.
+
+        The ``value`` to be set (Eg: drive an actuator) is identified by the
+        ``what`` tuple, and it is assumed to be already initialize. Indeed
+        ``set`` is not able to create new physical process values.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -195,7 +224,7 @@ class Device(object):
             return self._state._set(what, value)
 
     def get(self, what):
-        """Get (read) a ``state`` value.
+        """Get (read) a physical process state value.
 
         :param tuple what: field[s] identifier[s]
 
@@ -207,8 +236,11 @@ class Device(object):
         else:
             return self._state._get(what)
 
-    def send(self, what, value, address):
-        """Send aka serve a value to another host.
+    def send(self, what, value, address, **kwargs):
+        """Send (write) a value to another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
 
         :param tuple what: field[s] identifier[s]
         :param value: value to be setted
@@ -220,21 +252,24 @@ class Device(object):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._protocol._send(what, value, address)
+            return self._protocol._send(what, value, address, **kwargs)
 
-    def recieve(self, what, address):
-        """Receive a value from another host.
+    def receive(self, what, address, **kwargs):
+        """Receive (read) a value from another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
 
         :param tuple what: field[s] identifier[s]
         :param str address: ``ip[:port]``
 
-        :returns: recv value or ``TypeError`` if ``what`` is not a ``tuple``
+        :returns: received value or ``TypeError`` if ``what`` is not a ``tuple``
         """
 
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._protocol._receive(what, address)
+            return self._protocol._receive(what, address, **kwargs)
 
 
 # TODO: rename pre_loop and main_loop?
@@ -244,7 +279,7 @@ class PLC(Device):
 
     PLC provides:
         - state APIs: e.g., drive an actuator
-        - network APIs: e.g., communicate with another PLC
+        - network APIs: e.g., communicate with another Device
     """
 
     def _start(self):
@@ -361,6 +396,92 @@ class Tank(Device):
         while(sec < 1):
 
             print "TODO Tank main_loop: please override me"
+            time.sleep(sleep)
+
+            sec += 1
+
+
+class SCADAServer(Device):
+
+    """SCADAServer class.
+
+    SCADAServer provides:
+        - state APIs: e.g., drive an actuator
+        - network APIs: e.g., communicate with another Device
+    """
+
+    def _start(self):
+
+        self.pre_loop()
+        self.main_loop()
+
+    def _stop(self):
+
+        if self.protocol['mode'] > 0:
+            self._protocol._server_subprocess.kill()
+
+    def pre_loop(self, sleep=0.5):
+        """SCADAServer boot process.
+
+        :param float sleep: second[s] to sleep before returning
+        """
+
+        print "TODO SCADAServer pre_loop: please override me"
+        time.sleep(sleep)
+
+    def main_loop(self, sleep=0.5):
+        """SCADAServer main loop.
+
+        :param float sleep: second[s] to sleep after each iteration
+        """
+
+        sec = 0
+        while(sec < 1):
+
+            print "TODO SCADAServer main_loop: please override me"
+            time.sleep(sleep)
+
+            sec += 1
+
+
+class RTU(Device):
+
+    """RTU class.
+
+    RTU provides:
+        - state APIs: e.g., drive an actuator
+        - network APIs: e.g., communicate with another Device
+    """
+
+    def _start(self):
+
+        self.pre_loop()
+        self.main_loop()
+
+    def _stop(self):
+
+        if self.protocol['mode'] > 0:
+            self._protocol._server_subprocess.kill()
+
+    def pre_loop(self, sleep=0.5):
+        """RTU boot process.
+
+        :param float sleep: second[s] to sleep before returning
+        """
+
+        print "TODO RTU pre_loop: please override me"
+        time.sleep(sleep)
+
+    def main_loop(self, sleep=0.5):
+        """RTU main loop.
+
+        :param float sleep: second[s] to sleep after each iteration
+        """
+
+        sec = 0
+        while(sec < 1):
+
+            print "TODO RTU main_loop: please override me"
             time.sleep(sleep)
 
             sec += 1
