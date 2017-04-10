@@ -14,10 +14,9 @@ PYTHON_OPTS =
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
 
-# NOTE: sudo because of pymodbus and mininet
+# NOTE: sudo because of mininet
 TESTER = sudo nosetests
-# NOTE: sudo because of pymodbus
-TESTER_TRAVIS = sudo nosetests
+TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe  --rednose
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 

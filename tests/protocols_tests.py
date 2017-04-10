@@ -1,5 +1,8 @@
 """
 protocols_test.
+
+Use non-standard ports greater than 1024 to avoid using sudo both locally and
+on the Travis CI.
 """
 
 import os
@@ -212,7 +215,7 @@ class TestModbusProtocol():
     #     ('IR1', 1, 'IR'),
     #     ('IR2', 4, 'IR'))
     SERVER = {
-        'address': 'localhost:502',
+        'address': 'localhost:3502',
         'tags': TAGS
     }
     CLIENT_SERVER_PROTOCOL = {
@@ -241,7 +244,7 @@ class TestModbusProtocol():
 
         try:
             server = ModbusProtocol._start_server(self.SERVER_CMD_PATH,
-                'localhost:502', self.TAGS)
+                'localhost:3502', self.TAGS)
             ModbusProtocol._stop_server(server)
 
         except Exception as error:
@@ -281,7 +284,7 @@ class TestModbusProtocol():
         client = ModbusProtocol(
             protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
-        ADDRESS = 'localhost:502'
+        ADDRESS = 'localhost:3502'
         TAGS = (20, 20, 20, 20)
         OFFSET = 10
 
@@ -315,7 +318,7 @@ class TestModbusProtocol():
         client = ModbusProtocol(
             protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
-        ADDRESS = 'localhost:502'
+        ADDRESS = 'localhost:3502'
         TAGS = (20, 20, 20, 20)
         OFFSET = 10
 
@@ -357,7 +360,7 @@ class TestModbusProtocol():
     @SkipTest
     def test_client_server(self):
 
-        ADDRESS = 'localhost:502'
+        ADDRESS = 'localhost:3502'
 
         try:
             # NOTE: same instance used as server and client
@@ -410,7 +413,7 @@ class TestModbusProtocol():
         client = ModbusProtocol(
             protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
-        ADDRESS = 'localhost:502'
+        ADDRESS = 'localhost:3502'
         TAGS = (20, 20, 20, 20)
 
         try:
@@ -449,7 +452,7 @@ class TestModbusProtocol():
         client = ModbusProtocol(
             protocol=TestModbusProtocol.CLIENT_PROTOCOL)
 
-        ADDRESS = 'localhost:502'
+        ADDRESS = 'localhost:3502'
         TAGS = (50, 50, 50, 50)
 
         try:

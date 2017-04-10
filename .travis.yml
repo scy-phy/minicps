@@ -4,8 +4,7 @@
 # NOTE: Validate file using https://lint.travis-ci.org/
 
 # NOTE: When sudo is enabled Travis will use a non docker based infrastructure
-# NOTE: because of pymodbus
-sudo: required
+# sudo: required
 
 language: python
 
@@ -25,12 +24,12 @@ python:
 # NOTE: Travis-ci automatically runs
 #
 install:
-  - sudo pip install -r requirements.txt
   - pip install -r requirements.txt
 
 # TODO: Add mininet-based tests
 script: make tests-travis
 
+# NOTE: https://docs.travis-ci.com/user/notifications/
 notifications:
   email:
     on_success: change
