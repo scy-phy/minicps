@@ -9,7 +9,7 @@ config = {
     traffic in an industrial control system, with basic support for physical
     layer interaction.""",
 
-    'author': 'scy-phy',
+    'author': 'Daniele Antonioli',
 
     'url': 'https://github.com/scy-phy/minicps',
 
@@ -17,12 +17,13 @@ config = {
 
     'author email': 'daniele_antonioli@sutd.edu.sg',
 
-    'version': '1.0.0',
+    'version': '1.1.0',
 
     'install_requires': [
+        'cryptography',
+        'pyasn1',
+        'pymodbus',
         'cpppo',
-        'nose',
-        'coverage',
     ],
 
     'package': ['minicps'],

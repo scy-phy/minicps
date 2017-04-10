@@ -21,7 +21,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', type=str, dest='ip', help='request ip')
-    parser.add_argument('-p', type=int, dest='port', choices=[502],
+    # NOTE: allows non standard port to test without sudo
+    parser.add_argument('-p', type=int, dest='port',
             default=502, help='port number')
     parser.add_argument('-u', type=int, dest='unit',
             default=0, help='slave unit number')

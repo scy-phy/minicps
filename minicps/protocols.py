@@ -64,7 +64,9 @@ class Protocol(object):
 
         try:
             from minicps import __file__
-            self._minicps_path = __file__[:-12]  # XXX: remove trailing chars
+            index = __file__.rfind('minicps')
+            self._minicps_path = __file__[:index+7] + '/'
+
         except Exception as error:
             print 'ERROR Protocol __init__ set _minicps_path: ', error
 

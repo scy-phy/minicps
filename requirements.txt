@@ -1,5 +1,7 @@
-cpppo
-nose
 coverage
-pymodbus
+nose
 rednose
+cryptography
+pyasn1
+pymodbus
+cpppo

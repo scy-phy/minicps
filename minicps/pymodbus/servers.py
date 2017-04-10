@@ -20,7 +20,8 @@ if __name__ == "__main__":
 
     # NOTE: network
     parser.add_argument('-i', type=str, dest='ip', help='server ip')
-    parser.add_argument('-p', type=int, dest='port', choices=[502],
+    # NOTE: allows non standard port to test without sudo
+    parser.add_argument('-p', type=int, dest='port',
             default=502, help='port number')
     parser.add_argument('-m', type=int, dest='mode', choices=[1],
             default=1, help='mode')

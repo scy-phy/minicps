@@ -4,7 +4,7 @@
 MININET = sudo mn
 
 PYTHON = sudo python
-PYTHON_OPTS = 
+PYTHON_OPTS =
 
 # regex testMatch: (?:^|[b_.-])[Tt]est)
 # --exe: include also executable files
@@ -14,7 +14,7 @@ PYTHON_OPTS =
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
 
-# sudo because of mininet
+# NOTE: sudo because of mininet
 TESTER = sudo nosetests
 TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe  --rednose
