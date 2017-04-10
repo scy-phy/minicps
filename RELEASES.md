@@ -10,10 +10,6 @@
 
 * Modbus through `pymodbus`
 
-### Examples
-
-* New water distribution simulation see `examples/wadi`
-
 ### Test suite
 
 * Added `rednose` for better user interface
