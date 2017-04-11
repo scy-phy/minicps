@@ -179,7 +179,7 @@ class EnipProtocol(Protocol):
             else:
                 raise OSError
 
-            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            #print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
                 print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += EnipProtocol._TCP_PORT
@@ -204,7 +204,7 @@ class EnipProtocol(Protocol):
         """ Tuple to input format for server script init
         :tags:  ((SENSOR1, BOOL), (ACTUATOR1, 1, SINT), (TEMP2, REAL))
         :return: a string of the tuples (name and type separated by serializer) separated by white space
-                 E.g. 'sensor1_BOOL actuator1:1_SINT temp2_REAL'
+                 E.g. 'sensor1@BOOL actuator1:1@SINT temp2@REAL'
         """
         tag_list = [cls._tuple_to_enip_tags(tag) for tag in tags]
         return '--tags ' + ' '.join(tag_list)
@@ -248,7 +248,7 @@ class EnipProtocol(Protocol):
             ADDRESS +
             TAGS
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        # print 'DEBUG enip _start_server cmd: ', cmd
 
         return cmd
 
@@ -307,7 +307,7 @@ class EnipProtocol(Protocol):
             TAG +
             VAL
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        # print 'DEBUG enip _start_server cmd: ', cmd
 
         try:
             client = subprocess.Popen(cmd, shell=False,
@@ -315,7 +315,7 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print 'DEBUG enip _receive raw_out: ', raw_out
+            # print 'DEBUG enip _receive raw_out: ', raw_out
 
             #value is stored as first tuple element
             return raw_out[0]
@@ -348,7 +348,7 @@ class EnipProtocol(Protocol):
             ADDRESS +
             TAG
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        # print 'DEBUG enip _start_server cmd: ', cmd
 
         try:
             client = subprocess.Popen(cmd, shell=False,
@@ -356,7 +356,7 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print 'DEBUG enip _receive raw_out: ', raw_out
+            # print 'DEBUG enip _receive raw_out: ', raw_out
 
             #value is stored as first tuple element
             return raw_out[0]
