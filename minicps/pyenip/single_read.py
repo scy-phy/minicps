@@ -15,6 +15,7 @@ def read_tag(address, tag_name):
         if plc.open(address):
             tagg = plc.read_tag(tag_name)
             plc.close()
+            if not tagg: return (False, )
             return (tagg)
         else:
             return ("u", )
