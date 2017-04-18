@@ -7,7 +7,8 @@ value is passed as a ``str``
 """
 
 import argparse  # TODO: check if it is too slow at runtime
-from pycomm.ab_comm.clx import Driver as ClxDriver
+import sys
+from pycomm.clx import Driver as ClxDriver
 
 def convert_value_to_type(tag_type, val):
     if tag_type == "INT" or tag_type == "DINT" or tag_type == "SINT":  value = int(val)
@@ -36,7 +37,7 @@ if __name__ == "__main__":
                         help='request ip')
 
     parser.add_argument('-t', '--tag', type=str, dest='tag', required=True,
-                        help='request tag with type')
+                        help='request tag with type. format: NAME[:ID]@TYPE')
 
     parser.add_argument('-v', '--val', type=str, dest='val', required=True,
                         help='value to be written')
@@ -44,8 +45,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # split tags to retrieve type
-    tag_name, tag_type = args.tag.split("@")
+    try:
+        tag_name, tag_type = args.tag.split("@")
 
+    except ValueError as e:
+        print("single_write.py: error: invalid tag format.")
+        print("usage: single_write.py -h for help")
+        sys.exit(0)
+
+    if not tag_type:
+        print("single_write.py: error: tag type is invalid.")
+        print("usage: single_write.py -h for help")
+        sys.exit(0)
     # retrieve the ip and ignore the port
     address = args.ip.split(":")[0]
 
