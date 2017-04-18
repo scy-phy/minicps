@@ -8,7 +8,7 @@ value is passed as a ``str``
 
 import argparse  # TODO: check if it is too slow at runtime
 import sys
-from pycomm.clx import Driver as ClxDriver
+from pycomm.ab_comm.clx import Driver as ClxDriver
 
 def convert_value_to_type(tag_type, val):
     if tag_type == "INT" or tag_type == "DINT" or tag_type == "SINT":  value = int(val)
