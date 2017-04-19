@@ -64,12 +64,6 @@ class SwatPLC1(PLC):
                 self.set(MV101, 0)
                 self.send(MV101, 0, PLC1_ADDR)
 
-            elif lit101 <= LIT_101_M['L']:
-                # OPEN mv101
-                print "INFO PLC1 - lit101 under L -> open mv101."
-                self.set(MV101, 1)
-                self.send(MV101, 1, PLC1_ADDR)
-
             elif lit101 <= LIT_101_M['LL']:
                 print "WARNING PLC1 - lit101 under LL: %.2f <= %.2f." % (
                     lit101, LIT_101_M['LL'])
@@ -78,6 +72,12 @@ class SwatPLC1(PLC):
                 print "INFO PLC1 - close p101."
                 self.set(P101, 0)
                 self.send(P101, 0, PLC1_ADDR)
+
+            elif lit101 <= LIT_101_M['L']:
+                # OPEN mv101
+                print "INFO PLC1 - lit101 under L -> open mv101."
+                self.set(MV101, 1)
+                self.send(MV101, 1, PLC1_ADDR)
 
             # TODO: use it when implement raw water tank
             # read from PLC2 (constant value)
