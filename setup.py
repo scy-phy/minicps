@@ -9,12 +9,12 @@ setup(
     name='minicps',
     version='1.1.0',
     description='MiniCPS: a framework for Cyber-Physical Systems \
-    real-time simulation, built on top of mininet.',
+real-time simulation, built on top of mininet.',
     # NOTE: long_description displayed on PyPi
     long_description='MiniCPS is a framework for Cyber-Physical Systems \
-    real-time simulation. It includes support for physical process and \
-    control devices simulation, and network emulation. It is build \
-    on top of mininet.',
+real-time simulation. It includes support for physical process and \
+control devices simulation, and network emulation. It is build \
+on top of mininet.',
     url='https://github.com/scy-phy/minicps',
     author='Daniele Antonioli',
     author_email='antonioli.daniele@gmail.com',
