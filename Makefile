@@ -20,6 +20,7 @@ TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe  --rednose
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 
+UPLOADER=twine
 # }}}
 
 .PHONY: tests tests-travis clean
@@ -140,7 +141,10 @@ clean-mininet:
 
 # PYPI {{{1
 
-package-wheel:
-	python2 setup.py sdist bdist_wheel
+pypi-wheel:
+	./setup.py sdist bdist_wheel
+
+pypi-upload:
+	$(UPLOADER) upload dist/*
 
 # }}}
