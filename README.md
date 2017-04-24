@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/minicps.svg)](https://badge.fury.io/py/minicps)
 [![Documentation Status](https://readthedocs.org/projects/minicps/badge/?version=latest)](http://minicps.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status][CS img]][Coverage Status]
 
