@@ -13,7 +13,7 @@ real-time simulation, built on top of mininet.',
     # NOTE: long_description displayed on PyPi
     long_description='MiniCPS is a framework for Cyber-Physical Systems \
 real-time simulation. It includes support for physical process and \
-control devices simulation, and network emulation. It is build \
+control devices simulation, and network emulation. It is built \
 on top of mininet.',
     url='https://github.com/scy-phy/minicps',
     author='Daniele Antonioli',
