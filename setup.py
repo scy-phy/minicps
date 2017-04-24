@@ -4,7 +4,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# NOTE: https://docs.python.org/2/distutils/setupscript.html
+# NOTE: https://packaging.python.org/
 setup(
     name='minicps',
     version='1.1.0',
