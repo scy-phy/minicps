@@ -77,7 +77,8 @@ if __name__ == "__main__":
         elif args.type == 'CO':
 
             if args.count == 1:
-                if args.coil == 1:
+                # NOTE: coil is a list with one bool
+                if args.coil[0] == 1:
                     co_write = client.write_coil(args.offset, True)
                 else:
                     co_write = client.write_coil(args.offset, False)
