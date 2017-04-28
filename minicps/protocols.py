@@ -179,7 +179,7 @@ class EnipProtocol(Protocol):
             else:
                 raise OSError
 
-            #print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            # print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
                 print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += EnipProtocol._TCP_PORT
@@ -195,18 +195,16 @@ class EnipProtocol(Protocol):
         elif self._mode == 2: pass
 
     @classmethod
-    def _tuple_to_enip_tags(cls, tag):
-        tag = [str(x) for x in tag]
-        return "{0}@{1}".format(':'.join(tag[:-1]), tag[-1])
-
-    @classmethod
     def _nested_tuples_to_enip_tags(cls, tags):
         """ Tuple to input format for server script init
         :tags:  ((SENSOR1, BOOL), (ACTUATOR1, 1, SINT), (TEMP2, REAL))
         :return: a string of the tuples (name and type separated by serializer) separated by white space
                  E.g. 'sensor1@BOOL actuator1:1@SINT temp2@REAL'
         """
-        tag_list = [cls._tuple_to_enip_tags(tag) for tag in tags]
+        tag_list = []
+        for tag in tags:
+            tag = [str(x) for x in tag]
+            tag_list.append("{0}@{1}".format(':'.join(tag[:-1]), tag[-1]))
         return '--tags ' + ' '.join(tag_list)
 
     @classmethod
@@ -288,24 +286,35 @@ class EnipProtocol(Protocol):
         It is a blocking operation the parent process will wait till the child
         cpppo process returns.
 
-        :what: tuple of (tag name, datatype)
+        :what: tag
         :value: sent
         :address: ip
         """
-        tag = self._tuple_to_enip_tags(what)
+        def infer_tag_type(val):
+            if type(val) is float: _typ = "REAL"
+            elif type(val) is int: _typ = "INT"
+            elif type(val) is str: _typ = "STRING"
+            elif type(val) is bool: _typ = "BOOL"
+            else: _typ = "unsupported"
+            return _typ
+
+        tag = ':'.join([str(x) for x in what])
+        typ = infer_tag_type(value)
 
         ENV = "python " #sys.executable
         CMD = "{0}pyenip/single_write.py ".format(self._minicps_path)
         ADDRESS = "-i {0} ".format(address)
         TAG = "-t {0} ".format(tag)
-        VAL = "-v {0}".format(value)
+        VAL = "-v '{}' ".format(str(value))
+        TYP = "--type {}".format(typ)
 
         cmd = shlex.split(
             ENV +
             CMD +
             ADDRESS +
             TAG +
-            VAL
+            VAL +
+            TYP
         )
         # print 'DEBUG enip _start_server cmd: ', cmd
 
@@ -417,9 +426,9 @@ class ModbusProtocol(Protocol):
             else:
                 raise OSError
 
-            print 'DEBUG ModbusProtocol server addr: ', self._server['address']
+            # print 'DEBUG ModbusProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
+                # print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += ModbusProtocol._TCP_PORT
 
             elif not self._server['address'].endswith(ModbusProtocol._TCP_PORT):
@@ -428,7 +437,7 @@ class ModbusProtocol(Protocol):
 
             server_cmd_path = sys.executable + ' ' + self._minicps_path + \
                     'pymodbus/servers.py '   # NOTE: ending whitespace
-            print 'DEBUG: generating server_cmd_path: {}'.format(server_cmd_path)
+            # print 'DEBUG: generating server_cmd_path: {}'.format(server_cmd_path)
 
             self._server_subprocess = ModbusProtocol._start_server(
                 address=self._server['address'],
@@ -510,7 +519,7 @@ class ModbusProtocol(Protocol):
             MODE +
             DI + CO + IR + HR
         )
-        print 'DEBUG modbus _start_server cmd: ', cmd
+        # print 'DEBUG modbus _start_server cmd: ', cmd
 
         return cmd
 

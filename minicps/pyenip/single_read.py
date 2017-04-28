@@ -44,9 +44,7 @@ if __name__ == "__main__":
 
     val = res[0]
 
-    if val == "e":
-        print("Unable to open connection at : {}".format(address))
-    elif val == "u":
+    if val == "u":
         print("Unknown Error! Please check server log.")
     elif val == False:
         print("Read unsuccesful. Please check server log.")

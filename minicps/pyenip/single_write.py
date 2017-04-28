@@ -8,12 +8,14 @@ value is passed as a ``str``
 
 import argparse  # TODO: check if it is too slow at runtime
 import sys
-from pycomm.ab_comm.clx import Driver as ClxDriver
+from pycomm.clx import Driver as ClxDriver
 
-def convert_value_to_type(tag_type, val):
-    if tag_type == "INT" or tag_type == "DINT" or tag_type == "SINT":  value = int(val)
+def convert_value_to_proper_type(tag_type, val):
+    if tag_type == "INT": value = int(val)
     elif tag_type == "REAL": value = float(val)
-    elif tag_type == "BOOL": value = bool(val)
+    elif tag_type == "BOOL":
+        if val == "False" or val == 0: value = False
+        else: value = True
     else: value = str(val)
     return value
 
@@ -27,7 +29,7 @@ def write_tag(tag_name, value, tag_type):
         else:
             return "u"
     except Exception as e:
-        return "e"
+        raise e
 
 if __name__ == "__main__":
 
@@ -37,36 +39,31 @@ if __name__ == "__main__":
                         help='request ip')
 
     parser.add_argument('-t', '--tag', type=str, dest='tag', required=True,
-                        help='request tag with type. format: NAME[:ID]@TYPE')
+                        help='request tag with type. format: NAME[:ID][:ID]...')
 
-    parser.add_argument('-v', '--val', type=str, dest='val', required=True,
-                        help='value to be written')
+    parser.add_argument('-v', '--val', dest='val', required=True,
+                        help='value to be written.')
+
+    parser.add_argument('--type', dest='typ', required=True,
+                        help='[INT][STRING][REAL]')
 
     args = parser.parse_args()
 
-    # split tags to retrieve type
-    try:
-        tag_name, tag_type = args.tag.split("@")
+    tag_name = args.tag
+    tag_type = args.typ
+    value = convert_value_to_proper_type(tag_type, args.val)
 
-    except ValueError as e:
-        print("single_write.py: error: invalid tag format.")
-        print("usage: single_write.py -h for help")
-        sys.exit(0)
-
-    if not tag_type:
-        print("single_write.py: error: tag type is invalid.")
-        print("usage: single_write.py -h for help")
-        sys.exit(0)
     # retrieve the ip and ignore the port
     address = args.ip.split(":")[0]
 
-    value = convert_value_to_type(tag_type, args.val)
+    if tag_type not in ["INT", "STRING", "REAL"]:
+        print("single_write.py: error: tag type is invalid.")
+        print("usage: single_write.py -h for help")
+        raise ValueError("single_write.py: error: tag type is invalid. Only INT, STRING, and FLOAT is supported.")
 
     res = write_tag(tag_name, value, tag_type)
 
-    if res == "e":
-        print("Unable to open connection at : {}".format(address))
-    elif res:
+    if res:
         print("Successfully written value: {0} for tag: {1}".format(value, tag_name))
     else:
         print("Write unsuccesful. Please check server log.")
