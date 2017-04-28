@@ -20,7 +20,7 @@ def read_tag(address, tag_name):
         else:
             return ("u", )
     except Exception as e:
-        raise e
+        raise ValueError(e)
 
 if __name__ == "__main__":
 
