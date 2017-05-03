@@ -7,7 +7,7 @@ except ImportError:
 # NOTE: https://packaging.python.org/
 setup(
     name='minicps',
-    version='1.1.0',
+    version='1.1.1',
     description='MiniCPS: a framework for Cyber-Physical Systems \
 real-time simulation, built on top of mininet.',
     # NOTE: long_description displayed on PyPi
