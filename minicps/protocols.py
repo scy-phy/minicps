@@ -181,7 +181,7 @@ class EnipProtocol(Protocol):
 
             # print 'DEBUG EnipProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
+                # print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += EnipProtocol._TCP_PORT
 
             elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
@@ -323,11 +323,7 @@ class EnipProtocol(Protocol):
                  stdout=subprocess.PIPE)
 
             # client.communicate is blocking
-            raw_out = client.communicate()
-            # print 'DEBUG enip _receive raw_out: ', raw_out
-
-            #value is stored as first tuple element
-            return raw_out[0]
+            client.wait()
 
         except Exception as error:
             print 'ERROR enip _send: ', error
@@ -367,7 +363,7 @@ class EnipProtocol(Protocol):
             raw_out = client.communicate()
             # print 'DEBUG enip _receive raw_out: ', raw_out
 
-            #value is stored as first tuple element
+            # value is stored as first tuple element
             return raw_out[0]
 
         except Exception as error:
@@ -426,7 +422,7 @@ class ModbusProtocol(Protocol):
             else:
                 raise OSError
 
-            # print 'DEBUG ModbusProtocol server addr: ', self._server['address']
+            print 'DEBUG ModbusProtocol server addr: ', self._server['address']
             if self._server['address'].find(':') == -1:
                 # print 'DEBUG: concatenating server address with default port.'
                 self._server['address'] += ModbusProtocol._TCP_PORT
@@ -437,7 +433,7 @@ class ModbusProtocol(Protocol):
 
             server_cmd_path = sys.executable + ' ' + self._minicps_path + \
                     'pymodbus/servers.py '   # NOTE: ending whitespace
-            # print 'DEBUG: generating server_cmd_path: {}'.format(server_cmd_path)
+            print 'DEBUG: generating server_cmd_path: {}'.format(server_cmd_path)
 
             self._server_subprocess = ModbusProtocol._start_server(
                 address=self._server['address'],
