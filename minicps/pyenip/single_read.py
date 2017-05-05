@@ -15,7 +15,6 @@ def read_tag(address, tag_name):
         if plc.open(address):
             tagg = plc.read_tag(tag_name)
             plc.close()
-            if not tagg: return (False, )
             return (tagg)
         else:
             return ("u", )
@@ -44,10 +43,8 @@ if __name__ == "__main__":
 
     val = res[0]
 
-    if val == "u":
-        print("Unknown Error! Please check server log.")
-    elif val == False:
-        print("Read unsuccesful. Please check server log.")
+    if val == "u" or res[1] == 'Check Encapsulation and Message Router Error':
+        print("check server log.")
     else:
-        print("Success! Value: {0} for Tag: {1}. Type: {2}".format(val, tag_name, res[1]))
+        print("{}".format(val))
 
