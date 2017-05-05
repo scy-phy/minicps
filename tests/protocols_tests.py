@@ -156,21 +156,21 @@ class TestEnipProtocol():
             # read a multikey
             what = ('SENSOR1', 1)
             address = 'localhost:44818'
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "0\n")
 
             # read a multi key
             what = ('ACTUATOR1',1)
             address = 'localhost:44818'
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "0\n")
 
             # Read a single key - uninitialized tag
             what = ('HMI_TEST101',)
             address = 'localhost:44818'
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "check server log.\n")
 
             # Read a multi key
             what = ('FLAG101', 2)
-            enip._receive(what,ADDRESS)
+            eq_(enip._receive(what, ADDRESS), 'enipserver\n')
 
             EnipProtocol._stop_server(server)
 
@@ -193,48 +193,48 @@ class TestEnipProtocol():
 
             # read a multikey
             what = ('SENSOR1', 1)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), '0\n')
 
             # read a single key
             what = ('ACTUATOR1',)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), '0\n')
 
             # read a single key - present tag
             what = ('HMI_TEST101',)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "check server log.\n")
 
             # read a single key
             what = ('FLAG101',)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS),'enipserver\n') 
 
             # read a single key
             what = ('FLAG201', 2)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS),'enipserver\n') 
 
             # write a multikey
             what = ('SENSOR1', 1)
             for value in range(5):
                 enip._send(what, value, ADDRESS)
 
-            # # write a single key
-            # what = ('ACTUATOR1',)
-            # for value in range(5):
-            #     enip._send(what, value, ADDRESS)
+            # write a single key
+            what = ('ACTUATOR1',)
+            for value in range(5):
+                enip._send(what, value, ADDRESS)
 
-            # # write a single key - uninitialized tag - error shouldn't occur
-            # what = ('HMI_TEST101')
-            # for value in range(5):
-            #     enip._send(what, value, ADDRESS)
+            # write a single key - uninitialized tag - error shouldn't occur
+            what = ('HMI_TEST101')
+            for value in range(5):
+                enip._send(what, value, ADDRESS)
 
-            # # write a single key
-            # what = ('FLAG101')
-            # for value in range(5):
-            #     enip._send(what, str(127-value)*8, ADDRESS)
+            # write a single key
+            what = ('FLAG101')
+            for value in range(5):
+                enip._send(what, str(127-value)*8, ADDRESS)
 
-            # # write a multi key
-            # what = ('FLAG201', 2)
-            # for value in range(5):
-            #     enip._send(what, chr(127-value)*8, ADDRESS)
+            # write a multi key
+            what = ('FLAG201', 2)
+            for value in range(5):
+                enip._send(what, chr(127-value)*8, ADDRESS)
 
             EnipProtocol._stop_server(enip._server_subprocess)
 
