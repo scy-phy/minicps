@@ -7,7 +7,8 @@ converted to an ``int`` to be written in a holding register
 """
 
 import argparse  # TODO: check if it is too slow at runtime
-from pycomm.ab_comm.clx import Driver as ClxDriver
+import sys
+from pycomm.clx import Driver as ClxDriver
 
 def read_tag(address, tag_name):
     plc = ClxDriver()
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     val = res[0]
 
     if val == "u" or res[1] == 'Check Encapsulation and Message Router Error':
-        print("check server log.")
+        sys.stdout.write('check server log.')
     else:
-        print("{}".format(val))
+        sys.stdout.write("%s" % val)
 
