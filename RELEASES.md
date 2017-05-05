@@ -1,6 +1,12 @@
-# Releases and change log
+# Releases and Changelog
 
-## Version 1.1.0 (2017-TODO-TODO)
+## Version 1.1.1 (2017)
+
+### Modbus
+
+* Fix `write_coil` bug
+
+## Version 1.1.0 (2017)
 
 ### Public API
 
