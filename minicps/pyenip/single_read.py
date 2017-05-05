@@ -8,7 +8,7 @@ converted to an ``int`` to be written in a holding register
 
 import argparse  # TODO: check if it is too slow at runtime
 import sys
-from pycomm.clx import Driver as ClxDriver
+from pycomm.ab_comm.clx import Driver as ClxDriver
 
 def read_tag(address, tag_name):
     plc = ClxDriver()
