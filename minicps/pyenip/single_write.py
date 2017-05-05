@@ -29,7 +29,7 @@ def write_tag(tag_name, value, tag_type):
         else:
             return "u"
     except Exception as e:
-        raise e
+        raise Exception(e)
 
 if __name__ == "__main__":
 
@@ -62,12 +62,3 @@ if __name__ == "__main__":
         raise ValueError("single_write.py: error: tag type is invalid. Only INT, STRING, and FLOAT is supported.")
 
     res = write_tag(tag_name, value, tag_type)
-
-    if res:
-        print("Successfully written value: {0} for tag: {1}".format(value, tag_name))
-    else:
-        print("Write unsuccesful. Please check server log.")
-
-
-
-
