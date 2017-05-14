@@ -1,6 +1,13 @@
 # Releases and Changelog
 
-## Version 1.1.1 (2017-05-14)
+## Version 1.1.2 (2017-05-14)
+
+### Misc
+
+* Remove `example/swat` directory
+    * Kept some files in the `misc/` directory
+
+## Version 1.1.1 (2017-05-10)
 
 ### Pypi
 
