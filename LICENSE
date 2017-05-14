@@ -1,6 +1,4 @@
-MiniCPS is a lightweight simulator for accurate network traffic in an
-industrial control system, with basic support for physical layer interaction.
-Copyright (C) 2015 scy-phy
+Copyright (C) 2017 Daniele Antonioli
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the "Software"),
