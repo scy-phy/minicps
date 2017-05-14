@@ -1,12 +1,16 @@
 # Releases and Changelog
 
-## Version 1.1.1 (2017)
+## Version 1.1.1 (2017-05-14)
+
+### Pypi
+
+* [![PyPI version](https://badge.fury.io/py/minicps.svg)](https://badge.fury.io/py/minicps) requires `wheel`
 
 ### Modbus
 
 * Fix `write_coil` bug
 
-## Version 1.1.0 (2017)
+## Version 1.1.0 (2017-04-01)
 
 ### Public API
 
@@ -21,6 +25,7 @@
 * Added `rednose` for better user interface
 * Added `raises` decorator to test for expected Exceptions
 * Bug fixes
+* Removed `tests/utils_tests.py`
 
 
 ### Misc
