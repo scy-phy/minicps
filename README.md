@@ -6,7 +6,7 @@
 [CS img]: https://travis-ci.org/scy-phy/minicps.svg
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/hslatman/awesome-industrial-control-system-security)
 
-# MiniCPS #
+# MiniCPS
 
 MiniCPS is a framework for Cyber-Physical Systems real-time simulation. It
 includes support for physical process and control devices simulation, and
@@ -15,3 +15,7 @@ network emulation. It is build on top of
 
 MiniCPS is developed by the [SCy-Phy](http://scy-phy.github.io/index.html)
 group from SUTD (Singapore University of Design and Technology).
+
+## Contributing
+
+See [Contributing](https://minicps.readthedocs.io/en/latest/contributing.html)
