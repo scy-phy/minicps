@@ -5,10 +5,10 @@
 SWaT tutorial
 *************
 
-This tutorial shows how to use MiniCPS to simulate a subprocess of a  
+This tutorial shows how to use MiniCPS to simulate a subprocess of a
 Water Treatment testbed. In particular, we demonstrate basic controls through
 simulated PLCs, the network traffic, and simple physical layer simulation. We
-now provide: 
+now provide:
 
 * A list of the pre-requisites to run the tutorial
 * A brief system overview

@@ -42,55 +42,20 @@ requirements for MiniCPS (e.g., it can be used to display a pop-up window
 with sensor data visualization).
 
 The `Install MiniCPS`_ section provides instructions to install ``minicps``
-on a machine that is running the **latest official mininet VM (Ubuntu)**. Please
-refer to your distribution documentation if you need to install Mininet on 
-other Linux distributions.
-
+for a user or a developer, and it assumes that you *already* have installed
+``mininet``.
 
 .. INSTALL MINICPS {{{3
 
 Install MiniCPS
 ---------------
 
-Login the OS containing ``mininet`` installation then navigate to your home
-directory:
+MiniCPS is can be installed using ``pip``:
 
 .. code-block:: console
 
-   cd
+   sudo pip install minicps
 
-Make sure that the distro is up to date (if necessary, restart the system):
-
-.. code-block:: console
-
-   sudo apt-get update
-   sudo apt-get upgrade
-
-Then clone ``minicps`` repository:
-
-.. code-block:: console
-
-    git clone https://github.com/scy-phy/minicps
-
-and add ``minicps`` to the python path, for example using a soft link:
-
-.. code-block:: console
-
-    ln -s ~/minicps/minicps /usr/lib/python2.7/minicps
-
-MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
-
-.. code-block:: console
-
-   sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
-
-For *Ethernet/IP* support install ``cpppo``
-
-.. code-block:: console
-
-   sudo pip install cpppo
-
-.. TODO: add modbus maybe reorganize the deps
 
 For *SDN controller development* there are many options,
 ``pox`` is a good starting point and Mininet's VM already includes it. If you
@@ -109,7 +74,7 @@ execute the following:
 
    ~/minicps/bin/pox-init.py [-p POX_PATH -m MINICPS_PATH -vv]
 
-Notice that: 
+Notice that:
 
 * You can increase the verbosity level using either ``v`` or  ``-vv``
 * ``POX_PATH`` defaults to ``~/pox`` and ``MINICPS_PATH`` defaults to
@@ -118,41 +83,17 @@ Notice that:
 .. INSTALL OPTIONAL {{{3
 .. _install-optional:
 
-Install optional dependencies
---------------------------------
 
-For *testing* support install dependencies using:
-
-.. code-block:: console
-
-   sudo apt-get install python-pip python-nose python-coverage
-   sudo pip install nose-cov
-
-To generate the *documentation* from the source we use the ``sphinx`` tool.
-Please type:
-
-.. code-block:: console
-
-    sudo apt-get install python-sphinx libjs-mathjax
-    sudo pip install sphinx-rtd-theme
-
-
-
-.. TESTING INSTALLATION {{{3
-
-Testing installation
-----------------------
-
-Now you should be able to run:
+Test the installation with:
 
 .. code-block:: console
 
     cd ~/minicps
     make tests
 
-.. Which should start the command line with ``mininet>`` prompt. To directly
-.. continue with the tutorial, look at :ref:`swat-tutorial`.
 
+If you want to contribute to the project please take a look at
+:ref:`contributing`.
 
 .. CONFIGURE MINICPS {{{2
 
