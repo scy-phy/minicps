@@ -20,23 +20,23 @@ General design principles
 
 MiniCPS follows an object-oriented design pattern. It is using ``python2.x``
 for compatibility reasons with ``mininet``. We are trying to lower the number
-of external dependencies, and eventually will move to ``python3.x``.
+of external dependencies, and eventually move to ``python3.x``.
 
-* design drivers:
+* Design points:
 
   * separation of concerns (eg: public API vs private APi)
   * modularity (eg: different protocols and state backends)
   * testability (eg: unit tests and TDD)
   * performance (eg: real-time simulation)
 
-* security drivers:
+* Security points:
 
   * avoid unsafe programming languages
   * user input is untrusted and has to be validated (eg: prepared statements)
   * safe vs unsafe code separation
   * automated static analysis
 
-* core components:
+* Core components:
 
   * ``minicps`` module (should be in the ``PYTHONPATH``)
   * ``examples`` use cases (can be anywhere in the filesystem)
@@ -88,17 +88,18 @@ Code conventions
 
 The project it is based on PEP8 (code) and PEP257 (docstring).
 
-* naming scheme:
+* Naming scheme:
 
-    * private: prepend ``_`` eg: ``_method_name`` or ``_attribute_name``
-    * classes: ``ClassName`` or ``CLASSName``, ``method_name`` and ``instance_name``
-    * others: ``function_name``, ``local_variable_name``, ``GLOBAL_VARIABLE_NAME``
-    * filenames: ``foldername``, ``module.py``, ``another_module.py``
+    * Private data: prepend ``_`` eg: ``_method_name`` or ``_attribute_name``
+    * Classes: ``ClassName`` or ``CLASSName``, ``method_name`` and ``instance_name``
+    * Others: ``function_name``, ``local_variable_name``, ``GLOBAL_VARIABLE_NAME``
+    * Filenames: ``foldername``, ``module.py``, ``another_module.py``
       and ``module_tests.py``
-    * test: ``test_ClassName`` ``test_function_name``
-    * make: ``target-name`` ``VARIABLE_NAME``
-    * makers: ``TODO``, ``FIXME``, ``XXX``, ``NOTE``
-    * doc: ``doc.rst``, ``another-doc.rst`` \and ``SPHINX_DOC_NAME SOMETHING(`` for
+    * Test: ``test_ClassName`` ``test_function_name``
+    * Makefile: ``target-name`` ``VARIABLE_NAME``
+    * Makers: ``TODO``, ``FIXME``, ``XXX``, ``NOTE`` ``VIM MARKER {{{
+      ... }}}``
+    * Docs: ``doc.rst``, ``another-doc.rst`` \and ``SPHINX_DOC_NAME SOMETHING(`` for
       Sphinx's ``literalinclude``
 
 
