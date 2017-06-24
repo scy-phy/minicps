@@ -10,8 +10,6 @@ from minicps.states import SQLiteState
 from nose.tools import eq_
 from nose.plugins.skip import SkipTest
 
-# TODO: change to /tmp when install SQLitesutdio in ubuntu
-
 PATH = "/tmp/states_tests.sqlite"
 NAME = 'states_tests'
 STATE = {
