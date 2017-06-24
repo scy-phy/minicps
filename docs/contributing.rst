@@ -151,7 +151,6 @@ Class docstring to document (at least) public methods:
 
 .. }}}
 
-
 .. PROTOCOLS {{{2
 
 =========
@@ -166,7 +165,7 @@ If you want to add a new protocol please look at the ``minicps/protocols.py``
 module. ``Protocol`` is the base class, and the
 ``NewProtocolNameProtocol(Protocol)`` should be your new child class containing
 the code to manage it. A good point to start it to take a look
-at ``minicps/tests/protocols_tests.py`` to see how other protocols classes
+at ``tests/protocols_tests.py`` to see how other protocols classes
 are unit-tested.
 
 If you want to improve the compatibility of a supported protocol please take
@@ -182,7 +181,20 @@ the Modbus protocol support.
 States
 ======
 
-The same reasoning presented in the Protocols section applies here.
+The same reasoning presented in the Protocols section applies here. The
+relevant source code is located in ``minicps/states.py`` and
+``tests/states_tests.py``.
+
+.. }}}
+
+.. TESTING {{{2
+
+========
+Testing
+========
+
+Unit testing is hard to setup properly! Please if you find any inconsistent unit test or
+decomposable unit test or you want to add a new one.
 
 .. }}}
 
@@ -194,6 +206,31 @@ Examples
 
 Please feel free to send PRs about new use cases that are not already present
 in the ``examples`` directory.
+
+.. }}}
+
+.. DOCS {{{2
+
+========
+Docs
+========
+
+All the docs are stored in the ``docs`` folder. We are using ``sphinx`` to
+render the docs and the ``rst`` markup language to write them. Some of the
+docs are automatically generated from the code and others are written by
+hands.
+
+To build you documentation locally use one of the target of the ``Makefile``
+present in the ``docs`` folder. For example, to build and navigate an html
+version of our docs type:
+
+.. code-block:: console
+
+   cd docs
+   make html
+   firefox _build/html/index.html
+
+Please send a PR if you find any typo, incorrect explanation, etc.
 
 .. }}}
 
