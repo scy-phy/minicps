@@ -74,7 +74,7 @@ Install the requirements using:
 
 .. code-block:: console
 
-    pip install -r ~/minicps/requirements.txt
+    pip install -r ~/minicps/requirements-dev.txt
 
 Run the tests with:
 
