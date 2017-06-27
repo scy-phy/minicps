@@ -45,6 +45,7 @@ The `Install MiniCPS`_ section provides instructions to install ``minicps``
 for a user or a developer, and it assumes that you *already* have installed
 ``mininet``.
 
+
 .. INSTALL MINICPS {{{3
 
 Install MiniCPS
@@ -55,6 +56,23 @@ MiniCPS is can be installed using ``pip``:
 .. code-block:: console
 
    sudo pip install minicps
+
+Test the installation downloading one of our examples from
+https://github.com/scy-phy/minicps/tree/master/examples and try to run it.
+
+For example, given that you downloaded the ``examples`` directory,
+then you can ``cd swat-s1`` folder and run:
+
+.. code-block:: console
+
+   sudo python run.py
+
+
+.. INSTALL OPTIONAL {{{3
+.. _install-optional:
+
+Install Optional Packages
+-------------------------
 
 
 For *SDN controller development* there are many options,
@@ -80,16 +98,7 @@ Notice that:
 * ``POX_PATH`` defaults to ``~/pox`` and ``MINICPS_PATH`` defaults to
   ``~/minicps``, indeed ``~/minicps/bin/init`` should work for you.
 
-.. INSTALL OPTIONAL {{{3
-.. _install-optional:
 
-
-Test the installation with:
-
-.. code-block:: console
-
-    cd ~/minicps
-    make tests
 
 
 If you want to contribute to the project please take a look at
@@ -119,8 +128,7 @@ using the ``-Y`` option:
 
 .. code-block:: console
 
-    ssh -Y mininet@minnetvm
-
+    ssh -Y mininet@mininetvm
 
 .. IPv6 {{{3
 
@@ -156,32 +164,3 @@ Instruction taken from
 `here <https://github.com/mininet/mininet/issues/454>`_
 
 
-.. OFFILNE DOCUMENTATION {{{3
-
-Offline Documentation
----------------------
-
-First install packages listed in `Install optional dependencies`_.
-
-Then open ``docs/Makefile`` and check that ``SPHINXBUILD`` reference to
-``sphinx-build`` command. (e.g., Arch Linux users can use ``sphinx-build2``)
-
-Then to build the doc in ``html`` format type:
-
-.. code-block:: console
-
-    cd docs
-    make html
-
-Then to navigate a static version through a browser (e.g., ``firefox``) type:
-
-.. code-block:: console
-
-    firefox _build/html/index.html
-
-
-.. LOGGING AND TESTING {{{2
-
-.. Logging and Testing
-.. ====================
-.. TODO
