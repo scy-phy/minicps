@@ -16,8 +16,6 @@ import time
 import os
 
 from mininet.util import dumpNodeConnections
-from nose import with_setup
-
 
 # logging {{{1
 # https://docs.python.org/2/howto/logging.html
@@ -116,14 +114,6 @@ def setup_func(test_name):
 
 def teardown_func(test_name):
     pass
-
-
-def with_named_setup(setup=None, teardown=None):
-    def wrap(f):
-        return with_setup(
-            lambda: setup(f.__name__) if (setup is not None) else None,
-            lambda: teardown(f.__name__) if (teardown is not None) else None)(f)
-    return wrap
 
 
 # TODO: test it
