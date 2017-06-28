@@ -20,7 +20,9 @@ class SwatS1CPS(MiniCPS):
         self.name = name
         self.net = net
 
-        self.net.start()
+        net.start()
+
+        net.pingAll()
 
         # start devices
         plc1, plc2, plc3, s1 = self.net.get(
@@ -35,7 +37,7 @@ class SwatS1CPS(MiniCPS):
 
         CLI(self.net)
 
-        self.net.stop()
+        net.stop()
 
 if __name__ == "__main__":
 

@@ -1,6 +1,8 @@
 # MiniCPS makefile
 
 # VARIABLES {{{1
+
+LATEST_VERSION = 1.1.3
 MININET = sudo mn
 
 PYTHON = sudo python
@@ -145,6 +147,6 @@ pypi-wheel:
 	./setup.py sdist bdist_wheel
 
 pypi-upload:
-	$(UPLOADER) upload dist/*
+	$(UPLOADER) upload dist/minicps-$(LATEST_VERSION)*
 
 # }}}

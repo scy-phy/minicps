@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'minicps'
-copyright = u'2015, scy-phy'
+copyright = u'2017, Daniele Antonioli'
 author = u'scy-phy'
 
 # The version info for the project you're documenting, acts as replacement for

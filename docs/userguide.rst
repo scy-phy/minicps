@@ -42,9 +42,8 @@ requirements for MiniCPS (e.g., it can be used to display a pop-up window
 with sensor data visualization).
 
 The `Install MiniCPS`_ section provides instructions to install ``minicps``
-on a machine that is running the **latest official mininet VM (Ubuntu)**. Please
-refer to your distribution documentation if you need to install Mininet on 
-other Linux distributions.
+for a user or a developer, and it assumes that you *already* have installed
+``mininet``.
 
 
 .. INSTALL MINICPS {{{3
@@ -52,45 +51,41 @@ other Linux distributions.
 Install MiniCPS
 ---------------
 
-Login the OS containing ``mininet`` installation then navigate to your home
-directory:
+MiniCPS is can be installed using ``pip``:
 
 .. code-block:: console
 
-   cd
+   sudo pip install minicps
 
-Make sure that the distro is up to date (if necessary, restart the system):
+Test the installation downloading one of our examples from
+https://github.com/scy-phy/minicps/tree/master/examples and try to run it.
 
-.. code-block:: console
-
-   sudo apt-get update
-   sudo apt-get upgrade
-
-Then clone ``minicps`` repository:
+For example, given that you downloaded the ``examples`` directory,
+then you can ``cd swat-s1`` folder and run:
 
 .. code-block:: console
 
-    git clone https://github.com/scy-phy/minicps
+   sudo python run.py
 
-and add ``minicps`` to the python path, for example using a soft link:
-
-.. code-block:: console
-
-    ln -s ~/minicps/minicps /usr/lib/python2.7/minicps
-
-MiniCPS is compatible with *python 2.7.X*. Install dependencies using:
+And you should see the following:
 
 .. code-block:: console
 
-   sudo apt-get install python-matplotlib python-networkx python-pil.imagetk
+   *** Ping: testing ping reachability
+   attacker -> plc1 plc2 plc3
+   plc1 -> attacker plc2 plc3
+   plc2 -> attacker plc1 plc3
+   plc3 -> attacker plc1 plc2
+   *** Results: 0% dropped (12/12 received)
+   mininet>
 
-For *Ethernet/IP* support install ``cpppo``
 
-.. code-block:: console
+.. INSTALL OPTIONAL {{{3
+.. _install-optional:
 
-   sudo pip install cpppo
+Install Optional Packages
+-------------------------
 
-.. TODO: add modbus maybe reorganize the deps
 
 For *SDN controller development* there are many options,
 ``pox`` is a good starting point and Mininet's VM already includes it. If you
@@ -109,50 +104,17 @@ execute the following:
 
    ~/minicps/bin/pox-init.py [-p POX_PATH -m MINICPS_PATH -vv]
 
-Notice that: 
+Notice that:
 
 * You can increase the verbosity level using either ``v`` or  ``-vv``
 * ``POX_PATH`` defaults to ``~/pox`` and ``MINICPS_PATH`` defaults to
   ``~/minicps``, indeed ``~/minicps/bin/init`` should work for you.
 
-.. INSTALL OPTIONAL {{{3
-.. _install-optional:
-
-Install optional dependencies
---------------------------------
-
-For *testing* support install dependencies using:
-
-.. code-block:: console
-
-   sudo apt-get install python-pip python-nose python-coverage
-   sudo pip install nose-cov
-
-To generate the *documentation* from the source we use the ``sphinx`` tool.
-Please type:
-
-.. code-block:: console
-
-    sudo apt-get install python-sphinx libjs-mathjax
-    sudo pip install sphinx-rtd-theme
 
 
 
-.. TESTING INSTALLATION {{{3
-
-Testing installation
-----------------------
-
-Now you should be able to run:
-
-.. code-block:: console
-
-    cd ~/minicps
-    make tests
-
-.. Which should start the command line with ``mininet>`` prompt. To directly
-.. continue with the tutorial, look at :ref:`swat-tutorial`.
-
+If you want to contribute to the project please take a look at
+:ref:`contributing`.
 
 .. CONFIGURE MINICPS {{{2
 
@@ -178,8 +140,7 @@ using the ``-Y`` option:
 
 .. code-block:: console
 
-    ssh -Y mininet@minnetvm
-
+    ssh -Y mininet@mininetvm
 
 .. IPv6 {{{3
 
@@ -215,32 +176,3 @@ Instruction taken from
 `here <https://github.com/mininet/mininet/issues/454>`_
 
 
-.. OFFILNE DOCUMENTATION {{{3
-
-Offline Documentation
----------------------
-
-First install packages listed in `Install optional dependencies`_.
-
-Then open ``docs/Makefile`` and check that ``SPHINXBUILD`` reference to
-``sphinx-build`` command. (e.g., Arch Linux users can use ``sphinx-build2``)
-
-Then to build the doc in ``html`` format type:
-
-.. code-block:: console
-
-    cd docs
-    make html
-
-Then to navigate a static version through a browser (e.g., ``firefox``) type:
-
-.. code-block:: console
-
-    firefox _build/html/index.html
-
-
-.. LOGGING AND TESTING {{{2
-
-.. Logging and Testing
-.. ====================
-.. TODO
