@@ -1,5 +1,14 @@
 # Releases and Changelog
 
+## Version 1.1.3 (2017-05-14)
+
+### Misc
+
+* Add `CONTRIBTING.md` and related docs
+    * Clarify difference between user and devs installations
+
+* Fix dependencies issues
+
 ## Version 1.1.2 (2017-05-14)
 
 ### Misc
