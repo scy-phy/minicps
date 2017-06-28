@@ -163,8 +163,9 @@ Modbus protocols).
 
 If you want to add a new protocol please look at the ``minicps/protocols.py``
 module. ``Protocol`` is the base class, and the
-``NewProtocolNameProtocol(Protocol)`` should be your new child class containing
-the code to manage it. A good point to start it to take a look
+``[NewProtocolName]Protocol(Protocol)`` should be your new child class
+(inheriting from the ``Protocol`` class) containing
+the code to manage the new protocol. A good point to start it to take a look
 at ``tests/protocols_tests.py`` to see how other protocols classes
 are unit-tested.
 
@@ -194,7 +195,7 @@ Testing
 ========
 
 Unit testing is hard to setup properly! Please if you find any inconsistent unit test or
-decomposable unit test or you want to add a new one.
+decomposable unit test or you want to add a new one then send a PR.
 
 .. }}}
 

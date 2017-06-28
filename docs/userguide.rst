@@ -67,6 +67,18 @@ then you can ``cd swat-s1`` folder and run:
 
    sudo python run.py
 
+And you should see the following:
+
+.. code-block:: console
+
+   *** Ping: testing ping reachability
+   attacker -> plc1 plc2 plc3
+   plc1 -> attacker plc2 plc3
+   plc2 -> attacker plc1 plc3
+   plc3 -> attacker plc1 plc2
+   *** Results: 0% dropped (12/12 received)
+   mininet>
+
 
 .. INSTALL OPTIONAL {{{3
 .. _install-optional:
