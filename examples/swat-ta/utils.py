@@ -14,13 +14,17 @@ sqlite uses float keyword and cpppo use REAL keyword.
 
 # physical process {{{1
 
+# constants {{{2
 GRAVITATION = 9.81             # m.s^-2
 TANK_DIAMETER = 1.38           # m
 TANK_SECTION = 1.5             # m^2
+TANK_HEIGHT = 1.600            # m
 PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
 PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
+# }}}
 
-# periods in msec
+# periods {{{2
+
 # R/W = Read or Write
 T_PLC_R = 100E-3
 T_PLC_W = 100E-3
@@ -29,7 +33,17 @@ T_PP_R = 200E-3
 T_PP_W = 200E-3
 T_HMI_R = 100E-3
 
-# Control logic thresholds
+PLC_PERIOD_SEC = 0.40  # plc update rate in seconds
+PLC_PERIOD_HOURS = PLC_PERIOD_SEC / 3600.0
+PLC_SAMPLES = 1000
+
+PP_RESCALING_HOURS = 100
+PP_PERIOD_SEC = 0.20  # physical process update rate in seconds
+PP_PERIOD_HOURS = (PP_PERIOD_SEC / 3600.0) * PP_RESCALING_HOURS
+PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
+# }}}
+
+# thresholds {{{2
 LIT_101_MM = {  # raw water tank mm
     'LL': 250.0,
     'L': 500.0,
@@ -41,6 +55,11 @@ LIT_101_M = {  # raw water tank m
     'L': 0.500,
     'H': 0.800,
     'HH': 1.200,
+}
+
+FIT_201_THRESH = 0.500  # m^3/h
+LS_201_L = {  # chemical tank T201
+    'L': 50,  # liters
 }
 
 LIT_301_MM = {  # ultrafiltration tank mm
@@ -55,22 +74,13 @@ LIT_301_M = {  # ultrafiltration tank m
     'H': 1.000,
     'HH': 1.200,
 }
+# }}}
 
-TANK_HEIGHT = 1.600  # m
-
-PLC_PERIOD_SEC = 0.40  # plc update rate in seconds
-PLC_PERIOD_HOURS = PLC_PERIOD_SEC / 3600.0
-PLC_SAMPLES = 1000
-
-PP_RESCALING_HOURS = 100
-PP_PERIOD_SEC = 0.20  # physical process update rate in seconds
-PP_PERIOD_HOURS = (PP_PERIOD_SEC / 3600.0) * PP_RESCALING_HOURS
-PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
+# init values {{{2
 
 RWT_INIT_LEVEL = 0.500  # l
 
-# m^3 / h
-FIT_201_THRESH = 0.500  # m^3/h
+# }}}
 
 # }}}
 
@@ -191,6 +201,8 @@ SCHEMA_INIT = """
     INSERT INTO swat_ta VALUES ('P101',     1, '1');
     INSERT INTO swat_ta VALUES ('FIT201',   2, '2.45');
     INSERT INTO swat_ta VALUES ('MV201',    2, '0');
+    INSERT INTO swat_ta VALUES ('P201',     2, '0');
+    INSERT INTO swat_ta VALUES ('LS201',    2, '60');
     INSERT INTO swat_ta VALUES ('LIT301',   3, '0.500');
 """
 
@@ -199,12 +211,15 @@ SCHEMA_INIT = """
 # tags {{{1
 
 # NOTE: naming is NAMEPID_PLCID
+# NOTE: numbers of TAGx00_x should be equal to the number or records in the db
 
 FIT101_1 = ('FIT101', 1)
 MV101_1 = ('MV101', 1)
 LIT101_1 = ('LIT101', 1)
 P101_1 = ('P101', 1)
 
+P201_2 = ('P201', 2)
+LS201_2 = ('LS201', 2)
 FIT201_1 = ('FIT201', 1)
 FIT201_2 = ('FIT201', 2)
 MV201_1 = ('MV201', 1)
