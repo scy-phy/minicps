@@ -44,31 +44,25 @@ PP_SAMPLES = int(PLC_PERIOD_SEC / PP_PERIOD_SEC) * PLC_SAMPLES
 # }}}
 
 # thresholds {{{2
-LIT_101_MM = {  # raw water tank mm
-    'LL': 250.0,
-    'L': 500.0,
-    'H': 800.0,
-    'HH': 1200.0,
-}
-LIT_101_M = {  # raw water tank m
+T_LIT101_M = {  # raw water tank m
     'LL': 0.250,
     'L': 0.500,
     'H': 0.800,
     'HH': 1.200,
 }
 
-FIT_201_THRESH = 0.500  # m^3/h
-LS_201_L = {  # chemical tank T201
+T_FIT201 = 0.500  # m^3/h
+T_LS201_L = {  # chemical tank T201
     'L': 50,  # liters
 }
 
-LIT_301_MM = {  # ultrafiltration tank mm
+T_LIT301_MM = {  # ultrafiltration tank mm
     'LL': 250.0,
     'L': 800.0,
     'H': 1000.0,
     'HH': 1200.0,
 }
-LIT_301_M = {  # ultrafiltration tank m
+T_LIT301_M = {  # ultrafiltration tank m
     'LL': 0.250,
     'L': 0.800,
     'H': 1.000,

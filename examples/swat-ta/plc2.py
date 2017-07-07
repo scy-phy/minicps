@@ -6,7 +6,7 @@ from minicps.devices import PLC
 from utils import PLC2_DATA, STATE, PLC2_PROTOCOL
 from utils import PLC_PERIOD_SEC
 from utils import IP
-from utils import FIT_201_THRESH, LS_201_L
+from utils import T_FIT201, T_LS201_L
 from utils import LS201_2
 
 import time
@@ -37,7 +37,7 @@ class SwatPLC2(PLC):
 
             # TODO: read interlocks
 
-            if ls201 <= LS_201_L['L']:
+            if ls201 <= T_LS201_L['L']:
                 # NOTE: close p202
                 self.set(P201_2, 0)
                 self.memory['P201'] = 0

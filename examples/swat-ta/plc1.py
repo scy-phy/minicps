@@ -6,7 +6,7 @@ from minicps.devices import PLC
 from utils import PLC1_DATA, STATE, PLC1_PROTOCOL
 from utils import PLC_PERIOD_SEC
 from utils import IP
-from utils import LIT_101_M, LIT_301_M, FIT_201_THRESH
+from utils import T_LIT101_M, T_LIT301_M, T_FIT201
 from utils import LIT101_1, MV101_1, P101_1
 
 import time
@@ -46,29 +46,29 @@ class SwatPLC1(PLC):
             print "DEBUG PLC1 - receive lit301: %f" % lit301
             self.send(LIT301_1, lit301, IP['plc1'])
 
-            if lit101 <= LIT_101_M['L']:
+            if lit101 <= T_LIT101_M['L']:
                 # NOTE: close mv101
                 self.set(MV101_1, 1)
                 self.memory['MV101_1'] = 1
-            if lit101 >= LIT_101_M['H']:
+            if lit101 >= T_LIT101_M['H']:
                 # NOTE: close mv101
                 self.set(MV101_1, 0)
                 self.memory['MV101_1'] = 0
-            if lit101 <= LIT_101_M['LL']:
+            if lit101 <= T_LIT101_M['LL']:
                 # NOTE: stop p101
                 self.set(P101_1, 0)
                 self.memory['P101_1'] = 0
                 # TODO: add alarm to state
                 print('ALARM: lit101 below LL: {}'.format(lit101))
-            if lit101 >= LIT_101_M['HH']:
+            if lit101 >= T_LIT101_M['HH']:
                 print('ALARM: lit101 above HH: {}'.format(lit101))
 
             # FIXME: no check about lit301 integrity
-            if lit301 <= LIT301_1['L']:
+            if lit301 <= T_LIT301_M['L']:
                 # NOTE: start p101
                 self.set(P101_1, 1)
                 self.memory['P101_1'] = 1
-            if lit301 >= LIT301_1['H'] or fit201 <= FIT_201_THRESH:
+            if lit301 >= T_LIT301_M['H'] or fit201 <= T_FIT201:
                 # NOTE: stop p101
                 self.set(P101_1, 0)
                 self.memory['P101_1'] = 0
