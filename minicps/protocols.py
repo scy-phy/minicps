@@ -226,23 +226,18 @@ class EnipProtocol(Protocol):
         if address.find(":") != -1:
             address = address.split(":")[0]
 
-        VERBOSE = '-v '
-        ADDRESS = '--address ' + address + ' '
         TAGS = cls._nested_tuples_to_enip_tags(tags)
+        ADDRESS = '--tcpadd ' + address + ' '
 
         ENV = "python3"
-        CMD = " -m enipserver.server "
+        CMD = " -m enipserver.main "
 
-        if sys.platform.startswith('linux'):
-            LOG = '--log logs/protocols_tests_enip_server '
-        else:
+        if not sys.platform.startswith('linux'):
             raise OSError
 
         cmd = shlex.split(
             ENV +
             CMD +
-            VERBOSE +
-            LOG +
             ADDRESS +
             TAGS
         )
@@ -263,7 +258,6 @@ class EnipProtocol(Protocol):
         try:
             cmd = cls._start_server_cmd(address, tags)
             cls.server = subprocess.Popen(cmd, shell=False)
-
             return cls.server
 
         except Exception as error:
@@ -323,7 +317,8 @@ class EnipProtocol(Protocol):
                  stdout=subprocess.PIPE)
 
             # client.communicate is blocking
-            client.wait()
+            raw_out = client.communicate()
+            return raw_out[0]
 
         except Exception as error:
             print 'ERROR enip _send: ', error
