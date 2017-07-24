@@ -1,6 +1,8 @@
 # MiniCPS makefile
 
 # VARIABLES {{{1
+
+LATEST_VERSION = 1.1.3
 MININET = sudo mn
 
 PYTHON = sudo python
@@ -20,7 +22,9 @@ TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe  --rednose
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 
-# http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
+UPLOADER=twine
+# }}}
+
 .PHONY: tests tests-travis clean
 
 # TOY {{{1
@@ -34,6 +38,8 @@ test-toy:
 # TODO: test
 test-toy-cover:
 	cd examples/toy; $(TESTER) $(TESTER_OPTS_COV_HTML) tests.py; cd ../..
+
+# }}}
 
 # SWAT {{{1
 
@@ -49,9 +55,9 @@ test-swat-s1:
 # 	$(PYTHON) $(PYTHON_OPTS) tutorial/run.py
 # 	cd ../..
 # test-swat:
-# 	$(TESTER) $(TESTER_OPTS) examples/swat/tests
+# 	$(TESTER) $(TESTER_OPTS) examples/swat/test
 
-
+# }}}
 
 # TESTS {{{1
 
@@ -70,6 +76,7 @@ tests:
 # --cov set the covered FS
 # test-cov:
 # 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
+# }}}
 
 # MANUAL {{{2
 test-mcps:
@@ -104,9 +111,11 @@ test-devices:
 
 test-device:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py:TestDevice
+# }}}
 
+# }}}
 
-# clean {{{1
+# CLEAN {{{1
 clean: clean-cover clean-pyc clean-logs
 
 clean-simulation:
@@ -130,3 +139,14 @@ clean-cpppo:
 clean-mininet:
 	sudo mn -c
 
+# }}}
+
+# PYPI {{{1
+
+pypi-wheel:
+	./setup.py sdist bdist_wheel
+
+pypi-upload:
+	$(UPLOADER) upload dist/minicps-$(LATEST_VERSION)*
+
+# }}}

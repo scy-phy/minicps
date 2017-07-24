@@ -14,6 +14,7 @@ Contents:
    userguide
    api
    swat-tutorial
+   contributing
    tests
    misc
 
