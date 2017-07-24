@@ -26,8 +26,8 @@ import subprocess
 
 from multiprocessing import Process
 
-#import cpppo
-#import pymodbus
+import cpppo
+import pymodbus
 
 # Protocol {{{1
 class Protocol(object):
@@ -357,8 +357,6 @@ class EnipProtocol(Protocol):
             # client.communicate is blocking
             raw_out = client.communicate()
             # print 'DEBUG enip _receive raw_out: ', raw_out
-
-            # value is stored as first tuple element
             return raw_out[0]
 
         except Exception as error:
