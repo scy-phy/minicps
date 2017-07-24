@@ -1,13 +1,7 @@
 #!/usr/bin/python2
 
-"""
-single_write.py
-
-value is passed as a ``str``
-"""
-
-import argparse  # TODO: check if it is too slow at runtime
 import sys
+import argparse
 from pycomm.ab_comm.clx import Driver as ClxDriver
 
 def convert_value_to_proper_type(tag_type, val):
@@ -21,15 +15,12 @@ def convert_value_to_proper_type(tag_type, val):
 
 def write_tag(tag_name, value, tag_type):
     plc = ClxDriver()
-    try:
-        if plc.open(address):
-            temp = plc.write_tag(tag_name, value, tag_type)
-            plc.close()
-            return temp
-        else:
-            return "u"
-    except Exception as e:
-        raise Exception(e)
+    if plc.open(address):
+        temp = plc.write_tag(tag_name, value, tag_type)
+        plc.close()
+        return temp
+    else:
+        return "false"
 
 if __name__ == "__main__":
 
@@ -56,9 +47,12 @@ if __name__ == "__main__":
     # retrieve the ip and ignore the port
     address = args.ip.split(":")[0]
 
-    if tag_type not in ["INT", "STRING", "REAL"]:
+    if tag_type not in ["INT", "STRING", "REAL", "BOOL"]:
         print("single_write.py: error: tag type is invalid.")
         print("usage: single_write.py -h for help")
-        raise ValueError("single_write.py: error: tag type is invalid. Only INT, STRING, and FLOAT is supported.")
+        raise ValueError("single_write.py: error: tag type is invalid. Only INT, STRING, BOOL, and REAL is supported.")
 
     res = write_tag(tag_name, value, tag_type)
+
+    val = "err" if (res is None or res=="false") else res
+    sys.stdout.write("%s" % res)
