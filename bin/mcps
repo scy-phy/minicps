@@ -1,0 +1,5 @@
+#!/usr/bin/python2
+
+import click
+
+# vim: ft=python

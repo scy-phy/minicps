@@ -39,6 +39,7 @@ on top of mininet.',
     # packages=find_packages(exclude=['docs', 'tests*', 'examples', 'temp',
     # 'bin']),
     # NOTE: for the uses, see requirements for the developer
+    scripts = ['bin/mcps'],
     install_requires=[
         'cryptography',
         'pyasn1',
