@@ -2,4 +2,19 @@
 
 import click
 
+import os
+import minicps.ui.commands as mcps
+
 # vim: ft=python
+
+@click.group()
+def main():
+    pass
+
+@main.command()
+def init():
+    init = mcps.Init(os.getcwd())
+    init.default()
+
+if __name__=="__main__":
+    main()
