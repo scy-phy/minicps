@@ -12,9 +12,10 @@ def main():
     pass
 
 @main.command()
-def init():
+@click.option('--config', default="default", help="configuration file for generating template.")
+def init(config):
     init = mcps.Init(os.getcwd())
-    init.default()
+    init.make(config)
 
 if __name__=="__main__":
     main()
