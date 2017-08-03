@@ -7,8 +7,7 @@ This is the list of supported commands:
     - init
 """
 import os
-
-from template import Template
+from template import TemplateFactory
 
 class Init(object):
 
@@ -16,16 +15,23 @@ class Init(object):
 
     def __init__(self, cwd):
         self._cwd = cwd
-        self._template = Template
+        self._template = None
 
-    def default(self):
+    def make(self, _type="default", path=None):
+        if _type == "default":
+            self._template = TemplateFactory.getTemplate(_type)
+            self._default()
+        else:
+            raise NotImplementedError()
+
+    def _default(self):
         path = '{}/scaffold'.format(self._cwd)
         os.makedirs(path)
 
-        for x in range(1,3):
-            with open('{}/plc{}.py'.format(path, x), 'w') as f:
-                name = self._template.device('PLC{}'.format(x))
-                f.write(name)
+        devices = self._template.devices(number=2)
+        for idx in range(len(devices)):
+            with open('{}/plc{}.py'.format(path, (idx+1)), 'w') as f:
+                f.write(devices[idx])
 
         with open('{}/topo.py'.format(path), 'w') as f:
             f.write(self._template.topology())

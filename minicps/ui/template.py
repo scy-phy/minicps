@@ -1,51 +1,97 @@
-class Base(object):
+class BaseTemplate(object):
 
-    @classmethod
-    def device(cls, class_name, device=None):
+    @staticmethod
+    def devices(number):
         pass
 
-    @classmethod
-    def topology(cls):
+    @staticmethod
+    def topology():
         pass
 
-    @classmethod
-    def run(cls):
+    @staticmethod
+    def run():
         pass
 
-    @classmethod
-    def state(cls):
+    @staticmethod
+    def state():
         pass
 
-class Template(Base):
+class Device(object):
 
-    @classmethod
-    def device(cls, class_name, device="PLC"):
-        return"""#{device} Template
-from minicps.devices import {device}
+    @staticmethod
+    def plc(suffix):
+        return """# PLC Template
+from minicps.devices import PLC
 
-class {class_name}({device}):
+PLC_DATA = {{
+    'SENSOR1': '0',
+    'SENSOR2': '0.0',
+    'SENSOR3': '0',  # interlock with PLC2
+    'ACTUATOR1': '1',  # 0 means OFF and 1 means ON
+    'ACTUATOR2': '0',
+}}
+
+PLC_TAGS = (
+    ('SENSOR1', {suffix}, 'INT'),
+    ('SENSOR2', {suffix}, 'REAL'),
+    ('SENSOR3', {suffix}, 'INT'),  # interlock with PLC2
+    ('ACTUATOR1', {suffix}, 'INT'),  # 0 means OFF and 1 means ON
+    ('ACTUATOR2', {suffix}, 'INT'))
+
+PLC_ADDR = '10.0.0.{suffix}'
+
+PLC_SERVER = {{
+    'address': PLC_ADDR,
+    'tags': PLC_TAGS
+}}
+
+PLC_PROTOCOL = {{
+    'name': 'enip',
+    'mode': 1,
+    'server': PLC_SERVER
+}}
+
+class PLC{suffix}(PLC):
 
     def pre_loop(self, sleep=0.0):
         pass
 
-    def main_loop(self, sleep=0.5):
-        pass""".format(class_name=class_name, device=device)
+    def main_loop(self, sleep=0.0):
+        pass""".format(suffix=suffix)
 
-    @classmethod
-    def topology(cls):
+class TemplateFactory(object):
+
+    @staticmethod
+    def getTemplate(_type):
+        if _type == "default":
+            return DefaultTemplate
+        else:
+            pass
+
+class DefaultTemplate(BaseTemplate):
+
+    @staticmethod
+    def devices(number=1):
+        return [Device.plc(suffix) for suffix in range(1, number+1)]
+
+    @staticmethod
+    def topology():
         return"""#Topology Template
 
-NETMASK =
-
 from mininet.topo import Topo
+
+NETMASK = '/24'
+
+PLC1_MAC = '00:00:00:00:00:01'
+PLC2_MAC = '00:00:00:00:00:02'
 
 class ExampleTopo(Topo):
 
     def build(self):
         pass"""
 
-    @classmethod
-    def run(cls):
+    @staticmethod
+    def run():
         return """# Run Script Template
 from mininet.net import Mininet
 from mininet.cli import CLI
@@ -59,10 +105,9 @@ class ExampleCPS(MiniCPS):
     def __init__(self, name, net):
         pass"""
 
-    @classmethod
-    def state(cls):
+    @staticmethod
+    def state():
         return """# state
-
 from minicps.states import SQLiteState
 
 def example_state():
@@ -85,10 +130,20 @@ def example_state():
     '''
 
     SCHEMA_INIT = '''
-        INSERT INTO example_table VALUES ('test',   'int', '0', 1);
+        INSERT INTO example_table VALUES ('SENSOR1',   'int', '0', 1);
+        INSERT INTO example_table VALUES ('SENSOR2',   'float', '0.0', 1);
+        INSERT INTO example_table VALUES ('SENSOR3',   'int', '1', 1);
+        INSERT INTO example_table VALUES ('ACTUATOR1', 'int', '1', 1);
+        INSERT INTO example_table VALUES ('ACTUATOR2', 'int', '0', 1);
+        INSERT INTO example_table VALUES ('SENSOR3',   'int', '2', 2);
     '''
     return STATE, SCHEMA, SCHEMA_INIT
 
 def init_db(path, schema, schema_init):
     SQLiteState._create(path, schema)
-    SQLiteState._init(path, schema_init)"""
+    SQLiteState._init(path, schema_init)
+
+if __name__=="__main__":
+    state, schema, init = example_state()
+    init_db(state['path'], schema, init)
+"""
