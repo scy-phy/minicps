@@ -3,6 +3,9 @@
 import click
 
 import os
+import errno
+import traceback
+
 import minicps.ui.commands as mcps
 
 # vim: ft=python
@@ -13,9 +16,22 @@ def main():
 
 @main.command()
 @click.option('--config', default="default", help="configuration file for generating template.")
+@click.option('--path', help="directory path")
 def init(config):
     init = mcps.Init(os.getcwd())
-    init.make(config)
+    path = "scaffold"
+    try:
+        init.make(path=path)
+        click.echo(click.style("\n... Success: directory generated.", fg="green", bold=True))
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            click.echo(click.style("Warning: directory ('{}') already exists.".format(path), fg="yellow"))
+        else:
+            click.echo(click.style(traceback.format_exc(), fg="red"))
+        click.echo("... init aborted.".format(path))
+    except Exception as e:
+        click.echo(click.style(traceback.format_exc(), fg="red"))
+        click.echo("... init aborted.".format(path))
 
 if __name__=="__main__":
     main()
