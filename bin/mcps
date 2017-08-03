@@ -2,7 +2,6 @@
 
 import click
 
-import os
 import errno
 import traceback
 
@@ -17,9 +16,11 @@ def main():
 @main.command()
 @click.option('--config', default="default", help="configuration file for generating template.")
 @click.option('--path', help="directory path")
-def init(config):
-    init = mcps.Init(os.getcwd())
-    path = "scaffold"
+def init(config, path):
+    init = mcps.Init()
+
+    path = path if (path is not None) and (path[0] == "/") else "./scaffold"
+
     try:
         init.make(path=path)
         click.echo(click.style("\n... Success: directory generated.", fg="green", bold=True))
