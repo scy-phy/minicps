@@ -17,13 +17,13 @@ class Init(object):
         self._template = None
 
     def make(self, path, _type="default"):
-        os.makedirs(path)
+        os.mkdir(path)
 
+        self._template = TemplateFactory.get_template(_type)
         if _type == "default":
-            self._template = TemplateFactory.getTemplate(_type)
             self._default(path)
         else:
-            raise NotImplementedError("Only default is supported.")
+            pass
 
     def _default(self, path):
         devices = self._template.devices(number=2)
@@ -45,4 +45,3 @@ class Init(object):
 
     def _display(self, message):
         print "{:<5} create {}".format("", message)
-

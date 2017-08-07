@@ -18,20 +18,18 @@ def main():
 @click.option('--path', help="directory path")
 def init(config, path):
     init = mcps.Init()
-
-    path = path if (path is not None) and (path[0] == "/") else "./scaffold"
+    path = path if (path is not None) else "./scaffold"
 
     try:
         init.make(path=path)
         click.echo(click.style("\n... Success: directory generated.", fg="green", bold=True))
     except OSError as e:
         if e.errno == errno.EEXIST:
-            click.echo(click.style("Warning: directory ('{}') already exists.".format(path), fg="yellow"))
+            click.echo(click.style("Warning: Directory ('{}') already exists.".format(path), fg="yellow"))
+        elif e.errno == errno.EACCES:
+            click.echo(click.style("Error: Permission Denied. Cannot write to {path}.".format(path), fg="red"))
         else:
             click.echo(click.style(traceback.format_exc(), fg="red"))
-        click.echo("... init aborted.".format(path))
-    except Exception as e:
-        click.echo(click.style(traceback.format_exc(), fg="red"))
         click.echo("... init aborted.".format(path))
 
 if __name__=="__main__":
