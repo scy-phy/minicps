@@ -111,6 +111,11 @@ test-devices:
 
 test-device:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py:TestDevice
+
+
+test-ui:
+	$(TESTER) $(TESTER_OPTS) tests/ui_tests.py
+
 # }}}
 
 # }}}
