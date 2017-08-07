@@ -205,7 +205,7 @@ class EnipProtocol(Protocol):
         for tag in tags:
             tag = [str(x) for x in tag]
             tag_list.append("{0}@{1}".format(':'.join(tag[:-1]), tag[-1]))
-        return '--tags ' + ' '.join(tag_list)
+        return ' '.join(tag_list)
 
     @classmethod
     def _start_server_cmd(cls, address='localhost:44818',
@@ -226,8 +226,8 @@ class EnipProtocol(Protocol):
         if address.find(":") != -1:
             address = address.split(":")[0]
 
-        TAGS = cls._nested_tuples_to_enip_tags(tags)
-        ADDRESS = '--tcpadd ' + address + ' '
+        ADDRESS = '-i ' + address + ' '
+        TAGS = '-t ' + cls._nested_tuples_to_enip_tags(tags)
 
         ENV = "python3"
         CMD = " -m enipserver.main "
