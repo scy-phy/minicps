@@ -66,6 +66,7 @@ tests-travis:
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/ui_tests.py
 
 tests:
 	$(TESTER) $(TESTER_OPTS) tests
