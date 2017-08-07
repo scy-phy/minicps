@@ -1,7 +1,7 @@
 class BaseTemplate(object):
 
     @staticmethod
-    def devices(number):
+    def devices(number, _type):
         pass
 
     @staticmethod
@@ -62,21 +62,21 @@ class PLC{suffix}(PLC):
 class TemplateFactory(object):
 
     @staticmethod
-    def getTemplate(_type):
+    def get_template(_type):
         if _type == "default":
             return DefaultTemplate
         else:
-            pass
+            raise NotImplementedError()
 
 class DefaultTemplate(BaseTemplate):
 
     @staticmethod
-    def devices(number=1):
-        return [Device.plc(suffix) for suffix in range(1, number+1)]
+    def devices(number=1, _type="PLC"):
+        return [Device.plc(suffix) for suffix in range(1, number+1)] # always PLC
 
     @staticmethod
     def topology():
-        return"""#Topology Template
+        return """#Topology Template
 
 from mininet.topo import Topo
 
