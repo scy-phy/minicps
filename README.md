@@ -16,6 +16,15 @@ network emulation. It is build on top of
 MiniCPS is developed by the [SCy-Phy](http://scy-phy.github.io/index.html)
 group from SUTD (Singapore University of Design and Technology).
 
+## Reference Research Papers
+
+* [MiniCPS: A toolkit for security research on CPS networks (ACM CPS-SPC15)](https://arxiv.org/pdf/1507.04860)
+* [Towards high-interaction virtual ICS honeypots-in-a-box (ACM CPS-SPC16)](https://dl.acm.org/citation.cfm?id=2994493)
+
+## Docs
+
+See [readthedocs](http://minicps.readthedocs.io/en/latest/?badge=latest)
+
 ## Contributing
 
 See [Contributing](https://minicps.readthedocs.io/en/latest/contributing.html)
