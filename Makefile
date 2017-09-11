@@ -2,7 +2,7 @@
 
 # VARIABLES {{{1
 
-LATEST_VERSION = 1.1.3
+LATEST_VERSION = 1.2.0
 MININET = sudo mn
 
 PYTHON = sudo python

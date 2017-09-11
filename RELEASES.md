@@ -1,5 +1,11 @@
 # Releases and Changelog
 
+## Version 1.2.0 (TODO)
+
+### UI
+
+* Describe the new added functionality that is `mcps`
+
 ## Version 1.1.3 (2017-05-14)
 
 ### Misc
