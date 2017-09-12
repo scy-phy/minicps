@@ -14,7 +14,7 @@ def main():
     pass
 
 @main.command()
-@click.option('--config', default="default", help="configuration file for generating template.")
+@click.option('--config', default="default", help="configuration file for generating template")
 @click.option('--path', help="directory path")
 def init(config, path):
     init = mcps.Init()
@@ -30,7 +30,7 @@ def init(config, path):
             click.echo(click.style("Error: Permission Denied. Cannot write to {path}.".format(path), fg="red"))
         else:
             click.echo(click.style(traceback.format_exc(), fg="red"))
-        click.echo("... init aborted.".format(path))
+        click.echo("... init aborted.")
 
 if __name__=="__main__":
     main()

@@ -19,8 +19,6 @@ Contents:
    ui
    misc
 
-
-
 Indices and tables
 ==================
 
