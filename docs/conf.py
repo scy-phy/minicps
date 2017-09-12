@@ -264,8 +264,16 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
+
+# NOTE: we don't want one man page for each document in the toc
+# man_pages = [
+#     (master_doc, 'minicps', u'minicps Documentation',
+#      [author], 1)
+# ]
+
+# NOTE: mcps-man is not included in the TOC
 man_pages = [
-    (master_doc, 'minicps', u'minicps Documentation',
+    ('mcps-man', 'mcps', u'mcps man page',
      [author], 1)
 ]
 
