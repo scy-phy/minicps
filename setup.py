@@ -50,6 +50,5 @@ on top of mininet.',
     package_data={},
     # NOTE: specify files with absolute paths
     data_files=None,
-    scripts=[],
 )
 
