@@ -10,6 +10,7 @@ Synopsis
 ========
 
 ``mcps`` [``--help``]
+
 ``mcps init`` [``--path`` path] [``--config`` file]
 
 ===========
