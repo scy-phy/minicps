@@ -5,42 +5,42 @@
 mcps man page (not included in the docs)
 ****************************************
 
-TODO
+========
+Synopsis
+========
 
-=======================
-Section
-=======================
+``mcps`` [``--help``]
+``mcps init`` [``--path`` path] [``--config`` file]
 
-The command line utility is called ``mcps``. To get more information on the usage:
+===========
+Description
+===========
 
-.. code-block:: console
+The command line utility is called ``mcps``. It generates a scaffold directory which has
+the minimum files necessary to set-up a simulation environment.
 
-   mcps --help
+====================
+Command Line Options
+====================
 
-Subsection
+``init``
+--------
+
+This generates a default scaffold using two PLCs in the current working directory.
+
+``init [OPTIONS]``
+------------------
+
+``--path``
+    Provide a custom path for generating the scaffold.
+
+``--config``
+    Provide a configuration file to generate template with custom devices and values.
+
+    Note: This is **NOT** implemented yet.
+
+``--help``
 ----------
 
-The base command generates a scaffold directory which has the minimum files necessary 
-to set-up a simulation environment with two ``PLC``'s as the default device.
-
-.. code-block:: console
-
-   mcps init
-
-Custom
--------
-
-The command has additional options.
-
-.. code-block:: console
-
-   mcps init [OPTIONS]
-
-``path``
-     Provide a custom path for generating the scaffold.
-
-``config``
-     Provide a configuration file to generate template with custom devices and values.
-
-     Note: This is **NOT** implemented yet.
+This lists the available commands.
 
