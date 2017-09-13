@@ -152,6 +152,7 @@ text:
 
 man:
 	$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(BUILDDIR)/man
+	cp $(BUILDDIR)/man/mcps.1 .
 	@echo
 	@echo "Build finished. The manual pages are in $(BUILDDIR)/man."
 
