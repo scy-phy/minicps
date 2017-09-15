@@ -22,7 +22,7 @@ The command line utility is called ``mcps``. To get more information on the usag
 Default
 --------
 
-The base command generates a scaffold directory which has the minimum files necessary 
+The base command generates a default scaffold directory which has the minimum files necessary 
 to set-up a simulation environment with two ``PLC``'s as the default device.
 
 .. code-block:: console
@@ -36,7 +36,10 @@ The command has additional options.
 
 .. code-block:: console
 
-   mcps init [OPTIONS]
+   mcps init [NAME] [OPTIONS]
+
+``[NAME]``
+     Custom name of the directory to be generated.
 
 ``path``
      Provide a custom path for generating the scaffold.

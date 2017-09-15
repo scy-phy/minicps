@@ -11,7 +11,7 @@ Synopsis
 
 ``mcps`` [``--help``]
 
-``mcps init`` [``--path`` path] [``--config`` file]
+``mcps init`` [NAME] [``--path`` path] [``--config`` file]
 
 ===========
 Description
@@ -29,8 +29,10 @@ Command Line Options
 
 This generates a default scaffold using two PLCs in the current working directory.
 
-``init [OPTIONS]``
-------------------
+``init [NAME] [OPTIONS]``
+-------------------------
+``[NAME]``
+    Custom name of the directory to be generated.
 
 ``--path``
     Provide a custom path for generating the scaffold.
