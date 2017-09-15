@@ -14,14 +14,17 @@ def main():
     pass
 
 @main.command()
-@click.option('--config', default="default", help="configuration file for generating template")
-@click.option('--path', help="directory path")
-def init(config, path):
+@click.option('--config', help="configuration file for generating template")
+@click.option('--path', help="path to the scaffold directory")
+@click.argument('name', default="scaffold")
+def init(config, path, name):
     init = mcps.Init()
-    path = path if (path is not None) else "./scaffold"
+
+    path = path if (path is not None) else "./"
+    full_path = "{path}/{folder}".format(path=path.rstrip('/'), folder=name)
 
     try:
-        init.make(path=path)
+        init.make(path=full_path)
         click.echo(click.style("\n... Success: directory generated.", fg="green", bold=True))
     except OSError as e:
         if e.errno == errno.EEXIST:
