@@ -49,6 +49,6 @@ on top of mininet.',
     # NOTE: specify files relative to the module path
     package_data={},
     # NOTE: specify files with absolute paths
-    data_files=[('/usr/share/man/man1', ['docs/mcps.1'])],
+    data_files=[('/usr/local/man/man1', ['docs/mcps.1'])],
 )
 
