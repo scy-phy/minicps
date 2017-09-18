@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "MCPS" "1" "Sep 13, 2017" "1.2" "minicps"
+.TH "MCPS" "1" "Sep 18, 2017" "1.2" "minicps"
 .SH NAME
 mcps \- mcps man page
 .
@@ -34,7 +34,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 \fBmcps\fP [\fB\-\-help\fP]
 .sp
-\fBmcps init\fP [\fB\-\-path\fP path] [\fB\-\-config\fP file]
+\fBmcps init\fP [NAME] [\fB\-\-path\fP path] [\fB\-\-config\fP file]
 .SH DESCRIPTION
 .sp
 The command line utility is called \fBmcps\fP\&. It generates a scaffold directory which has
@@ -42,9 +42,12 @@ the minimum files necessary to set\-up a simulation environment.
 .SH COMMAND LINE OPTIONS
 .SS \fBinit\fP
 .sp
-This generates a default scaffold using two PLCs in the current working directory.
-.SS \fBinit [OPTIONS]\fP
+This generates a default scaffold directory (\fBmyproject\fP) using two PLCs in the current working directory.
+.SS \fBinit [NAME] [OPTIONS]\fP
 .INDENT 0.0
+.TP
+.B \fB[NAME]\fP
+Custom name of the directory to be generated.
 .TP
 .B \fB\-\-path\fP
 Provide a custom path for generating the scaffold.

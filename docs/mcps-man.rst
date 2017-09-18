@@ -27,7 +27,7 @@ Command Line Options
 ``init``
 --------
 
-This generates a default scaffold using two PLCs in the current working directory.
+This generates a default scaffold directory (``myproject``) using two PLCs in the current working directory.
 
 ``init [NAME] [OPTIONS]``
 -------------------------
