@@ -14,7 +14,7 @@ def main():
     """ A command line tool for MINICPS."""
     pass
 
-@main.command('init', short_help="Initialize a scaffold.")
+@main.command('init', short_help="Initialize a directory with default files for MINICPS simulation.")
 @click.option('--config', help="Configuration file for generating template.")
 @click.option('--path', help="Path to the scaffold directory.")
 @click.argument('name', default="myproject")
