@@ -11,16 +11,22 @@ import minicps.ui.commands as mcps
 
 @click.group()
 def main():
+    """ A command line tool for MINICPS."""
     pass
 
-@main.command()
-@click.option('--config', help="configuration file for generating template")
-@click.option('--path', help="path to the scaffold directory")
-@click.argument('name', default="scaffold")
+@main.command('init', short_help="Initialize a scaffold.")
+@click.option('--config', help="Configuration file for generating template.")
+@click.option('--path', help="Path to the scaffold directory.")
+@click.argument('name', default="myproject")
 def init(config, path, name):
+    """
+    Initialize directory NAME with optional custom configuration.
+
+    Default dir name: `myproject`.
+    """
     init = mcps.Init()
 
-    path = path if (path is not None) else "./"
+    path = path if (path is not None) else "."
     full_path = "{path}/{folder}".format(path=path.rstrip('/'), folder=name)
 
     try:
