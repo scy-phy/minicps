@@ -45,6 +45,7 @@ on top of mininet.',
         'pyasn1',
         'pymodbus',
         'cpppo',
+        'click',
     ],
     # NOTE: specify files relative to the module path
     package_data={},
