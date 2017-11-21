@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Set up the host to forward traffic on port 2222 to the attacker machine in minicps
+# needs to only be executed once
+
+# NOTE: enable ipv4 forwarding
+sudo  sysctl net.ipv4.ip_forward=1
+
+# NOTE: 3001 port-forward to attacker openvpn server
+sudo iptables -t nat -A PREROUTING -p tcp --dport 1337 -j DNAT --to-destination 10.0.0.1:1194
+
+# NOTE: 3002 port-forward to attacker2 openvpn server
+sudo iptables -t nat -A PREROUTING -p tcp --dport 1338 -j DNAT --to-destination 10.0.0.2:1194
+
+# FIXME: can be improved
+# https://askubuntu.com/questions/466445/what-is-masquerade-in-the-context-of-iptables
+sudo iptables -t nat -A POSTROUTING -j MASQUERADE
