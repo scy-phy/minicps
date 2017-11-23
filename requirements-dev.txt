@@ -6,4 +6,5 @@ cryptography
 pyasn1
 pymodbus
 cpppo
+click
 

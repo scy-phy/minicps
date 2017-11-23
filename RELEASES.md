@@ -1,5 +1,12 @@
 # Releases and Changelog
 
+## Version 1.2.0 (2017-09-18)
+
+### UI
+
+* Added CLI tool `mcps`.
+  * Generate default files for simulation using a single command.
+
 ## Version 1.1.3 (2017-05-14)
 
 ### Misc

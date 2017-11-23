@@ -7,7 +7,7 @@ except ImportError:
 # NOTE: https://packaging.python.org/
 setup(
     name='minicps',
-    version='1.1.3',
+    version='1.2.0',
     description='MiniCPS: a framework for Cyber-Physical Systems \
 real-time simulation, built on top of mininet.',
     # NOTE: long_description displayed on PyPi
@@ -39,16 +39,17 @@ on top of mininet.',
     # packages=find_packages(exclude=['docs', 'tests*', 'examples', 'temp',
     # 'bin']),
     # NOTE: for the uses, see requirements for the developer
+    scripts = ['bin/mcps'],
     install_requires=[
         'cryptography',
         'pyasn1',
         'pymodbus',
         'cpppo',
+        'click',
     ],
     # NOTE: specify files relative to the module path
     package_data={},
     # NOTE: specify files with absolute paths
-    data_files=None,
-    scripts=[],
+    data_files=[('/usr/local/man/man1', ['docs/mcps.1'])],
 )
 

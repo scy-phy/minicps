@@ -16,9 +16,8 @@ Contents:
    swat-tutorial
    contributing
    tests
+   ui
    misc
-
-
 
 Indices and tables
 ==================

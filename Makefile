@@ -2,7 +2,7 @@
 
 # VARIABLES {{{1
 
-LATEST_VERSION = 1.1.3
+LATEST_VERSION = 1.2.0
 MININET = sudo mn
 
 PYTHON = sudo python
@@ -66,6 +66,7 @@ tests-travis:
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/ui_tests.py
 
 tests:
 	$(TESTER) $(TESTER_OPTS) tests
@@ -111,6 +112,11 @@ test-devices:
 
 test-device:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py:TestDevice
+
+
+test-ui:
+	$(TESTER) $(TESTER_OPTS) tests/ui_tests.py
+
 # }}}
 
 # }}}

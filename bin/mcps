@@ -1,0 +1,45 @@
+#!/usr/bin/python2
+
+import click
+
+import errno
+import traceback
+
+import minicps.ui.commands as mcps
+
+# vim: ft=python
+
+@click.group()
+def main():
+    """ A command line tool for MINICPS."""
+    pass
+
+@main.command('init', short_help="Initialize a directory with default files for MINICPS simulation.")
+@click.option('--config', help="Configuration file for generating template.")
+@click.option('--path', help="Path to the scaffold directory.")
+@click.argument('name', default="myproject")
+def init(config, path, name):
+    """
+    Initialize directory NAME with optional custom configuration.
+
+    Default dir name: `myproject`.
+    """
+    init = mcps.Init()
+
+    path = path if (path is not None) else "."
+    full_path = "{path}/{folder}".format(path=path.rstrip('/'), folder=name)
+
+    try:
+        init.make(path=full_path)
+        click.echo(click.style("\n... Success: directory generated.", fg="green", bold=True))
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            click.echo(click.style("Warning: Directory ('{}') already exists.".format(path), fg="yellow"))
+        elif e.errno == errno.EACCES:
+            click.echo(click.style("Error: Permission Denied. Cannot write to {path}.".format(path), fg="red"))
+        else:
+            click.echo(click.style(traceback.format_exc(), fg="red"))
+        click.echo("... init aborted.")
+
+if __name__=="__main__":
+    main()
