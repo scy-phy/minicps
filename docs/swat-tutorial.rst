@@ -1,4 +1,3 @@
-.. SWAT {{{1
 .. _swat-tutorial:
 
 *************
@@ -39,6 +38,8 @@ This tutorial will use the following conventions for command syntax:
 
 Before continuing please read the :ref:`api` doc.
 
+.. }}}
+
 .. SYSTEM OVERVIEW {{{2
 
 =================
@@ -70,6 +71,7 @@ P5: Reverse Osmosis (RO)
 P6: Permeate transfer, cleaning and back-wash
    Storage of permeate (purified) water
 
+.. }}}
 
 .. SUPPLY AND STORAGE {{{3
 
@@ -77,8 +79,6 @@ Supply and Storage control
 ----------------------------
 
 The simulation focuses on the first subprocess of the SWaT testbed.
-
-.. TODO: ask Nils new image
 
 .. image:: images/swat-tutorial-subprocess.png
 
@@ -121,6 +121,7 @@ indeed our simulation separate the two cases using different functions.
 .. [#] The real system uses two redundant pumps, one is working and the other
        is in stand-by mode.
 
+.. }}}
 
 .. SWAT EXPLOTATION {{{2
 
@@ -134,9 +135,15 @@ MiniCPS simulation
 Topology
 ---------------
 
-To start the simulation, open up a terminal, navigate into the root 
-``minicps`` directory, (the one containing a ``Makefile``) and type:
-   
+To initialize the simulation environment open up a terminal, navigate into the
+root ``minicps`` directory, (the one containing a ``Makefile``) and type:
+
+.. code-block:: console
+
+   make swat-init
+
+To start the simulation, from the same directory type:
+
 .. code-block:: console
 
    make swat-s1
@@ -145,7 +152,7 @@ Now you should see the ``mininet`` CLI:
 
 .. code-block:: console
 
-   mininet> 
+   mininet>
 
 Feel free to explore the network topology using ``mininet``'s built-in
 commands such as: ``nodes``, ``dump``, ``net``, ``links`` etc.
@@ -191,6 +198,7 @@ You can optionally clean the OS environment typing:
 
    make clean-simulation
 
+.. }}}
 
 .. CUSTOMIZATION {{{3
 
@@ -310,6 +318,9 @@ You can clean the simulation environment from minicps root directory using:
 
 .. TODO: add HMI and ImageContainer and custom SDN controller from old swat
 
+.. }}}
+
+.. POX SDN CONTROLLER {{{3
 
 .. POXSwat SDN Controller
 .. --------------------------
@@ -322,3 +333,9 @@ You can clean the simulation environment from minicps root directory using:
 
 .. If you are familiar with SDN and the ``pox`` platform take a look at
 .. ``examples/swat/pox_controller.py``.
+
+
+.. }}}
+
+.. }}}
+
