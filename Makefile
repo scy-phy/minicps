@@ -43,6 +43,9 @@ test-toy-cover:
 
 # SWAT {{{1
 
+swat-init:
+	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) init.py; cd ../..
+
 swat-s1:
 	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
