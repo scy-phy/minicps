@@ -140,7 +140,7 @@ root ``minicps`` directory, (the one containing a ``Makefile``) and type:
 
 .. code-block:: console
 
-   make swat-init
+   make swat-s1-init
 
 To start the simulation, from the same directory type:
 
