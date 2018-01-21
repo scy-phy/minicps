@@ -43,8 +43,6 @@ local:
 	sudo python run-local.py
 
 init:
-	rm -f wadi.sqlite
-	rm -f enip.sqlite
 	sudo python init.py
 
 iptables:

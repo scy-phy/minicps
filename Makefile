@@ -1,4 +1,4 @@
-# MiniCPS makefile
+# MiniCPS Makefile
 
 # VARIABLES {{{1
 
@@ -32,16 +32,22 @@ UPLOADER=twine
 toy:
 	cd examples/toy; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
+toy-init:
+	cd examples/toy; $(PYTHON) $(PYTHON_OPTS) init.py; cd ../..
+
 test-toy:
 	cd examples/toy; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
 
-# TODO: test
+# TODO
 test-toy-cover:
 	cd examples/toy; $(TESTER) $(TESTER_OPTS_COV_HTML) tests.py; cd ../..
 
 # }}}
 
-# SWAT {{{1
+# SWAT-S1 {{{1
+
+swat-s1-init:
+	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) init.py; cd ../..
 
 swat-s1:
 	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
@@ -49,33 +55,14 @@ swat-s1:
 test-swat-s1:
 	cd examples/swat-s1; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
 
-# TODO: restructure dirs
-# swat-tutorial:
-# 	cd examples/swat; \
-# 	$(PYTHON) $(PYTHON_OPTS) tutorial/run.py
-# 	cd ../..
-# test-swat:
-# 	$(TESTER) $(TESTER_OPTS) examples/swat/test
-
 # }}}
 
 # TESTS {{{1
 
-# TRAVIS {{{2
-tests-travis:
-	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
-	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
-	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
-
+# ALL {{{2
 tests:
 	$(TESTER) $(TESTER_OPTS) tests
 
-# https://pypi.python.org/pypi/nose-cov/1.6
-# FIXME: test cov
-# report: term, term-missing, html, xml, annotate
-# --cov set the covered FS
-# test-cov:
-# 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
 # }}}
 
 # MANUAL {{{2
@@ -111,6 +98,21 @@ test-devices:
 
 test-device:
 	$(TESTER) $(TESTER_OPTS) tests/devices_tests.py:TestDevice
+# }}}
+
+# TRAVIS {{{2
+tests-travis:
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
+	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
+
+
+# https://pypi.python.org/pypi/nose-cov/1.6
+# FIXME: test cov
+# report: term, term-missing, html, xml, annotate
+# --cov set the covered FS
+# test-cov:
+# 	sudo $(TESTER) $(TESTER_OPTS_COV) minicps_tests.py
 # }}}
 
 # }}}
