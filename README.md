@@ -20,6 +20,8 @@ group from SUTD (Singapore University of Design and Technology).
 
 * [MiniCPS: A toolkit for security research on CPS networks (ACM CPS-SPC15)](https://arxiv.org/pdf/1507.04860)
 * [Towards high-interaction virtual ICS honeypots-in-a-box (ACM CPS-SPC16)](https://dl.acm.org/citation.cfm?id=2994493)
+* [Gamifying ICS Security Training and Research: Design, Implementation, and Results of S3 (ACM CPS-SPC17)](https://dl.acm.org/citation.cfm?id=3140253)
+
 
 ## Docs
 
