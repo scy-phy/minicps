@@ -26,7 +26,7 @@ sudo apt-get install sqlite htop traceroute xprobe2
 # git clone git@github.com:scy-phy/minicps.git
 
 echo "Init pox"
-python minicps/bin/pox_init.py
+python minicps/bin/pox-init.py
 
 # TODO
 # xserver otherwise no xterm and wireshark
