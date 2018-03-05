@@ -109,8 +109,8 @@ are monitoring subprocess2 and subprocess3.
    * Compare FIT201 with well defined thresholds
    * Take a decision
    * Update its status
-   * Ask to PLC3 LIT301's value
-   * Compare LIT301 with well defined thresholds
+   * Ask to PLC3 LIT201's value
+   * Compare LIT201 with well defined thresholds
    * Take a decision
    * Update its status
 
