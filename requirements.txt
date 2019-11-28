@@ -1,6 +1,6 @@
 nose
 rednose
-cryptography
+cryptography==2.8
 pyasn1
 pymodbus
 cpppo
