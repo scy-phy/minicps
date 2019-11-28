@@ -821,5 +821,5 @@ class ModbusProtocol(Protocol):
 
         except Exception as error:
             print('ERROR modbus _receive: ', error)
-
+#
 # }}}

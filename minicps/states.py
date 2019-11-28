@@ -59,7 +59,7 @@ class State(object):
         :value: value
         """
 
-        print "set: please override"
+        print("set: please override")
 
     def _get(self, what):
         """Get (read) a state value.
@@ -67,7 +67,7 @@ class State(object):
         :what: (Immutable) tuple with field identifiers
         """
 
-        print "get: please override"
+        print("get: please override")
 
 
 # sqlite {{{1
@@ -135,7 +135,7 @@ class SQLiteState(State):
             os.remove(db_name)
 
         except OSError as e:
-            print 'DEBUG %s do NOT exists in the filesystem.'
+            print('DEBUG %s do NOT exists in the filesystem.')
 
     def _init_what(self):
         """Save a ordered tuple of pk field names in self._what."""
@@ -159,7 +159,7 @@ class SQLiteState(State):
                         pks.append(field)
 
                 if not pks:
-                    print "ERROR: please provide at least 1 primary key"
+                    print("ERROR: please provide at least 1 primary key")
                 else:
                     # sort by pk order
                     pks.sort(key=lambda x: x[5])
@@ -173,7 +173,7 @@ class SQLiteState(State):
                     self._what = tuple(what_list)
                     # print 'DEBUG self._what: ', self._what
 
-            except sqlite3.Error, e:
+            except sqlite3.Error as e:
                 print('ERROR: %s: ' % e.args[0])
 
     def _init_get_query(self):
@@ -189,7 +189,7 @@ class SQLiteState(State):
             get_query += ' AND %s = ?' % (
                 pk)
 
-        print 'DEBUG get_query:', get_query
+        print('DEBUG get_query:', get_query)
         self._get_query = get_query
 
     def _init_set_query(self):
@@ -205,7 +205,7 @@ class SQLiteState(State):
             set_query += ' AND %s = ?' % (
                 pk)
 
-        print 'DEBUG set_query:', set_query
+        print('DEBUG set_query:', set_query)
         self._set_query = set_query
 
     # TODO: return result of cursor.execute
@@ -233,7 +233,7 @@ class SQLiteState(State):
                 conn.commit()
                 return value
 
-            except sqlite3.Error, e:
+            except sqlite3.Error as e:
                 print('_set ERROR: %s: ' % e.args[0])
 
     def _get(self, what):
@@ -246,7 +246,7 @@ class SQLiteState(State):
                 record = cursor.fetchone()
                 return record[0]
 
-            except sqlite3.Error, e:
+            except sqlite3.Error as e:
                 print('_get ERROR: %s: ' % e.args[0])
 
 
