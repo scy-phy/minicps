@@ -177,14 +177,14 @@ class Device(object):
             # TODO: add parametric key serialization
             self._state = RedisState(self.state)
         else:
-            print 'ERROR: %s backend not supported.' % self.state
+            print('ERROR: %s backend not supported.' % self.state)
 
     # TODO: add optional process name for the server and log location
     def _init_protocol(self):
         """Bind device to network API."""
 
         if self.protocol is None:
-            print 'DEBUG: %s has no networking capabilities.' % self.name
+            print('DEBUG: %s has no networking capabilities.' % self.name)
             pass
         else:
             name = self.protocol['name']
@@ -193,17 +193,17 @@ class Device(object):
             elif name == 'modbus':
                 self._protocol = ModbusProtocol(self.protocol)
             else:
-                print 'ERROR: %s protocol not supported.' % self.protocol
+                print('ERROR: %s protocol not supported.' % self.protocol)
 
     def _start(self):
         """Start a device."""
 
-        print "TODO _start: please override me"
+        print("TODO _start: please override me")
 
     def _stop(self):
         """Start a device."""
 
-        print "TODO _stop: please override me"
+        print("TODO _stop: please override me")
 
     def set(self, what, value):
         """Set (write) a physical process state value.
@@ -298,7 +298,7 @@ class PLC(Device):
         :param float sleep: second[s] to sleep before returning
         """
 
-        print "TODO PLC pre_loop: please override me"
+        print("TODO PLC pre_loop: please override me")
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
@@ -310,7 +310,7 @@ class PLC(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO PLC main_loop: please override me"
+            print("TODO PLC main_loop: please override me")
             time.sleep(sleep)
 
             sec += 1
@@ -344,7 +344,7 @@ class HMI(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO HMI main_loop: please override me"
+            print("TODO HMI main_loop: please override me")
             time.sleep(sleep)
 
             sec += 1
@@ -384,7 +384,7 @@ class Tank(Device):
         :param float sleep: second[s] to sleep before returning
         """
 
-        print "TODO Tank pre_loop: please override me"
+        print("TODO Tank pre_loop: please override me")
 
     def main_loop(self, sleep=0.5):
         """Tank main loop.
@@ -395,7 +395,7 @@ class Tank(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO Tank main_loop: please override me"
+            print("TODO Tank main_loop: please override me")
             time.sleep(sleep)
 
             sec += 1
@@ -426,7 +426,7 @@ class SCADAServer(Device):
         :param float sleep: second[s] to sleep before returning
         """
 
-        print "TODO SCADAServer pre_loop: please override me"
+        print("TODO SCADAServer pre_loop: please override me")
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
@@ -438,7 +438,7 @@ class SCADAServer(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO SCADAServer main_loop: please override me"
+            print("TODO SCADAServer main_loop: please override me")
             time.sleep(sleep)
 
             sec += 1
@@ -469,7 +469,7 @@ class RTU(Device):
         :param float sleep: second[s] to sleep before returning
         """
 
-        print "TODO RTU pre_loop: please override me"
+        print("TODO RTU pre_loop: please override me")
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
@@ -481,7 +481,7 @@ class RTU(Device):
         sec = 0
         while(sec < 1):
 
-            print "TODO RTU main_loop: please override me"
+            print("TODO RTU main_loop: please override me")
             time.sleep(sleep)
 
             sec += 1
