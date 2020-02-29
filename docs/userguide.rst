@@ -45,6 +45,16 @@ The `Install MiniCPS`_ section provides instructions to install ``minicps``
 for a user or a developer, and it assumes that you *already* have installed
 ``mininet``.
 
+.. UPGRADE TO UBUNTU-16.04 {{{3
+
+Upgrade to Ubuntu-16.04
+-----------------------
+
+Some MiniCPS libraries like cryptography now require Ubuntu16.04. To upgrade do:
+.. code-block:: console
+   sudo apt-get update
+   sudo apt-get dist-upgrade
+   sudo do-release-upgrade
 
 .. INSTALL MINICPS {{{3
 
