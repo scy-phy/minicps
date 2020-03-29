@@ -5,7 +5,7 @@ from minicps.devices import PLC
 
 class Plc2(PLC):
     NAME = 'plc2'
-    IP = '192.168.1.12'
+    IP = '192.168.1.20'
     MAC = '00:1D:9C:C7:B0:02'
     STATE = {
         'name': 'honeypot',

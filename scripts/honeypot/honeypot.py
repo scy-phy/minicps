@@ -9,7 +9,7 @@ from minicps.mcps import MiniCPS
 from topo import Topo
 
 import sys
-
+from mininet.log import lg
 
 class Honeypot(MiniCPS):
 
@@ -34,6 +34,7 @@ class Honeypot(MiniCPS):
         net.stop()
 
 if __name__ == "__main__":
+    lg.setLogLevel('debug')
 
     topo = Topo()
     net = Mininet(topo=topo)

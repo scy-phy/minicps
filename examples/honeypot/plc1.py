@@ -9,11 +9,11 @@ import time
 # TODO: real value tag where to read/write flow sensor
 class Plc1(PLC):
     NAME = 'plc1'
-    IP = '192.168.1.11'
+    IP = '192.168.1.10'
     MAC = '00:1D:9C:C7:B0:01'
     STATE = {
-        'name': 'honeypot',
-        'path': 'honeypot_db.sqlite'
+        'name': 'swat_s1',
+        'path': 'swat_s1_db.sqlite'
     }
     TAGS = (
         ('FIT101', 1, 'REAL'),
@@ -48,7 +48,7 @@ class Plc1(PLC):
             disk=Plc1.DATA)
 
 
-    def pre_loop(self, sleep=0.1):
+    def pre_loop(self, sleep=1000):
         print 'DEBUG: swat-s1 plc1 enters pre_loop'
         print
 

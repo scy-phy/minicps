@@ -4,14 +4,14 @@ swat-s1 topology
 
 from mininet.topo import Topo as TopoBase
 
-from pinger import Pinger
-from plc2 import Plc2
-from plc1 import Plc1
+from srv import Srv
+from cli import Cli
+
 
 
 class Topo(TopoBase):
     NETMASK = '/24'
-    NODES = [Plc1, Plc2, Pinger]
+    NODES = [Srv, Cli]
 
     def build(self):
 
