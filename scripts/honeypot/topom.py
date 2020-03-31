@@ -1,25 +1,23 @@
 """
-swat-s1 topology
+modbus honezpot topology
 """
 
 from mininet.topo import Topo as TopoBase
 
-from srv import Srv
-from cli import Cli
+from srvm import Srvm
+from clim import Clim
 
-
-
-class Topo(TopoBase):
+class Topom(TopoBase):
     NETMASK = '/24'
-    NODES = [Srv, Cli]
+    NODES = [Srvm, Clim]
 
     def build(self):
-
+        #dumbswitch from mininet
         switch = self.addSwitch('s1')
-
-        for node in Topo.NODES:
+        #addhosts
+        for node in Topom.NODES:
             host = self.addHost(
                 node.NAME,
-                ip=node.IP + Topo.NETMASK,
+                ip=node.IP + Topom.NETMASK,
                 mac=node.MAC)
             self.addLink(host, switch)

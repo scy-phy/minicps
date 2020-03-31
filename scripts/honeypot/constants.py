@@ -1,2 +1,4 @@
 class Constants:
     MODBUS_PORT = 502
+    ENIP_TCP_PORT = 44818
+    ENIP_UDP_PORT = 2222
