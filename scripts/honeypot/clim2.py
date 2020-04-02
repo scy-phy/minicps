@@ -8,35 +8,34 @@ from mininet.log import info
 
 from Logger import hlog
 
+
 #client ID
-class Clim:
-    NAME = 'clim'
-    IP = '192.168.1.10'
-    MAC = '00:1D:9C:C7:B0:10'
+class Clim2:
+    NAME = 'clim2'
+    IP = '192.168.1.30'
+    MAC = '00:1D:9C:C7:B0:30'
 
     def __init__(self):
-        hlog("Hello Client 1 \n")
+        hlog("Hello Client 2")
 
         sleep(4)
-        # Create and connect client to IP Srvm.IP and port 502
+        #start on 502 port from constants.py
         self.client = ModbusClient(Srvm.IP, port=Constants.MODBUS_PORT)
+        #
+
         self.client.connect()
-
-        # List of actions to be executed randomly
-        actionList = [
-            self.read_coil,
-            self.write_coil,
-            self.read_holding_register,
-            self.write_register,
-            self.read_discrete_inputs,
-            self.read_input_registers
-        ]
-
-        # loop for executing actions
+        #tag cases
+        map = {
+            0: self.read_coil,
+            1: self.write_coil,
+            2: self.read_holding_register,
+            3: self.write_register,
+            4: self.read_discrete_inputs,
+            5: self.read_input_registers
+        }
+        #loop for sending tag
         while True:
-            # Execute random action from actionList with index 0..6
-            actionList[random.randrange(0, 6)]()
-            # Sleep randomly 1 or 2 s
+            map[random.randrange(0, 6)]()
             sleep(random.randrange(1, 2))
 
     def get_random_address(self):
@@ -47,7 +46,6 @@ class Clim:
 
     def get_random_short(self):
         return random.randrange(0, 65535)
-
     #modbus data object definition
     def write_register(self):
         address = self.get_random_address()
@@ -82,4 +80,4 @@ class Clim:
         self.client.read_discrete_inputs(address=address)
 
 if __name__ == "__main__":
-    Clim()
+    Clim2()

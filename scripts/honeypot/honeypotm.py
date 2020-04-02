@@ -14,20 +14,27 @@ class Honeypotm(MiniCPS):
     """Main simulation container"""
 
     def __init__(self):
-        self.name = 'honeypotm'
-        self.net = Mininet(topo=Topom())
         #loglevel & ping mininet topology
         lg.setLogLevel('debug')
+
+        # Start Mininet with our topology defined in Topom
+        self.net = Mininet(topo=Topom())
         self.net.start()
+
+        # Verify connectivity
         self.net.pingAll()
 
-        # start partitions based on suffix
+        # Execute srvm, clim, clim2 scripts on their respective nodes
         for node_class in Topom.NODES:
+            # Get node on which to execute the script
             node = self.net.get(node_class.NAME)
+            # Instruct mininet to execute the script on that node
             node.cmd(sys.executable + ' {}.py &'.format(node_class.NAME))
 
+        # Start Mininet command line and let it use our self.net Mininet object
         CLI(self.net)
 
+        # Stop Mininet
         self.net.stop()
 
 if __name__ == "__main__":

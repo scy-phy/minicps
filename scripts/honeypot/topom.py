@@ -4,12 +4,14 @@ modbus honezpot topology
 
 from mininet.topo import Topo as TopoBase
 
+
 from srvm import Srvm
 from clim import Clim
+from clim2 import Clim2
 
 class Topom(TopoBase):
     NETMASK = '/24'
-    NODES = [Srvm, Clim]
+    NODES = [Srvm, Clim, Clim2]
 
     def build(self):
         #dumbswitch from mininet

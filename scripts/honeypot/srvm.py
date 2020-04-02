@@ -20,8 +20,14 @@ class Srvm:
         servers = os.path.abspath(os.path.realpath(__file__) + '../../../pymodbus/servers.py')
         self.process = subprocess.Popen(['sudo', 'python2', servers, '-i', Srvm.IP, '-p', str(Constants.MODBUS_PORT)])
         sleep(3600)
+
+
         #libraly import
+    # Created mostly as copy paste from pymodbus/servers.py
     def in_process_server(self):
+        # This defines number of coils/registers on server
+        # Number 10 below specifies that there are 0..8 addressable
+        # coils/registers on server.
         store = ModbusSlaveContext(
             di=ModbusSequentialDataBlock(0, [0] * 10),
             co=ModbusSequentialDataBlock(0, [0] * 10),
@@ -33,7 +39,7 @@ class Srvm:
 
         context = ModbusServerContext(slaves=store, single=True)
 
-        # server ID
+        # server ID - copied from servers.py
         identity = ModbusDeviceIdentification()
         identity.VendorName = 'Pymodbus'
         identity.ProductCode = 'PM'
@@ -42,6 +48,7 @@ class Srvm:
         identity.ModelName = 'Pymodbus Server'
         identity.MajorMinorRevision = '1.0'
 
+        # Starts MODBUS server on interface with IP Srvm.IP and port Constants.MODBUS_PORT
         StartTcpServer(context, identity=identity,
                        address=(Srvm.IP, Constants.MODBUS_PORT))
 

@@ -9,3 +9,4 @@ def hlog(message):
     date_time = now.strftime(" %m/%d%Y , %H:%M:%S")
     f.write(message + date_time + "\n")
     f.close()
+

@@ -9,9 +9,7 @@ from clie import Clie
 
 class Topoe(TopoBase):
     NETMASK = '/24'
-    NODES = [Srve
-#        , Clie
-    ]
+    NODES = [Srve, Clie]
 
     def build(self):
 
