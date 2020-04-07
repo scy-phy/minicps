@@ -23,5 +23,8 @@ class Clie:
             '--log', Constants.ENIP_LOG_FILE,
             'Scada[1]=99'])
 
+
+#TODO tag loop
+
 if __name__ == "__main__":
     Clie()

@@ -12,7 +12,7 @@ from Logger import hlog
 #srv ID
 class Srvm:
     NAME = 'srvm'
-    IP = '192.168.1.20'
+    IP = '10.0.2.120'
     MAC = '00:1D:9C:C7:B0:20'
 
     def out_of_process_server(self):

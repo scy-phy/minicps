@@ -1,5 +1,4 @@
-
-
+from mininet.link import Intf
 from mininet.net import Mininet
 from mininet.cli import CLI
 from minicps.mcps import MiniCPS
@@ -19,6 +18,8 @@ class Honeypotm(MiniCPS):
 
         # Start Mininet with our topology defined in Topom
         self.net = Mininet(topo=Topom())
+        #switch = self.net.getNodeByName('s1')
+        #self.intf = Intf('tap0', node=switch)
         self.net.start()
 
         # Verify connectivity
@@ -29,6 +30,7 @@ class Honeypotm(MiniCPS):
             # Get node on which to execute the script
             node = self.net.get(node_class.NAME)
             # Instruct mininet to execute the script on that node
+            # node.cmd('route add -net default gw 10.0.2.4')
             node.cmd(sys.executable + ' {}.py &'.format(node_class.NAME))
 
         # Start Mininet command line and let it use our self.net Mininet object

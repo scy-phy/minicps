@@ -11,7 +11,7 @@ from Logger import hlog
 #client ID
 class Clim:
     NAME = 'clim'
-    IP = '192.168.1.10'
+    IP = ' 10.0.2.110'
     MAC = '00:1D:9C:C7:B0:10'
 
     def __init__(self):

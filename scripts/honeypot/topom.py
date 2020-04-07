@@ -1,7 +1,7 @@
 """
 modbus honezpot topology
 """
-
+from mininet.link import Intf
 from mininet.topo import Topo as TopoBase
 
 
@@ -15,11 +15,15 @@ class Topom(TopoBase):
 
     def build(self):
         #dumbswitch from mininet
-        switch = self.addSwitch('s1')
+        switch = self.addSwitch('s1'
+                                , inNamespace=False
+                                )
         #addhosts
         for node in Topom.NODES:
             host = self.addHost(
                 node.NAME,
                 ip=node.IP + Topom.NETMASK,
-                mac=node.MAC)
+                mac=node.MAC
+            #    ,inNamespace=False
+            )
             self.addLink(host, switch)
