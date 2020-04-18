@@ -41,6 +41,14 @@ The official Mininet VM comes without an X-server that is an *optional*
 requirements for MiniCPS (e.g., it can be used to display a pop-up window
 with sensor data visualization). If you decide to install Mininet on your own, the following hints can be helpful.
 
+Mininet seems to  assume a mininet user in the mininet group is present on the system. You need to create both
+
+.. code-block:: console
+
+   sudo useradd mininet
+   sudo addgroup mininet
+
+
 Mininet relies on openvswitch-controller as basic SDN controller (unless you install POX or other controllers yourself). Since Open vSwitch 2.1, the openvswitch-controller was renamed to openvswitch-testcontroller. This means you will have to a) ensure that you have the corresponding package installed, e.g. via (on Ubuntu 16.04 or later)
 
 .. code-block:: console
