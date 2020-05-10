@@ -1,19 +1,25 @@
 import os
 import subprocess
+import random
+from threading import Thread
 from time import sleep
-
 from pymodbus.datastore import ModbusSlaveContext, ModbusSequentialDataBlock, ModbusServerContext
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.server.asynchronous import StartTcpServer
-
 from constants import Constants
 from Logger import hlog
 
 #srv ID
+from temperature_simulator import TemperatureSimulator
+
+
 class Srvm:
     NAME = 'srvm'
     IP = '10.0.2.120'
     MAC = '00:1D:9C:C7:B0:20'
+
+    def __init__(self):
+        self.coils = None
 
     def out_of_process_server(self):
         #start server from directory then sleep
@@ -21,17 +27,48 @@ class Srvm:
         self.process = subprocess.Popen(['sudo', 'python2', servers, '-i', Srvm.IP, '-p', str(Constants.MODBUS_PORT)])
         sleep(3600)
 
+    def change_temp(self):
+        hlog("Server in thread")
+        while True:
+            try:
+                hlog("Server changing temperature")
+                self.input_registers.setValues(1, self.temperature_simulator.get_next())
+                sleep(random.randrange(1, 2))
+            except Exception as e:
+                hlog("Exception: " + str(e))
 
-        #libraly import
     # Created mostly as copy paste from pymodbus/servers.py
     def in_process_server(self):
+        self.coils = ModbusSequentialDataBlock(0, [0] * 10)
+        self.coils.setValues(0, 32)
+        self.coils.setValues(1, 33)
+        self.coils.setValues(2, 34)
+
+        hlog("Server starting thread")
+        self.temperature_simulator = TemperatureSimulator(-110.0, 150.0, 5.0)
+        self.thread = Thread(target=self.change_temp,args=())
+        self.thread.daemon = True
+        self.thread.start()
+        hlog("Server started thread")
+
+        self.discrete_inputs = ModbusSequentialDataBlock(0, [0] * 10)
+        self.discrete_inputs.setValues(0, 32)
+        self.discrete_inputs.setValues(1, 33)
+        self.discrete_inputs.setValues(2, 34)
+
+        self.input_registers = ModbusSequentialDataBlock(0, [0] * 10)
+        self.input_registers.setValues(0, 32)
+        self.input_registers.setValues(1, 33)
+        self.input_registers.setValues(2, 34)
+        self.input_registers.setValues(3, 35)
+
         # This defines number of coils/registers on server
         # Number 10 below specifies that there are 0..8 addressable
         # coils/registers on server.
         store = ModbusSlaveContext(
-            di=ModbusSequentialDataBlock(0, [0] * 10),
-            co=ModbusSequentialDataBlock(0, [0] * 10),
-            ir=ModbusSequentialDataBlock(0, [0] * 10),
+            di=self.discrete_inputs,
+            co=self.coils,
+            ir=self.input_registers,
             hr=ModbusSequentialDataBlock(0, [0] * 10),
             zero_mode=False,
         )

@@ -1,15 +1,12 @@
-from mininet.link import Intf
 from mininet.net import Mininet
 from mininet.cli import CLI
 from minicps.mcps import MiniCPS
-from srvm import Srvm
-from clim import Clim
-from topom import Topom
+from topo import Topo
 
 import sys
 from mininet.log import lg
 
-class Honeypotm(MiniCPS):
+class Honeypot(MiniCPS):
     """Main simulation container"""
 
     def __init__(self):
@@ -17,7 +14,7 @@ class Honeypotm(MiniCPS):
         lg.setLogLevel('debug')
 
         # Start Mininet with our topology defined in Topom
-        self.net = Mininet(topo=Topom())
+        self.net = Mininet(topo=Topo())
         #switch = self.net.getNodeByName('s1')
         #self.intf = Intf('tap0', node=switch)
         #self.net.addNAT().configDefault()
@@ -33,7 +30,7 @@ class Honeypotm(MiniCPS):
         self.net.pingAll()
 
         # Execute srvm, clim, clim2 scripts on their respective nodes
-        for node_class in Topom.NODES:
+        for node_class in Topo.NODES:
             # Get node on which to execute the script
             node = self.net.get(node_class.NAME)
             # Instruct mininet to execute the script on that node
@@ -47,4 +44,4 @@ class Honeypotm(MiniCPS):
         self.net.stop()
 
 if __name__ == "__main__":
-    honeypot = Honeypotm()
+    honeypot = Honeypot()

@@ -38,3 +38,5 @@ class SwatTopo(Topo):
             ip=IP['attacker'] + NETMASK,
             mac=MAC['attacker'])
         self.addLink(attacker, switch)
+
+# We want the virtual nodes to be pingable from host machine and vice versa. How could this be achieved with minicps/mininet?
