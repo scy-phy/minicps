@@ -11,8 +11,8 @@ import sys
 import shlex
 import time
 
-import pymodbus
-import cpppo
+#import pymodbus
+#import cpppo
 
 from minicps.protocols import Protocol, EnipProtocol, ModbusProtocol
 
@@ -26,14 +26,17 @@ class TestProtocol():
 
 # }}}
 
-# TestEnipProtocol {{{1
+# # TestEnipProtocol {{{1
 class TestEnipProtocol():
 
     # NOTE: second tuple element is the process id
     TAGS = (
         ('SENSOR1', 1, 'INT'),
         ('SENSOR1', 2, 'INT'),
-        ('ACTUATOR1', 'INT'))
+        ('ACTUATOR1', 'INT'),
+        ('FLAG101', 'STRING'),
+        ('FLAG201', 2, 'STRING'))
+
     SERVER = {
         'address': 'localhost:44818',
         'tags': TAGS
@@ -61,6 +64,7 @@ class TestEnipProtocol():
 
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1)
             EnipProtocol._stop_server(server)
 
         except Exception as error:
@@ -83,6 +87,7 @@ class TestEnipProtocol():
         try:
             server = EnipProtocol(
                 protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
+            time.sleep(1)
             eq_(server._name, 'enip')
             server._stop_server(server._server_subprocess)
             del server
@@ -93,9 +98,10 @@ class TestEnipProtocol():
     def test_server_multikey(self):
 
         ADDRESS = 'localhost:44818'  # TEST port
-        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'), ('FLAG2', 2, 'STRING'))
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1)
             EnipProtocol._stop_server(server)
         except Exception as error:
             print 'ERROR test_server_multikey: ', error
@@ -107,23 +113,32 @@ class TestEnipProtocol():
             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:44818'  # TEST port
-        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 1, 'INT'), ('FLAG101', 2, 'STRING'))
 
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
-
+            time.sleep(1) # wait for the server to actually start so client can connect
             # write a multikey
             what = ('SENSOR1', 1)
             for value in range(5):
-                enip._send(what, value, ADDRESS)
+                eq_(enip._send(what, value, ADDRESS), str(True))
 
-            # write a single key
-            what = ('ACTUATOR1',)
+            # write a multi key
+            what = ('ACTUATOR1', 1)
             for value in range(5):
-                enip._send(what, value, ADDRESS)
+                eq_(enip._send(what, 1, ADDRESS), str(True))
+
+            # write a multi key
+            what = ('FLAG101', 2)
+            for value in range(5):
+                eq_(enip._send(what, chr(127-value)*6, ADDRESS), str(True))
+
+            # write a multi key
+            what = ('HMI_TEST101',)
+            for value in range(5):
+                eq_(enip._send(what, 1, ADDRESS), str(False))
 
             EnipProtocol._stop_server(server)
-
         except Exception as error:
             EnipProtocol._stop_server(server)
             print 'ERROR test_send_multikey: ', error
@@ -135,20 +150,30 @@ class TestEnipProtocol():
             protocol=TestEnipProtocol.CLIENT_PROTOCOL)
 
         ADDRESS = 'localhost:44818'  # TEST port
-        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 'INT'))
+        TAGS = (('SENSOR1', 1, 'INT'), ('ACTUATOR1', 1, 'INT'), ('FLAG101', 2, 'STRING'))
 
         try:
             server = EnipProtocol._start_server(ADDRESS, TAGS)
+            time.sleep(1) # wait for the server to actually start so client can connect
 
             # read a multikey
             what = ('SENSOR1', 1)
             address = 'localhost:44818'
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "0")
 
-            # read a single key
-            what = ('ACTUATOR1',)
+            # read a multi key
+            what = ('ACTUATOR1',1)
             address = 'localhost:44818'
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), "0")
+
+            # Read a single key - uninitialized tag
+            what = ('HMI_TEST101',)
+            address = 'localhost:44818'
+            eq_(enip._receive(what, ADDRESS), "err")
+
+            # Read a multi key
+            what = ('FLAG101', 2)
+            eq_(enip._receive(what, ADDRESS), 'ENIPSERVER')
 
             EnipProtocol._stop_server(server)
 
@@ -167,23 +192,52 @@ class TestEnipProtocol():
             enip = EnipProtocol(
                 protocol=TestEnipProtocol.CLIENT_SERVER_PROTOCOL)
 
+            time.sleep(1) # wait for the server to actually start so client can connect
+
             # read a multikey
             what = ('SENSOR1', 1)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), '0')
 
             # read a single key
             what = ('ACTUATOR1',)
-            enip._receive(what, ADDRESS)
+            eq_(enip._receive(what, ADDRESS), '0')
+
+            # read a single key - missing tag
+            what = ('HMI_TEST101',)
+            eq_(enip._receive(what, ADDRESS), "err")
+
+            # read a single key
+            what = ('FLAG101',)
+            eq_(enip._receive(what, ADDRESS),'ENIPSERVER')
+
+            # read a single key
+            what = ('FLAG201', 2)
+            eq_(enip._receive(what, ADDRESS),'ENIPSERVER')
 
             # write a multikey
             what = ('SENSOR1', 1)
             for value in range(5):
-                enip._send(what, value, ADDRESS)
+                eq_(enip._send(what, value, ADDRESS), str(True))
 
             # write a single key
             what = ('ACTUATOR1',)
             for value in range(5):
-                enip._send(what, value, ADDRESS)
+                eq_(enip._send(what, value, ADDRESS), str(True))
+
+            # write a single key - uninitialized tag - error shouldn't occur
+            what = ('HMI_TEST101')
+            for value in range(5):
+                eq_(enip._send(what, value, ADDRESS), str(False))
+
+            # write a single key
+            what = ('FLAG101',)
+            for value in range(5):
+                eq_(enip._send(what, str(127-value)*8, ADDRESS), str(True))
+
+            # write a multi key
+            what = ('FLAG201', 2)
+            for value in range(5):
+                eq_(enip._send(what, chr(127-value)*8, ADDRESS), str(True))
 
             EnipProtocol._stop_server(enip._server_subprocess)
 
@@ -200,7 +254,7 @@ class TestEnipProtocol():
 
 # }}}
 
-# TestModbusProtocol {{{1
+# # TestModbusProtocol {{{1
 class TestModbusProtocol():
 
     # NOTE: current API specifies only the number of tags
@@ -479,4 +533,4 @@ class TestModbusProtocol():
             ModbusProtocol._stop_server(server)
             print 'ERROR test_client_server_count: ', error
             assert False
-# }}}
+# # }}}
