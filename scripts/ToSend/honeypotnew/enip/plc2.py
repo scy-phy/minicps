@@ -1,11 +1,11 @@
 
 from minicps.devices import PLC
-from plc1 import SwatPLC1
+from plc1 import EnipPLC1
 from Logger import hlog
 
 import time
 
-class SwatPLC2(PLC): #builds upon the tags of the swat example
+class EnipPLC2(PLC): #builds upon the tags of the swat example
     # These constants are used mostly during setting up of topology
     NAME = 'plc2'
     IP = ' 10.0.2.120'
@@ -35,11 +35,11 @@ class SwatPLC2(PLC): #builds upon the tags of the swat example
     def __init__(self):
         PLC.__init__(
             self,
-            name=SwatPLC2.NAME,
-            state=SwatPLC2.STATE,
-            protocol=SwatPLC2.PLC2_PROTOCOL,
-            memory=SwatPLC2.PLC2_DATA,
-            disk=SwatPLC2.PLC2_DATA)
+            name=EnipPLC2.NAME,
+            state=EnipPLC2.STATE,
+            protocol=EnipPLC2.PLC2_PROTOCOL,
+            memory=EnipPLC2.PLC2_DATA,
+            disk=EnipPLC2.PLC2_DATA)
 
     # Executed before main loop is started
     def pre_loop(self, sleep=0.1):
@@ -57,7 +57,7 @@ class SwatPLC2(PLC): #builds upon the tags of the swat example
 
         count = 0
         while(count <= 100000):
-            lit = float(self.receive(('LIT101', 1), SwatPLC1.IP))
+            lit = float(self.receive(('LIT101', 1), EnipPLC1.IP))
             hlog('DEBUG: plc2 received! ' + str(lit))
 
             time.sleep(0.4)
@@ -69,4 +69,4 @@ if __name__ == "__main__":
 
     hlog('DEBUG plc1 start')
     # notice that memory init is different form disk init
-    plc1 = SwatPLC2()
+    plc1 = EnipPLC2()

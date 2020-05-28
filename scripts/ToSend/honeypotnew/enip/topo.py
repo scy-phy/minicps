@@ -1,13 +1,13 @@
 from mininet.topo import Topo as TopoBase
 
-from plc1 import SwatPLC1
-from plc2 import SwatPLC2
+from plc1 import EnipPLC1
+from plc2 import EnipPLC2
 
 # Defines network topology for this simulation. All nodes
 # (SwatPLC1 & SwatPLC2) are connected to a single switch 's1'.
 class Topo(TopoBase):
     NETMASK = '/24'
-    NODES = [SwatPLC1, SwatPLC2]
+    NODES = [EnipPLC1, EnipPLC2]
 
     def build(self):
 

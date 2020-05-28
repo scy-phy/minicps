@@ -28,3 +28,4 @@ class Topom(TopoBase):
             #    ,inNamespace=False
             )
             self.addLink(host, switch)
+06
