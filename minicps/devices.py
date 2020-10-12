@@ -236,6 +236,21 @@ class Device(object):
         else:
             return self._state._get(what)
 
+    def send_multiple(self, whats, values, adress, **kwargs):
+        """Send (write) a list of values to another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
+
+        :param tuple what: fields identifiers
+        :param value: values to be setted
+        :param str address: ``ip[:port]``
+
+        :returns: ``None`` or ``TypeError`` if ``what`` is not a ``tuple``
+        """
+        return self._protocol._send_multiple(whats, values, adress, **kwargs)
+
+
     def send(self, what, value, address, **kwargs):
         """Send (write) a value to another network host.
 
@@ -253,6 +268,20 @@ class Device(object):
             raise TypeError('Parameter must be a tuple.')
         else:
             return self._protocol._send(what, value, address, **kwargs)
+
+    def receive_multiple(self, whats, address, **kwargs):
+        """Receive (read) a value from another network host.
+
+        ``kwargs`` dict is used to pass extra key-value pair according to the
+        used protocol.
+
+        :param tuple what: field[s] identifier[s]
+        :param str address: ``ip[:port]``
+
+        :returns: received value or ``TypeError`` if ``what`` is not a ``tuple``
+        """
+
+        return self._protocol._receive_multiple(whats, address, **kwargs)
 
     def receive(self, what, address, **kwargs):
         """Receive (read) a value from another network host.
