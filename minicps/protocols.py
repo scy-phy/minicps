@@ -430,7 +430,7 @@ class EnipProtocol(Protocol):
 
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
-        print 'DEBUG single enip _send tag_string: ', tag_string
+        #print 'DEBUG single enip _send tag_string: ', tag_string
 
         cmd = shlex.split(
             self._client_cmd +
