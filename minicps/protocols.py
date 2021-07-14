@@ -351,7 +351,7 @@ class EnipProtocol(Protocol):
         """
 
         CMD = sys.executable + ' -m cpppo.server.enip '
-        PRINT_STDOUT = '--print '
+        PRINT_STDOUT = '--no-print '
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         ADDRESS = '--address ' + address + ' '
