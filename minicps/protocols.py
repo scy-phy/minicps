@@ -374,6 +374,7 @@ class EnipProtocol(Protocol):
 
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
+        print(tag_string)
         # print 'DEBUG enip _send tag_string: ', tag_string
 
         cmd = shlex.split(
@@ -426,6 +427,7 @@ class EnipProtocol(Protocol):
             # value is stored as first tuple element
             # between a pair of square brackets
             raw_string = raw_out[0]
+            print(raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
 
             return out
