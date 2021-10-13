@@ -409,7 +409,7 @@ class EnipProtocol(Protocol):
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
 
         cmd = shlex.split(
-            self._client_cmd +
+            self._server_cmd +
             '--log ' + self._client_log +
             '--address ' + address +
             ' ' + tag_string
