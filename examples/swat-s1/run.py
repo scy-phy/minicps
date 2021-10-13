@@ -20,6 +20,7 @@ class SwatS1CPS(MiniCPS):
         self.name = name
         self.net = net
 
+        net.setLogLevel('info')
         net.start()
 
         net.pingAll()
