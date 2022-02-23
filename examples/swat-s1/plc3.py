@@ -41,8 +41,8 @@ class SwatPLC3(PLC):
             lit301 = float(self.get(LIT301_3))
             print "DEBUG PLC3 - get lit301: %f" % lit301
 
-            if count % 200 == 0: 
-                self.send(LIT301_3, lit301, PLC3_ADDR)
+            if count % 50 == 0: 
+                self.send(LIT301_3, 0, PLC3_ADDR)
             else: 
                 self.send(LIT301_3, lit301, PLC3_ADDR)
 
