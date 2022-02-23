@@ -427,7 +427,6 @@ class EnipProtocol(Protocol):
             # value is stored as first tuple element
             # between a pair of square brackets
             raw_string = raw_out[0]
-            print("\nRAAAAAAAAAAAAAAAAAW!", raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
 
             return out

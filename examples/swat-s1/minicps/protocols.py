@@ -345,7 +345,7 @@ class EnipProtocol(Protocol):
             ADDRESS +
             TAGS
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        # print 'DEBUG enip _start_server cmd: ', cmd
 
         return cmd
 
@@ -375,7 +375,7 @@ class EnipProtocol(Protocol):
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what, value)
 
-        print 'DEBUG enip _send tag_string: ', tag_string
+        # print 'DEBUG enip _send tag_string: ', tag_string
 
         cmd = shlex.split(
             self._client_cmd +
@@ -383,7 +383,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string
         )
-        print 'DEBUG enip _send cmd shlex list: ', cmd
+        # print 'DEBUG enip _send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -414,7 +414,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string + ' -p'
         )
-        print 'DEBUG enip _receive cmd shlex list: ', cmd
+        # print 'DEBUG enip _receive cmd shlex list: ', cmd
 
         try:
             client = subprocess.Popen(cmd, shell=False,
@@ -422,12 +422,11 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print 'DEBUG enip _receive raw_out: ', raw_out
+            # print 'DEBUG enip _receive raw_out: ', raw_out
 
             # value is stored as first tuple element
             # between a pair of square brackets
             raw_string = raw_out[0]
-            print("\nRAAAAAAAAAAAAAAAAAW!", raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
 
             return out

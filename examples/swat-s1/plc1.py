@@ -90,18 +90,18 @@ class SwatPLC1(PLC):
             print "DEBUG PLC1 - receive lit301: %f" % lit301
             self.send(LIT301_1, lit301, PLC1_ADDR)
 
-            # if fit201 <= FIT_201_THRESH or lit301 >= LIT_301_M['H']:
-            #     # CLOSE p101
-            #     self.set(P101, 0)
-            #     self.send(P101, 0, PLC1_ADDR)
-            #     print "INFO PLC1 - fit201 under FIT_201_THRESH " \
-            #           "or over LIT_301_M['H']: -> close p101."
+            if fit201 <= FIT_201_THRESH or lit301 >= LIT_301_M['H']:
+                # CLOSE p101
+                self.set(P101, 0)
+                self.send(P101, 0, PLC1_ADDR)
+                print "INFO PLC1 - fit201 under FIT_201_THRESH " \
+                      "or over LIT_301_M['H']: -> close p101."
 
-            # elif lit301 <= LIT_301_M['L']:
-            #     # OPEN p101
-            #     self.set(P101, 1)
-            #     self.send(P101, 1, PLC1_ADDR)
-            #     print "INFO PLC1 - lit301 under LIT_301_M['L'] -> open p101."
+            elif lit301 <= LIT_301_M['L']:
+                # OPEN p101
+                self.set(P101, 1)
+                self.send(P101, 1, PLC1_ADDR)
+                print "INFO PLC1 - lit301 under LIT_301_M['L'] -> open p101."
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
