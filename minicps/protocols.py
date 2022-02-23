@@ -422,7 +422,7 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            # print 'DEBUG enip _receive raw_out: ', raw_out
+            print 'DEBUG enip _receive raw_out: ', raw_out
 
             # value is stored as first tuple element
             # between a pair of square brackets
