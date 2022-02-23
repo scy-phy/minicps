@@ -383,7 +383,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string
         )
-        # print 'DEBUG enip _send cmd shlex list: ', cmd
+        print 'DEBUG enip _send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -414,7 +414,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string
         )
-        # print 'DEBUG enip _receive cmd shlex list: ', cmd
+        print 'DEBUG enip _receive cmd shlex list: ', cmd
 
         try:
             client = subprocess.Popen(cmd, shell=False,
