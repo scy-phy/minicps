@@ -311,7 +311,7 @@ class IODevice(Device):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._state._set(what, value)
+            return self.state.set(what, value)
 
     def get(self, what):
         """Get (read) a physical process state value.
@@ -324,7 +324,7 @@ class IODevice(Device):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._state._get(what)
+            return self.state.get(what)
 
     def _init_state(self):
         """Bind device to the physical layer API."""
