@@ -260,7 +260,7 @@ class IODevice(Device):
         super(IODevice, self).__init__(name, protocol, disk, memory)
 
 
-    def _validate_state(state): 
+    def _validate_state(self, state): 
         # state dict
         if type(state) is not dict:
             raise TypeError('State must be a dict.')
