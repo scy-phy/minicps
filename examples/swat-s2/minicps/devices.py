@@ -254,10 +254,10 @@ class IODevice(Device):
     def __init__(self, name, protocol, state, disk={}, memory={}):
         # Added State to IODevice
         print("INITIIIITIA")
-        super(IODevice, self).__init__(name, protocol, disk, memory)
         self._validate_state(state)
         self.state = state
         self._init_state()
+        super(IODevice, self).__init__(name, protocol, disk, memory)
 
 
     def _validate_state(state): 
