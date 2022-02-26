@@ -24,6 +24,9 @@ MV101 = ('MV101', 5)
 # TODO: real value tag where to read/write flow sensor
 class SwatDev1(IODevice):
 
+    def __init__(self, name, protocol, state, disk={}, memory={}):
+        super().__init__(name, protocol, state, disk, memory)
+
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev1 enters pre_loop'
         print
