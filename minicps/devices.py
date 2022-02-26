@@ -311,7 +311,7 @@ class IODevice(Device):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self.state.set(what, value)
+            return self._state.set(what, value)
 
     def get(self, what):
         """Get (read) a physical process state value.
@@ -324,7 +324,7 @@ class IODevice(Device):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self.state.get(what)
+            return self._state._get(what)
 
     def _init_state(self):
         """Bind device to the physical layer API."""
@@ -339,7 +339,7 @@ class IODevice(Device):
             # TODO: add parametric key serialization
             self._state = RedisState(self.state)
         else:
-            print 'ERROR: %s backend not supported.' % self.state
+            print 'ERROR: %s backend not supported.' % self._state
 
     def pre_loop(self, sleep=0.5):
         """PLC boot process.
