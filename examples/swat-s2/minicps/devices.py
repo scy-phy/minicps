@@ -253,6 +253,7 @@ class IODevice(Device):
     # TODO: state dict convention (eg: multiple table support?)
     def __init__(self, name, protocol, state, disk={}, memory={}):
         # Added State to IODevice
+        print("INITIIIITIA")
         super(IODevice, self).__init__(name, protocol, disk, memory)
         self._validate_state(state)
         self.state = state
