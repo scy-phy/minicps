@@ -92,7 +92,6 @@ class Device(object):
         self.memory = memory
         self.disk = disk
 
-        self._init_state()
         self._init_protocol()
         self._start()
         self._stop()
