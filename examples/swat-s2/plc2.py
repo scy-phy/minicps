@@ -58,7 +58,6 @@ if __name__ == "__main__":
     # notice that memory init is different form disk init
     plc2 = SwatPLC2(
         name='plc2',
-        state=STATE,
         protocol=PLC2_PROTOCOL,
         memory=PLC2_DATA,
         disk=PLC2_DATA)
