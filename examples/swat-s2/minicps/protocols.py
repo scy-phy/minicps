@@ -411,7 +411,7 @@ class EnipProtocol(Protocol):
             self._client_cmd +
             '--log ' + self._client_log +
             '--address ' + address +
-            ' ' + tag_string
+            ' ' + tag_string + ' --print'
         )
         print 'DEBUG enip _receive cmd shlex list: ', cmd
 
