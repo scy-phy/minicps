@@ -31,6 +31,8 @@ class SwatDev5(IODevice):
         self.send(FIT201, 0, DEV5_ADDR)
 
         time.sleep(sleep)
+        time.sleep(120)
+
 
     def main_loop(self):
         """fit101 main loop.

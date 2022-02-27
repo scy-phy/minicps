@@ -35,6 +35,8 @@ class SwatDev3(IODevice):
         self.send(LIT101_1, start_level, PLC1_ADDR)
         self.send(LIT101, start_level, DEV3_ADDR)
         time.sleep(sleep)
+        time.sleep(120)
+
 
     def main_loop(self):
         """mv101 main loop.

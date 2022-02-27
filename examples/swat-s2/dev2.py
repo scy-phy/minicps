@@ -27,6 +27,8 @@ class SwatDev2(IODevice):
         self.send(MV101_1, 0, PLC1_ADDR)
         self.send(MV101_5, 0, DEV2_ADDR)
         time.sleep(sleep)
+        time.sleep(120)
+
 
     def main_loop(self):
         """mv101 main loop.
