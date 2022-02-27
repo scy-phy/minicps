@@ -164,11 +164,11 @@ PLC1_ADDR = IP["plc1"]
 PLC1_TAGS = (
     # interlocks does NOT go to the statedb
     ("FIT101", 1, "REAL"),
-    ("MV101", 1, "REAL"),
+    ("MV101", 1, "INT"),
     ("LIT101", 1, "REAL"),
-    ("P101", 1, "REAL"),
+    ("P101", 1, "INT"),
     ("FIT201", 1, "REAL"),
-    ("MV201", 1, "REAL"),
+    ("MV201", 1, "INT"),
     ("LIT301", 1, "REAL"),
 )
 PLC1_SERVER = {"address": PLC1_ADDR, "tags": PLC1_TAGS}
@@ -179,7 +179,7 @@ PLC2_ADDR = IP["plc2"]
 PLC2_TAGS = (
     # interlocks does NOT go to the statedb
     ("FIT201", 2, "REAL"),
-    ("MV201", 2, "REAL"),
+    ("MV201", 2, "INT"),
 )
 PLC2_SERVER = {"address": PLC2_ADDR, "tags": PLC2_TAGS}
 PLC2_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC2_SERVER}
@@ -199,7 +199,7 @@ DEV1_SERVER = {"address": DEV1_ADDR, "tags": DEV1_TAGS}
 DEV1_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV1_SERVER}
 
 DEV2_ADDR = IP["dev2"]
-DEV2_TAGS = (("MV101", 5, "REAL"),)
+DEV2_TAGS = (("MV101", 5, "INT"),)
 DEV2_SERVER = {"address": DEV2_ADDR, "tags": DEV2_TAGS}
 DEV2_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV2_SERVER}
 
@@ -209,7 +209,7 @@ DEV3_SERVER = {"address": DEV3_ADDR, "tags": DEV3_TAGS}
 DEV3_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV3_SERVER}
 
 DEV4_ADDR = IP["dev4"]
-DEV4_TAGS = (("P101", 7, "REAL"),)
+DEV4_TAGS = (("P101", 7, "INT"),)
 DEV4_SERVER = {"address": DEV4_ADDR, "tags": DEV4_TAGS}
 DEV4_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV4_SERVER}
 
