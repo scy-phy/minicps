@@ -382,7 +382,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string
         )
-        print 'DEBUG enip _send cmd shlex list: ', cmd
+        # print 'DEBUG enip _send cmd shlex list: ', cmd
 
         # TODO: pipe stdout and return the sent value
         try:
@@ -390,7 +390,7 @@ class EnipProtocol(Protocol):
             client.wait()
 
         except Exception as error:
-            print 'ERROR enip _send: ', error
+            # print 'ERROR enip _send: ', error
 
     def _receive(self, what, address='localhost:44818', **kwargs):
         """Receive (read) a value from another host.
@@ -413,7 +413,7 @@ class EnipProtocol(Protocol):
             '--address ' + address +
             ' ' + tag_string + ' --print'
         )
-        print 'DEBUG enip _receive cmd shlex list: ', cmd
+        # print 'DEBUG enip _receive cmd shlex list: ', cmd
 
         try:
             client = subprocess.Popen(cmd, shell=False,
@@ -421,7 +421,7 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print 'DEBUG enip _receive raw_out: ', raw_out
+            # print 'DEBUG enip _receive raw_out: ', raw_out
 
             # value is stored as first tuple element
             # between a pair of square brackets
@@ -431,7 +431,7 @@ class EnipProtocol(Protocol):
             return out
 
         except Exception as error:
-            print 'ERROR enip _receive: ', error
+            # print 'ERROR enip _receive: ', error
 
 # }}}
 

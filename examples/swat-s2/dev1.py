@@ -57,7 +57,7 @@ class SwatDev1(IODevice):
                         
             fit101 = float(self.get(FIT101))
 
-            print 'DEBUG dev1 fit101: %.5f' % fit101
+            # print 'DEBUG dev1 fit101: %.5f' % fit101
             self.send(FIT101_PLC, fit101, PLC1_ADDR)
             self.send(FIT101, fit101, DEV1_ADDR)
 

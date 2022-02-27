@@ -59,7 +59,7 @@ class SwatDev6(IODevice):
             fit201 = float(self.receive(FIT201_PLC, PLC2_ADDR))
             if fit201 > 0:
                 inflow = fit201 * PP_PERIOD_HOURS
-                print "DEBUG RawWaterTank inflow: ", inflow
+                # print "DEBUG RawWaterTank inflow: ", inflow
                 water_volume += inflow
 
             # outflows volumes
@@ -77,7 +77,7 @@ class SwatDev6(IODevice):
                 new_level = 0.0
 
             # update internal and state water level
-            print "DEBUG new_level: %.5f \t delta: %.5f" % (
+            # print "DEBUG new_level: %.5f \t delta: %.5f" % (
                 new_level, new_level - self.level)
             self.set(LIT301, new_level)
             self.send(LIT301_1, new_level, PLC3_ADDR)
@@ -85,12 +85,12 @@ class SwatDev6(IODevice):
 
             # 988 sec starting from 0.500 m
             if new_level >= LIT_101_M['HH']:
-                print 'DEBUG RawWaterTank above HH count: ', count
+                # print 'DEBUG RawWaterTank above HH count: ', count
                 break
 
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
-                print 'DEBUG RawWaterTank below LL count: ', count
+                # print 'DEBUG RawWaterTank below LL count: ', count
                 break
 
             time.sleep(PLC_PERIOD_SEC)

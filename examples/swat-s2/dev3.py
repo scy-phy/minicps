@@ -45,7 +45,7 @@ class SwatDev3(IODevice):
             - updates its enip server
         """
 
-        print 'DEBUG: swat-s2 dev2 enters main_loop.'
+        # print 'DEBUG: swat-s2 dev2 enters main_loop.'
         print
 
         count = 0
@@ -59,14 +59,14 @@ class SwatDev3(IODevice):
             mv101 = float(self.get(MV101))
             if int(mv101) == 1:
                 inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
-                print "DEBUG RawWaterTank inflow: ", inflow
+                # print "DEBUG RawWaterTank inflow: ", inflow
                 water_volume += inflow
 
             # outflows volumes
-            p101 = self.get(P101)
+            p101 = float(self.get(P101))
             if int(p101) == 1:
                 outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
-                print "DEBUG RawWaterTank outflow: ", outflow
+                # print "DEBUG RawWaterTank outflow: ", outflow
                 water_volume -= outflow
 
             # compute new water_level
@@ -83,18 +83,18 @@ class SwatDev3(IODevice):
 
             # 988 sec starting from 0.500 m
             if new_level >= LIT_101_M['HH']:
-                print 'DEBUG RawWaterTank above HH count: ', count
+                # print 'DEBUG RawWaterTank above HH count: ', count
                 break
 
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
-                print 'DEBUG RawWaterTank below LL count: ', count
+                # print 'DEBUG RawWaterTank below LL count: ', count
                 break
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
 
-        print 'DEBUG swat-s2 dev3 shutdown'
+        # print 'DEBUG swat-s2 dev3 shutdown'
 
 
 if __name__ == "__main__":

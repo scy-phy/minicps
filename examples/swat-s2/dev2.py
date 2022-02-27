@@ -43,7 +43,6 @@ class SwatDev2(IODevice):
         while(count <= PLC_SAMPLES):
             # TODO: SIMULATE VIRTUAL PROCESS
             test = self.receive(MV101, DEV2_ADDR)
-            print(test)
             mv101_1 = float(self.receive(MV101, DEV2_ADDR))
             self.set(MV101, mv101_1)
             self.send(MV101_PLC, mv101_1, PLC1_ADDR)
