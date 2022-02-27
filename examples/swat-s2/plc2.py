@@ -43,7 +43,7 @@ class SwatPLC2(IOController):
             fit201 = float(self.receive(FIT201, DEV5_ADDR))
             print "DEBUG PLC2 - get fit201: %f" % fit201
 
-            self.send(FIT201_PLC, fit201, PLC2_ADDR)
+            # self.send(FIT201_PLC, fit201, PLC2_ADDR)
             # fit201 = self.receive(FIT201_2, PLC2_ADDR)
             # print "DEBUG PLC2 - receive fit201: ", fit201
 
