@@ -26,7 +26,7 @@ class SwatDev4(IODevice):
         self.set(P101, 1)
         self.send(P101_PLC, 1, PLC1_ADDR)
         time.sleep(sleep)
-        time.sleep(20)
+        time.sleep(45)
 
     def main_loop(self):
         """p101 main loop.

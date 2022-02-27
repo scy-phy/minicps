@@ -34,11 +34,11 @@ class SwatDev6(IODevice):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
-        start_level = 0.00
+        start_level = 0.50
         self.set(LIT301, start_level)
         self.send(LIT301, start_level, DEV6_ADDR)
         time.sleep(sleep)
-        time.sleep(20)
+        time.sleep(45)
 
     def main_loop(self):
         """mv101 main loop.
