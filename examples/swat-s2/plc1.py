@@ -15,6 +15,7 @@ PLC3_ADDR = IP['plc3']
 
 DEV2_ADDR = IP["dev2"]
 DEV3_ADDR = IP["dev3"]
+DEV4_ADDR = IP["dev4"]
 
 FIT101 = ('FIT101', 1)
 
@@ -80,7 +81,7 @@ class SwatPLC1(IOController):
 
                 # CLOSE p101
                 print "INFO PLC1 - close p101."
-                self.send(P101, 0, DEV2_ADDR)
+                self.send(P101, 0, DEV4_ADDR)
                 self.send(P101_PLC, 0, PLC1_ADDR)
 
             elif lit101 <= LIT_101_M['L']:
@@ -100,14 +101,14 @@ class SwatPLC1(IOController):
 
             if fit201 <= FIT_201_THRESH or lit301 >= LIT_301_M['H']:
                 # CLOSE p101
-                self.send(P101, 0, DEV2_ADDR)
+                self.send(P101, 0, DEV4_ADDR)
                 self.send(P101_PLC,0, PLC1_ADDR)
                 print "INFO PLC1 - fit201 under FIT_201_THRESH " \
                       "or over LIT_301_M['H']: -> close p101."
 
             elif lit301 <= LIT_301_M['L']:
                 # OPEN p101
-                self.send(P101, 1, DEV2_ADDR)
+                self.send(P101, 1, DEV4_ADDR)
                 self.send(P101_PLC, 1, PLC1_ADDR)
                 print "INFO PLC1 - lit301 under LIT_301_M['L'] -> open p101."
 
