@@ -27,11 +27,14 @@ FIT201_PLC = ('FIT201', 2)
 # SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
 # TODO: real value tag where to read/write flow sensor
-class SwatDev3(IODevice):
+class SwatDev6(IODevice):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
-        self.set(LIT301, 0.00)
+        start_level = 0.00
+        self.set(LIT301, start_level)
+        self.send(LIT301_1, start_level, PLC3_ADDR)
+        self.send(LIT301, start_level, DEV6_ADDR)
         time.sleep(sleep)
 
     def main_loop(self):
