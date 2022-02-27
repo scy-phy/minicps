@@ -78,7 +78,7 @@ class SwatDev6(IODevice):
 
             # update internal and state water level
             # print "DEBUG new_level: %.5f \t delta: %.5f" % (
-                new_level, new_level - self.level)
+                # new_level, new_level - self.level)
             self.set(LIT301, new_level)
             self.send(LIT301_1, new_level, PLC3_ADDR)
             self.send(LIT301, new_level, DEV6_ADDR)
