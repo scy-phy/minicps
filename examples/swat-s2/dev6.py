@@ -16,6 +16,7 @@ import time
 
 PLC3_ADDR = IP['plc3']
 PLC2_ADDR = IP['plc2']
+PLC1_ADDR = IP['plc1']
 
 DEV6_ADDR = IP['dev6']
 
@@ -23,6 +24,8 @@ LIT301 = ('LIT301', 9)
 LIT301_1 = ('LIT301', 3)
 
 FIT201_PLC = ('FIT201', 2)
+P101_PLC = ('P101', 1)
+P101 = ('P101', 7)
 
 # SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
@@ -56,9 +59,9 @@ class SwatDev6(IODevice):
             water_volume = TANK_SECTION * new_level
 
             # inflows volumes
-            fit201 = float(self.receive(FIT201_PLC, PLC2_ADDR))
-            if fit201 > 0:
-                inflow = fit201 * PP_PERIOD_HOURS
+            p101 = float(self.get(P101))   
+            if p101 > 0:
+                inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
                 water_volume += inflow
 
@@ -96,7 +99,7 @@ class SwatDev6(IODevice):
             time.sleep(PLC_PERIOD_SEC)
             count += 1
 
-        print 'DEBUG swat-s2 dev3 shutdown'
+        print 'DEBUG swat-s2 dev6 shutdown'
 
 
 if __name__ == "__main__":
