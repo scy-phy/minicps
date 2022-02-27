@@ -92,7 +92,7 @@ class SwatDev3(IODevice):
             time.sleep(PLC_PERIOD_SEC)
             count += 1
 
-        # print 'DEBUG swat-s2 dev3 shutdown'
+        print 'DEBUG swat-s2 dev3 shutdown'
 
 
 if __name__ == "__main__":

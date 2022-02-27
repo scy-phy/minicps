@@ -91,6 +91,7 @@ class SwatPLC1(IOController):
                 print "INFO PLC1 - lit101 under L -> open mv101."
                 # self.send(MV101, 1, DEV2_ADDR)
                 self.send(MV101_PLC, 1, PLC1_ADDR)
+                self.send(P101_PLC, 0, PLC1_ADDR)
 
             # TODO: use it when implement raw water tank
             # read from PLC2 (constant value)
