@@ -36,7 +36,6 @@ class SwatDev6(IODevice):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
         start_level = 0.00
         self.set(LIT301, start_level)
-        self.send(LIT301_1, start_level, PLC3_ADDR)
         self.send(LIT301, start_level, DEV6_ADDR)
         time.sleep(sleep)
         time.sleep(20)
@@ -83,7 +82,6 @@ class SwatDev6(IODevice):
             # print "DEBUG new_level: %.5f \t delta: %.5f" % (
                 # new_level, new_level - self.level)
             self.set(LIT301, new_level)
-            self.send(LIT301_1, new_level, PLC3_ADDR)
             self.send(LIT301, new_level, DEV6_ADDR)
 
             # 988 sec starting from 0.500 m

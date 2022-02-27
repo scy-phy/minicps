@@ -24,7 +24,7 @@ class SwatPLC3(IOController):
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s1 plc3 enters pre_loop'
         print
-        
+
 
         time.sleep(sleep)
 
@@ -43,7 +43,7 @@ class SwatPLC3(IOController):
 
             lit301 = float(self.receive(LIT301, DEV6_ADDR))
             print 'DEBUG plc1 lit101: %.5f' % lit301
-            self.send(LIT301_PLC, lit301, PLC3_ADDR)
+            # self.send(LIT301_PLC, lit301, PLC3_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1

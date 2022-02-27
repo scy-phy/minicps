@@ -23,9 +23,8 @@ class SwatDev2(IODevice):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
-        self.set(MV101, 1)
-        self.send(MV101_PLC, 1, PLC1_ADDR)
-        self.send(MV101, 1, DEV2_ADDR)
+        start_value = 1
+        self.set(MV101, start_value)
         time.sleep(sleep)
         time.sleep(20)
 
@@ -44,8 +43,6 @@ class SwatDev2(IODevice):
             # TODO: SIMULATE VIRTUAL PROCESS
             mv101_1 = float(self.receive(MV101_PLC, PLC1_ADDR))
             self.set(MV101, mv101_1)
-            self.send(MV101_PLC, mv101_1, PLC1_ADDR)
-            self.send(MV101, mv101_1, DEV2_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1

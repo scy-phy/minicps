@@ -33,7 +33,6 @@ class SwatDev3(IODevice):
         start_level = 0.500
         time.sleep(20)        
         self.set(LIT101, start_level)
-        self.send(LIT101_PLC, start_level, PLC1_ADDR)
         self.send(LIT101, start_level, DEV3_ADDR)
         time.sleep(sleep)
 
@@ -78,7 +77,6 @@ class SwatDev3(IODevice):
 
             # update internal and state water level
             self.set(LIT101, new_level)
-            self.send(LIT101_PLC, new_level, PLC1_ADDR)
             self.send(LIT101, new_level, DEV3_ADDR)
 
             # 988 sec starting from 0.500 m

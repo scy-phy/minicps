@@ -27,7 +27,6 @@ class SwatDev5(IODevice):
         print 'DEBUG: swat-s2 dev1 enters pre_loop'
         print
         self.set(FIT201, 0)
-        self.send(FIT201_PLC, 0, PLC2_ADDR)
         self.send(FIT201, 0, DEV5_ADDR)
 
         time.sleep(sleep)
@@ -58,8 +57,7 @@ class SwatDev5(IODevice):
             fit201 = float(self.get(FIT201))
 
             # print 'DEBUG dev1 fit101: %.5f' % fit201
-            self.send(FIT201_PLC, fit201, PLC2_ADDR)
-            self.send(FIT201, fit201, DEV5_ADDR)
+            self.send(FIT201, 0, DEV5_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
