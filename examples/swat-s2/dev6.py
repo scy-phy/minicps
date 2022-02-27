@@ -60,7 +60,7 @@ class SwatDev6(IODevice):
             # inflows volumes
             p101 = float(self.get(P101))   
             if p101 > 0:
-                inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
+                inflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
                 water_volume += inflow
 
@@ -74,6 +74,8 @@ class SwatDev6(IODevice):
             # compute new water_level
             new_level = water_volume / TANK_SECTION
 
+            print new_level
+
             # level cannot be negative
             if new_level <= 0.0:
                 new_level = 0.0
@@ -85,14 +87,14 @@ class SwatDev6(IODevice):
             self.send(LIT301, new_level, DEV6_ADDR)
 
             # 988 sec starting from 0.500 m
-            if new_level >= LIT_101_M['HH']:
-                # print 'DEBUG RawWaterTank above HH count: ', count
-                break
+            # if new_level >= LIT_101_M['HH']:
+            #     # print 'DEBUG RawWaterTank above HH count: ', count
+            #     break
 
-            # 367 sec starting from 0.500 m
-            elif new_level <= LIT_101_M['LL']:
-                # print 'DEBUG RawWaterTank below LL count: ', count
-                break
+            # # 367 sec starting from 0.500 m
+            # elif new_level <= LIT_101_M['LL']:
+            #     # print 'DEBUG RawWaterTank below LL count: ', count
+            #     break
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
