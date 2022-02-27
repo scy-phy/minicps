@@ -36,7 +36,7 @@ class SwatDev6(IODevice):
         self.send(LIT301_1, start_level, PLC3_ADDR)
         self.send(LIT301, start_level, DEV6_ADDR)
         time.sleep(sleep)
-        time.sleep(120)
+        time.sleep(10)
 
 
     def main_loop(self):
@@ -52,7 +52,7 @@ class SwatDev6(IODevice):
         count = 0
         while(count <= PLC_SAMPLES):
             # TODO: SIMULATE VIRTUAL PROCESS
-            new_level = self.get(LIT301)
+            new_level = float(self.get(LIT301))
             
             water_volume = TANK_SECTION * new_level
 

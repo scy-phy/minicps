@@ -35,7 +35,7 @@ class SwatDev3(IODevice):
         self.send(LIT101_1, start_level, PLC1_ADDR)
         self.send(LIT101, start_level, DEV3_ADDR)
         time.sleep(sleep)
-        time.sleep(120)
+        time.sleep(10)
 
 
     def main_loop(self):
@@ -51,12 +51,12 @@ class SwatDev3(IODevice):
         count = 0
         while(count <= PLC_SAMPLES):
             # TODO: SIMULATE VIRTUAL PROCESS
-            new_level = self.get(LIT101)
+            new_level = float(self.get(LIT101))
             
             water_volume = TANK_SECTION * new_level
 
             # inflows volumes
-            mv101 = self.get(MV101)
+            mv101 = float(self.get(MV101))
             if int(mv101) == 1:
                 inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
                 print "DEBUG RawWaterTank inflow: ", inflow
