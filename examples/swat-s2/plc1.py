@@ -40,6 +40,8 @@ class SwatPLC1(IOController):
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s1 plc1 enters pre_loop'
         print
+        self.send(MV101_PLC, 1, PLC1_ADDR)
+        self.send(P101_PLC, 1, PLC1_ADDR)
         time.sleep(15)
         time.sleep(sleep)
 
