@@ -13,8 +13,8 @@ import time
 PLC1_ADDR = IP['plc1']
 DEV2_ADDR = IP['dev2']
 
-MV101_5 = ('MV101', 5)
-MV101_1 = ('MV101', 1)
+MV101 = ('MV101', 5)
+MV101_PLC = ('MV101', 1)
 
 # SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
@@ -23,12 +23,11 @@ class SwatDev2(IODevice):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
-        self.set(MV101_5, 1)
-        self.send(MV101_1, 1, PLC1_ADDR)
-        self.send(MV101_5, 1, DEV2_ADDR)
+        self.set(MV101, 1)
+        self.send(MV101_PLC, 1, PLC1_ADDR)
+        self.send(MV101, 1, DEV2_ADDR)
         time.sleep(sleep)
-        time.sleep(10)
-
+        time.sleep(60)
 
     def main_loop(self):
         """mv101 main loop.
@@ -43,10 +42,10 @@ class SwatDev2(IODevice):
         count = 0
         while(count <= PLC_SAMPLES):
             # TODO: SIMULATE VIRTUAL PROCESS
-            mv101_1 = float(self.receive(MV101_1, PLC1_ADDR))
-            self.set(MV101_5, mv101_1)
-            self.send(MV101_1, mv101_1, PLC1_ADDR)
-            self.send(MV101_5, mv101_1, DEV2_ADDR)
+            mv101_1 = int(self.receive(MV101_PLC, PLC1_ADDR))
+            self.set(MV101, mv101_1)
+            self.send(MV101_PLC, mv101_1, PLC1_ADDR)
+            self.send(MV101, mv101_1, DEV2_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
