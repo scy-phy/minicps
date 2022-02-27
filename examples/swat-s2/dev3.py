@@ -31,11 +31,11 @@ class SwatDev3(IODevice):
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev2 enters pre_loop'
         start_level = 0.500
+        time.sleep(10)
         self.set(LIT101, start_level)
         self.send(LIT101_1, start_level, PLC1_ADDR)
         self.send(LIT101, start_level, DEV3_ADDR)
         time.sleep(sleep)
-        time.sleep(10)
 
 
     def main_loop(self):
@@ -77,8 +77,6 @@ class SwatDev3(IODevice):
                 new_level = 0.0
 
             # update internal and state water level
-            print "DEBUG new_level: %.5f \t delta: %.5f" % (
-                new_level, new_level - self.level)
             self.set(LIT101, new_level)
             self.send(LIT101_1, new_level, PLC1_ADDR)
             self.send(LIT101, new_level, DEV3_ADDR)
