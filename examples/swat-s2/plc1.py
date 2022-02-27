@@ -56,6 +56,7 @@ class SwatPLC1(IOController):
 
         print 'DEBUG: swat-s1 plc1 enters main_loop.'
         print
+        time.sleep(45)
 
         count = 0
         while(count <= PLC_SAMPLES):

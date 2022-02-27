@@ -26,7 +26,7 @@ class SwatDev2(IODevice):
         start_value = 1
         self.set(MV101, start_value)
         time.sleep(sleep)
-        time.sleep(20)
+        time.sleep(45)
 
     def main_loop(self):
         """mv101 main loop.

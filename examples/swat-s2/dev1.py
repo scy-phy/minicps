@@ -30,7 +30,7 @@ class SwatDev1(IODevice):
         self.set(FIT101, start_value)
         self.send(FIT101, start_value, DEV1_ADDR)
         print
-        time.sleep(20)        
+        time.sleep(45)        
         time.sleep(sleep)
 
     def main_loop(self):
