@@ -68,6 +68,9 @@ class SwatPLC1(IOController):
             if lit101 >= LIT_101_M['HH']:
                 print "WARNING PLC1 - lit101 over HH: %.2f >= %.2f." % (
                     lit101, LIT_101_M['HH'])
+                print "INFO PLC1 - lit101 over H -> open p101."
+                self.send(P101, 1, DEV4_ADDR)
+                self.send(P101_PLC, 1, PLC1_ADDR)
 
             if lit101 >= LIT_101_M['H']:
                 # CLOSE mv101
