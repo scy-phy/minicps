@@ -456,6 +456,8 @@ class PnioProtocol(Protocol):
         tag = self._server['tags'][0]
         tag_type = tag[1]
 
+        print(tag, tag_type, self._server['tags'])
+
         if tag_type == 'INT':
             self.used_register = "DO8"
         elif tag_type == 'REAL': 
@@ -505,7 +507,7 @@ class PnioProtocol(Protocol):
         IP = '--ip '  + device["address"] + ' '
         NAME = '--name '  + device["name"] + ' '
         DBNAME = '--dbname ' + PN_NAME + ' '
-        DBPATH = '--dbpath ' + db_path + ' '
+        DBPATH = '--dbpath ../' + db_path + ' '
 
 
 
