@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from profinet_controller.protocol_machines.cmina.messages.sim_pnio_dcp import *
+from protocol_machines.cmina.messages.sim_pnio_dcp import *
 from getmac import get_mac_address
 import scapy.all as scapy
 from scapy.contrib.pnio_dcp import *

@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 import uuid
 import time
 
-from profinet_controller.protocol_machines.cpm.states import *
-from profinet_controller.protocol_machines.cpm.helper.gsdml_parser import XMLDevice
+from protocol_machines.cpm.states import *
+from protocol_machines.cpm.helper.gsdml_parser import XMLDevice
 
 
 class Consumer:

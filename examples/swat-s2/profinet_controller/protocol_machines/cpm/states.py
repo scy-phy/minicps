@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from email import message
 
 from numpy import float64
-from profinet_controller.protocol_machines.cpm.helper.gsdml_parser import XMLDevice
-from profinet_controller.protocol_machines.cpm.messages.pnio_ps import *
+from protocol_machines.cpm.helper.gsdml_parser import XMLDevice
+from protocol_machines.cpm.messages.pnio_ps import *
 from getmac import get_mac_address
 import scapy.all as scapy
 from scapy.contrib.pnio import *

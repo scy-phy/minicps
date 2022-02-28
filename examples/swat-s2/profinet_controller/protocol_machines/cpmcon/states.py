@@ -1,8 +1,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 import uuid
-from profinet_controller.protocol_machines.cpmcon.helper.gsdml_parser import XMLDevice
-from profinet_controller.protocol_machines.cpmcon.messages.pnio_cm import *
+from protocol_machines.cpmcon.helper.gsdml_parser import XMLDevice
+from protocol_machines.cpmcon.messages.pnio_cm import *
 from getmac import get_mac_address
 import scapy.all as scapy
 from scapy.contrib.pnio_dcp import *

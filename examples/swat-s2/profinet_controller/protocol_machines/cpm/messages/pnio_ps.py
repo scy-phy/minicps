@@ -2,7 +2,7 @@ from scapy.all import *
 from scapy.contrib.pnio_rpc import *
 from scapy.contrib.dce_rpc import *
 from scapy.contrib.pnio import *
-from profinet_controller.protocol_machines.cpm.helper.gsdml_parser import XMLDevice
+from protocol_machines.cpm.helper.gsdml_parser import XMLDevice
 
 load_contrib("pnio")
 load_contrib("pnio_rpc")

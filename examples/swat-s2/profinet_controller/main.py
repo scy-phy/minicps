@@ -1,13 +1,13 @@
-from profinet_controller.protocol_machines.cmina.context import Device, CMINAState
-from profinet_controller.protocol_machines.cmina.states import *
-from profinet_controller.protocol_machines.cpm.context import Consumer, CPMState
-from profinet_controller.protocol_machines.cpm.states import *
-from profinet_controller.protocol_machines.cpmcon.helper.device import GSDMLDevice
-from profinet_controller.protocol_machines.ppm.context import Provider, PPMState
-from profinet_controller.protocol_machines.ppm.states import *
-from profinet_controller.protocol_machines.cpmcon.context import Connection, CPMCONState
-from profinet_controller.protocol_machines.cpmcon.states import *
-from profinet_controller.protocol_machines.cpmcon.helper.gsdml_parser import XMLDevice
+from protocol_machines.cmina.context import Device, CMINAState
+from protocol_machines.cmina.states import *
+from protocol_machines.cpm.context import Consumer, CPMState
+from protocol_machines.cpm.states import *
+from protocol_machines.cpmcon.helper.device import GSDMLDevice
+from protocol_machines.ppm.context import Provider, PPMState
+from protocol_machines.ppm.states import *
+from protocol_machines.cpmcon.context import Connection, CPMCONState
+from protocol_machines.cpmcon.states import *
+from protocol_machines.cpmcon.helper.gsdml_parser import XMLDevice
 from state.SqliteState import SQLiteState
 import argparse
 from scapy.contrib.pnio_rpc import *
