@@ -456,7 +456,7 @@ class PnioProtocol(Protocol):
         tag = self._server['tags'][0]
         tag_type = tag[1]
 
-        print(tag, tag_type, self._server['tags'])
+        print(tag, tag_type, self._server)
 
         if tag_type == 'INT':
             self.used_register = "DO8"
@@ -499,15 +499,15 @@ class PnioProtocol(Protocol):
     @classmethod
     def _start_server_cmd(cls, device, db_path):
 
-        CMD = 'touch test_eins'
+        CMD = 'cd profinet_controller/; sudo python main.py '
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
-        # PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
-        # MAC = '--mac ' + device["mac"] + ' '
-        # IFACE = '--iface ' + "plc3-eth0" + ' '
-        # IP = '--ip '  + device["address"] + ' '
-        # NAME = '--name '  + device["name"] + ' '
-        # DBNAME = '--dbname ' + PN_NAME + ' '
-        # DBPATH = '--dbpath ../' + db_path + ' '
+        PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
+        MAC = '--mac ' + device["mac"] + ' '
+        IFACE = '--iface ' + "plc3-eth0" + ' '
+        IP = '--ip '  + device["address"] + ' '
+        NAME = '--name '  + device["name"] + ' '
+        DBNAME = '--dbname ' + PN_NAME + ' '
+        DBPATH = '--dbpath ../' + db_path + ' '
 
 
 
@@ -518,14 +518,14 @@ class PnioProtocol(Protocol):
             raise OSError
 
         cmd = shlex.split(
-            CMD
-            # PATH +
-            # MAC +
-            # IFACE +
-            # IP +
-            # NAME +
-            # DBNAME +
-            # DBPATH
+            CMD +
+            PATH +
+            MAC +
+            IFACE +
+            IP +
+            NAME +
+            DBNAME +
+            DBPATH
         )
         print 'DEBUG enip _start_server cmd: ', cmd
 
