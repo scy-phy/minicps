@@ -499,15 +499,15 @@ class PnioProtocol(Protocol):
     @classmethod
     def _start_server_cmd(cls, device, db_path):
 
-        CMD = 'touch test_eins && cd ../profinet_controller/ && sudo python main.py '
+        CMD = 'touch test_eins'
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
-        PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
-        MAC = '--mac ' + device["mac"] + ' '
-        IFACE = '--iface ' + "plc3-eth0" + ' '
-        IP = '--ip '  + device["address"] + ' '
-        NAME = '--name '  + device["name"] + ' '
-        DBNAME = '--dbname ' + PN_NAME + ' '
-        DBPATH = '--dbpath ../' + db_path + ' '
+        # PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
+        # MAC = '--mac ' + device["mac"] + ' '
+        # IFACE = '--iface ' + "plc3-eth0" + ' '
+        # IP = '--ip '  + device["address"] + ' '
+        # NAME = '--name '  + device["name"] + ' '
+        # DBNAME = '--dbname ' + PN_NAME + ' '
+        # DBPATH = '--dbpath ../' + db_path + ' '
 
 
 
