@@ -2,7 +2,7 @@
 scada.py
 """
 
-from minicps.devices import SCADAServer
+from minicps.devices_old import SCADAServer
 from utils import SCADA_PROTOCOL, STATE
 from utils import SCADA_PERIOD_SEC
 from utils import IP

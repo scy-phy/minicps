@@ -3,7 +3,7 @@
 swat-s1 plc3
 """
 
-from minicps.devices import IOController
+from minicps.devices_old import IOController
 from utils import PLC3_DATA, STATE, PLC3_PROTOCOL
 from utils import PLC_SAMPLES, PLC_PERIOD_SEC
 from utils import IP

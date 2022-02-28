@@ -2,7 +2,7 @@
 swat-s1 plc1.py
 """
 
-from minicps.devices import IODevice
+from minicps.devices_old import IODevice
 from utils import DEV6_DATA, STATE, DEV6_PROTOCOL
 from utils import PLC_PERIOD_SEC, PLC_SAMPLES
 from utils import IP

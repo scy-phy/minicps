@@ -8,7 +8,7 @@ principle (for the trajectories).
 """
 
 
-from minicps.devices import Tank
+from minicps.devices_old import Tank
 
 from utils import PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT
 from utils import TANK_HEIGHT, TANK_SECTION, TANK_DIAMETER
