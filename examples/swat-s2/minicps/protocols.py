@@ -440,8 +440,7 @@ class PnioProtocol(Protocol):
 
     def __init__(self, protocol):
 
-        super(EnipProtocol, self).__init__(protocol)
-
+        super(PnioProtocol, self).__init__(protocol)
 
         # NOTE: set up logging
         if sys.platform.startswith('linux'):
