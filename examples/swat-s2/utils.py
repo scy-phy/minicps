@@ -221,7 +221,7 @@ PLC3_TAGS = (
     ("LIT301", 3, "REAL"),
 )
 PLC3_SERVER = {"address": PLC3_ADDR, "tags": PLC3_TAGS, "device": DEV6_SERVER, "name": "plc3"}
-PLC3_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC3_SERVER}
+PLC3_PROTOCOL = {"name": "pnio", "mode": 1, "server": PLC3_SERVER}
 
 
 # state {{{1

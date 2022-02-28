@@ -25,8 +25,8 @@ import shlex
 import subprocess
 
 import cpppo
+from minicps.states import SQLiteState
 import pymodbus
-from state.SqliteState import SQLiteState
 from utils import PN_SCHEMA, PN_SCHEMA_INIT, PN_NAME
 
 # Protocol {{{1
@@ -454,6 +454,14 @@ class PnioProtocol(Protocol):
         SQLiteState._create(self._db_path, PN_SCHEMA)
         SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
 
+        tag = self._server['tags'][0]
+        tag_type = tag[1]
+
+        if tag_type == 'INT':
+            self.used_register = "DO8"
+        elif tag_type == 'REAL': 
+            self.used_register = "DO32"
+
         self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
 
         self._server_subprocess = PnioProtocol._start_server(
@@ -536,12 +544,12 @@ class PnioProtocol(Protocol):
 
     def _send(self, what, value, **kwargs):
         
-        self.dbstate._set(what, value)
+        self.dbstate._set((self.used_register, 1), value)
 
 
     def _receive(self, what, **kwargs):
         
-        self.dbstate._get(what)
+        return self.dbstate._get((self.used_register, 1))
 
 # }}}
 

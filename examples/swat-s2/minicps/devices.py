@@ -34,7 +34,7 @@ import time
 from os.path import splitext
 
 from minicps.states import SQLiteState, RedisState
-from minicps.protocols import EnipProtocol, ModbusProtocol
+from minicps.protocols import EnipProtocol, ModbusProtocol, PnioProtocol
 
 
 class Device(object):
@@ -150,6 +150,8 @@ class Device(object):
                 self._protocol = EnipProtocol(self.protocol)
             elif name == 'modbus':
                 self._protocol = ModbusProtocol(self.protocol)
+            elif name == 'pnio':
+                self._protocol = PnioProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol
 
