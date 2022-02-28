@@ -6,7 +6,7 @@ import time
 import sys
 import os
 
-from minicps.devices_old import Device, PLC, HMI, Tank, SCADAServer, RTU
+from minicps.devices import Device, PLC, HMI, Tank, SCADAServer, RTU
 from minicps.states import SQLiteState
 
 from nose.tools import eq_, raises

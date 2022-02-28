@@ -2,7 +2,7 @@
 toy plc1.py
 """
 
-from minicps.devices_old import PLC
+from minicps.devices import PLC
 from utils import PLC1_DATA, PLC2_ADDR, STATE
 from utils import PLC1_PROTOCOL, PLC1_ADDR
 

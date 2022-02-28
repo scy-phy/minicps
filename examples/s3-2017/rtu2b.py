@@ -2,7 +2,7 @@
 rtu2b.py
 """
 
-from minicps.devices_old import RTU
+from minicps.devices import RTU
 
 from utils import STATE, RTU2B_PROTOCOL
 from utils import RTU_PERIOD_SEC

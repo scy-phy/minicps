@@ -4,7 +4,7 @@ enip plc3
 
 from subprocess import call
 from shlex import split
-from minicps.devices_old import PLC
+from minicps.devices import PLC
 from utils import STATE_SWAT, PLC3_PROTOCOL
 from utils import PLC_PERIOD_SEC
 from utils import IP_SWAT

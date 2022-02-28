@@ -2,7 +2,7 @@
 enip plc2.py
 """
 
-from minicps.devices_old import PLC
+from minicps.devices import PLC
 from utils import STATE_SWAT, PLC2_PROTOCOL
 from utils import PLC_PERIOD_SEC
 from utils import IP_SWAT
