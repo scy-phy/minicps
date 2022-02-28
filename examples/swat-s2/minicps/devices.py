@@ -124,7 +124,7 @@ class Device(object):
                 raise TypeError('Protocol name must be a string.')
             else:
                 name = protocol['name']
-                if (name != 'enip' and name != 'modbus'):
+                if (name != 'enip' and name != 'modbus' and name != 'pnio'):
                     raise ValueError('%s protocol not supported.' % protocol)
             # protocol['mode']
             if type(protocol['mode']) is not int:
