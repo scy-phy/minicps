@@ -546,7 +546,7 @@ class PnioProtocol(Protocol):
         self.dbstate._set((self.used_register, 1), value)
 
 
-    def _receive(self, what, **kwargs):
+    def _receive(self, what, address, **kwargs):
         
         return self.dbstate._get((self.used_register, 1))
 
