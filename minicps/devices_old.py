@@ -34,7 +34,7 @@ import time
 from os.path import splitext
 
 from minicps.states import SQLiteState, RedisState
-from minicps.protocols import EnipProtocol, ModbusProtocol, PnioProtocol
+from minicps.protocols import EnipProtocol, ModbusProtocol
 
 
 class Device(object):
@@ -150,8 +150,6 @@ class Device(object):
                 self._protocol = EnipProtocol(self.protocol)
             elif name == 'modbus':
                 self._protocol = ModbusProtocol(self.protocol)
-            elif name == 'pnio':
-                self._protocol = PnioProtocol(self.protocol)
             else:
                 print 'ERROR: %s protocol not supported.' % self.protocol
 
@@ -258,10 +256,11 @@ class IODevice(Device):
         self._validate_state(state)
         self.state = state
         self._init_state()
-        super(IODevice, self).__init__(name, protocol, disk, memory)
+        super(Device, self).__init__(name, protocol, disk, memory)
 
 
-    def _validate_state(self, state): 
+
+    def _validate_state(state): 
         # state dict
         if type(state) is not dict:
             raise TypeError('State must be a dict.')
@@ -313,7 +312,7 @@ class IODevice(Device):
         if type(what) is not tuple:
             raise TypeError('Parameter must be a tuple.')
         else:
-            return self._state._set(what, value)
+            return self._state.set(what, value)
 
     def get(self, what):
         """Get (read) a physical process state value.
@@ -335,13 +334,13 @@ class IODevice(Device):
 
         if extension == '.sqlite':
             # TODO: add parametric value filed
-            print 'DEBUG state: ', self.state
+            # print 'DEBUG state: ', self.state
             self._state = SQLiteState(self.state)
         elif extension == '.redis':
             # TODO: add parametric key serialization
             self._state = RedisState(self.state)
         else:
-            print 'ERROR: %s backend not supported.' % self.state
+            print 'ERROR: %s backend not supported.' % self._state
 
     def pre_loop(self, sleep=0.5):
         """PLC boot process.
