@@ -518,7 +518,7 @@ class PnioProtocol(Protocol):
             raise OSError
 
         cmd = shlex.split(
-            CMD +
+            CMD
             # PATH +
             # MAC +
             # IFACE +
