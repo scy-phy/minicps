@@ -160,37 +160,6 @@ DEV6_DATA = {
 
 # IO-CONTROLER / PLCs
 # SPHINX_SWAT_TUTORIAL PLC1 UTILS(
-PLC1_ADDR = IP["plc1"]
-PLC1_TAGS = (
-    # interlocks does NOT go to the statedb
-    ("FIT101", 1, "REAL"),
-    ("MV101", 1, "INT"),
-    ("LIT101", 1, "REAL"),
-    ("P101", 1, "INT"),
-    ("FIT201", 1, "REAL"),
-    ("MV201", 1, "INT"),
-    ("LIT301", 1, "REAL"),
-)
-PLC1_SERVER = {"address": PLC1_ADDR, "tags": PLC1_TAGS}
-PLC1_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC1_SERVER}
-# SPHINX_SWAT_TUTORIAL PLC1 UTILS)
-
-PLC2_ADDR = IP["plc2"]
-PLC2_TAGS = (
-    # interlocks does NOT go to the statedb
-    ("FIT201", 2, "REAL"),
-    ("MV201", 2, "INT"),
-)
-PLC2_SERVER = {"address": PLC2_ADDR, "tags": PLC2_TAGS}
-PLC2_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC2_SERVER}
-
-PLC3_ADDR = IP["plc3"]
-PLC3_TAGS = (
-    # interlocks does NOT go to the statedb
-    ("LIT301", 3, "REAL"),
-)
-PLC3_SERVER = {"address": PLC3_ADDR, "tags": PLC3_TAGS}
-PLC3_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC3_SERVER}
 
 # IO-DEVICES
 DEV1_ADDR = IP["dev1"]
@@ -220,8 +189,39 @@ DEV5_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV5_SERVER}
 
 DEV6_ADDR = IP["dev6"]
 DEV6_TAGS = (("LIT301", 9, "REAL"),)
-DEV6_SERVER = {"address": DEV6_ADDR, "tags": DEV6_TAGS}
+DEV6_SERVER = {"address": DEV6_ADDR, "tags": DEV6_TAGS, "mac": MAC["dev6"], "name": "dev6"}
 DEV6_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV6_SERVER}
+
+PLC1_ADDR = IP["plc1"]
+PLC1_TAGS = (
+    # interlocks does NOT go to the statedb
+    ("FIT101", 1, "REAL"),
+    ("MV101", 1, "INT"),
+    ("LIT101", 1, "REAL"),
+    ("P101", 1, "INT"),
+    ("FIT201", 1, "REAL"),
+    ("MV201", 1, "INT"),
+    ("LIT301", 1, "REAL"),
+)
+PLC1_SERVER = {"address": PLC1_ADDR, "tags": PLC1_TAGS}
+PLC1_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC1_SERVER}
+# SPHINX_SWAT_TUTORIAL PLC1 UTILS)
+PLC2_ADDR = IP["plc2"]
+PLC2_TAGS = (
+    # interlocks does NOT go to the statedb
+    ("FIT201", 2, "REAL"),
+    ("MV201", 2, "INT"),
+)
+PLC2_SERVER = {"address": PLC2_ADDR, "tags": PLC2_TAGS}
+PLC2_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC2_SERVER}
+
+PLC3_ADDR = IP["plc3"]
+PLC3_TAGS = (
+    # interlocks does NOT go to the statedb
+    ("LIT301", 3, "REAL"),
+)
+PLC3_SERVER = {"address": PLC3_ADDR, "tags": PLC3_TAGS, "device": DEV6_SERVER, "name": "plc3"}
+PLC3_PROTOCOL = {"name": "enip", "mode": 1, "server": PLC3_SERVER}
 
 
 # state {{{1
@@ -251,3 +251,25 @@ SCHEMA_INIT = """
 
     INSERT INTO swat_s2 VALUES ('LIT301',   9, '0.500');
 """
+
+PN_SCHEMA = """
+CREATE TABLE profinet_device (
+    name              TEXT NOT NULL,
+    pid               INTEGER NOT NULL,
+    value             REAL,
+    PRIMARY KEY (name, pid)
+);
+"""
+
+PN_SCHEMA_INIT = """
+    INSERT INTO profinet_device VALUES ('DO8',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO32',    1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO64',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI8',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI32',    1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI64',   1, 0.0);
+"""
+PN_NAME = "profinet_device"
+
+PN_PATH = "profinet_device.sqlite"
+STATE = {"name": PN_NAME, "path": PN_PATH}

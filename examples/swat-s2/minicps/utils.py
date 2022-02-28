@@ -143,3 +143,22 @@ def _arp_cache_rtts(net, h1, h2):
     second_rtt = float(second_rtt[5:])
 
     return first_rtt, second_rtt
+
+PN_SCHEMA = """
+CREATE TABLE profinet_device (
+    name              TEXT NOT NULL,
+    pid               INTEGER NOT NULL,
+    value             REAL,
+    PRIMARY KEY (name, pid)
+);
+"""
+
+PN_SCHEMA_INIT = """
+    INSERT INTO profinet_device VALUES ('DO8',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO32',    1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO64',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI8',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI32',    1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI64',   1, 0.0);
+"""
+PN_NAME = "profinet_device"

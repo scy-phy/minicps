@@ -25,9 +25,6 @@ class SwatPLC3(IOController):
         print 'DEBUG: swat-s1 plc3 enters pre_loop'
         print
         time.sleep(45)
-
-
-
         time.sleep(sleep)
 
     def main_loop(self):

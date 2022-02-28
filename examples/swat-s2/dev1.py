@@ -52,7 +52,7 @@ class SwatDev1(IODevice):
             if (mv101 == 1 and fit101 == 0): 
                 # lit101 [meters]
                 self.set(FIT101, PUMP_FLOWRATE_IN)
-            else: 
+            elif mv101 == 0: 
                 self.set(FIT101, 0)
                         
             fit101 = float(self.get(FIT101))
