@@ -519,13 +519,13 @@ class PnioProtocol(Protocol):
 
         cmd = shlex.split(
             CMD +
-            PATH +
-            MAC +
-            IFACE +
-            IP +
-            NAME +
-            DBNAME +
-            DBPATH
+            # PATH +
+            # MAC +
+            # IFACE +
+            # IP +
+            # NAME +
+            # DBNAME +
+            # DBPATH
         )
         print 'DEBUG enip _start_server cmd: ', cmd
 
