@@ -497,7 +497,7 @@ class PnioProtocol(Protocol):
     @classmethod
     def _start_server_cmd(cls, device, db_path):
 
-        CMD = 'sudo python3 ./profinet_controller/main.py '
+        CMD = 'sudo python ./profinet_controller/main.py '
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
         MAC = '--mac ' + device["mac"] + ' '
