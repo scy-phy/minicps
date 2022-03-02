@@ -1278,6 +1278,10 @@ typedef struct pnet_cfg
                                                           Use NULL or empty
                                                           string for current
                                                           directory. */
+   char database_directory[100];
+   char database_name[100];
+   
+   uint8_t pid; 
 
 } pnet_cfg_t;
 

@@ -49,7 +49,7 @@ def get_data_msg(dst, src, device, data, counter, timer):
                     and x["submodule_ident"] == module.submodule_ident_number
                 ):
                     print(x["values"])
-                    payload = "".join([chr(x) for x in x["values"]])
+                    payload = bytes("".join([chr(x) for x in x["values"]]), encoding="raw_unicode_escape")
 
             output_data_objects.append(
                 PNIORealTimeCyclicPDU.build_fixed_len_raw_type(module.output_length)(

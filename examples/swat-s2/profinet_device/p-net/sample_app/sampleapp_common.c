@@ -978,6 +978,12 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
          app_set_outputs_default_value();
       }
    }
+
+   app_data_update_database(
+      app->pnet_cfg->database_directory, 
+      app->pnet_cfg->database_name, 
+      app->pnet_cfg->pid
+   );
 }
 
 /**

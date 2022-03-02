@@ -93,6 +93,9 @@ void show_usage()
    printf ("   -r           Remove stored files and exit.\n");
    printf ("   -g           Show stack details and exit. Repeat for more "
            "details.\n");
+   printf ("   -x           path to database file.\n");
+   printf ("   -y           Name of database.\n");
+   printf ("   -z           PID of Device.\n");
    printf (
       "   -i INTERF    Name of Ethernet interface to use. Defaults to %s\n",
       APP_DEFAULT_ETHERNET_INTERFACE);
@@ -136,14 +139,16 @@ app_args_t parse_commandline_arguments (int argc, char * argv[])
    strcpy (output_arguments.path_button1, "");
    strcpy (output_arguments.path_button2, "");
    strcpy (output_arguments.path_storage_directory, "");
+   strcpy (output_arguments.path_database_directory, "");
+   strcpy (output_arguments.database_name, "");
    strcpy (output_arguments.station_name, APP_GSDML_DEFAULT_STATION_NAME);
    strcpy (output_arguments.eth_interfaces, APP_DEFAULT_ETHERNET_INTERFACE);
    output_arguments.verbosity = 0;
    output_arguments.show = 0;
    output_arguments.factory_reset = false;
    output_arguments.remove_files = false;
-
-   while ((option = getopt (argc, argv, "hvgfri:s:b:d:p:")) != -1)
+   output_arguments.pid = 0;
+   while ((option = getopt (argc, argv, "hvgfri:s:b:d:p:x:y:z:")) != -1)
    {
       switch (option)
       {
@@ -193,6 +198,25 @@ app_args_t parse_commandline_arguments (int argc, char * argv[])
             exit (EXIT_FAILURE);
          }
          strcpy (output_arguments.path_storage_directory, optarg);
+         break;
+      case 'x':
+         if (strlen (optarg) + 1 > PNET_MAX_FILE_FULLPATH_SIZE)
+         {
+            printf ("Error: The argument to -x is too long.\n");
+            exit (EXIT_FAILURE);
+         }
+         strcpy (output_arguments.path_database_directory, optarg);
+         break;
+      case 'y':
+         if (strlen (optarg) + 1 > PNET_MAX_FILE_FULLPATH_SIZE)
+         {
+            printf ("Error: The argument to -y is too long.\n");
+            exit (EXIT_FAILURE);
+         }
+         strcpy (output_arguments.database_name, optarg);
+         break;
+      case 'z':
+         output_arguments.pid = atoi(optarg);
          break;
       case 'h':
          /* fallthrough */
@@ -377,10 +401,16 @@ int main (int argc, char * argv[])
    APP_LOG_INFO ("Button1 file:         %s\n", app_args.path_button1);
    APP_LOG_INFO ("Button2 file:         %s\n", app_args.path_button2);
    APP_LOG_INFO ("Default station name: %s\n", app_args.station_name);
+   APP_LOG_INFO ("Default database path: %s\n", app_args.path_database_directory);
+   APP_LOG_INFO ("Default database name: %s\n", app_args.database_name);
+   APP_LOG_INFO ("Process PID: %u\n", app_args.pid);
 
    app_pnet_cfg_init_default (&pnet_cfg);
 
    strcpy (pnet_cfg.station_name, app_args.station_name);
+   strcpy (pnet_cfg.database_directory, app_args.path_database_directory);
+   strcpy (pnet_cfg.database_name, app_args.database_name);
+   pnet_cfg.pid = (uint8_t) app_args.pid;
 
    ret = app_utils_pnet_cfg_init_netifs (
       app_args.eth_interfaces,

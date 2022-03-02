@@ -42,6 +42,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <sqlite3.h>
 
 /**
  * Get PNIO input data using module id.
@@ -87,6 +88,29 @@ int app_data_set_output_data (
  * @return 0 on success, -1 on error
  */
 int app_data_set_default_outputs (void);
+
+int app_data_update_database (char* database_path, char* database_name, uint8_t pid);
+
+/**
+ * Updates values in SQLite Database
+ * @param database_path    In:  Database Path
+ * @param database_name    In:  Database Name
+ * @param pid              In:  PID of Device Process
+ * @return 0 on success, -1 on error
+ */
+
+void app_update_sql_values (
+   sqlite3 * db,
+   int pid,
+   char * name[],
+   int amount_names,
+   double values[]);
+
+void app_get_sql_values (
+   sqlite3 * db,
+   int pid,
+   char * name[],
+   int amount_names);
 
 /**
  * Write parameter index.

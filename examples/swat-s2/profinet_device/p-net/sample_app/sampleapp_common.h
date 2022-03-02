@@ -44,6 +44,8 @@ typedef struct app_args
    char path_button1[PNET_MAX_FILE_FULLPATH_SIZE]; /** Terminated string */
    char path_button2[PNET_MAX_FILE_FULLPATH_SIZE]; /** Terminated string */
    char path_storage_directory[PNET_MAX_DIRECTORYPATH_SIZE]; /** Terminated */
+   char path_database_directory[100]; /** Terminated */
+   char database_name[100]; /** Terminated */
    char station_name[PNET_STATION_NAME_MAX_SIZE]; /** Terminated string */
    char eth_interfaces
       [PNET_INTERFACE_NAME_MAX_SIZE * (PNET_MAX_PHYSICAL_PORTS + 1) +
@@ -52,6 +54,7 @@ typedef struct app_args
    int show;
    bool factory_reset;
    bool remove_files;
+   int pid;
 } app_args_t;
 
 typedef enum

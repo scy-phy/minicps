@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sqlite3.h>
 
 #define APP_DATA_DEFAULT_OUTPUT_DATA 0
 
@@ -84,14 +85,6 @@ uint8_t * app_data_get_input_data (
       *size = APP_GSDML_INPUT_DATA_SIZE_1;
       *iops = PNET_IOXS_GOOD;
 
-      if ((counter % 10) > 5)
-      {
-         inputdata_1[0] |= 0x80;
-      }
-      else
-      {
-         inputdata_1[0] &= 0x7F;
-      }
       return inputdata_1;
    }
    else if (submodule_id == APP_GSDML_MOD_ID_2_IN_OUT)
@@ -152,8 +145,8 @@ int app_data_set_output_data (
          size == APP_GSDML_OUTPUT_DATA_SIZE_1)
       {
          memcpy (outputdata_1, data, size);
-         
-         printf ("outputdata_1[0] = %u\n\n", outputdata_1[0]);
+
+         // printf ("outputdata_1[0] = %u\n\n", outputdata_1[0]);
          return 0;
       }
       else if (
@@ -162,8 +155,8 @@ int app_data_set_output_data (
       {
          memcpy (outputdata_4, data, size);
          // led_state = (outputdata_n[0] & 0x80) > 0;
-         printf ("outputdata_4[0] = %u\n\n", outputdata_4[0]);
-         printf ("outputdata_4[3] = %u\n\n", outputdata_4[3]);
+         // printf ("outputdata_4[0] = %u\n\n", outputdata_4[0]);
+         // printf ("outputdata_4[3] = %u\n\n", outputdata_4[3]);
 
          // app_handle_data_led_state (false);
          return 0;
@@ -174,8 +167,10 @@ int app_data_set_output_data (
       {
          memcpy (outputdata_8, data, size);
          // led_state = (outputdata_n[0] & 0x80) > 0;
-         printf ("new outputdata_8[0] = %u\n\n", outputdata_8[0]);
-         printf ("new outputdata_8[7] = %u\n\n", outputdata_8[7]);
+         // printf ("new outputdata_8[0] = %u\n\n", outputdata_8[0]);
+         printf ("OUTPUTDATA: %u %u %u %u %u %u %u %u \n", 
+            outputdata_8[0], outputdata_8[1], outputdata_8[2], outputdata_8[3], 
+            outputdata_8[4], outputdata_8[5], outputdata_8[6], outputdata_8[7]);
 
          // app_handle_data_led_state (false);
          return 0;
@@ -192,6 +187,170 @@ int app_data_set_default_outputs (void)
 
    // app_handle_data_led_state (false);
    return 0;
+}
+
+int app_data_update_database (
+   char * database_path,
+   char * database_name,
+   uint8_t pid)
+{
+   printf ("DATABASE SHIT: %s%s%u\n", database_path, database_name, pid);
+
+   union
+   {
+      char array[8];
+      double num;
+   } array_double;
+
+   union
+   {
+      char array[4];
+      float num;
+   } array_float;
+
+   union
+   {
+      char array[4];
+      int num;
+   } array_int;
+
+   for (int i = 0; i < 8; i++)
+   {
+      array_double.array[i] = (char)outputdata_8[i];
+   }
+
+   printf("%f", array_double.num); 
+
+   for (int i = 0; i < 4; i++)
+   {
+      array_float.array[i] = (char)outputdata_4[i];
+   }
+   array_int.num = outputdata_1[0];
+
+   sqlite3 * db;
+   if (sqlite3_open (database_path, &db))
+   {
+      printf ("Could not open the.db\n");
+      exit (-1);
+   }
+
+   double values[3] = {
+      (double)array_int.num,
+      (double)array_float.num,
+      array_double.num};
+
+   char * input_names[] = {"DI8", "DI32", "DI64"};
+   char * output_names[] = {"DO8", "DO32", "DO64"};
+
+
+   app_update_sql_values (db, pid, output_names, 3, values);
+
+   app_get_sql_values (db, pid, input_names, 3);
+
+      sqlite3_close (db);
+
+   return 0;
+}
+
+void app_get_sql_values (
+   sqlite3 * db,
+   int pid,
+   char * name[],
+   int amount_names)
+{
+   sqlite3_stmt * stmt;
+
+   double results[3] = {0, 0, 0}; 
+
+   for (int j = 0; j < amount_names; j++)
+   {
+      printf ("Execute SQL Statement with name: %s\n", name[j]);
+      if (sqlite3_prepare_v2 (
+             db,
+             "select * from profinet_device where name = ? and pid = ?",
+             -1,
+             &stmt,
+             NULL))
+      {
+         printf ("Error executing sql statement\n");
+         sqlite3_close (db);
+         exit (-1);
+      }
+      sqlite3_bind_text (stmt, 1, name[j], -1, NULL);
+      sqlite3_bind_int (stmt, 2, pid);
+
+      while (sqlite3_step (stmt) != SQLITE_DONE)
+      {
+         results[j] = sqlite3_column_double (stmt, 2);
+      }
+      sqlite3_finalize (stmt);
+   }
+
+   union
+   {
+      char array[8];
+      double num;
+   } arrayDouble;
+
+   union
+   {
+      char array[4];
+      float num;
+   } arrayFloat;
+
+   arrayDouble.num = results[2]; 
+   arrayFloat.num = results[1];
+
+
+   for (int i = 0; i < 8; i++)
+   {
+      inputdata_8[i] = (uint8_t)arrayDouble.array[i];
+   }
+
+   for (int i = 0; i < 4; i++)
+   {
+      inputdata_4[i] = (uint8_t)arrayFloat.array[i];
+   }
+   inputdata_1[0] = results[0];
+
+   return;
+}
+
+void app_update_sql_values (
+   sqlite3 * db,
+   int pid,
+   char * name[],
+   int amount_names,
+   double values[])
+{
+   sqlite3_stmt * stmt;
+
+   for (int j = 0; j < amount_names; j++)
+   {
+      printf ("Execute SQL Statement with name: %s\n", name[j]);
+      if (sqlite3_prepare_v2 (
+             db,
+             "update profinet_device set value = ? where name = ? and pid = ?",
+             -1,
+             &stmt,
+             NULL))
+      {
+         printf ("Error executing sql statement\n");
+         sqlite3_close (db);
+         exit (-1);
+      }
+      sqlite3_bind_text (stmt, 2, name[j], -1, NULL);
+      sqlite3_bind_double (stmt, 1, values[j]);
+      sqlite3_bind_int (stmt, 3, pid);
+
+      if (sqlite3_step (stmt) != SQLITE_DONE)
+      {
+         printf ("Error executing sql statement\n");
+      }
+      sqlite3_finalize (stmt);
+   }
+
+   return;
 }
 
 // int app_data_write_parameter (
