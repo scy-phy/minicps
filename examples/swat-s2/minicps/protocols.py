@@ -508,7 +508,7 @@ class PnioProtocol(Protocol):
         IP = '--ip '  + device["address"] + ' '
         NAME = '--name '  + device["name"] + ' '
         DBNAME = '--dbname ' + PN_NAME + ' '
-        DBPATH = '--dbpath ../' + db_path + ' '
+        DBPATH = '--dbpath ' + db_path + ' '
 
 
 
