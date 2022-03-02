@@ -448,7 +448,7 @@ class PnioProtocol(Protocol):
         else:
             raise OSError
 
-        self._db_path = "./profinet_controller/profinet_device_" +  self._server['name'] + ".sqlite"
+        self._db_path = "./profinet_device_" +  self._server['name'] + ".sqlite"
 
         SQLiteState._create(self._db_path, PN_SCHEMA)
         SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
