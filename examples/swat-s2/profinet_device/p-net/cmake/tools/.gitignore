@@ -1,0 +1,7 @@
+build*/
+*~
+*#
+
+.cproject
+.project
+.dir-locals.el
