@@ -487,12 +487,12 @@ class PnioProtocol(Protocol):
 
         try:
             cmd = PnioProtocol._start_server_cmd(device, db_path)
-            server = subprocess.Popen(cmd, shell=False)
+            server = subprocess.Popen(" ".join(cmd), shell=False)
 
             return server
 
         except Exception as error:
-            print 'ERROR enip _start_server: ', error
+            print 'ERROR pnio _start_server: ', error
 
     # TODO: how to start a UDP cpppo server?
     # TODO: parametric PRINT_STDOUT and others
