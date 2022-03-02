@@ -2,6 +2,7 @@ from scapy.all import *
 from scapy.contrib.dce_rpc import *
 from scapy.contrib.pnio_rpc import *
 from scapy.contrib.dce_rpc import *
+from getmac import get_mac_address
 
 load_contrib("dce_rpc")
 load_contrib("pnio_rpc")
@@ -27,7 +28,7 @@ def get_connect_dcprpc_msg(ip, device, auuid):
     ar_block_req = ARBlockReq(
         ARUUID=auuid,
         SessionKey=1,
-        CMInitiatorMacAdd="C0:3E:BA:C9:19:36",
+        CMInitiatorMacAdd=get_mac_address(),
         CMInitiatorObjectUUID="dea00000-6c97-11d1-8271-0001008802cc",
         StationNameLength=10,
         CMInitiatorStationName="controller",
