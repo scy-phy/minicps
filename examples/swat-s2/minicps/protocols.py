@@ -24,6 +24,7 @@ import random
 import sys
 import shlex
 import subprocess
+import time
 
 import cpppo
 from minicps.states import SQLiteState
@@ -454,10 +455,9 @@ class PnioProtocol(Protocol):
         SQLiteState._create(self._db_path, PN_SCHEMA)
         SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
 
+
         tag = self._server['tags'][0]
         tag_type = tag[2]
-
-        print(tag, tag_type, self._server)
 
         if tag_type == 'INT':
             self.used_register = "DO8"
@@ -465,6 +465,7 @@ class PnioProtocol(Protocol):
             self.used_register = "DO32"
 
         self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
+        time.sleep(2)
 
         self._server_subprocess = PnioProtocol._start_server(
                     address=self._server['address'],
