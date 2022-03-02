@@ -455,7 +455,7 @@ class PnioProtocol(Protocol):
         SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
 
         tag = self._server['tags'][0]
-        tag_type = tag[1]
+        tag_type = tag[2]
 
         print(tag, tag_type, self._server)
 
