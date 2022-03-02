@@ -20,6 +20,7 @@ Modbus is supported using pymodbus module:
 https://github.com/bashwork/pymodbus
 """
 
+import random
 import sys
 import shlex
 import subprocess
@@ -448,7 +449,7 @@ class PnioProtocol(Protocol):
         else:
             raise OSError
 
-        self._db_path = "./profinet_states/profinet_device_" +  self._server['name'] + ".sqlite"
+        self._db_path = "./profinet_states/profinet_device_" +  self._server['name'] + "-" + random.randint(1, 10000000000) + ".sqlite"
 
         SQLiteState._create(self._db_path, PN_SCHEMA)
         SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
