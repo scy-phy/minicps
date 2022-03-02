@@ -68,7 +68,7 @@ target/
 *.err
 *.log
 *.log*
-*.xml
+# *.xml
 *.pdf
 *.json
 *.cache
