@@ -487,6 +487,7 @@ class PnioProtocol(Protocol):
 
         try:
             cmd = PnioProtocol._start_server_cmd(device, db_path)
+            print(" ".join(cmd))
             server = subprocess.Popen(" ".join(cmd), shell=False)
 
             return server
@@ -501,7 +502,7 @@ class PnioProtocol(Protocol):
 
         CMD = 'cd profinet_controller/; sudo python main.py '
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
-        PATH = '--path ' + "./gsdml/minicps_device.gsdml" + ' '
+        PATH = '--path ' + "./gsdml/minicps_device.xml" + ' '
         MAC = '--mac ' + device["mac"] + ' '
         IFACE = '--iface ' + "plc3-eth0" + ' '
         IP = '--ip '  + device["address"] + ' '
