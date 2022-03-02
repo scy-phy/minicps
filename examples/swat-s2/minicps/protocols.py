@@ -545,7 +545,7 @@ class PnioProtocol(Protocol):
         except Exception as error:
             print 'ERROR stop enip server: ', error
 
-    def _send(self, what, value, **kwargs):
+    def _send(self, what, value, address, **kwargs):
         
         self.dbstate._set((self.used_register, 1), value)
 
