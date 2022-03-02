@@ -465,7 +465,6 @@ class PnioProtocol(Protocol):
             self.used_register = "DO32"
 
         self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
-        time.sleep(2)
 
         self._server_subprocess = PnioProtocol._start_server(
                     address=self._server['address'],
@@ -490,7 +489,7 @@ class PnioProtocol(Protocol):
         try:
             cmd = PnioProtocol._start_server_cmd(device, db_path)
             print(" ".join(cmd))
-            server = subprocess.Popen(" ".join(cmd), shell=False)
+            server = subprocess.Popen(" ".join(cmd), shell=True)
 
             return server
 
