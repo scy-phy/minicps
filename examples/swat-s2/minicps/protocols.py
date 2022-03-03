@@ -490,7 +490,7 @@ class PnioProtocolController(Protocol):
         try:
             cmd = PnioProtocolController._start_server_cmd(device, db_path, server_name)
             print(" ".join(cmd))
-            server = subprocess.Popen(" ".join(cmd), shell=True)
+            server = subprocess.Popen(" ".join(cmd), shell=False)
 
             return server
 
@@ -606,7 +606,7 @@ class PnioProtocolDevice(Protocol):
         try:
             cmd = PnioProtocolDevice._start_server_cmd( db_path, device_name)
             print(" ".join(cmd))
-            server = subprocess.Popen(" ".join(cmd), shell=True)
+            server = subprocess.Popen(" ".join(cmd), shell=False)
 
             return server
 
