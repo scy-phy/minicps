@@ -190,7 +190,7 @@ DEV5_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV5_SERVER}
 DEV6_ADDR = IP["dev6"]
 DEV6_TAGS = (("LIT301", 9, "REAL"),)
 DEV6_SERVER = {"address": DEV6_ADDR, "tags": DEV6_TAGS, "mac": MAC["dev6"], "name": "dev6"}
-DEV6_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV6_SERVER}
+DEV6_PROTOCOL = {"name": "pnio_d", "mode": 1, "server": DEV6_SERVER}
 
 PLC1_ADDR = IP["plc1"]
 PLC1_TAGS = (
@@ -221,7 +221,7 @@ PLC3_TAGS = (
     ("LIT301", 3, "REAL"),
 )
 PLC3_SERVER = {"address": PLC3_ADDR, "tags": PLC3_TAGS, "device": DEV6_SERVER, "name": "plc3"}
-PLC3_PROTOCOL = {"name": "pnio", "mode": 1, "server": PLC3_SERVER}
+PLC3_PROTOCOL = {"name": "pnio_c", "mode": 1, "server": PLC3_SERVER}
 
 
 # state {{{1
@@ -262,12 +262,12 @@ CREATE TABLE profinet_device (
 """
 
 PN_SCHEMA_INIT = """
-    INSERT INTO profinet_device VALUES ('DO8',   1, 0.0);
-    INSERT INTO profinet_device VALUES ('DO32',    1, 0.0);
-    INSERT INTO profinet_device VALUES ('DO64',   1, 0.0);
-    INSERT INTO profinet_device VALUES ('DI8',   1, 0.0);
-    INSERT INTO profinet_device VALUES ('DI32',    1, 0.0);
-    INSERT INTO profinet_device VALUES ('DI64',   1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO8',  1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO32', 1, 0.0);
+    INSERT INTO profinet_device VALUES ('DO64', 1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI8',  1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI32', 1, 0.0);
+    INSERT INTO profinet_device VALUES ('DI64', 1, 0.0);
 """
 PN_NAME = "profinet_device"
 
