@@ -336,7 +336,6 @@ void app_update_sql_values (
       {
          printf ("Error executing sql statement\n");
          sqlite3_close (db);
-         exit (-1);
       }
       sqlite3_bind_text (stmt, 2, name[j], -1, NULL);
       sqlite3_bind_double (stmt, 1, values[j]);
