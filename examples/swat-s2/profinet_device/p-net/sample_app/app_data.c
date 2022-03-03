@@ -247,7 +247,7 @@ int app_data_update_database (
 
    app_get_sql_values (db, pid, input_names, 3);
 
-      sqlite3_close (db);
+   sqlite3_close (db);
 
    return 0;
 }
@@ -273,8 +273,6 @@ void app_get_sql_values (
              NULL))
       {
          printf ("Error executing sql statement\n");
-         sqlite3_close (db);
-         exit (-1);
       }
       sqlite3_bind_text (stmt, 1, name[j], -1, NULL);
       sqlite3_bind_int (stmt, 2, pid);
