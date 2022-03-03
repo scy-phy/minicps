@@ -38,7 +38,6 @@ class SwatDev6(IODevice):
         self.set(LIT301, start_level)
         self.send(LIT301, start_level, DEV6_ADDR)
         time.sleep(sleep)
-        time.sleep(5)
 
     def main_loop(self):
         """mv101 main loop.
