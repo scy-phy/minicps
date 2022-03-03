@@ -272,4 +272,4 @@ PN_SCHEMA_INIT = """
 PN_NAME = "profinet_device"
 
 PN_PATH = "profinet_device.sqlite"
-STATE = {"name": PN_NAME, "path": PN_PATH}
+PN_STATE = {"name": PN_NAME, "path": PN_PATH}
