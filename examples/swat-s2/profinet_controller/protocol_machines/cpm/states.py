@@ -123,7 +123,7 @@ class CPMReceiveState(CPMState):
                 return True
         
         def pkg_filter(d): 
-            print(d)
+            d.show()
             return True
 
         sniff(
