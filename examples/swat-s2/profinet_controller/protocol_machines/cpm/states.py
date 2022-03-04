@@ -121,13 +121,10 @@ class CPMReceiveState(CPMState):
                 return False
             else:
                 return True
-        
-        def pkg_filter(d): 
-            d.show()
-            return True
+
 
         sniff(
-            lfilter=lambda d: pkg_filter(d),
+            filter=f'ether dst {self.context.dst_adr}',
             store=0,
             count=-1,
             prn=update_load,
