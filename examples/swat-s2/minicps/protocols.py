@@ -560,6 +560,8 @@ class PnioProtocolController(Protocol):
 
 
     def _receive(self, what, address, **kwargs):
+
+        print(self.used_output_register)
         
         return self.dbstate[what[0]]._get((self.used_output_register[what[0]], 1))
 
