@@ -101,9 +101,7 @@ class CPMReceiveState(CPMState):
                 )
                 print(
                     "value DO32: ",
-                    struct.unpack("f", bytearray(message_data.input_data["data"][1]))[
-                        0
-                    ],
+                    message_data.input_data["data"][1]
                 )
 
             elif pkt.haslayer("ProfinetIO"):
