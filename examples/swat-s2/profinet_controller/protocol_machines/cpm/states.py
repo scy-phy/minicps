@@ -121,9 +121,13 @@ class CPMReceiveState(CPMState):
                 return False
             else:
                 return True
+        
+        def pkg_filter(d): 
+            print(d)
+            return True
 
         sniff(
-            lfilter=lambda d: d.src.lower() == self.context.dst_adr.lower(),
+            lfilter=lambda d: pkg_filter(d),
             store=0,
             count=-1,
             prn=update_load,
