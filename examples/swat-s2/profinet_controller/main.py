@@ -167,7 +167,7 @@ def main():
     args = pnio_parser.parse_args()
 
     # Sleep 15 Seconds to wait for IO-Device
-    time.sleep(15)
+    # time.sleep(15)
 
     # TODO: CHECK THE ARGUMENTS
 
