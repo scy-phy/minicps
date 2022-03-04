@@ -450,31 +450,34 @@ class PnioProtocolController(Protocol):
         else:
             raise OSError
 
-        self._db_path = "./profinet_states/profinet_device_" +  self._server['name'] + "-" + str(random.randint(1, 10000000000)) + ".sqlite"
+        self._server_subprocess = {}
+        self.dbstate = {}
+        self.used_input_register = {}
+        self.used_output_register = {}
 
-        SQLiteState._create(self._db_path, PN_SCHEMA)
-        SQLiteState._init(self._db_path, PN_SCHEMA_INIT)      
+        for (label, pid, type) in self._server['tags']:
+            # TODO: CHECK IF TAG EXISTS IN PLCX_SERVER[DEVICES] DEFINITION
+            _db_path = "./profinet_states/profinet_device_" +  self._server['name'] + "-" + str(random.randint(1, 10000000000)) + ".sqlite"
 
+            SQLiteState._create(_db_path, PN_SCHEMA)
+            SQLiteState._init(_db_path, PN_SCHEMA_INIT)      
 
-        tag = self._server['tags'][0]
-        tag_type = tag[2]
+            if type == 'INT':
+                self.used_input_register[label] = "DI8"
+                self.used_output_register[label] = "DO8"
 
-        if tag_type == 'INT':
-            self.used_input_register = "DI8"
-            self.used_output_register = "DO8"
+            elif type == 'REAL': 
+                self.used_input_register[label] = "DI32"
+                self.used_output_register[label] = "DO32"
 
-        elif tag_type == 'REAL': 
-            self.used_input_register = "DI32"
-            self.used_output_register = "DO32"
+            self.dbstate[self._server['devices'][label]['name']] =  SQLiteState({"name": PN_NAME, "path": _db_path})
 
-        self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
-
-        self._server_subprocess = PnioProtocolController._start_server(
-                    address=self._server['address'],
-                    tags=self._server['tags'], 
-                    device=self._server['device'],
-                    server_name = self._server['name'],
-                    db_path=self._db_path)
+            self._server_subprocess[label] = PnioProtocolController._start_server(
+                        address=self._server['address'],
+                        tags=self._server['tags'], 
+                        device=self._server['devices'][label],
+                        server_name = self._server['name'],
+                        db_path=_db_path)
 
     @classmethod
     def _start_server(cls, address, tags, device, db_path, server_name):
@@ -551,12 +554,12 @@ class PnioProtocolController(Protocol):
 
     def _send(self, what, value, address, **kwargs):
         
-        self.dbstate._set((self.used_input_register, 1), value)
+        self.dbstate[what[0]]._set((self.used_input_register[what[0]], 1), value)
 
 
     def _receive(self, what, address, **kwargs):
         
-        return self.dbstate._get((self.used_output_register, 1))
+        return self.dbstate[what[0]]._get((self.used_output_register[what[0]], 1))
 
 class PnioProtocolDevice(Protocol):
 
