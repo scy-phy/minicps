@@ -47,7 +47,11 @@ class SwatPLC3(IOController):
 
             print 'DEBUG plc1 lit301: %.5f' % lit301
 
-            
+            if (lit301 > 1): 
+                self.send(P301_PLC, 0, PLC3_ADDR)
+
+
+
 
             print 'DEBUG plc1 p301: %.5f' % p301
 

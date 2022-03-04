@@ -470,8 +470,6 @@ class PnioProtocolController(Protocol):
                 self.used_input_register[label] = "DI32"
                 self.used_output_register[label] = "DO32"
 
-            print("LABEL ORDER ", label, self.used_input_register[label], self.used_output_register[label])
-
             self.dbstate[label] =  SQLiteState({"name": PN_NAME, "path": _db_path})
 
             self._server_subprocess[label] = PnioProtocolController._start_server(
@@ -560,10 +558,6 @@ class PnioProtocolController(Protocol):
 
 
     def _receive(self, what, address, **kwargs):
-
-        print((self.used_output_register[what[0]], 1))
-        print(self.dbstate)
-        print(self.dbstate[what[0]]._get(('DI8', 1)))
         
         return self.dbstate[what[0]]._get((self.used_output_register[what[0]], 1))
 

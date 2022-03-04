@@ -25,7 +25,7 @@ LIT301_1 = ('LIT301', 3)
 
 FIT201_PLC = ('FIT201', 2)
 P101_PLC = ('P101', 1)
-P101 = ('P101', 7)
+P301 = ('P301', 9)
 
 # SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
@@ -57,11 +57,11 @@ class SwatDev7(IODevice):
             water_volume = TANK_SECTION * new_level
 
             # inflows volumes
-            p101 = float(self.get(P101))   
-            # if p101 > 0:
-            inflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
+            p301 = float(self.get(P301))   
+            if p301 > 0:
+                inflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
-            water_volume += inflow
+                water_volume += inflow
 
             # outflows volumes
             # p101 = self.get(P101)
