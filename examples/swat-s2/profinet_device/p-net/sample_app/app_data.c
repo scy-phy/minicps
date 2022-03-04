@@ -284,6 +284,7 @@ void app_get_sql_values (sqlite3 * db, int pid, char * name[], int amount_names)
       while (sqlite3_step (stmt) != SQLITE_DONE)
       {
          results[j] = sqlite3_column_double (stmt, 2);
+         printf ("Results %f\n", results[j]);
       }
       sqlite3_finalize (stmt);
 
