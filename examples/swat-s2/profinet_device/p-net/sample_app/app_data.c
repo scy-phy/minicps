@@ -202,8 +202,6 @@ int app_data_update_database (
    char * database_name,
    uint8_t pid)
 {
-   printf ("DATABASE SHIT: %s%s%u\n", database_path, database_name, pid);
-
    union
    {
       char array[8];
@@ -267,7 +265,7 @@ void app_get_sql_values (sqlite3 * db, int pid, char * name[], int amount_names)
 
    for (int j = 0; j < amount_names; j++)
    {
-      printf ("Execute SQL Statement select value where name = %s\n", name[j]);
+      // printf ("Execute SQL Statement select value where name = %s\n", name[j]);
       if (sqlite3_prepare_v2 (
              db,
              "select * from profinet_device where name = ? and pid = ?",
@@ -331,7 +329,7 @@ void app_update_sql_values (
 
    for (int j = 0; j < amount_names; j++)
    {
-      printf ("Execute SQL Statement set value %f where name = %s\n", values[j], name[j]);
+      // printf ("Execute SQL Statement set value %f where name = %s\n", values[j], name[j]);
       if (sqlite3_prepare_v2 (
              db,
              "update profinet_device set value = ? where name = ? and pid = ?",
