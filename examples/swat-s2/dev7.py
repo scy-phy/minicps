@@ -20,7 +20,7 @@ PLC1_ADDR = IP['plc1']
 
 DEV7_ADDR = IP['dev7']
 
-LIT301 = ('LIT301', 9)
+LIT301 = ('LIT301', 10)
 LIT301_1 = ('LIT301', 3)
 
 FIT201_PLC = ('FIT201', 2)
