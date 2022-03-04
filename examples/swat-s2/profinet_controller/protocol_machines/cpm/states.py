@@ -88,12 +88,17 @@ class CPMReceiveState(CPMState):
                 )
                 self.context.dbState._set(
                     ("DO32", self.context.id),
-                    struct.unpack("f", bytearray(message_data.input_data["data"][1]))[0]
+                    struct.unpack("f", bytearray(message_data.input_data["data"][1]))[
+                        0
+                    ],
                 )
                 self.context.dbState._set(
                     ("DO64", self.context.id),
-                    struct.unpack("d", bytearray(message_data.input_data["data"][2]))[0]
+                    struct.unpack("d", bytearray(message_data.input_data["data"][2]))[
+                        0
+                    ],
                 )
+                print(self.context.dbState._get(("DO32", self.context.id)))
 
             elif pkt.haslayer("ProfinetIO"):
                 # TODO: In Case of Alarm Message change state to IDLE and fire event

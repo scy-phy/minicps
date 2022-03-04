@@ -660,7 +660,6 @@ class PnioProtocolDevice(Protocol):
             print 'ERROR stop enip server: ', error
 
     def _send(self, what, value, address, **kwargs):
-        print "device sent %f with register %s" %(value, self.used_input_register)
         self.dbstate._set((self.used_input_register, 1), value)
 
 
