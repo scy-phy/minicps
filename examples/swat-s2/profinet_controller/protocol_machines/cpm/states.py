@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from email import message
+from netaddr import EUI
 
 from numpy import float64
 from protocol_machines.cpm.helper.gsdml_parser import XMLDevice
@@ -81,6 +82,7 @@ class CPMReceiveState(CPMState):
 
     def receive_messages(self):
         print("DEST ADD: ", self.context.dst_adr)
+
         def update_load(pkt):
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
                 message_data = parse_data_message(pkt, self.context.device)
@@ -99,7 +101,9 @@ class CPMReceiveState(CPMState):
                         0
                     ],
                 )
-                print("value DO32: ", self.context.dbState._get(("DO32", self.context.id)))
+                print(
+                    "value DO32: ", self.context.dbState._get(("DO32", self.context.id))
+                )
 
             elif pkt.haslayer("ProfinetIO"):
                 # TODO: In Case of Alarm Message change state to IDLE and fire event
@@ -120,7 +124,7 @@ class CPMReceiveState(CPMState):
                 return True
 
         sniff(
-            lfilter=lambda d: d.src == "00:1d:9c:c8:bd:16",
+            lfilter=lambda d: EUI(d.src) == EUI(self.context.dst_adr),
             store=0,
             count=-1,
             prn=update_load,
