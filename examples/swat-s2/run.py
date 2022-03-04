@@ -25,8 +25,8 @@ class SwatS1CPS(MiniCPS):
         net.pingAll()
 
         # start devices
-        plc1, plc2, plc3, dev1, dev2, dev3, dev4, dev5, dev6, s1 = self.net.get(
-            'plc1', 'plc2', 'plc3', 'dev1', 'dev2', 'dev3', 'dev4','dev5', 'dev6', 's1')
+        plc1, plc2, plc3, dev1, dev2, dev3, dev4, dev5, dev6, dev7, s1 = self.net.get(
+            'plc1', 'plc2', 'plc3', 'dev1', 'dev2', 'dev3', 'dev4','dev5', 'dev6', 'dev7' 's1')
 
         # SPHINX_SWAT_TUTORIAL RUN(
         # dev1.cmd('python2 dev1.py &')

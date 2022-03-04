@@ -69,6 +69,12 @@ class SwatTopo(Topo):
             mac=MAC['dev6'])
         self.addLink(dev6, switch)
 
+        dev7 = self.addHost(
+            'dev7',
+            ip=IP['dev7'] + NETMASK,
+            mac=MAC['dev7'])
+        self.addLink(dev7, switch)
+
 
         attacker = self.addHost(
             'attacker',
