@@ -124,7 +124,7 @@ class CPMReceiveState(CPMState):
                 return True
 
         sniff(
-            filter=f"ether dst {self.context.dst_adr}",
+            filter=f"ether src {self.context.dst_adr}",
             store=0,
             count=-1,
             prn=update_load,
