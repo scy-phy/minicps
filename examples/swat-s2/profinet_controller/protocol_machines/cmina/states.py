@@ -15,10 +15,10 @@ class Device:
 
     _state = None
 
-    def __init__(self, state: CMINAState, iface: str) -> None:
+    def __init__(self, state: CMINAState, iface: str, mac_address: str = "") -> None:
         self.setState(state)
         self.iface = iface
-        self.mac_address = ""
+        self.mac_address = mac_address
         self.name = ""
         self.ip = ""
 
@@ -49,11 +49,13 @@ class Device:
 
     # Service Methods
     def resetDevice(self):
+        print("RESET DEVICE")
         self.mac_address = ""
         self.name = ""
         self.ip = ""
 
     def initDevice(self, name, mac):
+        print("INIT DEVICE", name, mac)
         self.name = name
         self.mac_address = mac
 
@@ -113,9 +115,7 @@ class CMINAIdentifyState(CMINAState):
         ans, _ = scapy.srp(
             ident_msg, iface=self.context.iface, timeout=1, multi=True, verbose=False
         )
-
-        print(ans)
-
+        # PROBLEM: EVERY DEVICE RESPONDS, MULTIPLE DEVICES WILL RESPOND TO THIS MESSAGE
         dst_mac_address = ans[-1].answer["Ethernet"].src
 
         if dst_mac_address == mac_address_src or len(ans) < 2:
@@ -127,7 +127,7 @@ class CMINAIdentifyState(CMINAState):
             # success:
             # set state to identified
             self.context.setState(CMINAIdentifiedState())
-            self.context.initDevice(name, dst_mac_address)
+            # self.context.initDevice(name, dst_mac_address)
             return dst_mac_address
 
     def setName(self, name) -> bool:
@@ -196,7 +196,7 @@ class CMINASetNameState(CMINAState):
 
     def setName(self, name) -> bool:
         ident_msg = get_set_name_msg(
-            src=get_mac_address(), name_of_station=name, dst=self.context.getDeviceMac()
+            src=get_mac_address(), name_of_station=name, dst=self.context.mac_address
         )
         ans, _ = scapy.srp(
             ident_msg, iface=self.context.iface, timeout=1, multi=True, verbose=False

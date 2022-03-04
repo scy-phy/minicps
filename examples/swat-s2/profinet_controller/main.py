@@ -20,7 +20,7 @@ load_contrib("pnio_rpc")
 
 class PNConnection:
     def __init__(self, iface, mac_address, device_path, state) -> None:
-        self.device = Device(CMINAIdentifyState(), iface=iface)
+        self.device = Device(CMINAIdentifiedState(), iface=iface, mac_address = mac_address)
         self.connection = Connection(
             CPMCONConnectState(),
             iface=iface,
@@ -43,7 +43,7 @@ class PNConnection:
         )
 
     def initialize_device(self, ip, name, prev_device_name="") -> CMINAState:
-        self.device.identify(prev_device_name)
+        # self.device.identify(prev_device_name)
         self.device.setIp(ip=ip)
         self.device.setName(name)
 
@@ -58,7 +58,7 @@ class PNConnection:
         self.connection.announceEndPrm()
         self.connection.ackApplicationReady()
 
-        time.sleep(30)
+        time.sleep(5)
 
         self.stop_consumer_provider()
 
@@ -184,9 +184,9 @@ def main():
     connection.initialize_device(ip=args.ip, name=args.name, prev_device_name="")
     # set mac adress for corresponding device otherwise no messages are received
     # connection.consumer.dst_adr = connection.device.getDeviceMac()
-    # print("---INIT DEVICE END---")
-    # print("---CONNECT DEVICE START---")
-    # connection.connect_device(ip=args.ip)
+    print("---INIT DEVICE END---")
+    print("---CONNECT DEVICE START---")
+    connection.connect_device(ip=args.ip)
     # print("---CONNECT DEVICE END---")
 
 
