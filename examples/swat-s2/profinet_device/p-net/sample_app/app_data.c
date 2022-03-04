@@ -266,7 +266,7 @@ void app_get_sql_values (sqlite3 * db, int pid, char * name[], int amount_names)
 
    for (int j = 0; j < amount_names; j++)
    {
-      printf ("Execute SQL Statement with name: %s\n", name[j]);
+      printf ("Execute SQL Statement select value %f where name = %s\n", values[j], name[j]);
       if (sqlite3_prepare_v2 (
              db,
              "select * from profinet_device where name = ? and pid = ?",
