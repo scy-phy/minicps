@@ -460,9 +460,12 @@ class PnioProtocolController(Protocol):
         tag_type = tag[2]
 
         if tag_type == 'INT':
-            self.used_register = "DO8"
+            self.used_input_register = "DI8"
+            self.used_output_register = "DO8"
+
         elif tag_type == 'REAL': 
-            self.used_register = "DO32"
+            self.used_input_register = "DI32"
+            self.used_output_register = "DO32"
 
         self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
 
@@ -548,12 +551,12 @@ class PnioProtocolController(Protocol):
 
     def _send(self, what, value, address, **kwargs):
         
-        self.dbstate._set((self.used_register, 1), value)
+        self.dbstate._set((self.used_input_register, 1), value)
 
 
     def _receive(self, what, address, **kwargs):
         
-        return self.dbstate._get((self.used_register, 1))
+        return self.dbstate._get((self.used_output_register, 1))
 
 class PnioProtocolDevice(Protocol):
 
@@ -577,9 +580,12 @@ class PnioProtocolDevice(Protocol):
         tag_type = tag[2]
 
         if tag_type == 'INT':
-            self.used_register = "DO8"
+            self.used_input_register = "DI8"
+            self.used_output_register = "DO8"
+
         elif tag_type == 'REAL': 
-            self.used_register = "DO32"
+            self.used_input_register = "DI32"
+            self.used_output_register = "DO32"
 
         self.dbstate =  SQLiteState({"name": PN_NAME, "path": self._db_path})
 
@@ -655,12 +661,12 @@ class PnioProtocolDevice(Protocol):
 
     def _send(self, what, value, address, **kwargs):
         
-        self.dbstate._set((self.used_register, 1), value)
+        self.dbstate._set((self.used_input_register, 1), value)
 
 
     def _receive(self, what, address, **kwargs):
         
-        return self.dbstate._get((self.used_register, 1))
+        return self.dbstate._get((self.used_output_register, 1))
 
 # }}}
 
