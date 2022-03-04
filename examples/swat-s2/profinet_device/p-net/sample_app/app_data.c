@@ -246,8 +246,8 @@ int app_data_update_database (
       (double)array_float.num,
       array_double.num};
 
-   char * output_names[] = {"DI8", "DI32", "DI64"};
-   char * input_names[] = {"DO8", "DO32", "DO64"};
+   char * input_names[] = {"DI8", "DI32", "DI64"};
+   char * output_names[] = {"DO8", "DO32", "DO64"};
 
    app_update_sql_values (db, pid, output_names, 3, values);
 
