@@ -98,7 +98,7 @@ class CPMReceiveState(CPMState):
                         0
                     ],
                 )
-                print(self.context.dbState._get(("DO32", self.context.id)))
+                print("value DO32: ", self.context.dbState._get(("DO32", self.context.id)))
 
             elif pkt.haslayer("ProfinetIO"):
                 # TODO: In Case of Alarm Message change state to IDLE and fire event
