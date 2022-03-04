@@ -81,7 +81,6 @@ class CPMReceiveState(CPMState):
         self.thread = None
 
     def receive_messages(self):
-
         def update_load(pkt):
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
                 message_data = parse_data_message(pkt, self.context.device)
@@ -101,7 +100,10 @@ class CPMReceiveState(CPMState):
                     ],
                 )
                 print(
-                    "value DO32: ", self.context.dbState._get(("DO32", self.context.id))
+                    "value DO32: ",
+                    struct.unpack("f", bytearray(message_data.input_data["data"][1]))[
+                        0
+                    ],
                 )
 
             elif pkt.haslayer("ProfinetIO"):
@@ -122,9 +124,8 @@ class CPMReceiveState(CPMState):
             else:
                 return True
 
-
         sniff(
-            filter=f'ether dst {self.context.dst_adr}',
+            filter=f"ether dst {self.context.dst_adr}",
             store=0,
             count=-1,
             prn=update_load,
