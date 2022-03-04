@@ -169,17 +169,6 @@ int app_data_set_output_data (
          memcpy (outputdata_8, data, size);
          // led_state = (outputdata_n[0] & 0x80) > 0;
          // printf ("new outputdata_8[0] = %u\n\n", outputdata_8[0]);
-         printf (
-            "OUTPUTDATA: %u %u %u %u %u %u %u %u \n",
-            outputdata_8[0],
-            outputdata_8[1],
-            outputdata_8[2],
-            outputdata_8[3],
-            outputdata_8[4],
-            outputdata_8[5],
-            outputdata_8[6],
-            outputdata_8[7]);
-
          // app_handle_data_led_state (false);
          return 0;
       }
@@ -224,8 +213,6 @@ int app_data_update_database (
    {
       array_double.array[i] = (char)outputdata_8[i];
    }
-
-   printf ("%f", array_double.num);
 
    for (int i = 0; i < 4; i++)
    {
