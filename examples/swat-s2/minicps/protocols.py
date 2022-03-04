@@ -470,6 +470,8 @@ class PnioProtocolController(Protocol):
                 self.used_input_register[label] = "DI32"
                 self.used_output_register[label] = "DO32"
 
+            print("LABEL ORDER ", label, self.used_input_register[label], self.used_output_register[label])
+
             self.dbstate[self._server['devices'][label]['name']] =  SQLiteState({"name": PN_NAME, "path": _db_path})
 
             self._server_subprocess[label] = PnioProtocolController._start_server(
