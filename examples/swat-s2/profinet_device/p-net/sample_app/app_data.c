@@ -313,7 +313,7 @@ void app_get_sql_values (sqlite3 * db, int pid, char * name[], int amount_names)
    {
       inputdata_4[i] = (uint8_t)arrayFloat.array[i];
    }
-   print("Input data 4: %u%u%u%u\n", inputdata_4[0], inputdata_4[1], inputdata_4[2], inputdata_4[3]);
+   printf("Input data 4: %u%u%u%u\n", inputdata_4[0], inputdata_4[1], inputdata_4[2], inputdata_4[3]);
 
    inputdata_1[0] = results[0];
 
