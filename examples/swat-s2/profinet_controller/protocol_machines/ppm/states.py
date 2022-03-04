@@ -47,7 +47,6 @@ class Provider:
     # outputdata has following structure:
     # module_ident, submodule_ident, values[]
     def getOutputData(self) -> int:
-        print([int(self.dbState._get(("DI8", self.id)))])
         return [
             {
                 "module_ident": int(0x00000080),

@@ -113,6 +113,9 @@ class CMINAIdentifyState(CMINAState):
         ans, _ = scapy.srp(
             ident_msg, iface=self.context.iface, timeout=1, multi=True, verbose=False
         )
+
+        print(ans)
+
         dst_mac_address = ans[-1].answer["Ethernet"].src
 
         if dst_mac_address == mac_address_src or len(ans) < 2:

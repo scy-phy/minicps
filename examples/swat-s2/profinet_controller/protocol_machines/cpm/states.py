@@ -99,10 +99,6 @@ class CPMReceiveState(CPMState):
                         0
                     ],
                 )
-                print(
-                    "value DO32: ",
-                    message_data.input_data["data"]
-                )
 
             elif pkt.haslayer("ProfinetIO"):
                 # TODO: In Case of Alarm Message change state to IDLE and fire event
