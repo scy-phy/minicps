@@ -122,8 +122,12 @@ class CPMReceiveState(CPMState):
             else:
                 return True
 
+        def filter_pkg(src): 
+            print(src)
+            return True
+
         sniff(
-            lfilter=lambda d: netaddr.EUI(d.src) == netaddr.EUI(self.context.dst_adr),
+            lfilter=lambda d: filter_pkg(d.src),
             store=0,
             count=-1,
             prn=update_load,
