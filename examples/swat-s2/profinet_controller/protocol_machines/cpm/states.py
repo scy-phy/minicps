@@ -82,6 +82,7 @@ class CPMReceiveState(CPMState):
 
     def receive_messages(self):
         def update_load(pkt):
+            pkt.show2(); 
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
                 message_data = parse_data_message(pkt, self.context.device)
                 self.context.dbState._set(
