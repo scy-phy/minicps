@@ -83,6 +83,7 @@ class CPMReceiveState(CPMState):
     def receive_messages(self):
 
         def update_load(pkt):
+                    print("DEST ADD: ", self.context.dst_adr)
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
                 message_data = parse_data_message(pkt, self.context.device)
                 self.context.dbState._set(
@@ -122,12 +123,8 @@ class CPMReceiveState(CPMState):
             else:
                 return True
 
-        def filter_pkg(src): 
-            print(src)
-            return True
-
         sniff(
-            lfilter=lambda d: filter_pkg(d.src),
+            lfilter=lambda d: netaddr.EUI(str(d.src)) == netaddr.EUI(self.context.dst_adr),
             store=0,
             count=-1,
             prn=update_load,
