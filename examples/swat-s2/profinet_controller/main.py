@@ -183,11 +183,11 @@ def main():
     print("---INIT DEVICE START---")
     connection.initialize_device(ip=args.ip, name=args.name, prev_device_name="")
     # set mac adress for corresponding device otherwise no messages are received
-    connection.consumer.dst_adr = connection.device.getDeviceMac()
-    print("---INIT DEVICE END---")
-    print("---CONNECT DEVICE START---")
-    connection.connect_device(ip=args.ip)
-    print("---CONNECT DEVICE END---")
+    # connection.consumer.dst_adr = connection.device.getDeviceMac()
+    # print("---INIT DEVICE END---")
+    # print("---CONNECT DEVICE START---")
+    # connection.connect_device(ip=args.ip)
+    # print("---CONNECT DEVICE END---")
 
 
 if __name__ == "__main__":
