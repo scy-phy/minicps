@@ -275,7 +275,7 @@ SCHEMA_INIT = """
     INSERT INTO swat_s2 VALUES ('FIT201',   8, '2.45');
 
     INSERT INTO swat_s2 VALUES ('LIT301',   10, '0.500');
-    INSERT INTO swat_s2 VALUES ('P301',   9, '1');
+    INSERT INTO swat_s2 VALUES ('P301',   9, '0');
 """
 
 PN_SCHEMA = """
@@ -296,6 +296,5 @@ PN_SCHEMA_INIT = """
     INSERT INTO profinet_device VALUES ('DI64', 1, 0.0);
 """
 PN_NAME = "profinet_device"
-
 PN_PATH = "profinet_device.sqlite"
 PN_STATE = {"name": PN_NAME, "path": PN_PATH}

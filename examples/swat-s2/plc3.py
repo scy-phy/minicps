@@ -50,6 +50,8 @@ class SwatPLC3(IOController):
             if (lit301 > 1): 
                 self.send(P301_PLC, 0, PLC3_ADDR)
 
+            if (lit301 < 0.5):
+                self.send(P301_PLC, 1, PLC3_ADDR)
 
 
 

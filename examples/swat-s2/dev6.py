@@ -14,7 +14,7 @@ PLC3_ADDR = IP['plc3']
 DEV6_ADDR = IP['dev6']
 
 P301 = ('P301', 9)
-P301_PLC = ('P301', 3)
+# P301_PLC = ('P301', 3)
 
 # SPHINX_SWAT_TUTORIAL PLC1 LOGIC)
 
@@ -24,7 +24,6 @@ class SwatDev6(IODevice):
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev4 enters pre_loop'
         self.set(P301, 1)
-        self.send(P301_PLC, 1, PLC3_ADDR)
         time.sleep(sleep)
 
     def main_loop(self):
