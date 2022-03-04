@@ -73,7 +73,7 @@ class SwatDev6(IODevice):
             # compute new water_level
             new_level = water_volume / TANK_SECTION
 
-            print new_level
+            print 'New Level  %.5f' % new_level
 
             # level cannot be negative
             if new_level <= 0.0:
