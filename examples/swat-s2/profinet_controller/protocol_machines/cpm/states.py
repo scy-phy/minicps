@@ -101,7 +101,7 @@ class CPMReceiveState(CPMState):
                 )
                 print(
                     "value DO32: ",
-                    message_data.input_data["data"][1]
+                    message_data.input_data["data"]
                 )
 
             elif pkt.haslayer("ProfinetIO"):
