@@ -13,13 +13,14 @@ import argparse
 from scapy.contrib.pnio_rpc import *
 from scapy.contrib.dce_rpc import *
 import argparse
+import netaddr
 
 load_contrib("dce_rpc")
 load_contrib("pnio_rpc")
 
 class PNConnection:
     def __init__(self, iface, mac_address, device_path, state) -> None:
-        print(mac_address)
+        print(netaddr.EUI(mac_address))
         self.device = Device(CMINAIdentifyState(), iface=iface)
         self.connection = Connection(
             CPMCONConnectState(),
