@@ -83,7 +83,6 @@ class CPMReceiveState(CPMState):
     def receive_messages(self):
 
         def update_load(pkt):
-                    print("DEST ADD: ", self.context.dst_adr)
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
                 message_data = parse_data_message(pkt, self.context.device)
                 self.context.dbState._set(
