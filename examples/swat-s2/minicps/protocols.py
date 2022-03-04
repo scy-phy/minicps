@@ -629,7 +629,7 @@ class PnioProtocolDevice(Protocol):
         IFACE = '-i ' + "%s-eth0"%(device_name) + ' '
         DBNAME = '-y ' + PN_NAME + ' '
         DBPATH = '-x ../../' + db_path + ' '
-        PID = '-z ' + '1'
+        PID = '-z ' + '9' 
 
         if sys.platform.startswith('linux'):
             SHELL = '/bin/bash -c '
