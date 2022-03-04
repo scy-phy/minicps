@@ -40,7 +40,7 @@ class SwatPLC3(IOController):
         count = 0
         while(count <= PLC_SAMPLES):
 
-            lit301 = float(self.receive(LIT301, DEV6_ADDR))
+            lit301 = float(self.receive(LIT301_PLC, PLC3_ADDR))
 
             print 'DEBUG plc1 lit101: %.5f' % lit301
             # self.send(LIT301_PLC, lit301, PLC3_ADDR)
