@@ -14,10 +14,12 @@ PLC1_ADDR = IP['plc1']
 PLC2_ADDR = IP['plc2']
 PLC3_ADDR = IP['plc3']
 DEV6_ADDR = IP['dev6']
+DEV7_ADDR = IP['dev7']
 
 LIT301_PLC = ('LIT301', 3)
-LIT301 = ('LIT301', 9)
-
+LIT301 = ('LIT301', 10)
+P301_PLC = ('P301', 3)
+P301 = ('P301', 9)
 
 class SwatPLC3(IOController):
 
@@ -41,8 +43,11 @@ class SwatPLC3(IOController):
         while(count <= PLC_SAMPLES):
 
             lit301 = float(self.receive(LIT301_PLC, PLC3_ADDR))
+            p301 = float(self.receive(P301_PLC, PLC3_ADDR))
 
-            print 'DEBUG plc1 lit101: %.5f' % lit301
+            print 'DEBUG plc1 lit301: %.5f' % lit301
+            print 'DEBUG plc1 p301: %.5f' % p301
+
             # self.send(LIT301_PLC, lit301, PLC3_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)

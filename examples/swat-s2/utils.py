@@ -157,6 +157,10 @@ DEV5_DATA = {
 DEV6_DATA = {
     "TODO": "TODO",
 }
+# TODO
+DEV7_DATA = {
+    "TODO": "TODO",
+}
 
 # IO-CONTROLER / PLCs
 # SPHINX_SWAT_TUTORIAL PLC1 UTILS(
@@ -188,9 +192,24 @@ DEV5_SERVER = {"address": DEV5_ADDR, "tags": DEV5_TAGS}
 DEV5_PROTOCOL = {"name": "enip", "mode": 1, "server": DEV5_SERVER}
 
 DEV6_ADDR = IP["dev6"]
-DEV6_TAGS = (("LIT301", 9, "REAL"),)
-DEV6_SERVER = {"address": DEV6_ADDR, "tags": DEV6_TAGS, "mac": MAC["dev6"], "name": "dev6"}
+DEV6_TAGS = (("P301", 9, "INT"),)
+DEV6_SERVER = {
+    "address": DEV6_ADDR,
+    "tags": DEV6_TAGS,
+    "mac": MAC["dev6"],
+    "name": "dev6",
+}
 DEV6_PROTOCOL = {"name": "pnio_d", "mode": 1, "server": DEV6_SERVER}
+
+DEV7_ADDR = IP["dev7"]
+DEV7_TAGS = (("LIT301", 10, "REAL"),)
+DEV7_SERVER = {
+    "address": DEV7_ADDR,
+    "tags": DEV7_TAGS,
+    "mac": MAC["dev7"],
+    "name": "dev7",
+}
+DEV7_PROTOCOL = {"name": "pnio_d", "mode": 1, "server": DEV7_SERVER}
 
 PLC1_ADDR = IP["plc1"]
 PLC1_TAGS = (
@@ -219,8 +238,14 @@ PLC3_ADDR = IP["plc3"]
 PLC3_TAGS = (
     # interlocks does NOT go to the statedb
     ("LIT301", 3, "REAL"),
+    ("P301", 3, "INT"),
 )
-PLC3_SERVER = {"address": PLC3_ADDR, "tags": PLC3_TAGS, "device": DEV6_SERVER, "name": "plc3"}
+PLC3_SERVER = {
+    "address": PLC3_ADDR,
+    "tags": PLC3_TAGS,
+    "devices": {"LIT301": DEV7_SERVER, "P301": DEV6_SERVER},
+    "name": "plc3",
+}
 PLC3_PROTOCOL = {"name": "pnio_c", "mode": 1, "server": PLC3_SERVER}
 
 
@@ -249,7 +274,8 @@ SCHEMA_INIT = """
 
     INSERT INTO swat_s2 VALUES ('FIT201',   8, '2.45');
 
-    INSERT INTO swat_s2 VALUES ('LIT301',   9, '0.500');
+    INSERT INTO swat_s2 VALUES ('LIT301',   10, '0.500');
+    INSERT INTO swat_s2 VALUES ('P301',   9, '1');
 """
 
 PN_SCHEMA = """
