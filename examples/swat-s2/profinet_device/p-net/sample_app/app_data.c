@@ -95,6 +95,7 @@ uint8_t * app_data_get_input_data (
       // printf ("Count = %u!\n", counter);
 
       // inputdata_4[0] = counter;
+      printf("Input data 4: %u%u%u%u\n", inputdata_4[0], inputdata_4[1], inputdata_4[2], inputdata_4[3]);
 
       return inputdata_4;
    }
@@ -313,7 +314,6 @@ void app_get_sql_values (sqlite3 * db, int pid, char * name[], int amount_names)
    {
       inputdata_4[i] = (uint8_t)arrayFloat.array[i];
    }
-   printf("Input data 4: %u%u%u%u\n", inputdata_4[0], inputdata_4[1], inputdata_4[2], inputdata_4[3]);
 
    inputdata_1[0] = results[0];
 
