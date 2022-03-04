@@ -19,7 +19,7 @@ load_contrib("pnio_rpc")
 
 class PNConnection:
     def __init__(self, iface, mac_address, device_path, state) -> None:
-
+        print(mac_address)
         self.device = Device(CMINAIdentifyState(), iface=iface)
         self.connection = Connection(
             CPMCONConnectState(),

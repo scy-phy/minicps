@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from email import message
-from netaddr import EUI
+import netaddr
 
 from numpy import float64
 from protocol_machines.cpm.helper.gsdml_parser import XMLDevice
@@ -81,7 +81,6 @@ class CPMReceiveState(CPMState):
         self.thread = None
 
     def receive_messages(self):
-        print("DEST ADD: ", self.context.dst_adr)
 
         def update_load(pkt):
             if pkt.haslayer("PROFINET IO Real Time Cyclic Default Raw Data"):
@@ -124,7 +123,7 @@ class CPMReceiveState(CPMState):
                 return True
 
         sniff(
-            lfilter=lambda d: EUI(d.src) == EUI(self.context.dst_adr),
+            lfilter=lambda d: netaddr.EUI(d.src) == netaddr.EUI(self.context.dst_adr),
             store=0,
             count=-1,
             prn=update_load,
