@@ -120,7 +120,7 @@ class CPMReceiveState(CPMState):
                 return True
 
         sniff(
-            lfilter=lambda d: d.src == self.context.dst_adr,
+            lfilter=lambda d: d.src == "00:1D:9C:C8:BD:16",
             store=0,
             count=-1,
             prn=update_load,
