@@ -93,7 +93,6 @@ uint8_t * app_data_get_input_data (
       *iops = PNET_IOXS_GOOD;
       // printf ("Input n-data received!\n");
       // printf ("Count = %u!\n", counter);
-
       // inputdata_4[0] = counter;
       // printf("Input data 4: %u%u%u%u\n", inputdata_4[0], inputdata_4[1], inputdata_4[2], inputdata_4[3]);
 
