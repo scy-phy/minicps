@@ -58,7 +58,7 @@ class PNConnection:
         self.connection.announceEndPrm()
         self.connection.ackApplicationReady()
 
-        time.sleep(150)
+        time.sleep(120)
 
         self.stop_consumer_provider()
 
