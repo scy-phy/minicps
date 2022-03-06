@@ -55,6 +55,7 @@ class SwatDev7(IODevice):
 
             # inflows volumes
             p301 = float(self.get(P301))   
+            
             if p301 > 0:
                 inflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print "DEBUG RawWaterTank inflow: ", inflow
