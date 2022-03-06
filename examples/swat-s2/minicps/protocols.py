@@ -518,8 +518,6 @@ class PnioProtocolController(Protocol):
         DBNAME = '--dbname ' + PN_NAME + ' '
         DBPATH = '--dbpath ../' + db_path + ' '
 
-
-
         if sys.platform.startswith('linux'):
             SHELL = '/bin/bash -c '
             LOG = '--log logs/protocols_tests_pnio_server '
@@ -642,7 +640,7 @@ class PnioProtocolDevice(Protocol):
 
         cmd = shlex.split(
             CMD +
-            IFACE+
+            IFACE +
             DBNAME +
             DBPATH + PID
         )

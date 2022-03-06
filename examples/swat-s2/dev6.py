@@ -23,7 +23,7 @@ class SwatDev6(IODevice):
 
     def pre_loop(self, sleep=0.1):
         print 'DEBUG: swat-s2 dev4 enters pre_loop'
-        self.set(P301, 1)
+        self.set(P301, 0)
         time.sleep(sleep)
 
     def main_loop(self):

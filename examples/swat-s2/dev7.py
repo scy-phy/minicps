@@ -62,10 +62,10 @@ class SwatDev7(IODevice):
 
             # outflows volumes
             # p101 = self.get(P101)
-            # if int(p101) == 1:
-            #     outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
-            #     print "DEBUG RawWaterTank outflow: ", outflow
-            #     water_volume -= outflow
+            if p301 == 0:
+                outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
+                print "DEBUG RawWaterTank outflow: ", outflow
+                water_volume -= outflow
 
             # compute new water_level
             new_level = water_volume / TANK_SECTION
