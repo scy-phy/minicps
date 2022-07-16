@@ -29,7 +29,7 @@ Installation
 
 .. REQUIREMENTS {{{3
 
-Requirements
+Requirements: Installing Mininet
 ------------
 
 You need to start MiniCPS installation by `installing
@@ -39,16 +39,48 @@ Notice that Mininet can be installed either inside a Virtual Machine (VM)
 or on your physical machine.
 The official Mininet VM comes without an X-server that is an *optional*
 requirements for MiniCPS (e.g., it can be used to display a pop-up window
-with sensor data visualization).
+with sensor data visualization). If you decide to install Mininet on your own, the following hints can be helpful.
 
-The `Install MiniCPS`_ section provides instructions to install ``minicps``
+Mininet seems to  assume a mininet user in the mininet group is present on the system. You need to create both
+
+.. code-block:: console
+
+   sudo useradd mininet
+   sudo addgroup mininet
+
+
+Mininet relies on openvswitch-controller as basic SDN controller (unless you install POX or other controllers yourself). Since Open vSwitch 2.1, the openvswitch-controller was renamed to openvswitch-testcontroller. This means you will have to a) ensure that you have the corresponding package installed, e.g. via (on Ubuntu 16.04 or later)
+
+.. code-block:: console
+
+   sudo apt install openvswitch-testcontroller
+
+Then, you need to patch the minicps source (e.g., /usr/lib/python2.7/dist-packages/mininet/clean.py and /usr/lib/python2.7/dist-packages/mininet/node.py) to use the updated binary name (change occurances of openvswitch-controller to openvswitch-testcontroller). 
+
+.. code-block:: console
+
+   find /usr/lib/python2.7/dist-packages/mininet/ -type f -exec sudo sed -i 's/ovs-controller/ovs-testcontroller/' {} \;
+
+Ensure the corresponding service is running, e.g., by using    
+   
+.. code-block:: console
+
+   sudo service openvswitch-switch start
+
+You should now be able to start a simple topology without error messages by using 
+
+.. code-block:: console
+
+   sudo mn
+
+   
+The `Installing MiniCPS`_ section provides instructions to install ``minicps``
 for a user or a developer, and it assumes that you *already* have installed
 ``mininet``.
 
-
 .. INSTALL MINICPS {{{3
 
-Install MiniCPS
+Installing MiniCPS
 ---------------
 
 MiniCPS is can be installed using ``pip``:
