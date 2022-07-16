@@ -208,7 +208,7 @@ def stop():
 
     net.stop()
 
-    print "*** Running clean.sh"
+    print("*** Running clean.sh")
     call('./clean.sh')
 
     running = False
@@ -229,5 +229,3 @@ def restart():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded = True)
-
-

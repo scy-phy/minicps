@@ -76,5 +76,5 @@ if __name__ == '__main__':
     net.stop()
 
 
-    print "*** Running clean.sh"
+    print("*** Running clean.sh")
     call('./clean.sh')

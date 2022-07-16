@@ -20,8 +20,7 @@ FIT201_2 = ('FIT201', 2)
 class SwatPLC2(PLC):
 
     def pre_loop(self, sleep=0.1):
-        print 'DEBUG: swat-s1 plc2 enters pre_loop'
-        print
+        print('DEBUG: swat-s1 plc2 enters pre_loop')
 
         time.sleep(sleep)
 
@@ -32,23 +31,22 @@ class SwatPLC2(PLC):
             - update interal enip server
         """
 
-        print 'DEBUG: swat-s1 plc2 enters main_loop.'
-        print
+        print('DEBUG: swat-s1 plc2 enters main_loop.')
 
         count = 0
         while(count <= PLC_SAMPLES):
 
             fit201 = float(self.get(FIT201_2))
-            print "DEBUG PLC2 - get fit201: %f" % fit201
+            print("DEBUG PLC2 - get fit201: %f" % fit201)
 
             self.send(FIT201_2, fit201, PLC2_ADDR)
             # fit201 = self.receive(FIT201_2, PLC2_ADDR)
-            # print "DEBUG PLC2 - receive fit201: ", fit201
+            # print("DEBUG PLC2 - receive fit201: ", fit201)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
 
-        print 'DEBUG swat plc2 shutdown'
+        print9'DEBUG swat plc2 shutdown')
 
 
 if __name__ == "__main__":

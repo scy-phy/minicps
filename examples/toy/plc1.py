@@ -25,33 +25,31 @@ SENSOR3_2 = ('SENSOR3', 2)
 class ToyPLC1(PLC):
 
     def pre_loop(self, sleep=0.1):
-        print 'DEBUG: toy plc1 enters pre_loop'
-        print
+        print('DEBUG: toy plc1 enters pre_loop')
 
         # sensor1 = self.set(SENSOR1_1, 2)
-        # print 'DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_1)
+        # print('DEBUG: toy plc1 sensor1: ', self.get(SENSOR1_1))
         # self.memory['SENSOR1'] = sensor1
         self.send(SENSOR3_1, 2, PLC1_ADDR)
 
         time.sleep(sleep)
 
     def main_loop(self, sleep=0.5):
-        print 'DEBUG: toy plc1 enters main_loop'
-        print
+        print('DEBUG: toy plc1 enters main_loop')
 
         count = 0
         END = 6e6
         while(True):
             rec_s31 = self.receive(SENSOR3_1, PLC1_ADDR)
-            # print 'DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31
+            # print('DEBUG: toy plc1 receive SENSOR3_1: ', rec_s31)
             get_s32 = self.get(SENSOR3_2)
-            print 'DEBUG: toy plc1 get SENSOR3_2: ', get_s32
+            print('DEBUG: toy plc1 get SENSOR3_2: ', get_s32)
 
             time.sleep(1)
             count += 1
 
             if count > END:
-                print 'DEBUG toy plc1 shutdown'
+                print('DEBUG toy plc1 shutdown')
                 break
 
 
