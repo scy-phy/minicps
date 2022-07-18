@@ -38,7 +38,6 @@ class RawWaterTank(Tank):
         # SPHINX_SWAT_TUTORIAL STATE INIT(
         self.set(MV101, 1)
         self.set(P101, 0)
-        self.set(LIT301, 0.300)
         self.level = self.set(LIT101, 0.800)
         # SPHINX_SWAT_TUTORIAL STATE INIT)
 
@@ -100,10 +99,8 @@ class RawWaterTank(Tank):
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
                 print('DEBUG RawWaterTank below LL count: ', count)
-                break
-                
+                break 
             new_data = pd.DataFrame(data = [[timestamp, self.get(MV101), self.get(P101), self.get(LIT101), self.get(LIT301), self.get(FIT101), self.get(FIT201)]], columns=columns)
-            print(new_data)
             df = pd.concat([df,new_data])
             df.to_csv('logs/data.csv', index=False)
             count += 1

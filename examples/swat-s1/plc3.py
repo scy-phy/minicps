@@ -20,8 +20,7 @@ LIT301_3 = ('LIT301', 3)
 class SwatPLC3(PLC):
 
     def pre_loop(self, sleep=0.1):
-        print 'DEBUG: swat-s1 plc3 enters pre_loop'
-        print
+        print('DEBUG: swat-s1 plc3 enters pre_loop')
 
         time.sleep(sleep)
 
@@ -32,21 +31,20 @@ class SwatPLC3(PLC):
             - update internal enip server
         """
 
-        print 'DEBUG: swat-s1 plc3 enters main_loop.'
-        print
+        print('DEBUG: swat-s1 plc3 enters main_loop.')
 
         count = 0
         while(count <= PLC_SAMPLES):
 
             lit301 = float(self.get(LIT301_3))
-            print "DEBUG PLC3 - get lit301: %f" % lit301
+            print("DEBUG PLC3 - get lit301: %f" % lit301)
 
             self.send(LIT301_3, lit301, PLC3_ADDR)
 
             time.sleep(PLC_PERIOD_SEC)
             count += 1
 
-        print 'DEBUG swat plc3 shutdown'
+        print('DEBUG swat plc3 shutdown')
 
 
 if __name__ == "__main__":
