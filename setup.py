@@ -44,6 +44,7 @@ on top of mininet.',
         'pyasn1',
         'pymodbus',
         'cpppo==4.3.4',
+        'pandas',
     ],
     # NOTE: specify files relative to the module path
     package_data={},

@@ -99,9 +99,9 @@ class RawWaterTank(Tank):
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
                 print('DEBUG RawWaterTank below LL count: ', count)
-                break
-
-            df = df.append(pd.Series([timestamp, self.get(MV101), self.get(P101), self.get(LIT101), self.get(LIT101), self.get(FIT101), self.get(FIT201)], index=df.columns), ignore_index=True)
+                break 
+            new_data = pd.DataFrame(data = [[timestamp, self.get(MV101), self.get(P101), self.get(LIT101), self.get(LIT301), self.get(FIT101), self.get(FIT201)]], columns=columns)
+            df = pd.concat([df,new_data])
             df.to_csv('logs/data.csv', index=False)
             count += 1
             time.sleep(PP_PERIOD_SEC)
