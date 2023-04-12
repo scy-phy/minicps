@@ -3,5 +3,5 @@ rednose
 cryptography
 pyasn1
 pymodbus
-cpppo
+cpppo==4.3.4
 twisted

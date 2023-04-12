@@ -67,7 +67,7 @@ class Protocol(object):
             self._minicps_path = __file__[:index+7] + '/'
 
         except Exception as error:
-            print 'ERROR Protocol __init__ set _minicps_path: ', error
+            print('ERROR Protocol __init__ set _minicps_path: ', error)
 
         if self._mode > 0:
             # TODO: update server dict field: log
@@ -85,7 +85,7 @@ class Protocol(object):
         :values: to serve
         """
 
-        print '_start_server: please override me.'
+        print('_start_server: please override me.')
 
     @classmethod
     def _stop_server(cls, address):
@@ -96,7 +96,7 @@ class Protocol(object):
         :address: to stop
         """
 
-        print '_stop_server: please override me.'
+        print('_stop_server: please override me.')
 
     def _send(self, what, value, address, **kwargs):
         """Send (write) a value to another host.
@@ -105,7 +105,7 @@ class Protocol(object):
         :address: to send to
         """
 
-        print '_send: please override me.'
+        print('_send: please override me.')
 
     def _receive(self, what, address, **kwargs):
         """Receive (read) a value from another host.
@@ -114,7 +114,7 @@ class Protocol(object):
         :what: to ask for
         """
 
-        print '_receive: please override me.'
+        print('_receive: please override me.')
 
     def _send_multiple(self, what, values, address):
         """Send (write) multiple values to another host.
@@ -123,7 +123,7 @@ class Protocol(object):
         :what: to ask for
         """
 
-        print '_send_multiple: please override me.'
+        print('_send_multiple: please override me.')
 
 # }}}
 
@@ -189,14 +189,14 @@ class EnipProtocol(Protocol):
             else:
                 raise OSError
 
-            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            print('DEBUG EnipProtocol server addr: ', self._server['address'])
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
+                print('DEBUG: concatenating server address with default port.')
                 self._server['address'] += EnipProtocol._TCP_PORT
 
             elif not self._server['address'].endswith(EnipProtocol._TCP_PORT):
-                print 'WARNING: not using std enip %s TCP port' % \
-                    EnipProtocol._TCP_PORT
+                print('WARNING: not using std enip %s TCP port' % \
+                    EnipProtocol._TCP_PORT)
 
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
 
@@ -213,14 +213,14 @@ class EnipProtocol(Protocol):
             else:
                 raise OSError
 
-            print 'DEBUG EnipProtocol server addr: ', self._server['address']
+            print('DEBUG EnipProtocol server addr: ', self._server['address'])
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
+                print('DEBUG: concatenating server address with default port.')
                 self._server['address'] += EnipProtocol._UDP_PORT
 
             elif not self._server['address'].endswith(EnipProtocol._UDP_PORT):
-                print 'WARNING: not using std enip %s UDP port' % \
-                    EnipProtocol._UDP_PORT
+                print('WARNING: not using std enip %s UDP port' % \
+                    EnipProtocol._UDP_PORT)
             # TODO: add --udp flag
             self._server_cmd = sys.executable + ' -m cpppo.server.enip '
             if sys.platform.startswith('linux'):
@@ -277,7 +277,7 @@ class EnipProtocol(Protocol):
             tags_string += '='
             tags_string += str(tag[-1])
             tags_string += ' '
-        print 'DEBUG enip server tags_string: ', tags_string
+        print('DEBUG enip server tags_string: ', tags_string)
 
         return tags_string
 
@@ -302,7 +302,7 @@ class EnipProtocol(Protocol):
             return server
 
         except Exception as error:
-            print 'ERROR enip _start_server: ', error
+            print('ERROR enip _start_server: ', error)
 
     # TODO: how to start a UDP cpppo server?
     # TODO: parametric PRINT_STDOUT and others
@@ -345,7 +345,7 @@ class EnipProtocol(Protocol):
             ADDRESS +
             TAGS
         )
-        print 'DEBUG enip _start_server cmd: ', cmd
+        print('DEBUG enip _start_server cmd: ', cmd)
 
         return cmd
 
@@ -359,7 +359,7 @@ class EnipProtocol(Protocol):
         try:
             server.kill()
         except Exception as error:
-            print 'ERROR stop enip server: ', error
+            print('ERROR stop enip server: ', error)
 
     def _send(self, what, value, address='localhost:44818', **kwargs):
         """Send (write) a value to another host.
@@ -390,7 +390,7 @@ class EnipProtocol(Protocol):
             client.wait()
 
         except Exception as error:
-            print 'ERROR enip _send: ', error
+            print('ERROR enip _send: ', error)
 
     def _receive(self, what, address='localhost:44818', **kwargs):
         """Receive (read) a value from another host.
@@ -407,6 +407,8 @@ class EnipProtocol(Protocol):
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
 
+        print("DEBUG " + tag_string)
+
         cmd = shlex.split(
             self._client_cmd +
             '--log ' + self._client_log +
@@ -421,17 +423,20 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            # print 'DEBUG enip _receive raw_out: ', raw_out
+            print('DEBUG1 ', raw_out)
 
             # value is stored as first tuple element
             # between a pair of square brackets
+            
             raw_string = raw_out[0]
+            print("DEBUG2 " + str(raw_string))
+            raw_string = str(raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
-
+            print("DEBUG4 " + out)
             return out
 
         except Exception as error:
-            print 'ERROR enip _receive: ', error
+            print('ERROR enip _receive: ', error)
 
 # }}}
 
@@ -488,18 +493,18 @@ class ModbusProtocol(Protocol):
             else:
                 raise OSError
 
-            print 'DEBUG ModbusProtocol server addr: ', self._server['address']
+            print('DEBUG ModbusProtocol server addr: ', self._server['address'])
             if self._server['address'].find(':') == -1:
-                print 'DEBUG: concatenating server address with default port.'
+                print('DEBUG: concatenating server address with default port.')
                 self._server['address'] += ModbusProtocol._TCP_PORT
 
             elif not self._server['address'].endswith(ModbusProtocol._TCP_PORT):
-                print 'WARNING: not using std modbus %s TCP port' % \
-                    ModbusProtocol._TCP_PORT
+                print('WARNING: not using std modbus %s TCP port' % \
+                    ModbusProtocol._TCP_PORT)
 
             server_cmd_path = sys.executable + ' ' + self._minicps_path + \
                     'pymodbus/servers.py '   # NOTE: ending whitespace
-            print 'DEBUG: generating server_cmd_path: {}'.format(server_cmd_path)
+            print('DEBUG: generating server_cmd_path: {}'.format(server_cmd_path))
 
             self._server_subprocess = ModbusProtocol._start_server(
                 address=self._server['address'],
@@ -550,7 +555,7 @@ class ModbusProtocol(Protocol):
             return server
 
         except Exception as error:
-            print 'ERROR modbus _start_server: ', error
+            print('ERROR modbus _start_server: ', error)
 
 
     @classmethod
@@ -581,7 +586,7 @@ class ModbusProtocol(Protocol):
             MODE +
             DI + CO + IR + HR
         )
-        print 'DEBUG modbus _start_server cmd: ', cmd
+        print('DEBUG modbus _start_server cmd: ', cmd)
 
         return cmd
 
@@ -615,7 +620,7 @@ class ModbusProtocol(Protocol):
         try:
             server.kill()
         except Exception as error:
-            print 'ERROR stop modbus server: ', error
+            print('ERROR stop modbus server: ', error)
 
 
     def _send(self, what, value, address='localhost:502', **kwargs):
@@ -702,7 +707,7 @@ class ModbusProtocol(Protocol):
             client.wait()
 
         except Exception as error:
-            print 'ERROR modbus _send: ', error
+            print('ERROR modbus _send: ', error)
 
 
     def _receive(self, what, address='localhost:502', **kwargs):
@@ -815,6 +820,6 @@ class ModbusProtocol(Protocol):
             return out
 
         except Exception as error:
-            print 'ERROR modbus _receive: ', error
-
+            print('ERROR modbus _receive: ', error)
+#
 # }}}

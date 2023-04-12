@@ -14,6 +14,7 @@ from utils import PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT
 from utils import TANK_HEIGHT, TANK_SECTION, TANK_DIAMETER
 from utils import LIT_101_M, RWT_INIT_LEVEL
 from utils import STATE, PP_PERIOD_SEC, PP_PERIOD_HOURS, PP_SAMPLES
+import pandas as pd
 
 import sys
 import time
@@ -48,6 +49,9 @@ class RawWaterTank(Tank):
     def main_loop(self):
 
         count = 0
+        columns = ['Time', 'MV101', 'P101', 'LIT101', 'LIT301', 'FIT101', 'FIT201']
+        df = pd.DataFrame(columns=columns)
+        timestamp=0
         while(count <= PP_SAMPLES):
 
             new_level = self.level
@@ -60,7 +64,7 @@ class RawWaterTank(Tank):
             if int(mv101) == 1:
                 self.set(FIT101, PUMP_FLOWRATE_IN)
                 inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
-                # print "DEBUG RawWaterTank inflow: ", inflow
+                # print("DEBUG RawWaterTank inflow: ", inflow)
                 water_volume += inflow
             else:
                 self.set(FIT101, 0.00)
@@ -70,7 +74,7 @@ class RawWaterTank(Tank):
             if int(p101) == 1:
                 self.set(FIT201, PUMP_FLOWRATE_OUT)
                 outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
-                # print "DEBUG RawWaterTank outflow: ", outflow
+                # print("DEBUG RawWaterTank outflow: ", outflow)
                 water_volume -= outflow
             else:
                 self.set(FIT201, 0.00)
@@ -83,22 +87,25 @@ class RawWaterTank(Tank):
                 new_level = 0.0
 
             # update internal and state water level
-            print "DEBUG new_level: %.5f \t delta: %.5f" % (
-                new_level, new_level - self.level)
+            print("DEBUG new_level: %.5f \t delta: %.5f" % (
+                new_level, new_level - self.level))
             self.level = self.set(LIT101, new_level)
 
             # 988 sec starting from 0.500 m
             if new_level >= LIT_101_M['HH']:
-                print 'DEBUG RawWaterTank above HH count: ', count
+                print('DEBUG RawWaterTank above HH count: ', count)
                 break
 
             # 367 sec starting from 0.500 m
             elif new_level <= LIT_101_M['LL']:
-                print 'DEBUG RawWaterTank below LL count: ', count
-                break
-
+                print('DEBUG RawWaterTank below LL count: ', count)
+                break 
+            new_data = pd.DataFrame(data = [[timestamp, self.get(MV101), self.get(P101), self.get(LIT101), self.get(LIT301), self.get(FIT101), self.get(FIT201)]], columns=columns)
+            df = pd.concat([df,new_data])
+            df.to_csv('logs/data.csv', index=False)
             count += 1
             time.sleep(PP_PERIOD_SEC)
+            timestamp+=PP_PERIOD_SEC
 
 
 if __name__ == '__main__':
