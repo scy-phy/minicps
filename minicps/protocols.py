@@ -464,7 +464,7 @@ class EnipProtocol(Protocol):
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
 
-        print("DEBUG " + tag_string)
+        # print("DEBUG " + tag_string)
 
         cmd = shlex.split(
             self._client_cmd +
@@ -480,16 +480,16 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print('DEBUG1 ', raw_out)
+            # print('DEBUG1 ', raw_out)
 
             # value is stored as first tuple element
             # between a pair of square brackets
 
             raw_string = raw_out[0]
-            print("DEBUG2 " + str(raw_string))
+            # print("DEBUG2 " + str(raw_string))
             raw_string = str(raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
-            print("DEBUG4 " + out)
+            # print("DEBUG4 " + out)
             return out
 
         except Exception as error:
