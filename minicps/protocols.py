@@ -116,6 +116,16 @@ class Protocol(object):
 
         print('_receive: please override me.')
 
+
+    def _receive_multiple(self, what, address, **kwargs):
+        """Receive (read) a list of values from another host.
+
+        :address: to receive from
+        :what: list to ask for
+        """
+
+        print('_receive_multiple: please override me.')
+
     def _send_multiple(self, what, values, address):
         """Send (write) multiple values to another host.
 
@@ -231,6 +241,27 @@ class EnipProtocol(Protocol):
             # TODO: start UDP enip server
 
     @classmethod
+    def _tuple_to_cpppo_tag_multiple(cls, what, values=None, serializer=':'):
+        """Returns a list of cpppo strings to read/write a server.
+
+        Can be used both to generate cpppo scalar read query, like
+        SENSOR1:1, and scalar write query, like ACTUATOR1=1.
+
+        Value correctness is up the client and it is blindly
+        converted to string and appended to the cpppo client query.
+        """
+        tag_string = ''
+
+        if values == None:
+            for i in range(len(what)):
+                tag_string += what[i][0] + EnipProtocol._SERIALIZER + str(what[i][1]) + " "
+        else:
+            for i in range(len(what)):
+                tag_string += what[i][0] + EnipProtocol._SERIALIZER + str(what[i][1]) + "=" + str(values[i]) + " "
+
+        return tag_string
+
+    @classmethod
     def _tuple_to_cpppo_tag(cls, what, value=None, serializer=':'):
         """Returns a cpppo string to read/write a server.
 
@@ -277,7 +308,7 @@ class EnipProtocol(Protocol):
             tags_string += '='
             tags_string += str(tag[-1])
             tags_string += ' '
-        print('DEBUG enip server tags_string: ', tags_string)
+        # print('DEBUG enip server tags_string: ', tags_string)
 
         return tags_string
 
@@ -326,7 +357,7 @@ class EnipProtocol(Protocol):
         """
 
         CMD = sys.executable + ' -m cpppo.server.enip '
-        PRINT_STDOUT = '--print '
+        PRINT_STDOUT = '--no-print '
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
         # print 'DEBUG: enip _start_server_cmd HTTP: ', HTTP
         ADDRESS = '--address ' + address + ' '
@@ -348,6 +379,32 @@ class EnipProtocol(Protocol):
         print('DEBUG enip _start_server cmd: ', cmd)
 
         return cmd
+
+    def _send_multiple(self, what, values, address, **kwargs):
+        """Send (write) a list of values to another host.
+        It is a blocking operation the parent process will wait till the child
+        cpppo process returns.
+        :what: list of tuple addressing what
+        :values: sent
+        :address: ip[:port]
+        """
+
+        tag_string = ''
+        tag_string = EnipProtocol._tuple_to_cpppo_tag_multiple(what, values)
+
+        cmd = shlex.split(
+            self._client_cmd +
+            '--log ' + self._client_log +
+            '--address ' + address +
+            ' ' + tag_string
+        )
+
+        try:
+            client = subprocess.Popen(cmd, shell=False)
+            client.wait()
+
+        except Exception as error:
+            print('ERROR enip _send multiple: '), error
 
     @classmethod
     def _stop_server(cls, server):
@@ -407,12 +464,12 @@ class EnipProtocol(Protocol):
         tag_string = ''
         tag_string = EnipProtocol._tuple_to_cpppo_tag(what)
 
-        print("DEBUG " + tag_string)
+        # print("DEBUG " + tag_string)
 
         cmd = shlex.split(
             self._client_cmd +
             '--log ' + self._client_log +
-            '--address ' + address +
+            ' --print --address ' + address +
             ' ' + tag_string
         )
         # print 'DEBUG enip _receive cmd shlex list: ', cmd
@@ -423,20 +480,60 @@ class EnipProtocol(Protocol):
 
             # client.communicate is blocking
             raw_out = client.communicate()
-            print('DEBUG1 ', raw_out)
+            # print('DEBUG1 ', raw_out)
 
             # value is stored as first tuple element
             # between a pair of square brackets
-            
+
             raw_string = raw_out[0]
-            print("DEBUG2 " + str(raw_string))
+            # print("DEBUG2 " + str(raw_string))
             raw_string = str(raw_string)
             out = raw_string[(raw_string.find('[') + 1):raw_string.find(']')]
-            print("DEBUG4 " + out)
+            # print("DEBUG4 " + out)
             return out
 
         except Exception as error:
             print('ERROR enip _receive: ', error)
+
+    def _receive_multiple(self, what, address='localhost:44818', **kwargs):
+            """Receive (read) a value from another host.
+            It is a blocking operation the parent process will wait till the child
+            cpppo process returns.
+            :what: list to ask for
+            :address: to receive from
+            :returns: tag value as a `str`
+            """
+
+            tag_string = ''
+            tag_string = EnipProtocol._tuple_to_cpppo_tag_multiple(what)
+
+            cmd = shlex.split(
+                self._client_cmd +
+                '--log ' + self._client_log +
+                ' --print --address ' + address +
+                ' ' + tag_string
+            )
+
+            try:
+                client = subprocess.Popen(cmd, shell=False,
+                    stdout=subprocess.PIPE)
+
+                # client.communicate is blocking
+                raw_out = client.communicate()
+                # print(f'DEBUG enip _receive_multiple {raw_out}: ', raw_out)
+
+                # value is stored as first tuple element
+                # between a pair of square brackets
+                values =[]
+                raw_string = raw_out[0]
+                split_string = raw_string.split(b"\n")
+                for word in split_string:
+                    values.append(word[(word.find(b'[') + 1):word.find(b']')])
+                values.pop()
+                return values
+
+            except Exception as error:
+                print('ERROR enip _receive_multiple: ', error)
 
 # }}}
 
@@ -821,5 +918,23 @@ class ModbusProtocol(Protocol):
 
         except Exception as error:
             print('ERROR modbus _receive: ', error)
+
+    def _receive_multiple(self, what, address, **kwargs):
+        """Receive (read) a value from another host.
+
+        :address: to receive from
+        :what: to ask for
+        """
+
+        raise NotImplementedError('Multiple receiving is not yet implemented for Modbus')
+
+    def _send_multiple(self, what, values, address, **kwargs):
+        """Send (write) multiple values to another host.
+
+        :address: to receive from
+        :what: to ask for
+        """
+
+        raise NotImplementedError('Multiple sending is not yet implemented for Modbus')
 #
 # }}}

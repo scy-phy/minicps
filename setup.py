@@ -43,7 +43,7 @@ on top of mininet.',
         'cryptography',
         'pyasn1',
         'pymodbus',
-        'cpppo==4.3.4',
+        'cpppo',
         'pandas',
     ],
     # NOTE: specify files relative to the module path
