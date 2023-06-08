@@ -469,7 +469,7 @@ class EnipProtocol(Protocol):
         cmd = shlex.split(
             self._client_cmd +
             '--log ' + self._client_log +
-            '--address ' + address +
+            ' --print --address ' + address +
             ' ' + tag_string
         )
         # print 'DEBUG enip _receive cmd shlex list: ', cmd
@@ -510,7 +510,7 @@ class EnipProtocol(Protocol):
             cmd = shlex.split(
                 self._client_cmd +
                 '--log ' + self._client_log +
-                '--address ' + address +
+                ' --print --address ' + address +
                 ' ' + tag_string
             )
 
@@ -520,7 +520,7 @@ class EnipProtocol(Protocol):
 
                 # client.communicate is blocking
                 raw_out = client.communicate()
-                #print 'DEBUG enip _receive_multiple raw_out: ', raw_out
+                print(f'DEBUG enip _receive_multiple {raw_out}: ', raw_out)
 
                 # value is stored as first tuple element
                 # between a pair of square brackets
