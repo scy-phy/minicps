@@ -308,7 +308,7 @@ class EnipProtocol(Protocol):
             tags_string += '='
             tags_string += str(tag[-1])
             tags_string += ' '
-        print('DEBUG enip server tags_string: ', tags_string)
+        # print('DEBUG enip server tags_string: ', tags_string)
 
         return tags_string
 
@@ -520,7 +520,7 @@ class EnipProtocol(Protocol):
 
                 # client.communicate is blocking
                 raw_out = client.communicate()
-                print(f'DEBUG enip _receive_multiple {raw_out}: ', raw_out)
+                # print(f'DEBUG enip _receive_multiple {raw_out}: ', raw_out)
 
                 # value is stored as first tuple element
                 # between a pair of square brackets
