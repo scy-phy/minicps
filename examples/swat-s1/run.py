@@ -22,7 +22,7 @@ class SwatS1CPS(MiniCPS):
 
         net.start()
 
-        net.pingAll()
+        # net.pingAll()
 
         # start devices
         plc1, plc2, plc3, s1 = self.net.get(
