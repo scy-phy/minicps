@@ -30,6 +30,8 @@ TANK_DIAMETER = 1.38           # m
 TANK_SECTION = 1.5             # m^2
 PUMP_FLOWRATE_IN = 2.55        # m^3/h spec say btw 2.2 and 2.4
 PUMP_FLOWRATE_OUT = 2.45       # m^3/h spec say btw 2.2 and 2.4
+TANK2_INFLOW = 0.45/1000       # Simplification from Hybrid model
+TANK2_OUTFLOW = 0.15/1000
 
 # periods in msec
 # R/W = Read or Write
