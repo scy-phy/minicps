@@ -10,9 +10,9 @@ principle (for the trajectories).
 
 from minicps.devices import Tank
 
-from utils import PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT
+from utils import PUMP_FLOWRATE_IN, PUMP_FLOWRATE_OUT, TANK2_INFLOW, TANK2_OUTFLOW
 from utils import TANK_HEIGHT, TANK_SECTION, TANK_DIAMETER
-from utils import LIT_101_M, RWT_INIT_LEVEL
+from utils import LIT_101_M, RWT_INIT_LEVEL, LIT_301_M
 from utils import STATE, PP_PERIOD_SEC, PP_PERIOD_HOURS, PP_SAMPLES
 import pandas as pd
 
@@ -39,6 +39,7 @@ class RawWaterTank(Tank):
         self.set(MV101, 1)
         self.set(P101, 0)
         self.level = self.set(LIT101, 0.800)
+        self.level2 = self.set(LIT301,0.850)
         # SPHINX_SWAT_TUTORIAL STATE INIT)
 
         # test underflow
@@ -55,6 +56,7 @@ class RawWaterTank(Tank):
         while(count <= PP_SAMPLES):
 
             new_level = self.level
+            tank2_level = self.level2
 
             # compute water volume
             water_volume = self.section * new_level
@@ -76,7 +78,9 @@ class RawWaterTank(Tank):
                 outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print("DEBUG RawWaterTank outflow: ", outflow)
                 water_volume -= outflow
+                tank2_level += TANK2_INFLOW
             else:
+                tank2_level -= TANK2_OUTFLOW
                 self.set(FIT201, 0.00)
 
             # compute new water_level
@@ -90,10 +94,15 @@ class RawWaterTank(Tank):
             print("DEBUG new_level: %.5f \t delta: %.5f" % (
                 new_level, new_level - self.level))
             self.level = self.set(LIT101, new_level)
+            self.level2 = self.set(LIT301, tank2_level)
 
             # 988 sec starting from 0.500 m
             if new_level >= LIT_101_M['HH']:
                 print('DEBUG RawWaterTank above HH count: ', count)
+                break
+            
+            if tank2_level >= LIT_301_M['HH']:
+                print('DEBUG WaterTank2 above HH count: ', count)
                 break
 
             # 367 sec starting from 0.500 m
