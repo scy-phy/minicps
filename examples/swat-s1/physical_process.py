@@ -38,14 +38,14 @@ class RawWaterTank(Tank):
         # SPHINX_SWAT_TUTORIAL STATE INIT(
         self.set(MV101, 1)
         self.set(P101, 0)
-        self.level = self.set(LIT101, 0.800)
+        self.level1 = self.set(LIT101, 0.800)
         self.level2 = self.set(LIT301,0.850)
         # SPHINX_SWAT_TUTORIAL STATE INIT)
 
         # test underflow
         # self.set(MV101, 0)
         # self.set(P101, 1)
-        # self.level = self.set(LIT101, 0.500)
+        # self.level1 = self.set(LIT101, 0.500)
 
     def main_loop(self):
 
@@ -55,19 +55,19 @@ class RawWaterTank(Tank):
         timestamp=0
         while(count <= PP_SAMPLES):
 
-            new_level = self.level
+            tank1_level = self.level1
             tank2_level = self.level2
 
             # compute water volume
-            water_volume = self.section * new_level
+            tank1_volume = self.section * tank1_level
 
             # inflows volumes
             mv101 = self.get(MV101)
             if int(mv101) == 1:
                 self.set(FIT101, PUMP_FLOWRATE_IN)
-                inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
-                # print("DEBUG RawWaterTank inflow: ", inflow)
-                water_volume += inflow
+                tank1_inflow = PUMP_FLOWRATE_IN * PP_PERIOD_HOURS
+                # print("DEBUG RawWaterTank tank1_inflow: ", tank1_inflow)
+                tank1_volume += tank1_inflow
             else:
                 self.set(FIT101, 0.00)
 
@@ -77,27 +77,27 @@ class RawWaterTank(Tank):
                 self.set(FIT201, PUMP_FLOWRATE_OUT)
                 outflow = PUMP_FLOWRATE_OUT * PP_PERIOD_HOURS
                 # print("DEBUG RawWaterTank outflow: ", outflow)
-                water_volume -= outflow
-                tank2_level += TANK2_INFLOW
+                tank1_volume -= outflow
+                tank2_level += TANK2_INFLOW - TANK2_OUTFLOW
             else:
                 tank2_level -= TANK2_OUTFLOW
                 self.set(FIT201, 0.00)
 
             # compute new water_level
-            new_level = water_volume / self.section
+            tank1_level = tank1_volume / self.section
 
             # level cannot be negative
-            if new_level <= 0.0:
-                new_level = 0.0
+            if tank1_level <= 0.0:
+                tank1_level = 0.0
 
             # update internal and state water level
-            print("DEBUG new_level: %.5f \t delta: %.5f" % (
-                new_level, new_level - self.level))
-            self.level = self.set(LIT101, new_level)
+            print("DEBUG tank1_level: %.5f \t delta: %.5f" % (
+                tank1_level, tank1_level - self.level1))
+            self.level1 = self.set(LIT101, tank1_level)
             self.level2 = self.set(LIT301, tank2_level)
 
             # 988 sec starting from 0.500 m
-            if new_level >= LIT_101_M['HH']:
+            if tank1_level >= LIT_101_M['HH']:
                 print('DEBUG RawWaterTank above HH count: ', count)
                 break
             
@@ -106,7 +106,7 @@ class RawWaterTank(Tank):
                 break
 
             # 367 sec starting from 0.500 m
-            elif new_level <= LIT_101_M['LL']:
+            elif tank1_level <= LIT_101_M['LL']:
                 print('DEBUG RawWaterTank below LL count: ', count)
                 break 
             new_data = pd.DataFrame(data = [[timestamp, self.get(MV101), self.get(P101), self.get(LIT101), self.get(LIT301), self.get(FIT101), self.get(FIT201)]], columns=columns)
