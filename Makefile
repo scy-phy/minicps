@@ -3,9 +3,9 @@
 # VARIABLES {{{1
 
 LATEST_VERSION = 1.1.3
-MININET = sudo mn
+MININET = mn
 
-PYTHON = sudo python
+PYTHON = python
 PYTHON_OPTS =
 
 # regex testMatch: (?:^|[b_.-])[Tt]est)
@@ -16,8 +16,7 @@ PYTHON_OPTS =
 # TODO: add testing conditionals for verbosity, doctest plugin and coverage plugin
 # http://web.mit.edu/gnu/doc/html/make_7.html
 
-# NOTE: sudo because of mininet
-TESTER = sudo nosetests
+TESTER = nosetests
 TESTER_TRAVIS = nosetests
 TESTER_OPTS = -s -v --exe  --rednose
 TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
@@ -25,34 +24,42 @@ TESTER_OPTS_COV_HTML = $(TESTER_OPTS) --with-coverage --cover-html
 UPLOADER=twine
 # }}}
 
-.PHONY: tests tests-travis clean
+.PHONY: checkroot tests tests-travis clean
+
+
+checkroot:
+	@if ! [ "$(shell id -u)" = 0 ]; then \
+	   echo "You are not root, run this target as root please"; \
+	   exit 1; \
+	fi
+
 
 # TOY {{{1
 
-toy:
+toy: checkroot
 	cd examples/toy; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
-toy-init:
+toy-init: checkroot
 	cd examples/toy; $(PYTHON) $(PYTHON_OPTS) init.py; cd ../..
 
-test-toy:
+test-toy: checkroot
 	cd examples/toy; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
 
 # TODO
-test-toy-cover:
+test-toy-cover: checkroot
 	cd examples/toy; $(TESTER) $(TESTER_OPTS_COV_HTML) tests.py; cd ../..
 
 # }}}
 
 # SWAT-S1 {{{1
 
-swat-s1-init:
+swat-s1-init: checkroot
 	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) init.py; cd ../..
 
-swat-s1:
+swat-s1: checkroot
 	cd examples/swat-s1; $(PYTHON) $(PYTHON_OPTS) run.py; cd ../..
 
-test-swat-s1:
+test-swat-s1: checkroot
 	cd examples/swat-s1; $(TESTER) $(TESTER_OPTS) tests.py; cd ../..
 
 # }}}
@@ -60,7 +67,7 @@ test-swat-s1:
 # TESTS {{{1
 
 # ALL {{{2
-tests:
+tests: checkroot
 	$(TESTER) $(TESTER_OPTS) tests
 
 # }}}
@@ -101,7 +108,7 @@ test-device:
 # }}}
 
 # TRAVIS {{{2
-tests-travis:
+tests-travis: checkroot
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/protocols_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/devices_tests.py
 	$(TESTER_TRAVIS) $(TESTER_OPTS) tests/states_tests.py
@@ -120,26 +127,26 @@ tests-travis:
 # CLEAN {{{1
 clean: clean-cover clean-pyc clean-logs
 
-clean-simulation:
-	sudo pkill  -f -u root "python -m cpppo.server.enip"
-	sudo mn -c
+clean-simulation: checkroot
+	pkill  -f -u root "python -m cpppo.server.enip"
+	mn -c
 
-clean-cover:
+clean-cover: checkroot
 	rm -f minicps/*,cover
 	rm -f tests/*,cover
 
-clean-pyc:
+clean-pyc: checkroot
 	rm -f minicps/*.pyc
 	rm -f tests/*.pyc
 
-clean-logs:
+clean-logs: checkroot
 	rm -f logs/*.log
 
-clean-cpppo:
-	sudo pkill  -f -u root "python -m cpppo.server.enip"
+clean-cpppo: checkroot
+	pkill  -f -u root "python -m cpppo.server.enip"
 
-clean-mininet:
-	sudo mn -c
+clean-mininet: checkroot
+	mn -c
 
 # }}}
 
