@@ -20,8 +20,7 @@ now provide:
 Prerequisites
 =============
 
-This tutorial assumes that the reader has a basic understanding of ``python
-2.x``,  has familiarly with Linux OS, ``bash``, Mininet
+This tutorial assumes that the reader has a basic understanding of ``python 3.x``,  has familiarly with Linux OS, ``bash``, Mininet
 and has a basic understanding of networking tools such
 as: ``wireshark``, ``ifconfig`` and ``nmap``.
 
