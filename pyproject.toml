@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minicps"
+version = "1.1.4"
+description = "MiniCPS: a framework for Cyber-Physical Systems real-time simulation, built on top of mininet."
+readme = ""
+authors = [
+    { name = "Daniele Antonioli", email = "antonioli.daniele@gmail.com" },
+]
+license = "MIT" 
+keywords = ["simulation", "cyber-physical systems", "security", "real-time", "mininet"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Security",
+]
+
+dependencies = [
+    "cryptography",
+    "pyasn1",
+    "pymodbus",
+    "cpppo",
+    "numpy==2.2.6",
+    "pandas",
+]
+
+[project.urls]
+Homepage = "https://github.com/scy-phy/minicps"
+
+[tool.setuptools]
+packages = ["minicps"]
