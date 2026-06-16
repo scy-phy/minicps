@@ -18,9 +18,7 @@ How to start
 General design principles
 -------------------------
 
-MiniCPS follows an object-oriented design pattern. It is using ``python2.x``
-for compatibility reasons with ``mininet``. We are trying to lower the number
-of external dependencies, and eventually move to ``python3.x``.
+MiniCPS follows an object-oriented design pattern. It is using ``python3.x``.
 
 * Design points:
 
@@ -67,7 +65,7 @@ Add ``minicps`` to the python path, for example using a soft link:
 
 .. code-block:: console
 
-    ln -s ~/minicps/minicps /usr/lib/python2.7/minicps
+    ln -s ~/minicps/minicps /usr/lib/python3.7/minicps
 
 
 Install the requirements using:

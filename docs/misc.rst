@@ -16,7 +16,7 @@ Links
 Python 2.X and modules
 -----------------------
 
-* `python tutorial <https://docs.python.org/2/tutorial/index.html>`_.
+* `python tutorial <https://docs.python.org/3/tutorial/index.html>`_.
 * `pip <https://pip.pypa.io/en/stable/>`_
 * `networkx <http://networkx.github.io/>`_
 * `matplotlib <http://matplotlib.org/>`_

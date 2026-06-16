@@ -55,11 +55,11 @@ Mininet relies on openvswitch-controller as basic SDN controller (unless you ins
 
    sudo apt install openvswitch-testcontroller
 
-Then, you need to patch the minicps source (e.g., /usr/lib/python2.7/dist-packages/mininet/clean.py and /usr/lib/python2.7/dist-packages/mininet/node.py) to use the updated binary name (change occurances of openvswitch-controller to openvswitch-testcontroller). 
+Then, you need to patch the minicps source (e.g., /usr/lib/python3.7/dist-packages/mininet/clean.py and /usr/lib/python3.7/dist-packages/mininet/node.py) to use the updated binary name (change occurances of openvswitch-controller to openvswitch-testcontroller). 
 
 .. code-block:: console
 
-   find /usr/lib/python2.7/dist-packages/mininet/ -type f -exec sudo sed -i 's/ovs-controller/ovs-testcontroller/' {} \;
+   find /usr/lib/python3.7/dist-packages/mininet/ -type f -exec sudo sed -i 's/ovs-controller/ovs-testcontroller/' {} \;
 
 Ensure the corresponding service is running, e.g., by using    
    
