@@ -356,6 +356,7 @@ class EnipProtocol(Protocol):
                   passable to subprocess.Popen object
         """
 
+
         CMD = sys.executable + ' -m cpppo.server.enip '
         PRINT_STDOUT = '--no-print '
         HTTP = '--web %s:80 ' % address[0:address.find(':')]
@@ -667,6 +668,11 @@ class ModbusProtocol(Protocol):
             raise OSError
 
         colon_index = address.find(':')
+
+
+
+
+
         IP = '-i {} '.format(address[:colon_index])
         PORT = '-p {} '.format(address[colon_index+1:])
         MODE = '-m {} '.format(mode)

@@ -1,0 +1,40 @@
+05-19 18:36:38.463   Thread-2 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:39.102   Thread-3 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:39.687   Thread-4 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:40.292   Thread-5 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:40.872   Thread-6 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:41.457   Thread-7 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:36:42.059   Thread-8 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:2'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:01.432   Thread-2 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:02.016   Thread-3 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:02.703   Thread-4 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:03.284   Thread-5 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:03.863   Thread-6 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-19 18:37:04.450   Thread-7 enip.dev WARNING  route      Logix Failed attempting to resolve path {'segment': [{'symbolic': u'LIT101:3'}], 'size': 5}: class,inst,addr: None, target: None
+05-23 16:32:01.507 Thread-122 enip.srv ERROR    enip_srv_t EtherNet/IP error at 0 total bytes:
+''
+-^ (byte 0)
+
+Failed with exception:
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/enip/main.py", line 757, in enip_srv_tcp
+    msg	= network.recv( conn, timeout=wait )
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/network.py", line 60, in wrapper
+    r,_,_	= select.select( [args[0].fileno()], [], [], rem )
+ValueError: filedescriptor out of range in select()
+
+
+05-23 16:35:15.781 Thread-122 network  WARNING  run        enip_srv server failure: filedescriptor out of range in select()
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/network.py", line 153, in run
+    super( server_thread, self ).run()
+  File "/usr/lib/python2.7/threading.py", line 754, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/enip/main.py", line 616, in enip_srv
+    enip_srv_tcp( conn, addr, name=name, enip_process=enip_process, delay=delay, **kwds )
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/enip/main.py", line 757, in enip_srv_tcp
+    msg	= network.recv( conn, timeout=wait )
+  File "/usr/local/lib/python2.7/dist-packages/cpppo/server/network.py", line 60, in wrapper
+    r,_,_	= select.select( [args[0].fileno()], [], [], rem )
+ValueError: filedescriptor out of range in select()
+

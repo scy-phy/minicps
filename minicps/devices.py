@@ -68,20 +68,7 @@ class Device(object):
 
         Device construction example:
 
-        >>> device = Device(
-        >>>     name='dev',
-        >>>     protocol={
-        >>>         'name': 'enip',
-        >>>         'mode': 1,
-        >>>         'server': {
-        >>>             'address': '10.0.0.1',
-        >>>             'tags': (('SENSOR1', 1), ('SENSOR2', 1)),
-        >>>             }
-        >>>     state={
-        >>>         'path': '/path/to/db.sqlite',
-        >>>         'name': 'table_name',
-        >>>     }
-        >>> )
+
 
         """
 

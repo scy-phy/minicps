@@ -2,15 +2,15 @@
 
 # NOTE: https://pymodbus.readthedocs.io/en/latest/examples/asynchronous-server.html
 
-from pymodbus.server.async import StartTcpServer
-from pymodbus.server.async import StartUdpServer
-from pymodbus.server.async import StartSerialServer
+from pymodbus.server.asynchronous import StartTcpServer
+from pymodbus.server.asynchronous import StartUdpServer
+from pymodbus.server.asynchronous import StartSerialServer
 
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 from pymodbus.transaction import ModbusRtuFramer, ModbusAsciiFramer
-from pymodbus.server.async import StartTcpServer
+from pymodbus.server.asynchronous import StartTcpServer
 
 import argparse
 
